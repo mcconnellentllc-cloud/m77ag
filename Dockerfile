@@ -8,12 +8,19 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy all files
-COPY . .
-
-# Debug - list files to verify structure
+# Debug - list directory contents before copying
+RUN echo "Before copying files:"
 RUN ls -la
+
+# Explicitly copy the server directory and its contents
+COPY server ./server/
+
+# Debug - verify server directory contents
+RUN echo "Server directory contents:"
 RUN ls -la server/
+
+# Copy remaining files
+COPY . .
 
 # Start the application
 CMD ["node", "server/app.js"]
