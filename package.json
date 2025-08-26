@@ -1,12 +1,14 @@
 {
   "name": "m77ag.com",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "M77 AG Farming Website",
+  "main": "server/server.js",
   "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["agriculture", "farming", "calculator"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -23,5 +25,11 @@
     "path-to-regexp": "^8.2.0",
     "sqlite3": "^5.1.7",
     "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -2,25 +2,16 @@ FROM node:18
 
 WORKDIR /app
 
-# Copy package files first
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Debug - list directory contents before copying
-RUN echo "Before copying files:"
-RUN ls -la
-
-# Explicitly copy the server directory and its contents
-COPY server ./server/
-
-# Debug - verify server directory contents
-RUN echo "Server directory contents:"
-RUN ls -la server/
-
-# Copy remaining files
+# Copy all application files
 COPY . .
 
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=10000
+
 # Start the application
-CMD ["node", "server/app.js"]
+CMD ["npm", "start"]
