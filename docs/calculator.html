@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Service Calculator - M77 AG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background-color: #1c2331;
+            padding: 50px 0;
+            margin-bottom: 30px;
+        }
+        .navbar {
+            background-color: #0f141e !important;
+        }
+        footer {
+            background-color: #0f141e;
+            margin-top: 50px;
+        }
+        .form-container {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">M77 AG</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/crops.html">Crops</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cattle.html">Cattle</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/services.html">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/calculator.html">Calculator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about.html">About Us</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="/account/login.html" class="btn btn-outline-light me-2" id="loginBtn">Login</a>
+                    <a href="/account/register.html" class="btn btn-success" id="registerBtn">Register</a>
+                    <button class="btn btn-danger d-none" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section text-white text-center">
+        <div class="container">
+            <h1>Farm Service Calculator</h1>
+            <p class="lead">Calculate the cost of our agricultural services with volume discounts</p>
+        </div>
+    </header>
+
+    <!-- Calculator Form -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-container">
+                    <form id="calculatorForm">
+                        <h3 class="mb-4">Customer Information</h3>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone">
+                        </div>
+
+                        <h3 class="mt-4 mb-3">Farm Details</h3>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="acres" class="form-label">Total Acres</label>
+                                <input type="number" class="form-control" id="acres" min="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location">
+                            </div>
+                        </div>
+
+                        <h3 class="mt-4 mb-3">Select Services</h3>
+                        <div id="servicesContainer">
+                            <div class="service-row mb-3 p-3 border rounded">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Service</label>
+                                        <select class="form-select service-select" required>
+                                            <option value="">Select a service</option>
+                                            <option value="planting" data-price="25">Planting ($25/acre)</option>
+                                            <option value="harvesting" data-price="35">Harvesting ($35/acre)</option>
+                                            <option value="spraying" data-price="15">Spraying ($15/acre)</option>
+                                            <option value="fertilizing" data-price="20">Fertilizing ($20/acre)</option>
+                                            <option value="tillage" data-price="22">Tillage ($22/acre)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">Acres</label>
+                                        <input type="number" class="form-control service-acres" min="1" required>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="button" class="btn btn-danger w-100 remove-service">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <button type="button" id="addServiceBtn" class="btn btn-secondary">Add Another Service</button>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="notes" class="form-label">Additional Notes</label>
+                                <textarea class="form-control" id="notes" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3" id="discountInfo">
+                            <strong>Volume Discounts:</strong> 7% for 100+ acres, 10% for 200+ acres, 14% for 300+ acres
+                        </div>
+
+                        <div class="card mt-4 mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Cost Summary</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Total Acres:</strong> <span id="totalAcres">0</span></p>
+                                        <p><strong>Base Price:</strong> $<span id="basePrice">0.00</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Discount Rate:</strong> <span id="discountRate">0</span>%</p>
+                                        <p><strong>Discount Amount:</strong> $<span id="discountAmount">0.00</span></p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h4 class="text-end">Final Price: $<span id="finalPrice">0.00</span></h4>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" id="calculateBtn" class="btn btn-primary btn-lg">Calculate</button>
+                            <button type="submit" id="submitProposalBtn" class="btn btn-success btn-lg">Submit Proposal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>M77 AG</h5>
+                    <p>Innovative agricultural solutions for modern farming.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/about.html" class="text-white">About Us</a></li>
+                        <li><a href="/services.html" class="text-white">Services</a></li>
+                        <li><a href="/calculator.html" class="text-white">Calculator</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contact</h5>
+                    <address>
+                        <p>Email: info@m77ag.com</p>
+                        <p>Phone: (555) 123-4567</p>
+                    </address>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>&copy; 2025 M77 AG. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Authentication check
+            const token = localStorage.getItem('token');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (token) {
+                // User is logged in
+                loginBtn.classList.add('d-none');
+                registerBtn.classList.add('d-none');
+                logoutBtn.classList.remove('d-none');
+                
+                // Add logout functionality
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/';
+                });
+            }
+
+            // Add service button
+            const addServiceBtn = document.getElementById('addServiceBtn');
+            const servicesContainer = document.getElementById('servicesContainer');
+            
+            addServiceBtn.addEventListener('click', function() {
+                const serviceRow = document.createElement('div');
+                serviceRow.className = 'service-row mb-3 p-3 border rounded';
+                serviceRow.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="form-label">Service</label>
+                            <select class="form-select service-select" required>
+                                <option value="">Select a service</option>
+                                <option value="planting" data-price="25">Planting ($25/acre)</option>
+                                <option value="harvesting" data-price="35">Harvesting ($35/acre)</option>
+                                <option value="spraying" data-price="15">Spraying ($15/acre)</option>
+                                <option value="fertilizing" data-price="20">Fertilizing ($20/acre)</option>
+                                <option value="tillage" data-price="22">Tillage ($22/acre)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Acres</label>
+                            <input type="number" class="form-control service-acres" min="1" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger w-100 remove-service">Remove</button>
+                        </div>
+                    </div>
+                `;
+                servicesContainer.appendChild(serviceRow);
+                
+                // Add event listener to the new remove button
+                serviceRow.querySelector('.remove-service').addEventListener('click', function() {
+                    serviceRow.remove();
+                });
+            });
+            
+            // Add event listener to the initial remove button
+            document.querySelector('.remove-service').addEventListener('click', function() {
+                alert('You need at least one service.');
+            });
+            
+            // Calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            
+            calculateBtn.addEventListener('click', function() {
+                calculateCost();
+            });
+            
+            // Calculate cost function
+            function calculateCost() {
+                const serviceRows = document.querySelectorAll('.service-row');
+                let totalAcres = 0;
+                let basePrice = 0;
+                
+                serviceRows.forEach(row => {
+                    const serviceSelect = row.querySelector('.service-select');
+                    const serviceAcres = row.querySelector('.service-acres');
+                    
+                    if (serviceSelect.value && serviceAcres.value) {
+                        const price = parseFloat(serviceSelect.options[serviceSelect.selectedIndex].dataset.price);
+                        const acres = parseFloat(serviceAcres.value);
+                        
+                        totalAcres += acres;
+                        basePrice += price * acres;
+                    }
+                });
+                
+                // Calculate discount
+                let discountRate = 0;
+                if (totalAcres >= 300) {
+                    discountRate = 14;
+                } else if (totalAcres >= 200) {
+                    discountRate = 10;
+                } else if (totalAcres >= 100) {
+                    discountRate = 7;
+                }
+                
+                const discountAmount = (basePrice * discountRate) / 100;
+                const finalPrice = basePrice - discountAmount;
+                
+                // Update the summary
+                document.getElementById('totalAcres').textContent = totalAcres;
+                document.getElementById('basePrice').textContent = basePrice.toFixed(2);
+                document.getElementById('discountRate').textContent = discountRate;
+                document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+                document.getElementById('finalPrice').textContent = finalPrice.toFixed(2);
+            }
+            
+            // Submit proposal button
+            const submitProposalBtn = document.getElementById('submitProposalBtn');
+            const calculatorForm = document.getElementById('calculatorForm');
+            
+            submitProposalBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Check if user is logged in
+                if (!token) {
+                    alert('Please log in to submit a proposal.');
+                    window.location.href = '/account/login.html';
+                    return;
+                }
+                
+                // Calculate final values
+                calculateCost();
+                
+                // Prepare proposal data
+                const serviceRows = document.querySelectorAll('.service-row');
+                const services = [];
+                
+                serviceRows.forEach(row => {
+                    const serviceSelect = row.querySelector('.service-select');
+                    const serviceAcres = row.querySelector('.service-acres');
+                    
+                    if (serviceSelect.value && serviceAcres.value) {
+                        const serviceName = serviceSelect.options[serviceSelect.selectedIndex].text.split(' ')[0];
+                        const price = parseFloat(serviceSelect.options[serviceSelect.selectedIndex].dataset.price);
+                        const acres = parseFloat(serviceAcres.value);
+                        
+                        services.push({
+                            name: serviceName,
+                            pricePerAcre: price,
+                            quantity: acres
+                        });
+                    }
+                });
+                
+                const totalAcres = parseFloat(document.getElementById('totalAcres').textContent);
+                const basePrice = parseFloat(document.getElementById('basePrice').textContent);
+                const discountRate = parseFloat(document.getElementById('discountRate').textContent);
+                const discountAmount = parseFloat(document.getElementById('discountAmount').textContent);
+                const finalPrice = parseFloat(document.getElementById('finalPrice').textContent);
+                
+                const proposalData = {
+                    customer: {
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value
+                    },
+                    farmDetails: {
+                        acres: totalAcres,
+                        location: document.getElementById('location').value,
+                        crops: []
+                    },
+                    services: services,
+                    totalPrice: basePrice,
+                    discountApplied: discountAmount,
+                    finalPrice: finalPrice,
+                    notes: document.getElementById('notes').value
+                };
+                
+                // Submit proposal to API
+                fetch('/api/proposals', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(proposalData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to submit proposal');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Proposal submitted successfully!');
+                    calculatorForm.reset();
+                    document.getElementById('totalAcres').textContent = '0';
+                    document.getElementById('basePrice').textContent = '0.00';
+                    document.getElementById('discountRate').textContent = '0';
+                    document.getElementById('discountAmount').textContent = '0.00';
+                    document.getElementById('finalPrice').textContent = '0.00';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error submitting proposal. Please try again.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

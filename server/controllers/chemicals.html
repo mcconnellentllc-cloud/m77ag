@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemical Inventory - M77 AG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8bc34a;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--darker-bg);
+            position: fixed;
+            height: 100vh;
+            border-right: 1px solid var(--border-color);
+            padding-top: 2rem;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+        
+        .logo span {
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-nav a {
+            display: block;
+            padding: 0.8rem 1.5rem;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-nav a:hover, .sidebar-nav li.active a {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding-left: 2rem;
+        }
+        
+        .sidebar-nav li.active a {
+            border-left: 4px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        /* Filter Controls */
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .filter-group select, .filter-group input {
+            padding: 0.5rem;
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #fff;
+        }
+        
+        .filter-group input::placeholder {
+            color: #aaa;
+        }
+        
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        /* Tables */
+        .data-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            color: #ccc;
+            font-weight: 600;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-low {
+            background-color: #f44336;
+            color: #fff;
+        }
+        
+        .status-warning {
+            background-color: #ff9800;
+            color: #000;
+        }
+        
+        .status-ok {
+            background-color: #4caf50;
+            color: #000;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background-color: #a1d26a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #2a2a2a;
+            border: 1px solid var(--border-color);
+            color: #fff;
+        }
+        
+        .btn-logout {
+            width: 100%;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            background-color: rgba(255, 0, 0, 0.2);
+            border-color: #f44336;
+        }
+        
+        /* Action Buttons */
+        .btn-icon {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 0.2rem;
+        }
+        
+        .btn-icon:hover {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            right: 1.5rem;
+            top: 1rem;
+            color: #aaa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #fff;
+        }
+        
+        .modal h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #2a2a2a;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: #fff;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <a href="/" style="text-decoration: none; color: #fff;">M77<span>AG</span></a>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="proposals.html">Proposals</a></li>
+                <li class="active"><a href="chemicals.html">Chemicals</a></li>
+                <li><a href="programs.html">Spray Programs</a></li>
+                <li><a href="customers.html">Customers</a></li>
+                <li><a href="orders.html">Orders</a></li>
+                <li><a href="farm-management.html">Farm Management</a></li>
+                <li><a href="settings.html">Settings</a></li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-logout">Log Out</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1>Chemical Inventory Management</h1>
+                <button id="addChemicalBtn" class="btn btn-primary">Add New Chemical</button>
+            </div>
+            
+            <!-- Stats Overview -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <div class="stat-value" id="totalProducts">245</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Low Stock Items</h3>
+                    <div class="stat-value" id="lowStockItems">8</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Inventory Value</h3>
+                    <div class="stat-value" id="inventoryValue">$186,250</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Categories</h3>
+                    <div class="stat-value" id="categoryCount">5</div>
+                </div>
+            </div>
+            
+            <!-- Chemical Inventory Table -->
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>Chemical Inventory</h2>
+                    <div class="filter-group">
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="herbicide">Herbicides</option>
+                            <option value="fungicide">Fungicides</option>
+                            <option value="insecticide">Insecticides</option>
+                            <option value="fertilizer">Fertilizers</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="text" id="searchInventory" placeholder="Search inventory...">
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price/Unit</th>
+                            <th>Margin</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chemicalTable">
+                        <tr>
+                            <td>Roundup PowerMax</td>
+                            <td>Herbicide</td>
+                            <td>$65.00</td>
+                            <td>18%</td>
+                            <td>18</td>
+                            <td>gallon</td>
+                            <td>$1,170.00</td>
+                            <td><span class="status-badge status-low">Low Stock</span></td>
+                            <td>
+                                <button class="btn-icon view-chemical" data-id="CHEM-001">👁️</button>
+                                <button class="btn-icon edit-chemical" data-id="CHEM-001">✏️</button>
+                                <button class="btn-icon delete-chemical" data-id="CHEM-001">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Headline AMP</td>
+                            <td>Fungicide</td>
+                            <td>$375.00</td>
+                            <td>22%</td>
+                            <td>5</td>
+                            <td>gallon</td>
+                            <td>$1,875.00</td>
+                            <td><span class="status-badge status-low">Low Stock</span></td>
+                            <td>
+                                <button class="btn-icon view-chemical" data-id="CHEM-015">👁️</button>
+                                <button class="btn-icon edit-chemical" data-id="CHEM-015">✏️</button>
+                                <button class="btn-icon delete-chemical" data-id="CHEM-015">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Atrazine 4L</td>
+                            <td>Herbicide</td>
+                            <td>$28.50</td>
+                            <td>15%</td>
+                            <td>45</td>
+                            <td>gallon</td>
+                            <td>$1,282.50</td>
+                            <td><span class="status-badge status-warning">Near Threshold</span></td>
+                            <td>
+                                <button class="btn-icon view-chemical" data-id="CHEM-008">👁️</button>
+                                <button class="btn-icon edit-chemical" data-id="CHEM-008">✏️</button>
+                                <button class="btn-icon delete-chemical" data-id="CHEM-008">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Liberty</td>
+                            <td>Herbicide</td>
+                            <td>$78.00</td>
+                            <td>20%</td>
+                            <td>32</td>
+                            <td>gallon</td>
+                            <td>$2,496.00</td>
+                            <td><span class="status-badge status-warning">Near Threshold</span></td>
+                            <td>
+                                <button class="btn-icon view-chemical" data-id="CHEM-022">👁️</button>
+                                <button class="btn-icon edit-chemical" data-id="CHEM-022">✏️</button>
+                                <button class="btn-icon delete-chemical" data-id="CHEM-022">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pristine</td>
+                            <td>Fungicide</td>
+                            <td>$85.00</td>
+                            <td>25%</td>
+                            <td>28</td>
+                            <td>pound</td>
+                            <td>$2,380.00</td>
+                            <td><span class="status-badge status-ok">In Stock</span></td>
+                            <td>
+                                <button class="btn-icon view-chemical" data-id="CHEM-032">👁️</button>
+                                <button class="btn-icon edit-chemical" data-id="CHEM-032">✏️</button>
+                                <button class="btn-icon delete-chemical" data-id="CHEM-032">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Add/Edit Chemical Modal -->
+            <div id="chemicalModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2 id="modalTitle">Add New Chemical</h2>
+                    <form id="chemicalForm">
+                        <input type="hidden" id="chemicalId" name="chemicalId">
+                        
+                        <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" id="productName" name="productName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category" required>
+                                <option value="herbicide">Herbicide</option>
+                                <option value="fungicide">Fungicide</option>
+                                <option value="insecticide">Insecticide</option>
+                                <option value="fertilizer">Fertilizer</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="costPerUnit">Cost Per Unit</label>
+                                <input type="number" id="costPerUnit" name="costPerUnit" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="marginPercent">Margin %</label>
+                                <input type="number" id="marginPercent" name="marginPercent" step="0.1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="pricePerUnit">Price Per Unit</label>
+                                <input type="number" id="pricePerUnit" name="pricePerUnit" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" id="quantity" name="quantity" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="unit">Unit</label>
+                                <select id="unit" name="unit" required>
+                                    <option value="gallon">Gallon</option>
+                                    <option value="pound">Pound</option>
+                                    <option value="quart">Quart</option>
+                                    <option value="ounce">Ounce</option>
+                                    <option value="ton">Ton</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="threshold">Low Stock Threshold</label>
+                                <input type="number" id="threshold" name="threshold" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notes</label>
+                            <textarea id="notes" name="notes" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Chemical</button>
+                            <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if admin is logged in
+            const adminLoggedIn = localStorage.getItem('adminLoggedIn');
+            if (!adminLoggedIn || adminLoggedIn !== 'true') {
+                // Not logged in as admin, redirect to login page
+                alert('Please log in with administrator credentials');
+                window.location.href = '/admin/';
+                return;
+            }
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('loggedIn');
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                window.location.href = '/admin/';
+            });
+            
+            // Modal functionality
+            const modal = document.getElementById('chemicalModal');
+            const closeBtn = document.querySelector('.close');
+            const addChemicalBtn = document.getElementById('addChemicalBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const chemicalForm = document.getElementById('chemicalForm');
+            
+            // Open modal when clicking Add New Chemical
+            addChemicalBtn.addEventListener('click', function() {
+                document.getElementById('modalTitle').textContent = 'Add New Chemical';
+                document.getElementById('chemicalId').value = '';
+                chemicalForm.reset();
+                modal.style.display = 'block';
+            });
+            
+            // Close modal when clicking X
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking Cancel
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Edit chemical buttons
+            document.querySelectorAll('.edit-chemical').forEach(button => {
+                button.addEventListener('click', function() {
+                    const chemicalId = this.getAttribute('data-id');
+                    document.getElementById('modalTitle').textContent = 'Edit Chemical';
+                    document.getElementById('chemicalId').value = chemicalId;
+                    
+                    // In production, fetch chemical details from API
+                    // For now, use sample data
+                    if (chemicalId === 'CHEM-001') {
+                        document.getElementById('productName').value = 'Roundup PowerMax';
+                        document.getElementById('category').value = 'herbicide';
+                        document.getElementById('costPerUnit').value = '55.00';
+                        document.getElementById('marginPercent').value = '18';
+                        document.getElementById('pricePerUnit').value = '65.00';
+                        document.getElementById('quantity').value = '18';
+                        document.getElementById('unit').value = 'gallon';
+                        document.getElementById('threshold').value = '25';
+                        document.getElementById('notes').value = 'Apply at 32 oz/acre for burndown.';
+                    }
+                    
+                    modal.style.display = 'block';
+                });
+            });
+            
+            // Delete chemical buttons
+            document.querySelectorAll('.delete-chemical').forEach(button => {
+                button.addEventListener('click', function() {
+                    const chemicalId = this.getAttribute('data-id');
+                    if (confirm(`Are you sure you want to delete ${chemicalId}?`)) {
+                        // In production, call API to delete chemical
+                        alert(`Delete chemical: ${chemicalId}`);
+                    }
+                });
+            });
+            
+            // Auto-calculate price based on cost and margin
+            document.getElementById('costPerUnit').addEventListener('input', updatePrice);
+            document.getElementById('marginPercent').addEventListener('input', updatePrice);
+            
+            function updatePrice() {
+                const cost = parseFloat(document.getElementById('costPerUnit').value) || 0;
+                const margin = parseFloat(document.getElementById('marginPercent').value) || 0;
+                
+                if (cost > 0 && margin > 0) {
+                    const price = cost * (1 + margin / 100);
+                    document.getElementById('pricePerUnit').value = price.toFixed(2);
+                }
+            }
+            
+            // Form submission
+            chemicalForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(chemicalForm);
+                const chemicalData = Object.fromEntries(formData.entries());
+                
+                // In production, call API to save chemical
+                console.log('Chemical data:', chemicalData);
+                alert('Chemical saved successfully!');
+                
+                modal.style.display = 'none';
+            });
+            
+            // Category filter
+            document.getElementById('categoryFilter').addEventListener('change', function() {
+                const category = this.value;
+                // In production, filter chemicals by category
+                console.log(`Filtering by category: ${category}`);
+            });
+            
+            // Search functionality
+            document.getElementById('searchInventory').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                // In production, search chemicals
+                console.log(`Searching for: ${searchTerm}`);
+            });
+            
+            // Load chemicals from API
+            loadChemicals();
+        });
+        
+        // Function to load chemicals from API
+        async function loadChemicals() {
+            try {
+                // In production, call API to get chemicals
+                // For now, we're using placeholder data
+                
+                // Uncomment for production with real API
+                /*
+                const response = await fetch('/api/chemicals', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load chemicals');
+                }
+                
+                const chemicals = await response.json();
+                
+                // Update stats
+                document.getElementById('totalProducts').textContent = chemicals.length;
+                document.getElementById('lowStockItems').textContent = chemicals.filter(c => c.quantity <= c.threshold).length;
+                
+                // Calculate inventory value
+                const inventoryValue = chemicals.reduce((total, chemical) => {
+                    return total + (chemical.pricePerUnit * chemical.quantity);
+                }, 0);
+                
+                document.getElementById('inventoryValue').textContent = `$${inventoryValue.toLocaleString()}`;
+                
+                // Get unique categories
+                const categories = [...new Set(chemicals.map(c => c.category))];
+                document.getElementById('categoryCount').textContent = categories.length;
+                
+                // Clear table
+                const tableBody = document.getElementById('chemicalTable');
+                tableBody.innerHTML = '';
+                
+                // Populate table with real data
+                chemicals.forEach(chemical => {
+                    const row = document.createElement('tr');
+                    
+                    // Calculate value
+                    const value = chemical.pricePerUnit * chemical.quantity;
+                    
+                    // Determine status
+                    let statusClass = 'status-ok';
+                    let statusText = 'In Stock';
+                    
+                    if (chemical.quantity <= chemical.threshold * 0.5) {
+                        statusClass = 'status-low';
+                        statusText = 'Low Stock';
+                    } else if (chemical.quantity <= chemical.threshold) {
+                        statusClass = 'status-warning';
+                        statusText = 'Near Threshold';
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${chemical.productName}</td>
+                        <td>${chemical.category}</td>
+                        <td>$${chemical.pricePerUnit.toFixed(2)}</td>
+                        <td>${chemical.marginPercent}%</td>
+                        <td>${chemical.quantity}</td>
+                        <td>${chemical.unit}</td>
+                        <td>$${value.toFixed(2)}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn-icon view-chemical" data-id="${chemical._id}">👁️</button>
+                            <button class="btn-icon edit-chemical" data-id="${chemical._id}">✏️</button>
+                            <button class="btn-icon delete-chemical" data-id="${chemical._id}">🗑️</button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Add event listeners to buttons
+                document.querySelectorAll('.view-chemical').forEach(btn => {
+                    btn.addEventListener('click', viewChemical);
+                });
+                
+                document.querySelectorAll('.edit-chemical').forEach(btn => {
+                    btn.addEventListener('click', editChemical);
+                });
+                
+                document.querySelectorAll('.delete-chemical').forEach(btn => {
+                    btn.addEventListener('click', deleteChemical);
+                });
+                */
+            } catch (error) {
+                console.error('Error loading chemicals:', error);
+                // Show error message
+                alert('Failed to load chemicals. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

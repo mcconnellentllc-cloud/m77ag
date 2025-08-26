@@ -1,0 +1,71 @@
+<!-- admin/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M77 AG Admin Dashboard</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>M77 AG</h2>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active"><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="proposals.html">Proposals</a></li>
+                    <li><a href="chemicals.html">Chemicals</a></li>
+                    <li><a href="programs.html">Programs</a></li>
+                    <li><a href="customers.html">Customers</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span id="admin-name">Admin</span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total Proposals</h3>
+                    <p id="totalProposals">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Proposals</h3>
+                    <p id="pendingProposals">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Approved Proposals</h3>
+                    <p id="approvedProposals">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <p id="totalRevenue">$0</p>
+                </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <section class="recent-activity">
+                <h2>Recent Activity</h2>
+                <div id="activity-list">
+                    <!-- Activity items will be inserted here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
