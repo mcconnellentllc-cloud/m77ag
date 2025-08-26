@@ -1,51 +1,84 @@
-// Main application entry point for M77AG
+// server/server.js
 const express = require('express');
-const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
-const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+const helmet = require('helmet');
+const { connectDB } = require('./models/database');
 require('dotenv').config();
 
 // Import routes
 const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
+const proposalRoutes = require('./routes/proposals');
 
-// Initialize app
+// Initialize express app
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB
+connectDB();
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'"],
+    },
+  },
+}));
+app.use(morgan('dev')); // Logging
+app.use(cors()); // Enable CORS
+app.use(express.json()); // Parse JSON requests
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 
-// Serve static files
-app.use(express.static(path.join(__dirname, '../public')));
+// Static files - serve from 'docs' directory
+app.use(express.static(path.join(__dirname, '../docs')));
 
 // API routes
 app.use('/api', apiRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/proposals', proposalRoutes);
 
-// Serve main HTML for all other routes (SPA support)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+// Serve admin panel
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../docs/admin/dashboard.html'));
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('MongoDB Atlas connected successfully');
-    
-    // Start server after successful database connection
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT} - With authentication`);
-      console.log(`M77 AG server is ready! Visit: http://localhost:${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
+// Serve account pages
+app.get('/account/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../docs/account/login.html'));
+});
+
+// Main route - serve the calculator
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../docs/index.html'));
+});
+
+// Fallback route for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../docs/index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({
+    message: 'Server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'An unknown error occurred'
   });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`M77 AG Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`MongoDB: ${process.env.MONGODB_URI ? 'Connected' : 'Not connected'}`);
+  console.log(`Server URL: http://localhost:${PORT}`);
+});
 
 module.exports = app; // For testing

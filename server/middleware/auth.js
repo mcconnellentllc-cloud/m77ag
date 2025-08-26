@@ -1,29 +1,34 @@
+// middleware/auth.js
 const jwt = require('jsonwebtoken');
+const { User } = require('../models/user');
 
-// Environment variables
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
-
-/**
- * Middleware to verify JWT token for protected routes
- */
-module.exports = function(req, res, next) {
-  // Get token from header
-  const token = req.header('x-auth-token');
-
-  // Check if no token
-  if (!token) {
-    return res.status(401).json({ message: 'No token, authorization denied' });
-  }
-
+exports.authenticate = (req, res, next) => {
   try {
-    // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Get token from header
+    const token = req.headers.authorization?.split(' ')[1];
     
-    // Add user from payload
-    req.user = decoded;
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    
+    // Add user ID to request
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
+    
     next();
-  } catch (err) {
-    console.error('Token verification failed:', err.message);
-    res.status(401).json({ message: 'Token is not valid' });
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(401).json({ message: 'Invalid or expired token' });
   }
+};
+
+exports.isAdmin = (req, res, next) => {
+  if (req.userRole !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  
+  next();
 };

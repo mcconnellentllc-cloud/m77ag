@@ -1,47 +1,72 @@
+// models/user.js
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const bcrypt = require('bcrypt');
 
-// Create User Schema
-const UserSchema = new Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
+const userSchema = new mongoose.Schema({
+  username: { 
+    type: String, 
     required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
+    unique: true 
   },
-  password: {
-    type: String,
-    required: true
+  email: { 
+    type: String, 
+    required: true,
+    unique: true 
   },
-  company: {
-    type: String,
-    default: ''
+  password: { 
+    type: String, 
+    required: true 
   },
-  isAdmin: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  lastLogin: {
-    type: Date,
-    default: null
-  },
-  resetPasswordToken: {
-    type: String,
-    default: null
-  },
-  resetPasswordExpires: {
-    type: Date,
-    default: null
+  role: { 
+    type: String, 
+    default: 'user',
+    enum: ['user', 'admin'] 
+  }
+}, { 
+  timestamps: { 
+    createdAt: 'created_at', 
+    updatedAt: 'updated_at' 
+  } 
+});
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
   }
 });
 
-module.exports = mongoose.model('User', UserSchema);
+// Method to compare passwords
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Create model from schema
+const User = mongoose.model('User', userSchema);
+
+// Function to create default admin user
+const createDefaultAdmin = async () => {
+  try {
+    const adminExists = await User.findOne({ email: process.env.ADMIN_EMAIL || 'admin@m77ag.com' });
+    
+    if (!adminExists) {
+      await User.create({
+        username: 'admin',
+        email: process.env.ADMIN_EMAIL || 'admin@m77ag.com',
+        password: process.env.ADMIN_PASSWORD || 'M77admin2024!',
+        role: 'admin'
+      });
+      console.log('Default admin user created');
+    }
+  } catch (error) {
+    console.error('Error creating default admin:', error);
+  }
+};
+
+module.exports = { User, createDefaultAdmin };
