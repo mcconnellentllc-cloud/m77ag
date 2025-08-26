@@ -2,14 +2,18 @@ FROM node:18
 
 WORKDIR /app
 
-# Copy package files first (for better caching)
+# Copy package files first
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy all project files
+# Copy all files
 COPY . .
+
+# Debug - list files to verify structure
+RUN ls -la
+RUN ls -la server/
 
 # Start the application
 CMD ["node", "server/app.js"]
