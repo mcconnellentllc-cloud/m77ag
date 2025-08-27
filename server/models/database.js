@@ -1,4 +1,3 @@
-// models/database.js
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -8,15 +7,13 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag'
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGODB_URI);
     console.log('MongoDB connected successfully');
     
     // Create default admin user if it doesn't exist
-    const { createDefaultAdmin } = require('./user');
-    await createDefaultAdmin();
+    // Will uncomment this after creating user model
+    // const { createDefaultAdmin } = require('./user');
+    // await createDefaultAdmin();
     
   } catch (error) {
     console.error('MongoDB connection error:', error);
