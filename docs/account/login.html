@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | M77 AG</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
     <style>
         body {
             background-color: #111;
@@ -40,7 +39,7 @@
 
             <form id="loginForm" class="space-y-6">
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email address</label>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
                     <input type="email" id="email" name="email" required 
                            class="w-full px-4 py-2 border bg-gray-800 border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
@@ -82,100 +81,12 @@
             
             <!-- Version marker -->
             <div class="text-center text-xs text-gray-500 mt-8">
-                Version: 2.0.0 - August 27, 2025
+                Version: 2.1.0 - August 27, 2025
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already logged in
-            checkAuthStatus();
-            
-            // Login form submission
-            const loginForm = document.getElementById('loginForm');
-            loginForm.addEventListener('submit', handleLogin);
-            
-            // Demo button
-            const demoBtn = document.getElementById('demoBtn');
-            if (demoBtn) {
-                demoBtn.addEventListener('click', function() {
-                    document.getElementById('email').value = 'demo@m77ag.com';
-                    document.getElementById('password').value = 'password123';
-                });
-            }
-        });
-
-        // Check authentication status
-        async function checkAuthStatus() {
-            try {
-                const response = await axios.get('/api/auth/check');
-                if (response.data.isAuthenticated) {
-                    // Redirect based on role
-                    if (response.data.isAdmin) {
-                        window.location.href = '/admin';
-                    } else {
-                        window.location.href = '/account/dashboard';
-                    }
-                }
-            } catch (error) {
-                console.error('Auth check error:', error);
-            }
-        }
-
-        // Handle login form submission
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                // Show loading state
-                const submitButton = e.target.querySelector('button[type="submit"]');
-                const originalText = submitButton.textContent;
-                submitButton.textContent = 'Signing in...';
-                submitButton.disabled = true;
-                
-                // Make login request
-                const response = await axios.post('/api/auth/login', {
-                    email,
-                    password
-                });
-                
-                // Reset alert
-                const alertBox = document.getElementById('alert');
-                alertBox.className = 'hidden';
-                
-                // Handle successful login
-                if (response.data.success) {
-                    // Store token in localStorage
-                    localStorage.setItem('token', response.data.token);
-                    
-                    // Redirect based on role
-                    if (response.data.user.role === 'admin') {
-                        window.location.href = '/admin';
-                    } else {
-                        window.location.href = '/account/dashboard';
-                    }
-                }
-            } catch (error) {
-                // Reset button state
-                const submitButton = e.target.querySelector('button[type="submit"]');
-                submitButton.textContent = 'Login';
-                submitButton.disabled = false;
-                
-                // Show error message
-                const alertBox = document.getElementById('alert');
-                alertBox.className = 'mb-4 p-4 bg-red-900 text-red-100 rounded-md';
-                
-                if (error.response && error.response.data) {
-                    alertBox.textContent = error.response.data.message || 'Login failed. Please try again.';
-                } else {
-                    alertBox.textContent = 'Network error. Please try again later.';
-                }
-            }
-        }
-    </script>
+    <!-- Include the login.js script -->
+    <script src="/assets/js/login.js"></script>
 </body>
 </html>
