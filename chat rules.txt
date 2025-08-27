@@ -1,0 +1,122 @@
+Rules for Claude      Project  M77 Ag Website...
+
+
+
+1.) Never write code until we both agree upon the need for the code.
+
+2.) We always want to move forward in the project and not to redo over and over what has been done.
+
+3.) Prioritize one thing at a time, do not give multiple steps at a time, I am new to coding and website building.    
+
+4.) Keep project knowledge and chat knowledge up to date.. always assume we have worked on the issue before and we are
+     progressing.     
+
+   Priority List _
+     1. connect the database and website www.m77ag.com witht the ability to login..  each type of login
+         own dashboard and restricted access...    the types of logins are admin - employee - customer ( landowner, 
+         commodity buyer, custom hire request)   Each one of these will only see and be able to choose options as 
+         are relevant to their request.
+     
+     2.  Ultimately this website is going to operate under 3 principles, It will act like a calendar / journal entry 
+          website for our farm.  We grow Corn, Milo, Wheat, Sorghum Sudan, Pearl Millet, Summer Fallow, and Cattle.  
+          Eventually we utilize the spreadsheets provided, along with your input to answer the ultimate question.  How
+          much money does it cost to raise a crop per bushel per field / cow / pound.
+ 
+     3. We want to make sure that every page with inputing options has an AI driven portion for data base queries.. 
+          example ( If I sold all of the corn I have today, how much would that be, and can I meet my financial obligations)
+
+
+
+There is a lot that goes into the farm, lots of numbers, lots of people, lots of chaos.  This site is being designed to manage
+our own farm, and our own customers.  If successful, we will look at building a customer based website in the future.  For now,
+I would like for this site to be the one stop shop of everyone who is involved with our farm.  A place for everyone to login to 
+and see their accounts, where they are at, and what they owe/ have coming to them like a ledger.  I would also like the ledger
+to be able to go back years as we add more and more information into the data base so we can see over time how we have done.
+   I would also like the database to be robust and able to interpret data and requests.
+
+Ultimately, I would like to inpute either a picture, an email, text, of any and all documents related to the farm, and for the site 
+exrapolate the data and add the information to correct parts of the database, always ask for confirmation before committing to the database.
+When we export the checking information, settlement sheets, scale tickets, invoices, bills, utilities.
+
+
+
+Basic Structure.
+
+Administration 
+    
+   With a lot to think about running a farm there are some major factors that go into it.  
+
+                  A.) Crops
+                        Planning, growing, inputs, harvest, selling always in goal of cost per bushel.
+                  B.) Financial and Cash Flow  (To replace Quickbooks)
+                       Current and Long Term Assets
+                       Current and Long Term Debt 
+                  C.)Assets
+                     Current Assets
+                     Long Term Assets
+    
+                  D.) Equipment. 
+                       Always having the loan information / pay off date and always scraping the web for 
+                        current sales pricings to keep an accurate view of where stand.
+                  E.) Cattle
+                     Able to track all expenses and income to keep cattle as a profitable enterprise
+                  F.)Insurance
+                  G.) Personal
+                  E.) Employees  wages, what they can input
+                  F.) Landowners, contracts, ledgers
+                  C.) Custom Work and Equipment Rental			
+
+
+
+M77-Ag/
+├── docs/
+│   ├── index.html
+│   ├── calculator.html
+│   ├── account/
+│   │   ├── login.html
+│   │   └── register.html
+│   ├── admin/
+│   │   ├── dashboard.html
+│   │   ├── chemicals.html
+│   │   ├── proposals.html
+│   │   ├── js/
+│   │   │   ├── auth.js
+│   │   │   └── dashboard.js
+│   │   └── styles/
+│   └── assets/
+│       └── js/
+│           ├── auth.js
+│           └── login.js
+│
+├── server/
+│   ├── server.js
+│   ├── controllers/
+│   │   ├── analyticsController.js
+│   │   ├── authController.js
+│   │   ├── chemicalController.js
+│   │   ├── customerController.js
+│   │   ├── farmController.js
+│   │   ├── orderController.js
+│   │   ├── programController.js
+│   │   └── proposalController.js
+│   ├── databases/
+│   │   └── farming_proposals.db.backup
+│   ├── middleware/
+│   │   └── auth.js
+│   ├── models/
+│   │   ├── database.js
+│   │   ├── proposal.js
+│   │   └── user.js
+│   └── routes/
+│       ├── api.js
+│       ├── auth.js
+│       └── proposals.js
+│
+├── node_modules/
+├── .env
+├── .gitattributes
+├── directory_structure.txt
+├── Dockerfile
+├── package.json
+├── package-lock.json
+└── project_structure.txt

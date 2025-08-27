@@ -4,319 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M77 AG - Login</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
     <style>
-        :root {
-            --primary-color: #558b2f;
-            --primary-dark: #33691e;
-            --primary-light: #7cb342;
-            --secondary-color: #212121;
-        }
-        
         body {
-            background-color: #000;
-            color: #fff;
+            background-color: #f8f9fa;
             font-family: 'Arial', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-        
-        .navbar-brand {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        
-        .navbar {
-            background-color: #000;
-            border-bottom: 1px solid #333;
-        }
-        
-        .content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-        
-        .login-container {
-            background-color: rgba(33, 33, 33, 0.8);
-            border-radius: 8px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .login-title {
-            color: var(--primary-light);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2rem;
-        }
-        
-        .form-control {
-            background-color: #333;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 0.75rem;
-        }
-        
-        .form-control:focus {
-            background-color: #444;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 0.25rem rgba(124, 179, 66, 0.25);
-            color: #fff;
-        }
-        
-        .form-label {
-            color: #ccc;
-        }
-        
         .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            padding: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            background-color: #3B7302;
+            color: white;
+            transition: all 0.3s ease;
         }
-        
         .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
+            background-color: #2E5A01;
         }
-        
-        .form-check-input {
-            background-color: #333;
-            border-color: #555;
-        }
-        
-        .form-check-input:checked {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .form-check-label {
-            color: #ccc;
-        }
-        
-        .alert {
-            display: none;
-            margin-top: 1rem;
-        }
-        
-        .login-footer {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-        
-        .login-footer a {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
-        
-        .login-footer a:hover {
-            text-decoration: underline;
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <span style="color: #fff;">M77</span>
-                <span style="color: #7cb342;">AG</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about.html">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/services.html">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/account/login.html">Log In</a>
-                    </li>
-                </ul>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+            <div class="text-center mb-8">
+                <img src="/assets/images/logo.png" alt="M77 AG Logo" class="logo mx-auto">
+                <h2 class="text-2xl font-bold text-gray-800">Welcome Back</h2>
+                <p class="text-gray-600">Sign in to your account</p>
             </div>
-        </div>
-    </nav>
 
-    <!-- Login Content -->
-    <div class="content">
-        <div class="login-container">
-            <h2 class="login-title">Account Login</h2>
-            
-            <!-- Error Alert -->
-            <div class="alert alert-danger" id="error-message" role="alert"></div>
-            
-            <!-- Login Form -->
-            <form id="login-form">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+            <div id="alert" class="hidden mb-4 p-4 rounded-md"></div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="remember-me">
-                    <label class="form-check-label" for="remember-me">Remember me</label>
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary" id="login-button">Log In</button>
+
+                <div>
+                    <button type="submit" class="w-full btn-primary py-2 px-4 rounded-md">
+                        Sign In
+                    </button>
                 </div>
             </form>
-            
-            <div class="login-footer">
-                <p>Don't have an account? <a href="/account/register.html">Register</a></p>
-                <p><a href="/account/forgot-password.html">Forgot password?</a></p>
-                <p>Use these test credentials:</p>
-                <p>Admin: admin@m77ag.com / M77admin2024!</p>
-                <p>Demo: demo@m77ag.com / password123</p>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="/account/register" class="text-green-600 hover:text-green-800">Create Account</a>
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Login JavaScript -->
     <script>
-        // DOM Elements
-        const loginForm = document.getElementById('login-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const errorMessage = document.getElementById('error-message');
-        const rememberMe = document.getElementById('remember-me');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            checkAuthStatus();
+            
+            // Login form submission
+            const loginForm = document.getElementById('loginForm');
+            loginForm.addEventListener('submit', handleLogin);
+        });
 
-        // API URL
-        const API_URL = '/api'; // Relative URL for production
+        // Check authentication status
+        async function checkAuthStatus() {
+            try {
+                const response = await axios.get('/api/auth/check');
+                if (response.data.isAuthenticated) {
+                    // Redirect based on role
+                    if (response.data.isAdmin) {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/account/dashboard';
+                    }
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+            }
+        }
 
-        // Login form submission
-        loginForm.addEventListener('submit', async function(e) {
+        // Handle login form submission
+        async function handleLogin(e) {
             e.preventDefault();
             
-            // Clear previous error messages
-            errorMessage.style.display = 'none';
-            errorMessage.textContent = '';
-            
-            // Get form values
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            
-            // Basic validation
-            if (!email || !password) {
-                showError('Please enter both email and password');
-                return;
-            }
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
             try {
                 // Show loading state
-                document.getElementById('login-button').disabled = true;
-                document.getElementById('login-button').textContent = 'Logging in...';
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                submitButton.textContent = 'Signing in...';
+                submitButton.disabled = true;
                 
-                // Send login request
-                const response = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
+                // Make login request
+                const response = await axios.post('/api/auth/login', {
+                    email,
+                    password
                 });
                 
-                const data = await response.json();
+                // Reset alert
+                const alertBox = document.getElementById('alert');
+                alertBox.className = 'hidden';
                 
-                // Check if login was successful
-                if (response.ok && data.token) {
-                    // Store token and user data
-                    localStorage.setItem('m77ag_token', data.token);
-                    localStorage.setItem('m77ag_user', JSON.stringify(data.user));
+                // Handle successful login
+                if (response.data.success) {
+                    // Store token in localStorage
+                    localStorage.setItem('token', response.data.token);
                     
-                    // If remember me is checked, store for longer (just a simulation)
-                    if (rememberMe.checked) {
-                        // In a real app, you might use a refresh token or other mechanism
-                        console.log('Remember me enabled');
+                    // Redirect based on role
+                    if (response.data.user.role === 'admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/account/dashboard';
                     }
-                    
-                    // Redirect based on user role
-                    setTimeout(function() {
-                        if (data.user.role === 'admin') {
-                            window.location.href = '/admin';
-                        } else {
-                            window.location.href = '/account/dashboard.html';
-                        }
-                    }, 500);
-                } else {
-                    // Display error message
-                    showError(data.message || 'Invalid email or password');
                 }
             } catch (error) {
-                showError('Server error. Please try again later.');
-                console.error('Login error:', error);
-            } finally {
                 // Reset button state
-                document.getElementById('login-button').disabled = false;
-                document.getElementById('login-button').textContent = 'Log In';
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                submitButton.textContent = 'Sign In';
+                submitButton.disabled = false;
+                
+                // Show error message
+                const alertBox = document.getElementById('alert');
+                alertBox.className = 'mb-4 p-4 bg-red-100 text-red-700 rounded-md';
+                
+                if (error.response && error.response.data) {
+                    alertBox.textContent = error.response.data.message || 'Login failed. Please try again.';
+                } else {
+                    alertBox.textContent = 'Network error. Please try again later.';
+                }
             }
-        });
-
-        // Function to display error messages
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
         }
-
-        // Check if user is already logged in and verify token
-        document.addEventListener('DOMContentLoaded', function() {
-            const token = localStorage.getItem('m77ag_token');
-            const user = JSON.parse(localStorage.getItem('m77ag_user') || 'null');
-            
-            // If user is already logged in, verify token and redirect
-            if (token && user) {
-                // Verify token with backend
-                fetch(`${API_URL}/auth/verify-token`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Token is valid, redirect based on role
-                        if (user.role === 'admin') {
-                            window.location.href = '/admin';
-                        } else {
-                            window.location.href = '/account/dashboard.html';
-                        }
-                    } else {
-                        // Token is invalid, clear localStorage
-                        localStorage.removeItem('m77ag_token');
-                        localStorage.removeItem('m77ag_user');
-                    }
-                })
-                .catch(error => {
-                    console.error('Token verification error:', error);
-                    // Clear invalid token
-                    localStorage.removeItem('m77ag_token');
-                    localStorage.removeItem('m77ag_user');
-                });
-            }
-        });
     </script>
 </body>
 </html>

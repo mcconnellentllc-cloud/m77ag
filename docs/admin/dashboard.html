@@ -1,71 +1,162 @@
-<!-- admin/dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M77 AG Admin Dashboard</title>
-    <link rel="stylesheet" href="styles/admin.css">
+    <title>M77 AG - Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .sidebar {
+            background-color: #2C3E50;
+            color: white;
+            min-height: 100vh;
+        }
+        .nav-link {
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #34495E;
+        }
+        .content-area {
+            padding: 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-primary {
+            background-color: #3B7302;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2E5A01;
+        }
+    </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="logo">
-                <h2>M77 AG</h2>
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 flex-shrink-0">
+            <div class="p-4 border-b border-gray-700">
+                <h2 class="text-xl font-bold">M77 AG Admin</h2>
             </div>
-            <nav class="nav-menu">
-                <ul>
-                    <li class="active"><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="proposals.html">Proposals</a></li>
-                    <li><a href="chemicals.html">Chemicals</a></li>
-                    <li><a href="programs.html">Programs</a></li>
-                    <li><a href="customers.html">Customers</a></li>
-                </ul>
+            <nav class="mt-4">
+                <a href="/admin/dashboard.html" class="nav-link block active">Dashboard</a>
+                <a href="/admin/chemicals.html" class="nav-link block">Chemicals</a>
+                <a href="/admin/proposals.html" class="nav-link block">Proposals</a>
+                <!-- Add more admin links as needed -->
+                <button id="logoutBtn" class="nav-link block w-full text-left mt-10 text-red-300 hover:text-red-100">
+                    Logout
+                </button>
             </nav>
-        </aside>
+        </div>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="top-bar">
-                <h1>Dashboard</h1>
-                <div class="user-info">
-                    <span id="admin-name">Admin</span>
-                    <button id="logout-btn">Logout</button>
+        <!-- Main content -->
+        <div class="flex-1">
+            <header class="bg-white shadow-sm">
+                <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                    <div class="flex items-center">
+                        <span class="text-gray-600 mr-4">Welcome, <span id="adminName">Admin</span></span>
+                    </div>
                 </div>
             </header>
 
-            <!-- Dashboard Stats Cards -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <h3>Total Proposals</h3>
-                    <p id="totalProposals">0</p>
+            <main class="content-area">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="card">
+                            <h3 class="text-lg font-semibold mb-2">Farm Operations</h3>
+                            <p class="text-gray-600 mb-4">Manage your farm operations and activities.</p>
+                            <a href="#" class="btn-primary px-4 py-2 rounded inline-block">View Operations</a>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-lg font-semibold mb-2">Financial Reports</h3>
+                            <p class="text-gray-600 mb-4">Access financial reports and analytics.</p>
+                            <a href="#" class="btn-primary px-4 py-2 rounded inline-block">View Reports</a>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-lg font-semibold mb-2">User Management</h3>
+                            <p class="text-gray-600 mb-4">Manage employees, customers, and landowners.</p>
+                            <a href="#" class="btn-primary px-4 py-2 rounded inline-block">Manage Users</a>
+                        </div>
+                        <!-- Add more dashboard cards as needed -->
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>Pending Proposals</h3>
-                    <p id="pendingProposals">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Approved Proposals</h3>
-                    <p id="approvedProposals">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Revenue</h3>
-                    <p id="totalRevenue">$0</p>
-                </div>
-            </div>
-
-            <!-- Recent Activity Section -->
-            <section class="recent-activity">
-                <h2>Recent Activity</h2>
-                <div id="activity-list">
-                    <!-- Activity items will be inserted here -->
-                </div>
-            </section>
-        </main>
+            </main>
+        </div>
     </div>
 
-    <script src="js/auth.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication on page load
+            checkAuth();
+            
+            // Setup axios defaults for auth
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+            
+            // Logout button handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        });
+
+        // Check user authentication
+        async function checkAuth() {
+            try {
+                const response = await axios.get('/api/auth/check');
+                
+                if (!response.data.isAuthenticated) {
+                    // Not authenticated, redirect to login
+                    window.location.href = '/account/login';
+                    return;
+                }
+                
+                if (!response.data.isAdmin) {
+                    // Not an admin, redirect to user dashboard
+                    window.location.href = '/account/dashboard';
+                    return;
+                }
+                
+                // User is authenticated and an admin
+                // Update UI with user info if available
+                if (document.getElementById('adminName') && response.data.user) {
+                    document.getElementById('adminName').textContent = response.data.user.username || 'Admin';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // Redirect to login on error
+                window.location.href = '/account/login';
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await axios.post('/api/auth/logout');
+                localStorage.removeItem('token');
+                window.location.href = '/account/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Redirect to login anyway
+                localStorage.removeItem('token');
+                window.location.href = '/account/login';
+            }
+        }
+    </script>
 </body>
 </html>
