@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M77 AG - Login</title>
+    <title>Login | M77 AG</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #111;
             font-family: 'Arial', sans-serif;
         }
         .btn-primary {
@@ -19,48 +19,70 @@
         .btn-primary:hover {
             background-color: #2E5A01;
         }
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .ag-text {
+            color: #3B7302;
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-black text-white">
     <div class="min-h-screen flex items-center justify-center px-4">
-        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+        <div class="max-w-md w-full bg-gray-900 rounded-lg shadow-lg p-8">
             <div class="text-center mb-8">
-                <img src="/assets/images/logo.png" alt="M77 AG Logo" class="logo mx-auto">
-                <h2 class="text-2xl font-bold text-gray-800">Welcome Back</h2>
-                <p class="text-gray-600">Sign in to your account</p>
+                <div class="logo-text mb-4">M77<span class="ag-text">AG</span></div>
+                <h2 class="text-2xl font-bold">Account Login</h2>
             </div>
 
             <div id="alert" class="hidden mb-4 p-4 rounded-md"></div>
 
             <form id="loginForm" class="space-y-6">
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email address</label>
                     <input type="email" id="email" name="email" required 
-                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                           class="w-full px-4 py-2 border bg-gray-800 border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
                     <input type="password" id="password" name="password" required 
-                           class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                           class="w-full px-4 py-2 border bg-gray-800 border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember" name="remember" 
+                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-700 rounded">
+                    <label for="remember" class="ml-2 block text-sm text-gray-300">Remember me</label>
                 </div>
 
                 <div>
                     <button type="submit" class="w-full btn-primary py-2 px-4 rounded-md">
-                        Sign In
+                        Login
                     </button>
                 </div>
             </form>
 
+            <div class="mt-4">
+                <button id="demoBtn" class="w-full bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition duration-200">
+                    Use Demo Account
+                </button>
+            </div>
+
             <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600">
-                    Don't have an account? 
-                    <a href="/account/register" class="text-green-600 hover:text-green-800">Create Account</a>
+                <p class="text-sm text-gray-400">
+                    <a href="/account/forgot-password" class="text-green-500 hover:text-green-400">Forgot your password?</a>
                 </p>
+                <p class="text-sm text-gray-400 mt-2">
+                    Don't have an account? 
+                    <a href="/account/register" class="text-green-500 hover:text-green-400">Register</a>
+                </p>
+            </div>
+            
+            <!-- Version marker -->
+            <div class="text-center text-xs text-gray-500 mt-8">
+                Version: 2.0.0 - August 27, 2025
             </div>
         </div>
     </div>
@@ -73,6 +95,15 @@
             // Login form submission
             const loginForm = document.getElementById('loginForm');
             loginForm.addEventListener('submit', handleLogin);
+            
+            // Demo button
+            const demoBtn = document.getElementById('demoBtn');
+            if (demoBtn) {
+                demoBtn.addEventListener('click', function() {
+                    document.getElementById('email').value = 'demo@m77ag.com';
+                    document.getElementById('password').value = 'password123';
+                });
+            }
         });
 
         // Check authentication status
@@ -102,6 +133,7 @@
             try {
                 // Show loading state
                 const submitButton = e.target.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
                 submitButton.textContent = 'Signing in...';
                 submitButton.disabled = true;
                 
@@ -130,12 +162,12 @@
             } catch (error) {
                 // Reset button state
                 const submitButton = e.target.querySelector('button[type="submit"]');
-                submitButton.textContent = 'Sign In';
+                submitButton.textContent = 'Login';
                 submitButton.disabled = false;
                 
                 // Show error message
                 const alertBox = document.getElementById('alert');
-                alertBox.className = 'mb-4 p-4 bg-red-100 text-red-700 rounded-md';
+                alertBox.className = 'mb-4 p-4 bg-red-900 text-red-100 rounded-md';
                 
                 if (error.response && error.response.data) {
                     alertBox.textContent = error.response.data.message || 'Login failed. Please try again.';
@@ -143,10 +175,7 @@
                     alertBox.textContent = 'Network error. Please try again later.';
                 }
             }
-     <!-- Add this just before the closing </body> tag -->
-<div class="text-center text-xs text-gray-400 mt-4">
-  Version: 1.0.1 - Updated
-   }
+        }
     </script>
 </body>
 </html>
