@@ -8,6 +8,9 @@ Rules for Claude      Project  M77 Ag Website...
 
 3.) Prioritize one thing at a time, do not give multiple steps at a time, I am new to coding and website building.    
 
+ABSOLUTELY NO WORK AROUNDS OR TEMPORARY FIXES - THESE HAVE COST VALUABLE TIME - DOCUS ON THE SOLUTION
+
+
 4.) Keep project knowledge and chat knowledge up to date.. always assume we have worked on the issue before and we are
      progressing.     
 

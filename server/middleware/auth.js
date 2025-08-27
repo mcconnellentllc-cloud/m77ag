@@ -1,9 +1,25 @@
-// middleware/auth.js - Revised Version
+// middleware/auth.js - Updated version
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
 
 // Authentication middleware
 exports.auth = async (req, res, next) => {
+  // Add public paths that should be excluded from auth check
+  const publicPaths = [
+    '/account/login', 
+    '/account/login.html',
+    '/account/register',
+    '/account/register.html',
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/check'
+  ];
+  
+  // Skip auth check for public paths
+  if (publicPaths.includes(req.path)) {
+    return next();
+  }
+  
   try {
     // Get token from header or cookie
     const token = req.headers.authorization?.split(' ')[1] || 
@@ -15,7 +31,7 @@ exports.auth = async (req, res, next) => {
         return res.status(401).json({ message: 'Authentication required' });
       }
       // For page routes, redirect to login
-      return res.redirect('/account/login');
+      return res.redirect('/account/login.html');
     }
     
     // Verify token
@@ -27,7 +43,7 @@ exports.auth = async (req, res, next) => {
       if (req.path.startsWith('/api/')) {
         return res.status(401).json({ message: 'User not found' });
       }
-      return res.redirect('/account/login');
+      return res.redirect('/account/login.html');
     }
     
     // Add user info to request
@@ -45,11 +61,11 @@ exports.auth = async (req, res, next) => {
     }
     
     // For page routes
-    return res.redirect('/account/login');
+    return res.redirect('/account/login.html');
   }
 };
 
-// Admin check middleware
+// The rest of your middleware remains the same
 exports.adminOnly = (req, res, next) => {
   if (req.userRole !== 'admin') {
     // For API routes
@@ -58,13 +74,12 @@ exports.adminOnly = (req, res, next) => {
     }
     
     // For page routes
-    return res.redirect('/account/login');
+    return res.redirect('/account/login.html');
   }
   
   next();
 };
 
-// Added auth check endpoint for frontend
 exports.checkAuth = (req, res) => {
   try {
     // Get token from header or cookie
@@ -95,6 +110,5 @@ exports.checkAuth = (req, res) => {
   }
 };
 
-// For backward compatibility
 exports.authenticate = exports.auth;
 exports.isAdmin = exports.adminOnly;
