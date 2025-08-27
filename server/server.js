@@ -58,14 +58,33 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working', timestamp: new Date().toISOString() });
 });
 
-// Static files - serve files from the docs directory
-app.use(express.static(path.join(__dirname, '../docs')));
+// ===== ACCOUNT ROUTES - Fixed for login button issue =====
 
-// Account route - redirect to login page
+// Handle /account exactly (no trailing slash)
 app.get('/account', (req, res) => {
   console.log('Redirecting /account to /account/login.html');
   res.redirect('/account/login.html');
 });
+
+// Handle /account/ (with trailing slash)
+app.get('/account/', (req, res) => {
+  console.log('Redirecting /account/ (with slash) to /account/login.html');
+  res.redirect('/account/login.html');
+});
+
+// Explicitly handle the login page to make sure it loads correctly
+app.get('/account/login', (req, res) => {
+  console.log('Redirecting /account/login to /account/login.html');
+  res.redirect('/account/login.html');
+});
+
+// Explicitly handle the login page with .html extension
+app.get('/account/login.html', (req, res) => {
+  console.log('Serving login page');
+  res.sendFile(path.join(__dirname, '../docs/account/login.html'));
+});
+
+// ===== ADMIN ROUTES =====
 
 // Admin dashboard route
 app.get('/admin', (req, res) => {
@@ -73,14 +92,29 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../docs/admin/dashboard.html'));
 });
 
+// Admin dashboard route with trailing slash
+app.get('/admin/', (req, res) => {
+  console.log('Redirecting /admin/ to /admin');
+  res.redirect('/admin');
+});
+
+// ===== STATIC FILES =====
+// Serve static files from the docs directory
+// Note: This should come after specific routes to prevent conflicts
+app.use(express.static(path.join(__dirname, '../docs')));
+
 // Main route
 app.get('/', (req, res) => {
   console.log('Serving index page');
   res.sendFile(path.join(__dirname, '../docs/index.html'));
 });
 
+// ===== ERROR HANDLING =====
+
 // Catch-all route handler for any undefined routes
 app.use((req, res, next) => {
+  console.log(`Route not found: ${req.path}`);
+  
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ 
       success: false, 
