@@ -4,89 +4,409 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Login - M77 AG</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #111;
-            font-family: 'Arial', sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #ffffff;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #121212;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: #8bc34a;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav li {
+            margin-left: 2rem;
+        }
+        
+        nav a {
+            position: relative;
+            padding-bottom: 0.3rem;
+        }
+        
+        nav a.active {
+            border-bottom: 2px solid #8bc34a;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: #ffffff;
+        }
+        
         .btn-primary {
-            background-color: #3B7302;
-            color: white;
+            background-color: #8bc34a;
+            border: none;
+            color: #000000;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Login Form Styles */
+        .login-container {
+            max-width: 500px;
+            margin: 5rem auto;
+            padding: 2rem;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #8bc34a;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #8bc34a;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .remember-me input {
+            margin-right: 0.5rem;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #8bc34a;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
-        .btn-primary:hover {
-            background-color: #2E5A01;
+        
+        .login-button:hover {
+            background-color: #9bcc5e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: bold;
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
         }
-        .ag-text {
-            color: #3B7302;
+        
+        .login-footer a {
+            color: #8bc34a;
+            text-decoration: underline;
+        }
+        
+        /* Alert styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .alert-error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #0a0a0a;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        footer p {
+            color: #777;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav {
+                margin: 1rem 0;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 0.5rem 0;
+                margin-left: 0;
+            }
+            
+            .auth-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .login-container {
+                margin: 3rem 1rem;
+            }
         }
     </style>
 </head>
-<body class="bg-black text-white">
-    <div class="min-h-screen flex items-center justify-center px-4">
-        <div class="max-w-md w-full bg-gray-900 rounded-lg shadow-lg p-8">
-            <div class="text-center mb-8">
-                <div class="logo-text mb-4">M77<span class="ag-text">AG</span></div>
-                <h2 class="text-2xl font-bold">Account Login</h2>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="/" class="logo">M77<span>AG</span></a>
+        
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/crops.html">Crops</a></li>
+                <li><a href="/cattle.html">Cattle</a></li>
+                <li><a href="/services.html">Services</a></li>
+                <li><a href="/applications.html">Applications</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+        </nav>
+        
+        <div class="auth-buttons">
+            <a href="/account" class="btn btn-outline">Log In</a>
+            <a href="/calculator.html" class="btn btn-primary">Request Quote</a>
+        </div>
+    </header>
+    
+    <!-- Login Form -->
+    <div class="login-container">
+        <h2>Account Login</h2>
+        
+        <!-- Alert message container -->
+        <div id="alertBox" class="alert"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
-
-            <div id="alert" class="hidden mb-4 p-4 rounded-md"></div>
-
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <input type="email" id="email" name="email" required 
-                           class="w-full px-4 py-2 border bg-gray-800 border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                    <input type="password" id="password" name="password" required 
-                           class="w-full px-4 py-2 border bg-gray-800 border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
-                </div>
-
-                <div class="flex items-center">
-                    <input type="checkbox" id="remember" name="remember" 
-                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-700 rounded">
-                    <label for="remember" class="ml-2 block text-sm text-gray-300">Remember me</label>
-                </div>
-
-                <div>
-                    <button type="submit" id="login-button" class="w-full btn-primary py-2 px-4 rounded-md">
-                        Log In
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-4">
-                <button id="demoBtn" class="w-full bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition duration-200">
-                    Use Demo Account
-                </button>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
             </div>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-400">
-                    <a href="/account/forgot-password" class="text-green-500 hover:text-green-400">Forgot password?</a>
-                </p>
-                <p class="text-sm text-gray-400 mt-2">
-                    Don't have an account? 
-                    <a href="/account/register" class="text-green-500 hover:text-green-400">Register</a>
-                </p>
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
             </div>
-            
-            <!-- Version marker -->
-            <div class="text-center text-xs text-gray-500 mt-8">
-                Version: 2.1.0 - August 27, 2025
+            <button type="submit" id="loginBtn" class="login-button">Log In</button>
+            <div class="login-footer">
+                <p>Don't have an account? <a href="/account/register.html">Register</a></p>
+                <p><a href="/account/forgot-password.html">Forgot password?</a></p>
             </div>
+        </form>
+        
+        <!-- Demo button -->
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <button id="demoBtn" style="background-color: #333; border: none; color: #fff; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                Use Demo Account
+            </button>
+        </div>
+        
+        <!-- Version indicator -->
+        <div style="text-align: center; margin-top: 2rem; font-size: 0.8rem; color: #555;">
+            Version 3.0.0 - Aug 27, 2025
         </div>
     </div>
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 M77 AG. All rights reserved.</p>
+    </footer>
 
-    <!-- Make sure this path is correct based on your directory structure -->
-    <script src="/assets/js/login.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const alertBox = document.getElementById('alertBox');
+            const demoBtn = document.getElementById('demoBtn');
+            
+            // Function to show alert messages
+            function showAlert(message, type = 'error') {
+                alertBox.textContent = message;
+                alertBox.className = type === 'error' 
+                    ? 'alert alert-error' 
+                    : 'alert alert-success';
+                alertBox.style.display = 'block';
+            }
+            
+            // Handle demo button click
+            demoBtn.addEventListener('click', function() {
+                emailInput.value = 'demo@m77ag.com';
+                passwordInput.value = 'password123';
+            });
+            
+            // Handle form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Clear previous alerts
+                alertBox.style.display = 'none';
+                
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                // Disable button during login attempt
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Logging in...';
+                
+                try {
+                    // Demo account support (client-side for backward compatibility)
+                    if (email === 'demo@m77ag.com' && password === 'password123') {
+                        // For demo account, use client-side auth
+                        localStorage.setItem('token', 'demo-token');
+                        localStorage.setItem('user', JSON.stringify({
+                            email: email,
+                            name: 'Demo User',
+                            role: 'user'
+                        }));
+                        
+                        // Redirect to dashboard
+                        window.location.href = '/account/dashboard.html';
+                        return;
+                    }
+                    
+                    // For all other accounts, use backend API
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.token) {
+                        // Store authentication data
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        
+                        // Redirect based on role
+                        if (data.user.role === 'admin') {
+                            window.location.href = '/admin';
+                        } else {
+                            window.location.href = '/account/dashboard.html';
+                        }
+                    } else {
+                        // Show error message
+                        showAlert(data.message || 'Invalid email or password. For demo, use: demo@m77ag.com / password123');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showAlert('Server error. Please try again later.');
+                } finally {
+                    // Re-enable button
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Log In';
+                }
+            });
+            
+            // Check if user is already logged in
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Redirect to appropriate page based on stored role
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                if (user.role === 'admin') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/account/dashboard.html';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
