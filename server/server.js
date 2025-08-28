@@ -58,30 +58,37 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working', timestamp: new Date().toISOString() });
 });
 
+// IMPORTANT: Serve static files BEFORE defining redirect routes
+// This ensures direct file access works without redirection interference
+app.use(express.static(path.join(__dirname, '../docs'), {
+  // Add cache control to prevent browser caching issues
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
+
 // ===== ACCOUNT ROUTES - Fixed for login button issue =====
 
 // Handle /account exactly (no trailing slash)
 app.get('/account', (req, res) => {
   console.log('Redirecting /account to /account/login.html');
-  res.redirect('/account/login.html');
+  res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
 });
 
 // Handle /account/ (with trailing slash)
 app.get('/account/', (req, res) => {
   console.log('Redirecting /account/ (with slash) to /account/login.html');
-  res.redirect('/account/login.html');
+  res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
 });
 
-// Explicitly handle the login page to make sure it loads correctly
+// Explicitly handle the login page without .html extension
 app.get('/account/login', (req, res) => {
   console.log('Redirecting /account/login to /account/login.html');
-  res.redirect('/account/login.html');
-});
-
-// Explicitly handle the login page with .html extension
-app.get('/account/login.html', (req, res) => {
-  console.log('Serving login page');
-  res.sendFile(path.join(__dirname, '../docs/account/login.html'));
+  res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
 });
 
 // ===== ADMIN ROUTES =====
@@ -95,18 +102,19 @@ app.get('/admin', (req, res) => {
 // Admin dashboard route with trailing slash
 app.get('/admin/', (req, res) => {
   console.log('Redirecting /admin/ to /admin');
-  res.redirect('/admin');
+  res.redirect(302, '/admin'); // 302 ensures no caching of redirect
 });
-
-// ===== STATIC FILES =====
-// Serve static files from the docs directory
-// Note: This should come after specific routes to prevent conflicts
-app.use(express.static(path.join(__dirname, '../docs')));
 
 // Main route
 app.get('/', (req, res) => {
   console.log('Serving index page');
-  res.sendFile(path.join(__dirname, '../docs/index.html'));
+  res.sendFile(path.join(__dirname, '../docs/index.html'), {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  });
 });
 
 // ===== ERROR HANDLING =====
