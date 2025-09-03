@@ -6,7 +6,7 @@ function checkAuth() {
     
     if (!token) {
         // Redirect to login page if no token found
-        window.location.href = 'login.html';
+        window.location.href = 'account/login.html';
         return false;
     }
     
@@ -28,7 +28,7 @@ function setupLogout() {
             localStorage.removeItem('adminName');
             
             // Redirect to login page
-            window.location.href = 'login.html';
+            window.location.href = 'account/login.html';
         });
     }
 }
