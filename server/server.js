@@ -58,8 +58,7 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working', timestamp: new Date().toISOString() });
 });
 
-// IMPORTANT: Serve static files BEFORE defining redirect routes
-// This ensures direct file access works without redirection interference
+// IMPORTANT: Serve static files
 app.use(express.static(path.join(__dirname, '../docs'), {
   // Add cache control to prevent browser caching issues
   setHeaders: (res, path) => {
@@ -70,26 +69,6 @@ app.use(express.static(path.join(__dirname, '../docs'), {
     }
   }
 }));
-
-// ===== ACCOUNT ROUTES - Fixed for login button issue =====
-
-// Handle /account exactly (no trailing slash)
-app.get('/account', (req, res) => {
-  console.log('Redirecting /account to /account/login.html');
-  res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
-});
-
-// Handle /account/ (with trailing slash)
-app.get('/account/', (req, res) => {
-  console.log('Redirecting /account/ (with slash) to /account/login.html');
-  res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
-});
-
-// Explicitly handle the login page without .html extension
-app.get('/account/login', (req, res) => {
-  console.log('Redirecting /account/login to /account/login.html');
-  res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
-});
 
 // ===== ADMIN ROUTES =====
 

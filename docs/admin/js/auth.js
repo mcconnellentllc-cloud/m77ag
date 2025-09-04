@@ -6,7 +6,7 @@ function checkAuth() {
     
     if (!token) {
         // Redirect to login page if no token found
-        window.location.href = 'account/login.html';
+        window.location.href = '/account/login.html';
         return false;
     }
     
