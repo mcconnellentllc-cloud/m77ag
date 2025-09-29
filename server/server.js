@@ -58,19 +58,7 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working', timestamp: new Date().toISOString() });
 });
 
-// IMPORTANT: Serve static files
-app.use(express.static(path.join(__dirname, '../docs'), {
-  // Add cache control to prevent browser caching issues
-  setHeaders: (res, path) => {
-    if (path.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
-    }
-  }
-}));
-
-// ===== ACCOUNT ROUTES - Fixed for login button issue =====
+// ===== ACCOUNT ROUTES - IMPORTANT: These come BEFORE static files =====
 
 // Handle /account exactly (no trailing slash)
 app.get('/account', (req, res) => {
@@ -89,6 +77,18 @@ app.get('/account/login', (req, res) => {
   console.log('Redirecting /account/login to /account/login.html');
   res.redirect(302, '/account/login.html'); // 302 ensures no caching of redirect
 });
+
+// IMPORTANT: Serve static files AFTER defining redirect routes
+app.use(express.static(path.join(__dirname, '../docs'), {
+  // Add cache control to prevent browser caching issues
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // ===== ADMIN ROUTES =====
 
