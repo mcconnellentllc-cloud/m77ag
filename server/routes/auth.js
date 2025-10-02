@@ -1,8 +1,9 @@
+// server/routes/auth.js
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
-const { auth, checkAuth } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
 // Register new user
 router.post('/register', async (req, res) => {
@@ -29,28 +30,20 @@ router.post('/register', async (req, res) => {
       });
     }
     
-    // Create new user
+    // Create new user (password will be hashed automatically)
     const user = await User.create({
       username,
       email,
-      password, // Will be hashed by pre-save hook
-      role: 'user' // Default role
+      password,
+      role: 'user' // Default role is 'user', not 'admin'
     });
     
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
-    
-    // Set token in cookie for browser use
-    res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    });
     
     res.status(201).json({
       success: true,
@@ -103,22 +96,14 @@ router.post('/login', async (req, res) => {
       });
     }
     
-    // Generate token
+    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
     
-    // Set token in cookie for browser use
-    res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    });
-    
-    res.status(200).json({
+    res.json({
       success: true,
       message: 'Login successful',
       token,
@@ -138,44 +123,42 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// User logout
-router.post('/logout', (req, res) => {
-  // Clear cookie
-  res.clearCookie('token');
-  
-  res.status(200).json({
-    success: true,
-    message: 'Logout successful'
-  });
-});
-
-// Check authentication status
-router.get('/check', checkAuth);
-
-// Protected route example
-router.get('/profile', auth, async (req, res) => {
+// Get current user (protected route)
+router.get('/me', authenticate, async (req, res) => {
   try {
-    // User is available from auth middleware
     const user = await User.findById(req.userId).select('-password');
     
     if (!user) {
       return res.status(404).json({ 
-        success: false, 
+        success: false,
         message: 'User not found' 
       });
     }
     
-    res.status(200).json({
+    res.json({
       success: true,
-      user
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (error) {
-    console.error('Profile error:', error);
+    console.error('Get current user error:', error);
     res.status(500).json({ 
-      success: false, 
-      message: 'An error occurred while retrieving profile' 
+      success: false,
+      message: 'Server error' 
     });
   }
+});
+
+// Logout (client-side - just clear token)
+router.post('/logout', (req, res) => {
+  res.json({ 
+    success: true,
+    message: 'Logout successful. Please clear your token.' 
+  });
 });
 
 module.exports = router;

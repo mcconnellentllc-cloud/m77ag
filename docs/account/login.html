@@ -3,311 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Login - M77 AG</title>
+    <title>Login - M77 AG</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background-color: #121212;
-            color: #ffffff;
-            line-height: 1.6;
-        }
-        
-        a {
-            text-decoration: none;
-            color: #ffffff;
-        }
-        
-        /* Header Styles */
-        header {
-            background-color: #121212;
-            padding: 1rem 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 20px;
         }
-        
-        .logo {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        
-        .logo span {
-            color: #8bc34a;
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-        
-        nav li {
-            margin-left: 2rem;
-        }
-        
-        nav a {
-            position: relative;
-            padding-bottom: 0.3rem;
-        }
-        
-        nav a.active {
-            border-bottom: 2px solid #8bc34a;
-        }
-        
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .btn {
-            padding: 0.7rem 1.5rem;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .btn-outline {
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            background: transparent;
-            color: #ffffff;
-        }
-        
-        .btn-primary {
-            background-color: #8bc34a;
-            border: none;
-            color: #000000;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Login Form Styles */
+
         .login-container {
-            max-width: 500px;
-            margin: 5rem auto;
-            padding: 2rem;
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
         }
-        
-        .login-container h2 {
+
+        .logo-section {
             text-align: center;
-            margin-bottom: 2rem;
-            color: #8bc34a;
+            margin-bottom: 30px;
         }
-        
+
+        .logo-section h1 {
+            color: #2d5016;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .logo-section p {
+            color: #666;
+            font-size: 14px;
+        }
+
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
-        
+
         .form-group input {
             width: 100%;
-            padding: 0.8rem;
-            border-radius: 4px;
-            border: 1px solid #333;
-            background-color: #222;
-            color: #fff;
-            font-size: 1rem;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #8bc34a;
-        }
-        
-        .remember-me {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .remember-me input {
-            margin-right: 0.5rem;
-        }
-        
-        .login-button {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: #8bc34a;
-            color: #000;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
             transition: all 0.3s ease;
         }
-        
-        .login-button:hover {
-            background-color: #9bcc5e;
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            background: #234012;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
         }
-        
-        .login-footer {
+
+        .login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border-left: 4px solid #c33;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #2d5016;
+            border-left: 4px solid #2d5016;
+        }
+
+        .links {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 20px;
         }
-        
-        .login-footer a {
-            color: #8bc34a;
+
+        .links a {
+            color: #2d5016;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
             text-decoration: underline;
         }
-        
-        /* Footer */
-        footer {
-            background-color: #0a0a0a;
-            padding: 3rem 2rem;
+
+        .divider {
             text-align: center;
-            margin-top: 3rem;
+            color: #999;
+            margin: 15px 0;
+            font-size: 13px;
         }
-        
-        footer p {
-            color: #777;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            header {
-                padding: 1rem;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            nav {
-                margin: 1rem 0;
-            }
-            
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            nav li {
-                margin: 0.5rem 0;
-                margin-left: 0;
-            }
-            
-            .auth-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-            
+
+        @media (max-width: 480px) {
             .login-container {
-                margin: 3rem 1rem;
+                padding: 30px 20px;
+            }
+            .logo-section h1 {
+                font-size: 26px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- URL Redirect Script - Fix for incorrect URL paths -->
-    <script>
-        // Check if we're on the wrong URL path and redirect if needed
-        if (window.location.pathname === '/account/' || window.location.pathname === '/account') {
-            window.location.replace('/account/login.html');
-        }
-    </script>
-
-    <!-- Header -->
-    <header>
-        <a href="/" class="logo">M77<span>AG</span></a>
-        
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/crops.html">Crops</a></li>
-                <li><a href="/cattle.html">Cattle</a></li>
-                <li><a href="/services.html">Services</a></li>
-                <li><a href="/applications.html">Applications</a></li>
-                <li><a href="/about.html">About</a></li>
-            </ul>
-        </nav>
-        
-        <div class="auth-buttons">
-            <a href="/account/login.html" class="btn btn-outline">Log In</a>
-            <a href="/calculator.html" class="btn btn-primary">Request Quote</a>
-        </div>
-    </header>
-    
-    <!-- Login Form -->
     <div class="login-container">
-        <h2>Account Login</h2>
+        <div class="logo-section">
+            <h1>M77 AG</h1>
+            <p>Login to your account</p>
+        </div>
+
+        <div id="errorAlert" class="alert alert-error"></div>
+        <div id="successAlert" class="alert alert-success"></div>
+
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required
+                    placeholder="your@email.com"
+                    autocomplete="email"
+                >
             </div>
+
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
             </div>
-            <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember">
-                <label for="remember">Remember me</label>
-            </div>
-            <button type="submit" class="login-button">Log In</button>
-            <div class="login-footer">
-                <p>Don't have an account? <a href="/account/register.html">Register</a></p>
-                <p><a href="/account/forgot-password.html">Forgot password?</a></p>
-            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                Login
+            </button>
         </form>
+
+        <div class="divider">or</div>
+
+        <div class="links">
+            <a href="/account/register.html">Create Account</a>
+            <span>•</span>
+            <a href="/">Back to Home</a>
+        </div>
     </div>
-    
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 M77 AG. All rights reserved.</p>
-    </footer>
 
     <script>
-        // Simple client-side validation
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorAlert = document.getElementById('errorAlert');
+        const successAlert = document.getElementById('successAlert');
+
+        // Determine API URL based on environment
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api/auth/login'
+            : '/api/auth/login';
+
+        function showError(message) {
+            errorAlert.textContent = message;
+            errorAlert.classList.add('show');
+            successAlert.classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            successAlert.textContent = message;
+            successAlert.classList.add('show');
+            errorAlert.classList.remove('show');
+        }
+
+        function hideAlerts() {
+            errorAlert.classList.remove('show');
+            successAlert.classList.remove('show');
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value;
+            hideAlerts();
+
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            
-            // For demonstration purposes only - this would be replaced with real authentication
-            if (email === 'demo@m77ag.com' && password === 'password123') {
-                // Success - store login state and redirect
-                localStorage.setItem('loggedIn', 'true');
-                localStorage.setItem('user', JSON.stringify({
-                    email: email,
-                    name: 'Demo User'
-                }));
-                
-                // Redirect to dashboard
-                alert('Login successful! Redirecting to dashboard...');
-                window.location.href = '/account/dashboard.html';
-            } else {
-                // Failed login
-                alert('Invalid email or password. For demo, use: demo@m77ag.com / password123');
+
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return;
+            }
+
+            // Disable button and show loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.token) {
+                    // Store authentication data
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userRole', data.user.role);
+                    localStorage.setItem('userEmail', data.user.email);
+                    localStorage.setItem('userName', data.user.username);
+                    localStorage.setItem('userId', data.user.id);
+
+                    showSuccess('Login successful! Redirecting...');
+
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = '/admin/dashboard.html';
+                        } else {
+                            window.location.href = '/account/dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    showError(data.message || 'Invalid email or password');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Connection error. Please check if the server is running.');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
             }
         });
 
-        // Additional check to ensure we're at the correct URL
-        if (window.location.pathname !== '/account/login.html') {
-            console.log('Detected incorrect URL path, redirecting...');
-            window.location.href = '/account/login.html';
-        }
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (token && userRole) {
+                // Already logged in, redirect to appropriate dashboard
+                if (userRole === 'admin') {
+                    window.location.href = '/admin/dashboard.html';
+                } else {
+                    window.location.href = '/account/dashboard.html';
+                }
+            }
+        });
     </script>
 </body>
 </html>
