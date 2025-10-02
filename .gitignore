@@ -1,0 +1,30 @@
+# Environment Variables (NEVER COMMIT!)
+.env
+.env.local
+.env.development
+.env.production
+
+# Dependencies
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Database
+databases/
+*.db
+*.sqlite
+
+# Logs
+*.log
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
