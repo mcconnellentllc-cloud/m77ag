@@ -11,9 +11,13 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #000000;
+            background: #0a0a0a;
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
@@ -21,13 +25,13 @@
 
         /* Header Styles */
         header {
-            background: #0a0a0a;
+            background: rgba(0, 0, 0, 0.95);
             padding: 1rem 0;
-            position: sticky;
+            position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
         }
 
         .header-container {
@@ -37,7 +41,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 2rem;
         }
 
         .logo {
@@ -46,7 +49,6 @@
             color: #ffffff;
             text-decoration: none;
             letter-spacing: -1px;
-            flex-shrink: 0;
         }
 
         .logo .green {
@@ -66,7 +68,6 @@
             font-size: 1rem;
             font-weight: 400;
             transition: color 0.3s ease;
-            position: relative;
             padding: 0.5rem 0;
         }
 
@@ -79,11 +80,9 @@
             display: flex;
             gap: 1rem;
             align-items: center;
-            flex-shrink: 0;
         }
 
-        /* Login Button */
-        .login-btn {
+        .btn-login {
             background: transparent;
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -93,15 +92,13 @@
             border-radius: 3px;
             cursor: pointer;
             transition: all 0.3s ease;
-            white-space: nowrap;
         }
 
-        .login-btn:hover {
+        .btn-login:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Request Quote Button */
         .btn-quote {
             background: #8BC34A;
             color: #000000;
@@ -111,16 +108,16 @@
             border-radius: 3px;
             text-decoration: none;
             transition: all 0.3s ease;
-            white-space: nowrap;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-quote:hover {
             background: #7CB342;
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(139, 195, 74, 0.3);
         }
 
-        /* Hero Section with Background Image */
+        /* Hero Section */
         .hero {
             position: relative;
             height: 100vh;
@@ -128,32 +125,46 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            margin-bottom: 0;
+            background: rgb(10, 10, 10);
         }
 
-        .hero-background {
+        .hero::after {
+            content: '';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(0, 0, 0, 0.65) 0%,
-                rgba(0, 0, 0, 0.5) 50%,
-                rgba(0, 0, 0, 0.7) 100%
-            ), url('https://images.unsplash.com/photo-1530267981375-f0de937f5f13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
+            height: 45%;
+            background-image: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
             background-size: cover;
-            background-position: center;
+            background-position: center top;
             background-repeat: no-repeat;
-            z-index: -1;
+            z-index: 1;
+            filter: brightness(0.3) sepia(0.1);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to bottom, 
+                rgba(10, 10, 10, 1) 0%,
+                rgba(10, 10, 10, 0.95) 40%,
+                rgba(10, 10, 10, 0.7) 70%,
+                rgba(10, 10, 10, 0.2) 100%
+            );
+            z-index: 2;
         }
 
         .hero-content {
             text-align: center;
-            max-width: 800px;
+            max-width: 1000px;
             padding: 0 2rem;
-            z-index: 1;
+            z-index: 3;
+            position: relative;
         }
 
         .hero h1 {
@@ -164,23 +175,20 @@
             letter-spacing: -1px;
         }
 
-        .hero h1 .green {
-            color: #8BC34A;
-            display: block;
-            margin: 0.2rem 0;
+        .hero h1 .white {
+            color: #ffffff;
         }
 
-        .hero h1 .white-text {
-            color: #ffffff;
-            display: block;
+        .hero h1 .green {
+            color: #8BC34A;
         }
 
         .hero-description {
             font-size: 1.15rem;
-            color: #cccccc;
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 2.5rem;
             line-height: 1.6;
-            max-width: 600px;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -201,31 +209,28 @@
             display: inline-block;
             transition: all 0.3s ease;
             cursor: pointer;
+            border: none;
         }
 
         .btn-primary {
             background: #8BC34A;
             color: #000000;
-            border: 2px solid #8BC34A;
         }
 
         .btn-primary:hover {
             background: #7CB342;
-            border-color: #7CB342;
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(139, 195, 74, 0.3);
         }
 
         .btn-outline {
             background: transparent;
             color: #ffffff;
-            border: 2px solid #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.5);
         }
 
         .btn-outline:hover {
-            background: #ffffff;
-            color: #000000;
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
         }
 
         /* Login Modal */
@@ -374,7 +379,6 @@
         .submit-btn:hover {
             background: #7CB342;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 195, 74, 0.3);
         }
 
         .login-footer {
@@ -396,10 +400,7 @@
         }
 
         /* Error and Success Messages */
-        .error-message {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            color: #ff6b6b;
+        .error-message, .success-message {
             padding: 0.75rem;
             border-radius: 4px;
             margin-bottom: 1rem;
@@ -407,270 +408,20 @@
             font-size: 0.9rem;
         }
 
-        .error-message.active {
-            display: block;
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
         }
 
         .success-message {
             background: rgba(139, 195, 74, 0.1);
             border: 1px solid rgba(139, 195, 74, 0.3);
             color: #8BC34A;
-            padding: 0.75rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            display: none;
-            font-size: 0.9rem;
         }
 
-        .success-message.active {
+        .error-message.active, .success-message.active {
             display: block;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Statistics Section */
-        .stats-section {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-            padding: 4rem 0;
-            border-top: 1px solid #2a2a2a;
-            border-bottom: 1px solid #2a2a2a;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            text-align: center;
-        }
-
-        .stat-card h3 {
-            font-size: 3rem;
-            color: #8BC34A;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-        }
-
-        .stat-card p {
-            color: #cccccc;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Services Section */
-        .services-section {
-            padding: 5rem 0;
-            background: #0a0a0a;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #ffffff;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .service-card {
-            background: #1a1a1a;
-            padding: 2rem;
-            border-radius: 8px;
-            border: 1px solid #2a2a2a;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-            border-color: #8BC34A;
-            box-shadow: 0 10px 30px rgba(139, 195, 74, 0.1);
-        }
-
-        .service-card h3 {
-            color: #8BC34A;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .service-card p {
-            color: #cccccc;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .service-link {
-            color: #8BC34A;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .service-link:hover {
-            color: #7CB342;
-        }
-
-        /* Features Section */
-        .features-section {
-            padding: 5rem 0;
-            background: #111111;
-        }
-
-        .features-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .features-text h2 {
-            font-size: 2.5rem;
-            color: #ffffff;
-            margin-bottom: 2rem;
-        }
-
-        .feature-item {
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-            border-left: 3px solid #8BC34A;
-        }
-
-        .feature-item h4 {
-            color: #ffffff;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .feature-item p {
-            color: #cccccc;
-            line-height: 1.6;
-        }
-
-        .features-image {
-            position: relative;
-        }
-
-        .image-placeholder {
-            width: 100%;
-            height: 400px;
-            background: url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
-            background-size: cover;
-            background-position: center;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Call to Action Section */
-        .cta-section {
-            padding: 5rem 0;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-            text-align: center;
-        }
-
-        .cta-section h2 {
-            font-size: 2.5rem;
-            color: #ffffff;
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            font-size: 1.2rem;
-            color: #cccccc;
-            margin-bottom: 2rem;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .btn-outline-white {
-            background: transparent;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-            padding: 0.875rem 2rem;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 3px;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-white:hover {
-            background: #ffffff;
-            color: #000000;
-        }
-
-        /* Footer */
-        .footer {
-            background: #0a0a0a;
-            border-top: 1px solid #2a2a2a;
-            padding: 3rem 0 1rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 2fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-column h4 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #ffffff;
-        }
-
-        .footer-column h4 .green {
-            color: #8BC34A;
-        }
-
-        .footer-column h5 {
-            color: #8BC34A;
-            margin-bottom: 1rem;
-        }
-
-        .footer-column p {
-            color: #cccccc;
-            line-height: 1.6;
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-column ul {
-            list-style: none;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-column ul li a {
-            color: #cccccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-column ul li a:hover {
-            color: #8BC34A;
-        }
-
-        .footer-bottom {
-            padding-top: 2rem;
-            border-top: 1px solid #2a2a2a;
-            text-align: center;
-            color: #666666;
         }
 
         /* Mobile Responsiveness */
@@ -686,6 +437,7 @@
                 flex-wrap: wrap;
                 gap: 1rem;
                 order: 3;
+                margin-top: 1rem;
             }
 
             nav a {
@@ -698,7 +450,7 @@
             }
 
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
 
             .hero-description {
@@ -720,23 +472,13 @@
                 grid-template-columns: 1fr;
             }
 
-            .features-content {
-                grid-template-columns: 1fr;
-            }
-
-            .features-image {
-                order: -1;
-            }
-
             .cta-buttons {
                 flex-direction: column;
                 padding: 0 2rem;
             }
 
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
+        .btn-outline-white, .cta-buttons .btn {
+            text-align: center;
         }
     </style>
 </head>
@@ -756,7 +498,7 @@
             </nav>
             
             <div class="header-buttons">
-                <button class="login-btn" onclick="openLogin()">Log In</button>
+                <button class="btn-login" onclick="openLogin()">Log In</button>
                 <a href="calculator.html" class="btn-quote">Request Quote</a>
             </div>
         </div>
@@ -764,12 +506,10 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-background"></div>
         <div class="hero-content">
             <h1>
-                <span class="white-text">Advanced</span>
-                <span class="green">Agricultural</span>
-                <span class="white-text">Solutions for<br>Modern Farming</span>
+                <span class="white">Advanced</span> <span class="green">Agricultural</span><br>
+                <span class="white">Solutions for Modern Farming</span>
             </h1>
             <p class="hero-description">
                 M77 AG provides comprehensive farming services, custom applications, and innovative agricultural solutions to maximize your yield and optimize your operations.
@@ -780,141 +520,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Statistics Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>10,000+</h3>
-                    <p>Acres Managed</p>
-                </div>
-                <div class="stat-card">
-                    <h3>500+</h3>
-                    <p>Satisfied Customers</p>
-                </div>
-                <div class="stat-card">
-                    <h3>20+</h3>
-                    <p>Years Experience</p>
-                </div>
-                <div class="stat-card">
-                    <h3>98%</h3>
-                    <p>Customer Satisfaction</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="services-section">
-        <div class="container">
-            <h2 class="section-title">Our Services</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <h3>Crops We Grow</h3>
-                    <p>Premium quality corn, soybeans, and wheat cultivated with precision agriculture techniques for maximum yield and sustainability.</p>
-                    <a href="crops.html" class="service-link">Learn More →</a>
-                </div>
-                <div class="service-card">
-                    <h3>Cattle Operations</h3>
-                    <p>Professional cattle management services including feeding programs, health monitoring, and pasture management for optimal livestock production.</p>
-                    <a href="cattle.html" class="service-link">Learn More →</a>
-                </div>
-                <div class="service-card">
-                    <h3>Custom Farming</h3>
-                    <p>Complete farming services from planting to harvest. State-of-the-art equipment and experienced operators for your agricultural needs.</p>
-                    <a href="services.html" class="service-link">Learn More →</a>
-                </div>
-                <div class="service-card">
-                    <h3>Chemical Applications</h3>
-                    <p>Precision chemical application with GPS-guided equipment. Custom spray programs tailored to your specific crop requirements.</p>
-                    <a href="applications.html" class="service-link">Learn More →</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features-section">
-        <div class="container">
-            <div class="features-content">
-                <div class="features-text">
-                    <h2>Why Choose M77 AG?</h2>
-                    <div class="feature-item">
-                        <h4>Experienced Team</h4>
-                        <p>Over 20 years of agricultural expertise serving local farmers with dedication and professionalism.</p>
-                    </div>
-                    <div class="feature-item">
-                        <h4>Modern Equipment</h4>
-                        <p>Latest technology including GPS-guided tractors, precision planters, and efficient harvesting equipment.</p>
-                    </div>
-                    <div class="feature-item">
-                        <h4>Competitive Pricing</h4>
-                        <p>Volume discounts available: 7% off for 100+ acres, 10% off for 200+ acres, 14% off for 300+ acres.</p>
-                    </div>
-                    <div class="feature-item">
-                        <h4>Custom Solutions</h4>
-                        <p>Tailored farming programs designed to meet your specific needs and maximize your return on investment.</p>
-                    </div>
-                </div>
-                <div class="features-image">
-                    <div class="image-placeholder"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Call to Action Section -->
-    <section class="cta-section">
-        <div class="container">
-            <h2>Ready to Get Started?</h2>
-            <p>Contact us today for a custom quote on our farming services</p>
-            <div class="cta-buttons">
-                <a href="calculator.html" class="btn btn-primary">Get Custom Quote</a>
-                <a href="tel:+19707743276" class="btn btn-outline-white">Call Us: (970) 774-3276</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h4>M77<span class="green">AG</span></h4>
-                    <p>Kyle & Brandi McConnell</p>
-                    <p>Professional agricultural services for modern farming operations.</p>
-                </div>
-                <div class="footer-column">
-                    <h5>Quick Links</h5>
-                    <ul>
-                        <li><a href="services.html">Services</a></li>
-                        <li><a href="calculator.html">Calculator</a></li>
-                        <li><a href="about.html">About Us</a></li>
-                        <li><a href="account/login.html">Customer Portal</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h5>Services</h5>
-                    <ul>
-                        <li><a href="crops.html">Crops</a></li>
-                        <li><a href="cattle.html">Cattle</a></li>
-                        <li><a href="applications.html">Applications</a></li>
-                        <li><a href="services.html">Custom Farming</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h5>Contact</h5>
-                    <p>Email: office@m77ag.com</p>
-                    <p>Phone: (970) 774-3276</p>
-                    <p>Kyle & Brandi McConnell</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 M77 AG. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
@@ -930,7 +535,7 @@
                 
                 <div class="form-group">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" class="form-input" placeholder="office@m77ag.com" required>
+                    <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
                 </div>
                 
                 <div class="form-group">
@@ -1062,11 +667,11 @@
 
         // Placeholder functions
         function showRegister() {
-            alert('Registration feature coming soon! For demo, use office@m77ag.com with password: M77admin2024!');
+            alert('Registration feature coming soon! For admin access, use office@m77ag.com');
         }
 
         function showForgotPassword() {
-            alert('Password reset feature coming soon!');
+            alert('Password reset feature coming soon! Contact office@m77ag.com for assistance.');
         }
 
         // Close modal when clicking outside
@@ -1080,7 +685,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
             if (token) {
-                const loginBtn = document.querySelector('.login-btn');
+                const loginBtn = document.querySelector('.btn-login');
                 if (loginBtn) {
                     loginBtn.textContent = 'Dashboard';
                     loginBtn.onclick = function() {
