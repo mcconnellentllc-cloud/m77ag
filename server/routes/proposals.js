@@ -1,24 +1,46 @@
+// server/routes/proposals.js
 const express = require('express');
 const router = express.Router();
-const { auth, adminOnly } = require('../middleware/auth');
-const proposalController = require('../controllers/proposalController');
 
-// Create new proposal
-router.post('/', auth, proposalController.createProposal);
+// Placeholder routes for farming proposals
+router.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Proposals endpoint - to be implemented',
+    proposals: []
+  });
+});
 
-// Get all proposals (admin only)
-router.get('/', auth, adminOnly, proposalController.getAllProposals);
-
-// Get user proposals
-router.get('/me', auth, proposalController.getUserProposals);
-
-// Get proposal by ID
-router.get('/:id', auth, proposalController.getProposalById);
-
-// Update proposal status (admin only)
-router.patch('/:id/status', auth, adminOnly, proposalController.updateProposalStatus);
-
-// Delete proposal (admin only)
-router.delete('/:id', auth, adminOnly, proposalController.deleteProposal);
+router.post('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Proposal created - to be implemented'
+  });
+});
 
 module.exports = router;
+
+// ================================
+// server/routes/chemicals.js
+// ================================
+
+const express = require('express');
+const chemRouter = express.Router();
+
+// Placeholder routes for chemical inventory
+chemRouter.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Chemicals endpoint - to be implemented',
+    chemicals: []
+  });
+});
+
+chemRouter.post('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Chemical added - to be implemented'
+  });
+});
+
+module.exports = chemRouter;
