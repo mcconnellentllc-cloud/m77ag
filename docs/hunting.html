@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M77 AG - Premium Private Land Hunting | Colorado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AdX73h4Ob3MtFXKDbUGq2sRNctji2Ew30O3pOWJcH78KxfvObnsnqReYQNDPaK6bSiWZ2qwnhel2Gl3X&currency=USD"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3d2914;
+            --secondary: #6b4423;
+            --accent: #d4822f;
+            --success: #4a7c59;
+            --light: #f5f2ed;
+            --dark: #1a1a1a;
+            --text: #333;
+            --border: #ddd;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Professional Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(to bottom, rgba(61,41,20,0.95), rgba(61,41,20,0.9));
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .nav-cta {
+            background: var(--accent);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: #b8701f;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section with Premium Image */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)),
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><linearGradient id="sky" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23e4c8a0"/><stop offset="50%25" style="stop-color:%23f4d4a0"/><stop offset="100%25" style="stop-color:%23d4a574"/></linearGradient></defs><rect fill="url(%23sky)" width="1920" height="1080"/><g opacity="0.3"><path fill="%23654321" d="M0,800 Q200,750 400,800 T800,800 L800,1080 L0,1080 Z"/><path fill="%23543210" d="M400,850 Q600,800 800,850 T1200,850 L1200,1080 L400,1080 Z"/><path fill="%23432100" d="M800,900 Q1000,850 1200,900 T1600,900 L1600,1080 L800,1080 Z"/><path fill="%23321000" d="M1200,950 Q1400,900 1600,950 T1920,950 L1920,1080 L1200,1080 Z"/></g><g opacity="0.2"><circle cx="100" cy="500" r="3" fill="%23fff"/><circle cx="300" cy="400" r="2" fill="%23fff"/><circle cx="500" cy="450" r="3" fill="%23fff"/><circle cx="700" cy="350" r="2" fill="%23fff"/><circle cx="900" cy="400" r="3" fill="%23fff"/><circle cx="1100" cy="300" r="2" fill="%23fff"/><circle cx="1300" cy="350" r="3" fill="%23fff"/><circle cx="1500" cy="400" r="2" fill="%23fff"/><circle cx="1700" cy="450" r="3" fill="%23fff"/><circle cx="1900" cy="350" r="2" fill="%23fff"/></g><path d="M100,600 L120,550 L140,570 L160,540 L180,580 L200,560 Z" fill="%234a3319" opacity="0.4"/><path d="M1500,600 L1520,550 L1540,570 L1560,540 L1580,580 L1600,560 Z" fill="%234a3319" opacity="0.4"/><ellipse cx="1700" cy="200" rx="80" ry="60" fill="%23ffd700" opacity="0.3"/></svg>');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            padding: 0 30px;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .hero-feature i {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .hero-cta {
+            background: var(--accent);
+            color: white;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-cta:hover {
+            background: #b8701f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212,130,47,0.4);
+        }
+
+        /* Trust Badges Section */
+        .trust-section {
+            background: var(--primary);
+            color: white;
+            padding: 30px 0;
+        }
+
+        .trust-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .trust-item {
+            text-align: center;
+        }
+
+        .trust-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .trust-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Hunt Options with Premium Cards */
+        .hunts-section {
+            padding: 80px 0;
+            background: var(--light);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .hunts-grid {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0 30px;
+        }
+
+        .hunt-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .hunt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .hunt-image {
+            height: 200px;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4));
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hunt-image.pheasant {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)),
+                        linear-gradient(135deg, #8B4513, #D2691E);
+        }
+
+        .hunt-image.deer {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)),
+                        linear-gradient(135deg, #654321, #8B7355);
+        }
+
+        .hunt-image.coyote {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)),
+                        linear-gradient(135deg, #696969, #A9A9A9);
+        }
+
+        .hunt-image.prairie {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)),
+                        linear-gradient(135deg, #C19A6B, #F0E68C);
+        }
+
+        .hunt-icon {
+            font-size: 4rem;
+            color: white;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .hunt-price-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .youth-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .hunt-content {
+            padding: 30px;
+        }
+
+        .hunt-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .hunt-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .hunt-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hunt-features i {
+            color: var(--success);
+            width: 20px;
+        }
+
+        .add-cart-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-cart-btn:hover {
+            background: var(--secondary);
+        }
+
+        .add-cart-btn.added {
+            background: var(--success);
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .about-features {
+            margin-top: 30px;
+        }
+
+        .about-feature {
+            display: flex;
+            align-items: start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .about-feature i {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-top: 5px;
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .about-img-placeholder {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        /* Calendar Section */
+        .booking-section {
+            padding: 80px 0;
+            background: var(--light);
+        }
+
+        .booking-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .booking-sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .calendar-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cal-nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary);
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .cal-nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .cal-header {
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--light);
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .cal-day:hover:not(.disabled) {
+            background: var(--light);
+            border-color: var(--accent);
+        }
+
+        .cal-day.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .cal-day.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Waiver Section */
+        .waiver-box {
+            background: #fff9f0;
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .waiver-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .waiver-header i {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .waiver-content {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .waiver-checkbox {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .waiver-checkbox input {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+
+        /* Shopping Cart */
+        .cart-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        .cart-button:hover {
+            transform: scale(1.1);
+            background: #b8701f;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--primary);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            right: -450px;
+            top: 0;
+            width: 450px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+            z-index: 1001;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-close {
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .cart-item-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 2px solid var(--border);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .checkout-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkout-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .paypal-btn {
+            background: #0070ba;
+            color: white;
+        }
+
+        .venmo-btn {
+            background: #3d95ce;
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h4 {
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Checkout Modal */
+        .checkout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkout-modal.open {
+            display: flex;
+        }
+
+        .checkout-content {
+            background: white;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .booking-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-container {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-sidebar {
+                position: static;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .hunts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-img">M77</div>
+                <div class="logo-text">M77 AG HUNTING</div>
+            </a>
+            <div class="nav-links">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#hunts" class="nav-link">Hunt Options</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#booking" class="nav-link">Book Now</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="#booking" class="nav-cta">Reserve Hunt</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">Est. 2025 • Colorado</div>
+            <h1>Premium Private Land Hunting</h1>
+            <p class="hero-subtitle">Exclusive access to 1,200+ acres of pristine Colorado hunting grounds</p>
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Youth 50% OFF</span>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>7 Private Parcels</span>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>No Guides Required</span>
+                </div>
+            </div>
+            <a href="#hunts" class="hero-cta">View Available Hunts</a>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="trust-section">
+        <div class="trust-container">
+            <div class="trust-item">
+                <div class="trust-number">1,200+</div>
+                <div class="trust-label">Acres of Land</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-number">7</div>
+                <div class="trust-label">Private Parcels</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-number">4</div>
+                <div class="trust-label">Hunt Species</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-number">50%</div>
+                <div class="trust-label">Youth Discount</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hunt Options -->
+    <section class="hunts-section" id="hunts">
+        <div class="section-header">
+            <h2 class="section-title">Available Hunts</h2>
+            <p class="section-subtitle">Choose your adventure on Colorado's premier private hunting lands</p>
+        </div>
+        <div class="hunts-grid">
+            <!-- Pheasant Hunt Card -->
+            <div class="hunt-card">
+                <div class="hunt-image pheasant">
+                    <i class="fas fa-dove hunt-icon"></i>
+                    <div class="hunt-price-badge">$250-$500/parcel</div>
+                </div>
+                <div class="hunt-content">
+                    <h3 class="hunt-title">Pheasant Hunting</h3>
+                    <ul class="hunt-features">
+                        <li><i class="fas fa-calendar"></i> Season: Nov 13 - Jan 31</li>
+                        <li><i class="fas fa-users"></i> Large Parcel: $500/day (groups)</li>
+                        <li><i class="fas fa-user-friends"></i> Small Parcels: $250/day (2-4 hunters)</li>
+                        <li><i class="fas fa-check"></i> 3 Exclusive Parcels Available</li>
+                    </ul>
+                    <button class="add-cart-btn" onclick="showPheasantOptions()">
+                        <i class="fas fa-cart-plus"></i> Select Parcel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Deer Hunt Card -->
+            <div class="hunt-card">
+                <div class="hunt-image deer">
+                    <i class="fas fa-deer hunt-icon"></i>
+                    <div class="youth-badge">Youth 50% OFF</div>
+                    <div class="hunt-price-badge">$350/day</div>
+                </div>
+                <div class="hunt-content">
+                    <h3 class="hunt-title">Deer Hunting</h3>
+                    <ul class="hunt-features">
+                        <li><i class="fas fa-bow-arrow"></i> Archery: Sept 2-30</li>
+                        <li><i class="fas fa-bullseye"></i> Rifle: Oct-Nov (Varies)</li>
+                        <li><i class="fas fa-child"></i> Youth (Under 18): $175/day</li>
+                        <li><i class="fas fa-check"></i> All Parcels Included</li>
+                    </ul>
+                    <button class="add-cart-btn" onclick="quickAddToCart('deer', 350)">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coyote Hunt Card -->
+            <div class="hunt-card">
+                <div class="hunt-image coyote">
+                    <i class="fas fa-dog hunt-icon"></i>
+                    <div class="youth-badge">Youth 50% OFF</div>
+                    <div class="hunt-price-badge">$50/person/day</div>
+                </div>
+                <div class="hunt-content">
+                    <h3 class="hunt-title">Coyote Hunting</h3>
+                    <ul class="hunt-features">
+                        <li><i class="fas fa-calendar"></i> Year-Round Season</li>
+                        <li><i class="fas fa-moon"></i> Night Hunting Available</li>
+                        <li><i class="fas fa-child"></i> Youth (Under 18): $25/day</li>
+                        <li><i class="fas fa-check"></i> Small Game License</li>
+                    </ul>
+                    <button class="add-cart-btn" onclick="quickAddToCart('coyote', 50)">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Prairie Dog Hunt Card -->
+            <div class="hunt-card">
+                <div class="hunt-image prairie">
+                    <i class="fas fa-otter hunt-icon"></i>
+                    <div class="youth-badge">Youth 50% OFF</div>
+                    <div class="hunt-price-badge">$50/person/day</div>
+                </div>
+                <div class="hunt-content">
+                    <h3 class="hunt-title">Prairie Dog Hunting</h3>
+                    <ul class="hunt-features">
+                        <li><i class="fas fa-calendar"></i> Year-Round on Private</li>
+                        <li><i class="fas fa-bullseye"></i> Long-Range Shooting</li>
+                        <li><i class="fas fa-child"></i> Youth (Under 18): $25/day</li>
+                        <li><i class="fas fa-check"></i> Select Parcels</li>
+                    </ul>
+                    <button class="add-cart-btn" onclick="quickAddToCart('prairie-dog', 50)">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <div class="about-content">
+                <h2>Why Choose M77 AG?</h2>
+                <p>Experience the freedom of private land hunting without the constraints of guided tours. Our exclusive parcels offer pristine habitat, diverse terrain, and exceptional game populations.</p>
+                <p>With over 1,200 acres across 7 unique parcels, you'll find the perfect spot for your hunting style - from open prairie to wooded creek bottoms.</p>
+                <div class="about-features">
+                    <div class="about-feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h4>Fully Insured & Legal</h4>
+                            <p>Complete liability coverage with required waivers and compliance with all Colorado hunting regulations.</p>
+                        </div>
+                    </div>
+                    <div class="about-feature">
+                        <i class="fas fa-child"></i>
+                        <div>
+                            <h4>Youth Hunter Program</h4>
+                            <p>50% discount for hunters under 18. We believe in fostering the next generation of ethical hunters.</p>
+                        </div>
+                    </div>
+                    <div class="about-feature">
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <h4>Exclusive Access</h4>
+                            <p>Your reserved parcels are yours alone - no competition from other hunters during your booked dates.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image">
+                <div class="about-img-placeholder">
+                    <i class="fas fa-mountain" style="font-size: 5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="booking-section" id="booking">
+        <div class="booking-container">
+            <div class="section-header">
+                <h2 class="section-title">Reserve Your Hunt</h2>
+                <p class="section-subtitle">Select your dates and parcels for an exclusive hunting experience</p>
+            </div>
+
+            <div class="booking-grid">
+                <!-- Booking Form -->
+                <div class="booking-sidebar">
+                    <h3 style="margin-bottom: 25px;">Booking Details</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Hunt Type</label>
+                        <select class="form-select" id="hunt-type" onchange="updateBookingOptions()">
+                            <option value="">Choose Hunt...</option>
+                            <option value="pheasant-large">Pheasant - Large Parcel ($500/day)</option>
+                            <option value="pheasant-small-1">Pheasant - Small Parcel 1 ($250/day)</option>
+                            <option value="pheasant-small-2">Pheasant - Small Parcel 2 ($250/day)</option>
+                            <option value="deer">Deer Hunt ($350/day, Youth $175/day)</option>
+                            <option value="coyote">Coyote ($50/day, Youth $25/day)</option>
+                            <option value="prairie-dog">Prairie Dog ($50/day, Youth $25/day)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="hunters-group">
+                        <label class="form-label">Number of Hunters</label>
+                        <select class="form-select" id="num-hunters" onchange="updateHunterDetails()">
+                            <option value="1">1 Hunter</option>
+                            <option value="2">2 Hunters</option>
+                            <option value="3">3 Hunters</option>
+                            <option value="4">4 Hunters</option>
+                            <option value="5">5 Hunters</option>
+                            <option value="6">6 Hunters</option>
+                            <option value="7">7 Hunters</option>
+                            <option value="8">8 Hunters</option>
+                            <option value="9">9 Hunters</option>
+                            <option value="10">10 Hunters</option>
+                        </select>
+                    </div>
+
+                    <!-- Youth Hunter Notice -->
+                    <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">
+                            <i class="fas fa-child"></i> Youth Hunter Discount!
+                        </h4>
+                        <p style="color: #1b5e20; margin: 0;">
+                            <strong>50% OFF for hunters under 18!</strong><br>
+                            <small>We encourage youth participation in hunting. Select age for each hunter below.</small>
+                        </p>
+                    </div>
+
+                    <!-- Lead Hunter Age Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Lead Hunter Age Category *</label>
+                        <select class="form-select" id="lead-hunter-age" onchange="updatePricing()">
+                            <option value="adult">Adult (18+)</option>
+                            <option value="youth">Youth (Under 18)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Lead Hunter Name *</label>
+                        <input type="text" class="form-input" id="hunter-name" placeholder="John Smith" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="hunter-email" placeholder="john@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone *</label>
+                        <input type="tel" class="form-input" id="hunter-phone" placeholder="(555) 123-4567" required>
+                    </div>
+
+                    <!-- Updated License Section -->
+                    <div class="form-group">
+                        <label class="form-label">Colorado DOW License # * <small style="color: #666; display: block; margin-top: 5px;">Lead hunter's Colorado Division of Wildlife license number</small></label>
+                        <input type="text" class="form-input" id="hunter-license" placeholder="CO123456" required>
+                    </div>
+
+                    <!-- Additional Hunters License Numbers and Ages -->
+                    <div id="additional-hunters-licenses" style="display: none;">
+                        <div style="background: #f9f9f9; border-left: 3px solid var(--accent); padding: 15px; margin: 20px 0; border-radius: 5px;">
+                            <h4 style="color: var(--primary); margin-bottom: 15px;">Additional Hunters Information</h4>
+                            <div id="additional-licenses-container">
+                                <!-- Dynamically generated license and age fields will go here -->
+                            </div>
+                            <small style="color: #666;">Each hunter must have a valid Colorado hunting license. Youth hunters (under 18) receive 50% discount.</small>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Information Section -->
+                    <div style="background: linear-gradient(135deg, #f9f9f9, #fff); border: 1px solid #ddd; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">
+                            <i class="fas fa-truck"></i> Vehicle Information
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Vehicle Make *</label>
+                            <input type="text" class="form-input" id="vehicle-make" placeholder="Ford, Chevrolet, etc." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Vehicle Model *</label>
+                            <input type="text" class="form-input" id="vehicle-model" placeholder="F-150, Silverado, etc." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">License Plate # *</label>
+                            <input type="text" class="form-input" id="vehicle-plate" placeholder="ABC-1234" required>
+                        </div>
+
+                        <small style="color: #666;">Vehicle information is required for property access and security</small>
+                    </div>
+
+                    <!-- Price Summary -->
+                    <div style="background: linear-gradient(135deg, var(--light), #fff); padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid var(--accent);">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">Booking Summary</h4>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Selected Dates:</span>
+                            <span id="selected-dates-count" style="font-weight: bold;">0 days</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Hunt Type:</span>
+                            <span id="selected-hunt-type" style="font-weight: bold;">Not selected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Hunters:</span>
+                            <span id="selected-hunters" style="font-weight: bold;">1</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: bold; color: var(--accent); padding-top: 15px; border-top: 2px solid var(--border);">
+                            <span>Total:</span>
+                            <span id="booking-total">$0</span>
+                        </div>
+                    </div>
+
+                    <!-- Waiver -->
+                    <div class="waiver-box">
+                        <div class="waiver-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h4>Liability Waiver Required</h4>
+                        </div>
+                        <div class="waiver-content">
+                            <p><strong>ASSUMPTION OF RISK AND RELEASE OF LIABILITY</strong></p>
+                            <p>By booking, I acknowledge that hunting activities involve inherent risks. I release M77 AG and all associated parties from any liability for injury, death, or property damage. I accept full responsibility for any damage to property and agree to comply with all laws and regulations.</p>
+                            <p style="margin-top: 10px;"><strong>LICENSING REQUIREMENT:</strong> I confirm that all hunters in my party possess valid Colorado hunting licenses appropriate for the selected hunt type and will have licenses in possession during the hunt.</p>
+                            <p style="margin-top: 10px;"><strong>YOUTH HUNTER PARTICIPATION:</strong> For hunters under 18 years of age, I certify that I am the parent/legal guardian or have written consent from the parent/legal guardian. Youth hunters must be supervised by a licensed adult hunter at all times.</p>
+                        </div>
+                        <div class="waiver-checkbox">
+                            <input type="checkbox" id="waiver-accept">
+                            <label for="waiver-accept">I agree to the liability waiver, confirm all hunters are properly licensed, provide consent for any youth hunters, and am 18+ years old</label>
+                        </div>
+                    </div>
+
+                    <button class="add-cart-btn" style="margin-top: 20px; font-size: 1.1rem; padding: 18px;" onclick="addCustomHuntToCart()">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+
+                <!-- Right Side - Calendar -->
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <h3 class="calendar-title" id="calendar-month">November 2025</h3>
+                        <div class="calendar-nav">
+                            <button class="cal-nav-btn" onclick="changeMonth(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="cal-nav-btn" onclick="changeMonth(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shopping Cart Button -->
+    <div class="cart-button" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count">0</span>
+    </div>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <span class="cart-close" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p style="text-align: center; color: #666;">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total">$0</span>
+            </div>
+            <div class="checkout-buttons">
+                <button class="checkout-btn paypal-btn" onclick="checkoutPayPal()">
+                    <i class="fab fa-paypal"></i> Pay with PayPal
+                </button>
+                <button class="checkout-btn venmo-btn" onclick="checkoutVenmo()">
+                    <i class="fas fa-qrcode"></i> Pay with Venmo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkout-modal">
+        <div class="checkout-content">
+            <h2>Complete Your Purchase</h2>
+            <div id="paypal-button-container"></div>
+            
+            <div class="venmo-qr" style="text-align: center; margin: 20px 0;">
+                <h3>Pay with Venmo</h3>
+                <p>Scan QR code or send to @Kyle-McConnell-15</p>
+                <div style="width: 200px; height: 200px; margin: 20px auto; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px solid #3d95ce; border-radius: 10px;">
+                    <div style="text-align: center;">
+                        <i class="fas fa-qrcode" style="font-size: 4rem; color: #3d95ce;"></i>
+                        <p style="margin-top: 10px; color: #666;">QR Code Here</p>
+                    </div>
+                </div>
+                <p style="margin-top: 10px;">Amount: <strong id="venmoAmount">$0</strong></p>
+                <p style="font-size: 14px; color: #666;">Include order number in payment note</p>
+                <p style="font-size: 12px; color: #999;">Or use Venmo handle: @Kyle-McConnell-15</p>
+            </div>
+            
+            <button class="checkout-btn" onclick="closeCheckout()" style="width: 100%; margin-top: 20px; background: #666;">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>M77 AG Hunting</h4>
+                <p>Premium private land hunting access in Colorado. Experience the freedom of self-guided hunts on exclusive properties.</p>
+                <p style="margin-top: 10px; color: #4caf50;"><strong>Youth hunters (under 18) receive 50% discount!</strong></p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="#hunts">Available Hunts</a>
+                <a href="#booking">Book Now</a>
+                <a href="#about">About Us</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Hunt Species</h4>
+                <a href="#">Pheasant</a>
+                <a href="#">Deer (Mule & Whitetail)</a>
+                <a href="#">Coyote</a>
+                <a href="#">Prairie Dog</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <p>Email: hunting@m77ag.com</p>
+                <p>Phone: (970) 123-4567</p>
+                <p>Emergency: 911</p>
+                <p>Payment: PayPal & Venmo</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 M77 AG. All rights reserved. | Licensed & Insured | Colorado Hunting | Youth Discount Available</p>
+        </div>
+    </footer>
+
+    <script>
+        // Cart system
+        let cart = [];
+        let selectedDates = [];
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let hunterAges = {1: 'adult'};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCalendar();
+            loadCart();
+        });
+
+        // Update hunter details including age options
+        function updateHunterDetails() {
+            const numHunters = parseInt(document.getElementById('num-hunters').value) || 1;
+            updateAdditionalHuntersLicenses(numHunters);
+            updatePricing();
+        }
+
+        // Update booking options based on hunt type
+        function updateBookingOptions() {
+            const huntType = document.getElementById('hunt-type').value;
+            updateAdditionalHuntersLicenses(parseInt(document.getElementById('num-hunters').value) || 1);
+            updatePricing();
+        }
+
+        // Handle additional hunters' license and age fields
+        function updateAdditionalHuntersLicenses(numHunters) {
+            const container = document.getElementById('additional-hunters-licenses');
+            const licensesContainer = document.getElementById('additional-licenses-container');
+            
+            if (numHunters > 1) {
+                container.style.display = 'block';
+                licensesContainer.innerHTML = '';
+                
+                for (let i = 2; i <= numHunters; i++) {
+                    const hunterSection = document.createElement('div');
+                    hunterSection.style.cssText = 'background: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px;';
+                    hunterSection.innerHTML = `
+                        <h5 style="color: var(--primary); margin-bottom: 15px;">Hunter ${i}</h5>
+                        <div class="form-group">
+                            <label class="form-label">Age Category *</label>
+                            <select class="form-select hunter-age" id="hunter-age-${i}" onchange="updateHunterAge(${i}, this.value)">
+                                <option value="adult">Adult (18+)</option>
+                                <option value="youth">Youth (Under 18) - 50% OFF</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Colorado DOW License # *</label>
+                            <input type="text" class="form-input additional-license" id="hunter-license-${i}" placeholder="CO123456" required>
+                        </div>
+                    `;
+                    licensesContainer.appendChild(hunterSection);
+                    hunterAges[i] = 'adult';
+                }
+            } else {
+                container.style.display = 'none';
+                hunterAges = {1: document.getElementById('lead-hunter-age').value || 'adult'};
+            }
+        }
+
+        // Track hunter age changes
+        function updateHunterAge(hunterNumber, age) {
+            hunterAges[hunterNumber] = age;
+            updatePricing();
+        }
+
+        // Track lead hunter age changes
+        document.getElementById('lead-hunter-age').addEventListener('change', function() {
+            hunterAges[1] = this.value;
+            updatePricing();
+        });
+
+        // Updated pricing function to account for youth discounts
+        function updatePricing() {
+            const huntType = document.getElementById('hunt-type').value;
+            const numHunters = parseInt(document.getElementById('num-hunters').value) || 1;
+            const numDays = selectedDates.length || 0;
+            
+            let totalPrice = 0;
+            let huntDescription = '';
+            
+            if (huntType === 'pheasant-large') {
+                totalPrice = 500 * numDays;
+                huntDescription = 'Large Parcel';
+            } else if (huntType === 'pheasant-small-1' || huntType === 'pheasant-small-2') {
+                totalPrice = 250 * numDays;
+                huntDescription = huntType === 'pheasant-small-1' ? 'Small Parcel 1' : 'Small Parcel 2';
+            } else if (huntType === 'deer') {
+                let adultCount = 0;
+                let youthCount = 0;
+                
+                for (let i = 1; i <= numHunters; i++) {
+                    if (hunterAges[i] === 'youth') {
+                        youthCount++;
+                    } else {
+                        adultCount++;
+                    }
+                }
+                
+                const adultPrice = 350 * adultCount * numDays;
+                const youthPrice = 175 * youthCount * numDays;
+                totalPrice = adultPrice + youthPrice;
+                
+                if (youthCount > 0) {
+                    huntDescription = `${adultCount} Adult${adultCount !== 1 ? 's' : ''}, ${youthCount} Youth`;
+                } else {
+                    huntDescription = `${adultCount} Hunter${adultCount !== 1 ? 's' : ''}`;
+                }
+            } else if (huntType === 'coyote' || huntType === 'prairie-dog') {
+                let adultCount = 0;
+                let youthCount = 0;
+                
+                for (let i = 1; i <= numHunters; i++) {
+                    if (hunterAges[i] === 'youth') {
+                        youthCount++;
+                    } else {
+                        adultCount++;
+                    }
+                }
+                
+                const basePrice = 50;
+                const adultPrice = basePrice * adultCount * numDays;
+                const youthPrice = (basePrice * 0.5) * youthCount * numDays;
+                totalPrice = adultPrice + youthPrice;
+                
+                if (youthCount > 0) {
+                    huntDescription = `${adultCount} Adult${adultCount !== 1 ? 's' : ''}, ${youthCount} Youth`;
+                } else {
+                    huntDescription = `${numHunters} Hunter${numHunters !== 1 ? 's' : ''}`;
+                }
+            }
+            
+            document.getElementById('selected-dates-count').textContent = `${numDays} day${numDays !== 1 ? 's' : ''}`;
+            document.getElementById('selected-hunt-type').textContent = huntType ? huntDescription : 'Not selected';
+            document.getElementById('selected-hunters').textContent = numHunters;
+            document.getElementById('booking-total').textContent = `$${totalPrice}`;
+            
+            // Show savings if youth hunters are selected
+            const youthCount = Object.values(hunterAges).filter(age => age === 'youth').length;
+            if (youthCount > 0 && huntType && (huntType === 'deer' || huntType === 'coyote' || huntType === 'prairie-dog')) {
+                const savingsNote = document.getElementById('youth-savings');
+                if (!savingsNote) {
+                    const summaryDiv = document.getElementById('booking-total').parentElement.parentElement;
+                    const savingsDiv = document.createElement('div');
+                    savingsDiv.id = 'youth-savings';
+                    savingsDiv.style.cssText = 'color: #4caf50; font-size: 0.9rem; margin-top: 10px;';
+                    savingsDiv.innerHTML = `<i class="fas fa-tag"></i> Youth discount applied for ${youthCount} hunter${youthCount !== 1 ? 's' : ''}!`;
+                    summaryDiv.appendChild(savingsDiv);
+                } else {
+                    savingsNote.innerHTML = `<i class="fas fa-tag"></i> Youth discount applied for ${youthCount} hunter${youthCount !== 1 ? 's' : ''}!`;
+                }
+            } else {
+                const savingsNote = document.getElementById('youth-savings');
+                if (savingsNote) savingsNote.remove();
+            }
+        }
+
+        // Show pheasant parcel options
+        function showPheasantOptions() {
+            const modal = document.createElement('div');
+            modal.className = 'checkout-modal open';
+            modal.style.zIndex = '3000';
+            modal.innerHTML = `
+                <div class="checkout-content" style="max-width: 500px;">
+                    <h2 style="color: var(--primary); margin-bottom: 20px;">Select Pheasant Parcel</h2>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="border: 2px solid var(--accent); border-radius: 10px; padding: 20px; cursor: pointer;" 
+                             onclick="selectPheasantParcel('large', 500, this)">
+                            <h3 style="color: var(--primary);">Large Parcel - $500/day</h3>
+                            <p>Perfect for groups of 5-10 hunters</p>
+                            <p>200+ acres of prime pheasant habitat</p>
+                        </div>
+                        <div style="border: 2px solid var(--accent); border-radius: 10px; padding: 20px; cursor: pointer;"
+                             onclick="selectPheasantParcel('small-1', 250, this)">
+                            <h3 style="color: var(--primary);">Small Parcel 1 - $250/day</h3>
+                            <p>Ideal for 2-4 hunters</p>
+                            <p>80 acres with excellent cover</p>
+                        </div>
+                        <div style="border: 2px solid var(--accent); border-radius: 10px; padding: 20px; cursor: pointer;"
+                             onclick="selectPheasantParcel('small-2', 250, this)">
+                            <h3 style="color: var(--primary);">Small Parcel 2 - $250/day</h3>
+                            <p>Ideal for 2-4 hunters</p>
+                            <p>75 acres near water source</p>
+                        </div>
+                    </div>
+                    <button onclick="this.closest('.checkout-modal').remove()" 
+                            style="width: 100%; margin-top: 20px; padding: 12px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Cancel
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Select pheasant parcel
+        function selectPheasantParcel(parcelType, price, element) {
+            const parcelName = parcelType === 'large' ? 'Large Parcel' : 
+                              parcelType === 'small-1' ? 'Small Parcel 1' : 'Small Parcel 2';
+            
+            const item = {
+                id: Date.now(),
+                type: 'pheasant-' + parcelType,
+                price: price,
+                quantity: 1,
+                description: `Pheasant Hunt - ${parcelName} - 1 Day`
+            };
+            
+            cart.push(item);
+            saveCart();
+            updateCartDisplay();
+            element.closest('.checkout-modal').remove();
+            toggleCart();
+        }
+
+        // Add custom hunt to cart
+        function addCustomHuntToCart() {
+            const huntType = document.getElementById('hunt-type').value;
+            const numHunters = parseInt(document.getElementById('num-hunters').value) || 1;
+            const name = document.getElementById('hunter-name').value;
+            const email = document.getElementById('hunter-email').value;
+            const phone = document.getElementById('hunter-phone').value;
+            const leadLicense = document.getElementById('hunter-license').value;
+            const leadAge = document.getElementById('lead-hunter-age').value;
+            
+            // Vehicle information
+            const vehicleMake = document.getElementById('vehicle-make').value;
+            const vehicleModel = document.getElementById('vehicle-model').value;
+            const vehiclePlate = document.getElementById('vehicle-plate').value;
+            
+            // Validation
+            if (!huntType) {
+                alert('Please select a hunt type');
+                return;
+            }
+            
+            if (selectedDates.length === 0) {
+                alert('Please select at least one date');
+                return;
+            }
+            
+            if (!name || !email || !phone || !leadLicense) {
+                alert('Please fill in all required fields including Colorado DOW License #');
+                return;
+            }
+            
+            if (!vehicleMake || !vehicleModel || !vehiclePlate) {
+                alert('Please provide complete vehicle information');
+                return;
+            }
+            
+            // Collect all hunter licenses and ages
+            const hunterLicenses = [leadLicense];
+            const hunterAgesList = [leadAge];
+            
+            for (let i = 2; i <= numHunters; i++) {
+                const additionalLicense = document.getElementById(`hunter-license-${i}`);
+                const additionalAge = document.getElementById(`hunter-age-${i}`);
+                
+                if (additionalLicense && !additionalLicense.value) {
+                    alert(`Please enter Colorado DOW License # for Hunter ${i}`);
+                    return;
+                }
+                if (additionalLicense) {
+                    hunterLicenses.push(additionalLicense.value);
+                    hunterAgesList.push(additionalAge ? additionalAge.value : 'adult');
+                }
+            }
+            
+            // Check for minors and parental consent
+            const hasYouth = hunterAgesList.includes('youth');
+            if (hasYouth && leadAge === 'youth') {
+                alert('At least one adult (18+) must be present when youth hunters are participating');
+                return;
+            }
+            
+            if (!document.getElementById('waiver-accept').checked) {
+                alert('You must accept the liability waiver and confirm all hunters are properly licensed');
+                return;
+            }
+            
+            // Calculate price with youth discounts
+            let pricePerDay = 0;
+            let description = '';
+            const numDays = selectedDates.length;
+            
+            const adultCount = hunterAgesList.filter(age => age === 'adult').length;
+            const youthCount = hunterAgesList.filter(age => age === 'youth').length;
+            
+            if (huntType === 'pheasant-large') {
+                pricePerDay = 500;
+                description = `Pheasant Hunt - Large Parcel - ${numDays} day${numDays !== 1 ? 's' : ''}`;
+            } else if (huntType === 'pheasant-small-1') {
+                pricePerDay = 250;
+                description = `Pheasant Hunt - Small Parcel 1 - ${numDays} day${numDays !== 1 ? 's' : ''}`;
+            } else if (huntType === 'pheasant-small-2') {
+                pricePerDay = 250;
+                description = `Pheasant Hunt - Small Parcel 2 - ${numDays} day${numDays !== 1 ? 's' : ''}`;
+            } else if (huntType === 'deer') {
+                const adultPrice = 350 * adultCount;
+                const youthPrice = 175 * youthCount;
+                pricePerDay = adultPrice + youthPrice;
+                description = `Deer Hunt - ${adultCount} Adult${adultCount !== 1 ? 's' : ''}${youthCount > 0 ? `, ${youthCount} Youth` : ''} - ${numDays} day${numDays !== 1 ? 's' : ''}`;
+            } else if (huntType === 'coyote') {
+                const adultPrice = 50 * adultCount;
+                const youthPrice = 25 * youthCount;
+                pricePerDay = adultPrice + youthPrice;
+                description = `Coyote Hunt - ${adultCount} Adult${adultCount !== 1 ? 's' : ''}${youthCount > 0 ? `, ${youthCount} Youth` : ''} - ${numDays} day${numDays !== 1 ? 's' : ''}`;
+            } else if (huntType === 'prairie-dog') {
+                const adultPrice = 50 * adultCount;
+                const youthPrice = 25 * youthCount;
+                pricePerDay = adultPrice + youthPrice;
+                description = `Prairie Dog Hunt - ${adultCount} Adult${adultCount !== 1 ? 's' : ''}${youthCount > 0 ? `, ${youthCount} Youth` : ''} - ${numDays} day${numDays !== 1 ? 's' : ''}`;
+            }
+            
+            const totalPrice = pricePerDay * numDays;
+            
+            const item = {
+                id: Date.now(),
+                type: 'custom',
+                huntType: huntType,
+                dates: [...selectedDates],
+                price: totalPrice,
+                description: description,
+                hunterInfo: {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    leadLicense: leadLicense,
+                    hunterLicenses: hunterLicenses,
+                    hunterAges: hunterAgesList,
+                    numHunters: numHunters,
+                    adultCount: adultCount,
+                    youthCount: youthCount
+                },
+                vehicleInfo: {
+                    make: vehicleMake,
+                    model: vehicleModel,
+                    plateNumber: vehiclePlate
+                }
+            };
+            
+            cart.push(item);
+            saveCart();
+            updateCartDisplay();
+            toggleCart();
+            
+            // Reset form
+            selectedDates = [];
+            hunterAges = {1: 'adult'};
+            generateCalendar();
+            document.getElementById('hunt-type').value = '';
+            document.getElementById('hunter-name').value = '';
+            document.getElementById('hunter-email').value = '';
+            document.getElementById('hunter-phone').value = '';
+            document.getElementById('hunter-license').value = '';
+            document.getElementById('lead-hunter-age').value = 'adult';
+            document.getElementById('vehicle-make').value = '';
+            document.getElementById('vehicle-model').value = '';
+            document.getElementById('vehicle-plate').value = '';
+            document.getElementById('num-hunters').value = '1';
+            document.getElementById('waiver-accept').checked = false;
+            document.getElementById('additional-hunters-licenses').style.display = 'none';
+            updateBookingOptions();
+        }
+
+        // Cart functions
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('open');
+        }
+
+        function quickAddToCart(type, price) {
+            let description = '';
+            let actualPrice = price;
+            
+            if (type === 'deer') {
+                description = 'Deer Hunt - 1 Adult/1 Day (All Parcels)';
+            } else if (type === 'coyote') {
+                description = 'Coyote Hunt - 1 Adult/1 Day';
+            } else if (type === 'prairie-dog') {
+                description = 'Prairie Dog Hunt - 1 Adult/1 Day';
+            }
+            
+            const item = {
+                id: Date.now(),
+                type: type,
+                price: actualPrice,
+                quantity: 1,
+                description: description
+            };
+            
+            cart.push(item);
+            saveCart();
+            updateCartDisplay();
+            
+            event.target.innerHTML = '<i class="fas fa-check"></i> Added!';
+            event.target.classList.add('added');
+            setTimeout(() => {
+                event.target.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                event.target.classList.remove('added');
+            }, 2000);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveCart();
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartCount.textContent = cart.length;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #666;">Your cart is empty</p>';
+                cartTotal.textContent = '$0';
+                return;
+            }
+            
+            let html = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                html += `
+                    <div class="cart-item">
+                        <span class="cart-item-remove" onclick="removeFromCart(${item.id})">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <h4>${item.description}</h4>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: var(--accent); margin-top: 10px;">
+                            $${item.price}
+                        </div>
+                    </div>
+                `;
+                total += item.price;
+            });
+            
+            cartItems.innerHTML = html;
+            cartTotal.textContent = `$${total}`;
+        }
+
+        function saveCart() {
+            localStorage.setItem('m77_cart', JSON.stringify(cart));
+        }
+
+        function loadCart() {
+            const saved = localStorage.getItem('m77_cart');
+            if (saved) {
+                cart = JSON.parse(saved);
+                updateCartDisplay();
+            }
+        }
+
+        function clearCart() {
+            cart = [];
+            saveCart();
+            updateCartDisplay();
+        }
+
+        function calculateTotal() {
+            return cart.reduce((sum, item) => sum + item.price, 0);
+        }
+
+        // Calendar functions
+        function generateCalendar() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const grid = document.getElementById('calendar-grid');
+            const monthDisplay = document.getElementById('calendar-month');
+            
+            monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            grid.innerHTML = '';
+            
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'cal-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'cal-day';
+                
+                const date = new Date(currentYear, currentMonth, day);
+                date.setHours(0, 0, 0, 0);
+                const dateStr = `${currentMonth + 1}/${day}/${currentYear}`;
+                
+                if (date < today) {
+                    dayEl.classList.add('disabled');
+                } else {
+                    dayEl.onclick = () => toggleDate(dateStr, dayEl);
+                    if (selectedDates.includes(dateStr)) {
+                        dayEl.classList.add('selected');
+                    }
+                }
+                
+                dayEl.innerHTML = `<div style="font-size: 1.1rem; font-weight: 600;">${day}</div>`;
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function toggleDate(dateStr, element) {
+            const index = selectedDates.indexOf(dateStr);
+            if (index > -1) {
+                selectedDates.splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                selectedDates.push(dateStr);
+                element.classList.add('selected');
+            }
+            updatePricing();
+        }
+
+        function changeMonth(dir) {
+            currentMonth += dir;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+
+        // Checkout functions
+        function checkoutPayPal() {
+            if (cart.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+            document.getElementById('checkout-modal').classList.add('open');
+        }
+
+        function checkoutVenmo() {
+            if (cart.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+            document.getElementById('venmoAmount').textContent = `$${calculateTotal()}`;
+            document.getElementById('checkout-modal').classList.add('open');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').classList.remove('open');
+        }
+    </script>
+</body>
+</html>
