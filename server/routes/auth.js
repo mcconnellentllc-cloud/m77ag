@@ -1,4 +1,3 @@
-// server/routes/auth.js
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -30,19 +29,19 @@ router.post('/register', async (req, res) => {
       });
     }
     
-    // Create new user (password will be hashed automatically)
+    // Create new user
     const user = await User.create({
       username,
       email,
-      password,
-      role: 'user' // Default role is 'user', not 'admin'
+      password, // Will be hashed by pre-save hook
+      role: 'user' // Default role
     });
     
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: '24h' }
     );
     
     res.status(201).json({
@@ -88,8 +87,8 @@ router.post('/login', async (req, res) => {
     }
     
     // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    const isValid = await user.comparePassword(password);
+    if (!isValid) {
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid credentials' 
@@ -100,7 +99,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: '24h' }
     );
     
     res.json({
@@ -123,14 +122,44 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get current user (protected route)
+// Verify token endpoint
+router.get('/verify', authenticate, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Token verification failed' 
+    });
+  }
+});
+
+// Get current user
 router.get('/me', authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
     
     if (!user) {
       return res.status(404).json({ 
-        success: false,
+        success: false, 
         message: 'User not found' 
       });
     }
@@ -147,17 +176,19 @@ router.get('/me', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Get current user error:', error);
     res.status(500).json({ 
-      success: false,
-      message: 'Server error' 
+      success: false, 
+      message: 'Failed to get user information' 
     });
   }
 });
 
-// Logout (client-side - just clear token)
+// Logout (optional - mainly for client-side to clear token)
 router.post('/logout', (req, res) => {
+  // Since we're using JWT, we don't need to do anything server-side
+  // The client should remove the token from localStorage
   res.json({ 
-    success: true,
-    message: 'Logout successful. Please clear your token.' 
+    success: true, 
+    message: 'Logged out successfully' 
   });
 });
 
