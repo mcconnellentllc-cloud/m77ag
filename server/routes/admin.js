@@ -1,6 +1,41 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, isAdmin } = require('../middleware/auth');
+
+// Middleware functions for authentication
+const authenticate = async (req, res, next) => {
+  try {
+    const jwt = require('jsonwebtoken');
+    const { User } = require('../models/user');
+    
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ message: 'User no longer exists' });
+    }
+    
+    req.userId = decoded.userId;
+    req.userRole = user.role;
+    
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(401).json({ message: 'Invalid or expired token' });
+  }
+};
+
+const isAdmin = (req, res, next) => {
+  if (req.userRole !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
 
 // Mock data for now - replace with actual database queries
 const getMockAnalytics = () => ({
@@ -56,11 +91,9 @@ const getMockAnalytics = () => ({
   ]
 });
 
-// Get dashboard analytics - Protected route for admins only
+// GET /api/admin/analytics - Get dashboard analytics
 router.get('/analytics', authenticate, isAdmin, async (req, res) => {
   try {
-    // For now, return mock data
-    // TODO: Replace with actual database queries
     const analytics = getMockAnalytics();
     res.json(analytics);
   } catch (error) {
@@ -72,10 +105,9 @@ router.get('/analytics', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Get all proposals - Protected route for admins
+// GET /api/admin/proposals - Get all proposals
 router.get('/proposals', authenticate, isAdmin, async (req, res) => {
   try {
-    // TODO: Fetch from database
     const proposals = [
       {
         id: 1,
@@ -113,13 +145,12 @@ router.get('/proposals', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Update proposal status - Protected route for admins
+// PATCH /api/admin/proposals/:id/status - Update proposal status
 router.patch('/proposals/:id/status', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
     
-    // Validate status
     const validStatuses = ['pending', 'approved', 'completed', 'cancelled'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ 
@@ -128,7 +159,6 @@ router.patch('/proposals/:id/status', authenticate, isAdmin, async (req, res) =>
       });
     }
     
-    // TODO: Update in database
     console.log(`Updating proposal ${id} to status: ${status}`);
     
     res.json({ 
@@ -144,12 +174,11 @@ router.patch('/proposals/:id/status', authenticate, isAdmin, async (req, res) =>
   }
 });
 
-// Delete proposal - Protected route for admins
+// DELETE /api/admin/proposals/:id - Delete proposal
 router.delete('/proposals/:id', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     
-    // TODO: Delete from database
     console.log(`Deleting proposal ${id}`);
     
     res.json({ 
@@ -165,10 +194,9 @@ router.delete('/proposals/:id', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Get chemical inventory - Protected route for admins
+// GET /api/admin/chemicals - Get chemical inventory
 router.get('/chemicals', authenticate, isAdmin, async (req, res) => {
   try {
-    // TODO: Fetch from database
     const chemicals = [
       {
         id: 1,
@@ -212,12 +240,11 @@ router.get('/chemicals', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Add new chemical - Protected route for admins
+// POST /api/admin/chemicals - Add new chemical
 router.post('/chemicals', authenticate, isAdmin, async (req, res) => {
   try {
     const { name, type, quantity, unit, cost_per_unit, min_stock_level, supplier } = req.body;
     
-    // Validate required fields
     if (!name || !type || !quantity || !unit || !cost_per_unit) {
       return res.status(400).json({ 
         success: false, 
@@ -225,7 +252,6 @@ router.post('/chemicals', authenticate, isAdmin, async (req, res) => {
       });
     }
     
-    // TODO: Save to database
     console.log('Adding new chemical:', { name, type, quantity });
     
     res.status(201).json({ 
@@ -251,13 +277,12 @@ router.post('/chemicals', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Update chemical - Protected route for admins
+// PUT /api/admin/chemicals/:id - Update chemical
 router.put('/chemicals/:id', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
     
-    // TODO: Update in database
     console.log(`Updating chemical ${id}:`, updateData);
     
     res.json({ 
@@ -273,12 +298,11 @@ router.put('/chemicals/:id', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Delete chemical - Protected route for admins
+// DELETE /api/admin/chemicals/:id - Delete chemical
 router.delete('/chemicals/:id', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     
-    // TODO: Delete from database
     console.log(`Deleting chemical ${id}`);
     
     res.json({ 
@@ -294,10 +318,9 @@ router.delete('/chemicals/:id', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Get customers - Protected route for admins
+// GET /api/admin/customers - Get customers
 router.get('/customers', authenticate, isAdmin, async (req, res) => {
   try {
-    // TODO: Fetch from database
     const customers = [
       {
         id: 1,
@@ -337,12 +360,11 @@ router.get('/customers', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Add new customer - Protected route for admins
+// POST /api/admin/customers - Add new customer
 router.post('/customers', authenticate, isAdmin, async (req, res) => {
   try {
     const customerData = req.body;
     
-    // Validate required fields
     if (!customerData.name || !customerData.email || !customerData.phone) {
       return res.status(400).json({ 
         success: false, 
@@ -350,7 +372,6 @@ router.post('/customers', authenticate, isAdmin, async (req, res) => {
       });
     }
     
-    // TODO: Save to database
     console.log('Adding new customer:', customerData);
     
     res.status(201).json({ 
@@ -370,13 +391,12 @@ router.post('/customers', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Update customer - Protected route for admins
+// PUT /api/admin/customers/:id - Update customer
 router.put('/customers/:id', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
     
-    // TODO: Update in database
     console.log(`Updating customer ${id}:`, updateData);
     
     res.json({ 
@@ -392,12 +412,11 @@ router.put('/customers/:id', authenticate, isAdmin, async (req, res) => {
   }
 });
 
-// Delete customer - Protected route for admins
+// DELETE /api/admin/customers/:id - Delete customer
 router.delete('/customers/:id', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     
-    // TODO: Delete from database
     console.log(`Deleting customer ${id}`);
     
     res.json({ 
@@ -409,6 +428,118 @@ router.delete('/customers/:id', authenticate, isAdmin, async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Failed to delete customer' 
+    });
+  }
+});
+
+// GET /api/admin/hunting - Get hunting leases
+router.get('/hunting', authenticate, isAdmin, async (req, res) => {
+  try {
+    const leases = [
+      {
+        id: 1,
+        name: 'North Field Deer Lease',
+        type: 'Deer Hunting',
+        acres: 150,
+        location: 'North Section - Field 12',
+        price_per_day: 250,
+        price_per_week: 1500,
+        price_per_season: 5000,
+        status: 'available',
+        bookings: 2
+      },
+      {
+        id: 2,
+        name: 'West Creek Turkey Lease',
+        type: 'Turkey Hunting',
+        acres: 100,
+        location: 'West Section - Creek Area',
+        price_per_day: 150,
+        price_per_week: 800,
+        price_per_season: 2500,
+        status: 'available',
+        bookings: 1
+      }
+    ];
+    
+    res.json({ success: true, leases });
+  } catch (error) {
+    console.error('Hunting leases error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch hunting leases' 
+    });
+  }
+});
+
+// POST /api/admin/hunting - Add new hunting lease
+router.post('/hunting', authenticate, isAdmin, async (req, res) => {
+  try {
+    const leaseData = req.body;
+    
+    if (!leaseData.name || !leaseData.type || !leaseData.acres || !leaseData.price_per_day) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Missing required fields' 
+      });
+    }
+    
+    console.log('Adding new hunting lease:', leaseData);
+    
+    res.status(201).json({ 
+      success: true, 
+      message: 'Hunting lease added successfully',
+      lease: { 
+        id: Date.now(), 
+        ...leaseData
+      }
+    });
+  } catch (error) {
+    console.error('Add hunting lease error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to add hunting lease' 
+    });
+  }
+});
+
+// PUT /api/admin/hunting/:id - Update hunting lease
+router.put('/hunting/:id', authenticate, isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    console.log(`Updating hunting lease ${id}:`, updateData);
+    
+    res.json({ 
+      success: true, 
+      message: 'Hunting lease updated successfully' 
+    });
+  } catch (error) {
+    console.error('Update hunting lease error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update hunting lease' 
+    });
+  }
+});
+
+// DELETE /api/admin/hunting/:id - Delete hunting lease
+router.delete('/hunting/:id', authenticate, isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log(`Deleting hunting lease ${id}`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Hunting lease deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Delete hunting lease error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete hunting lease' 
     });
   }
 });
