@@ -2,9 +2,53 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
-const { authenticate } = require('../middleware/auth');
 
-// Register new user
+// Helper function to generate JWT token
+const generateToken = (userId, role) => {
+  return jwt.sign(
+    { userId, role },
+    process.env.JWT_SECRET || 'your_jwt_secret',
+    { expiresIn: '24h' }
+  );
+};
+
+// Middleware to authenticate requests
+const authenticateToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Authentication required' 
+      });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    
+    const user = await User.findById(decoded.userId).select('-password');
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'User no longer exists' 
+      });
+    }
+    
+    req.userId = decoded.userId;
+    req.userRole = user.role;
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(401).json({ 
+      success: false,
+      message: 'Invalid or expired token' 
+    });
+  }
+};
+
+// POST /api/auth/register - Register new user
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -38,11 +82,7 @@ router.post('/register', async (req, res) => {
     });
     
     // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: '24h' }
-    );
+    const token = generateToken(user._id, user.role);
     
     res.status(201).json({
       success: true,
@@ -64,7 +104,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// User login
+// POST /api/auth/login - User login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -96,11 +136,7 @@ router.post('/login', async (req, res) => {
     }
     
     // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'your_jwt_secret',
-      { expiresIn: '24h' }
-    );
+    const token = generateToken(user._id, user.role);
     
     res.json({
       success: true,
@@ -122,25 +158,16 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Verify token endpoint
-router.get('/verify', authenticate, async (req, res) => {
+// GET /api/auth/verify - Verify token
+router.get('/verify', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('-password');
-    
-    if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-    
     res.json({
       success: true,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role
+        id: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+        role: req.user.role
       }
     });
   } catch (error) {
@@ -152,25 +179,16 @@ router.get('/verify', authenticate, async (req, res) => {
   }
 });
 
-// Get current user
-router.get('/me', authenticate, async (req, res) => {
+// GET /api/auth/me - Get current user
+router.get('/me', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('-password');
-    
-    if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-    
     res.json({
       success: true,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role
+        id: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+        role: req.user.role
       }
     });
   } catch (error) {
@@ -182,7 +200,7 @@ router.get('/me', authenticate, async (req, res) => {
   }
 });
 
-// Logout (optional - mainly for client-side to clear token)
+// POST /api/auth/logout - Logout
 router.post('/logout', (req, res) => {
   // Since we're using JWT, we don't need to do anything server-side
   // The client should remove the token from localStorage
