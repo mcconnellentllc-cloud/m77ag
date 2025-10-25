@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M77 AG - Professional Agricultural Services in Northeast Colorado. Custom farming with Claas, John Deere, and Rogator equipment. Black Angus cattle operations.">
+    <meta name="keywords" content="farming, agriculture, custom farming, hunting, Colorado, M77 AG, John Deere, Claas, Black Angus">
+    <title>M77 AG - Four Generations of Agricultural Excellence</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* Complete Homepage Redesign - Natural Agricultural Style */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation - Clean and Minimal */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-wrapper.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            padding: 20px 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        
+        .nav-wrapper.scrolled .logo {
+            color: #1a1a1a;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .nav-wrapper.scrolled .nav-link {
+            color: #4a4a4a;
+        }
+        
+        .nav-link:hover {
+            color: #d4af37;
+        }
+        
+        /* Hero Section - Full Screen with Video Background Feel */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(45deg, rgba(45, 80, 22, 0.4) 0%, rgba(212, 175, 55, 0.2) 100%),
+                        url('assets/images/claas-760-harvest.jpg') center/cover;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%);
+        }
+        
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+        
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(60px, 10vw, 120px);
+            line-height: 0.9;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .btn-hero {
+            padding: 16px 40px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .btn-hero-primary {
+            background: #d4af37;
+            color: #1a1a1a;
+            border-color: #d4af37;
+        }
+        
+        .btn-hero-primary:hover {
+            background: transparent;
+            color: #d4af37;
+        }
+        
+        .btn-hero-outline {
+            border-color: #fff;
+            color: #fff;
+        }
+        
+        .btn-hero-outline:hover {
+            background: #fff;
+            color: #1a1a1a;
+        }
+        
+        /* Introduction Section */
+        .intro-section {
+            padding: 120px 0;
+            background: #fff;
+        }
+        
+        .intro-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+        
+        .intro-content h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+        
+        .intro-content p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .equipment-list {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .equipment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .equipment-icon {
+            width: 40px;
+            height: 40px;
+            background: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .intro-image {
+            position: relative;
+            height: 600px;
+            overflow: hidden;
+        }
+        
+        .intro-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-overlay-text {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* Services Grid - Organic Layout */
+        .services-section {
+            padding: 120px 0;
+            background: #f5f3f0;
+        }
+        
+        .services-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 80px;
+        }
+        
+        .services-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        
+        .services-header p {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .services-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .service-card {
+            background: #fff;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+        
+        .service-image {
+            height: 280px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .service-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+        
+        .service-card:hover .service-image img {
+            transform: scale(1.1);
+        }
+        
+        .service-content {
+            padding: 40px;
+        }
+        
+        .service-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: #d4af37;
+            color: #1a1a1a;
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .service-content h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+        
+        .service-content p {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .service-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        
+        /* Equipment Showcase */
+        .equipment-section {
+            padding: 120px 0;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .equipment-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        .equipment-header {
+            margin-bottom: 60px;
+        }
+        
+        .equipment-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .equipment-showcase {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        
+        .equipment-card {
+            text-align: center;
+        }
+        
+        .equipment-image-box {
+            height: 200px;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .equipment-image-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.2) 100%);
+        }
+        
+        .equipment-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #d4af37;
+        }
+        
+        .equipment-model {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        /* Call to Action */
+        .cta-section {
+            padding: 120px 0;
+            background: linear-gradient(135deg, #2d5016 0%, #1a2f0d 100%);
+            text-align: center;
+        }
+        
+        .cta-content h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 72px;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+        
+        .cta-content p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            padding: 80px 0 40px;
+            color: #fff;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+        
+        .footer-brand h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #d4af37;
+        }
+        
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #d4af37;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 40px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .intro-container,
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .equipment-showcase {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 60px;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper" id="navbar">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="logo">M77 AG</a>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="services.html" class="nav-link">Services</a></li>
+                    <li><a href="hunting.html" class="nav-link">Hunting</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="portal/login.html" class="nav-link">Portal</a></li>
+                    <li><a href="portal/employee/login.html" class="nav-link">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-label">Northeastern Colorado</div>
+            <h1 class="hero-title">
+                FOUR GENERATIONS<br>
+                OF FARMING<br>
+                EXCELLENCE
+            </h1>
+            <p class="hero-subtitle">
+                Custom agricultural services with state-of-the-art equipment. 
+                From planting to harvest, we deliver precision farming solutions 
+                backed by over a century of experience.
+            </p>
+            <div class="hero-buttons">
+                <a href="services.html#calculator" class="btn-hero btn-hero-primary">Get Quote</a>
+                <a href="#services" class="btn-hero btn-hero-outline">Our Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction -->
+    <section class="intro-section">
+        <div class="intro-container">
+            <div class="intro-content">
+                <h2>Modern Equipment.<br>Traditional Values.</h2>
+                <p>
+                    M77 AG operates with state-of-the-art agricultural equipment in Northeast Colorado. 
+                    Our comprehensive fleet ensures efficient, precise operations across thousands of acres.
+                </p>
+                <p>
+                    Beyond crop production, we maintain a premium Black Angus cattle operation, 
+                    continuing our multi-generational commitment to sustainable agriculture.
+                </p>
+                
+                <div style="margin-top: 40px;">
+                    <a href="services.html" class="btn-hero btn-hero-primary">Explore Our Services</a>
+                </div>
+            </div>
+            
+            <div class="intro-image">
+                <img src="assets/images/black-angus-pasture.jpg" alt="Black Angus Cattle">
+                <div class="image-overlay-text">Premium Black Angus Operation</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services-section" id="services">
+        <div class="services-header">
+            <h2>Comprehensive Agricultural Services</h2>
+            <p>From field preparation to harvest, we provide complete farming solutions with transparent pricing and exceptional results.</p>
+        </div>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-image">
+                    <img src="assets/images/planting-service.jpg" alt="Planting Services">
+                </div>
+                <div class="service-content">
+                    <div class="service-number">01</div>
+                    <h3>Custom Farming</h3>
+                    <p>
+                        Full-service operations from planting through harvest. Our John Deere equipment 
+                        and experienced operators ensure optimal yields.
+                    </p>
+                    <a href="services.html" class="service-link">Calculate Pricing →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-image">
+                    <img src="assets/images/hunting-property.jpg" alt="Hunting Leases">
+                </div>
+                <div class="service-content">
+                    <div class="service-number">02</div>
+                    <h3>Hunting Leases</h3>
+                    <p>
+                        Premium hunting opportunities on private Northeast Colorado land. 
+                        Multiple parcels available for deer, antelope, and upland game.
+                    </p>
+                    <a href="hunting.html" class="service-link">View Properties →</a>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-image">
+                    <img src="assets/images/field-analytics.jpg" alt="Land Management">
+                </div>
+                <div class="service-content">
+                    <div class="service-number">03</div>
+                    <h3>Land Management</h3>
+                    <p>
+                        Real-time ROI tracking with detailed cost-per-bushel analytics. 
+                        Complete transparency for landowners and investors.
+                    </p>
+                    <a href="portal/login.html" class="service-link">Access Portal →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>LET'S GROW TOGETHER</h2>
+            <p>Experience the difference of working with Northeast Colorado's premier agricultural service provider</p>
+            <div class="hero-buttons">
+                <a href="tel:970-774-3276" class="btn-hero btn-hero-primary">Call 970-774-3276</a>
+                <a href="services.html" class="btn-hero btn-hero-outline">View Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>M77 AG</h3>
+                <p>
+                    Professional agricultural services serving Northeast Colorado since 1920. 
+                    Four generations of farming excellence with modern equipment and traditional values.
+                </p>
+                <p style="color: #d4af37;">
+                    970-774-3276<br>
+                    office@m77ag.com
+                </p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="services.html">Custom Farming</a></li>
+                    <li><a href="services.html#spraying">Chemical Application</a></li>
+                    <li><a href="services.html#planting">Planting Services</a></li>
+                    <li><a href="services.html#harvesting">Harvesting</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="hunting.html">Hunting Leases</a></li>
+                    <li><a href="portal/login.html">Customer Portal</a></li>
+                    <li><a href="portal/login.html">Landlord Access</a></li>
+                    <li><a href="portal/employee/login.html">Employee Login</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="about.html#history">Our History</a></li>
+                    <li><a href="about.html#team">Our Team</a></li>
+                    <li><a href="about.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
