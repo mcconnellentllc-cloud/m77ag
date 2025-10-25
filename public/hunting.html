@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M77 AG Hunting & Camping Leases - Premium hunting on private land in Sedgwick County, Colorado. Historic Swedish homestead, deer, pheasant, dove hunting with camping available.">
+    <meta name="keywords" content="hunting, Colorado hunting, Sedgwick County, private land hunting, camping, deer hunting, pheasant, dove, M77 AG">
+    <title>Hunting & Camping Leases - M77 AG</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+        }
+        
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            padding: 20px 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-link {
+            color: #4a4a4a;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #d4af37;
+        }
+        
+        /* Hero Section */
+        .hunting-hero {
+            margin-top: 80px;
+            height: 70vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)),
+                        url('assets/images/hunting-property.jpg') center/cover;
+        }
+        
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            color: #fff;
+        }
+        
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 8vw, 96px);
+            line-height: 0.9;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+        }
+        
+        /* Overview Section */
+        .overview-section {
+            padding: 100px 0;
+            background: #fff;
+        }
+        
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        
+        .section-header p {
+            font-size: 18px;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Amenities Grid */
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .amenity-card {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f7f5;
+            transition: all 0.3s;
+        }
+        
+        .amenity-card:hover {
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .amenity-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #1a1a1a;
+        }
+        
+        .amenity-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+        
+        .amenity-description {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Properties Section - Sedgwick County */
+        .properties-section {
+            padding: 100px 0;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .property-card {
+            background: #2a2a2a;
+            padding: 40px;
+            transition: all 0.3s;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .property-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #d4af37;
+        }
+        
+        .property-details {
+            margin: 20px 0;
+        }
+        
+        .property-details li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .property-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d4af37;
+            margin-top: 20px;
+        }
+        
+        .bundle-card {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #2d5016 0%, #1a2f0d 100%);
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .bundle-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        /* Booking Calendar Section */
+        .booking-section {
+            padding: 100px 0;
+            background: #f5f3f0;
+        }
+        
+        .calendar-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #d4af37;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .calendar-day:hover {
+            background: #f8f7f5;
+            border-color: #d4af37;
+        }
+        
+        .calendar-day.available {
+            background: #e8f5e8;
+            color: #2d5016;
+        }
+        
+        .calendar-day.booked {
+            background: #ffebee;
+            color: #c62828;
+            cursor: not-allowed;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            padding: 100px 0;
+            background: #fff;
+            text-align: center;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+        }
+        
+        .contact-item {
+            text-align: center;
+        }
+        
+        .contact-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .contact-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #1a1a1a;
+        }
+        
+        .contact-value a {
+            color: #d4af37;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 18px 40px;
+            background: #d4af37;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #1a1a1a;
+            color: #d4af37;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            padding: 40px 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        @media (max-width: 1024px) {
+            .amenities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .property-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bundle-card {
+                grid-column: span 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="logo">M77 AG</a>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="services.html" class="nav-link">Services</a></li>
+                    <li><a href="hunting.html" class="nav-link active">Hunting</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="portal/login.html" class="nav-link">Portal</a></li>
+                    <li><a href="portal/employee/login.html" class="nav-link">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hunting-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                HUNTING & CAMPING<br>
+                SEDGWICK COUNTY
+            </h1>
+            <p class="hero-subtitle">
+                Historic Swedish homestead from the late 1800s. Premium private land hunting 
+                with deer, pheasant, dove, and coyote. Camping accommodations available with 
+                water and electricity on-site.
+            </p>
+        </div>
+    </section>
+
+    <!-- Overview & Amenities -->
+    <section class="overview-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Premium Hunting Experience</h2>
+                <p>
+                    Experience world-class hunting on our family's historic land in Sedgwick County. 
+                    From our original Swedish homestead to rolling prairie, we offer diverse terrain 
+                    and excellent game populations.
+                </p>
+            </div>
+            
+            <div class="amenities-grid">
+                <div class="amenity-card">
+                    <div class="amenity-icon">CAMP</div>
+                    <div class="amenity-title">Camping Available</div>
+                    <p class="amenity-description">
+                        Camp at the historic homestead with water and electricity. 
+                        $50/night for comfortable accommodations.
+                    </p>
+                </div>
+                
+                <div class="amenity-card">
+                    <div class="amenity-icon">GAME</div>
+                    <div class="amenity-title">Diverse Game</div>
+                    <p class="amenity-description">
+                        Monster deer, pheasant, dove, turkey, and coyote. 
+                        Excellent populations across varied habitat.
+                    </p>
+                </div>
+                
+                <div class="amenity-card">
+                    <div class="amenity-icon">GPS</div>
+                    <div class="amenity-title">GPS Boundaries</div>
+                    <p class="amenity-description">
+                        Clear property boundaries provided. 
+                        Exclusive access to your reserved parcels.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sedgwick County Properties -->
+    <section class="properties-section">
+        <div class="section-container">
+            <div class="section-header" style="color: #fff;">
+                <h2 style="color: #fff;">Sedgwick County Parcels</h2>
+                <p style="color: rgba(255,255,255,0.8);">
+                    Multiple parcels available for individual or bundled lease
+                </p>
+            </div>
+            
+            <div class="property-grid">
+                <div class="property-card">
+                    <h3 class="property-title">North & South Parcels</h3>
+                    <p>Monster deer habitat with scattered pheasant. Weather and timing dependent - excellent when conditions align.</p>
+                    <ul class="property-details" style="list-style: none;">
+                        <li><span>Game</span><strong style="color: #d4af37;">Deer, Pheasant</strong></li>
+                        <li><span>Terrain</span><strong style="color: #d4af37;">Mixed Cover</strong></li>
+                        <li><span>Note</span><strong style="color: #d4af37;">Must lease together</strong></li>
+                    </ul>
+                    <div class="property-price">$40/day</div>
+                </div>
+                
+                <div class="property-card">
+                    <h3 class="property-title">Homestead Parcel</h3>
+                    <p>Our family's original 1800s Swedish homestead. Pasture land with fencelines and old home site cover. Water and electricity available.</p>
+                    <ul class="property-details" style="list-style: none;">
+                        <li><span>Game</span><strong style="color: #d4af37;">Deer, Dove, Coyote</strong></li>
+                        <li><span>Special</span><strong style="color: #d4af37;">Historic Farm Relics</strong></li>
+                        <li><span>Camping</span><strong style="color: #d4af37;">$50/night</strong></li>
+                    </ul>
+                    <div class="property-price">$40/day hunting</div>
+                </div>
+                
+                <div class="property-card">
+                    <h3 class="property-title">Rolling Dunes</h3>
+                    <p>Large eastern parcel with varied terrain and excellent cover. Prime deer and upland bird habitat.</p>
+                    <ul class="property-details" style="list-style: none;">
+                        <li><span>Acres</span><strong style="color: #d4af37;">600+</strong></li>
+                        <li><span>Game</span><strong style="color: #d4af37;">Deer, Birds</strong></li>
+                        <li><span>Terrain</span><strong style="color: #d4af37;">Rolling Hills</strong></li>
+                    </ul>
+                    <div class="property-price">Contact for pricing</div>
+                </div>
+                
+                <div class="property-card">
+                    <h3 class="property-title">Prairie Parcel</h3>
+                    <p>Open prairie with draws and pockets of cover. Excellent for spot-and-stalk hunting.</p>
+                    <ul class="property-details" style="list-style: none;">
+                        <li><span>Game</span><strong style="color: #d4af37;">Deer, Antelope</strong></li>
+                        <li><span>Terrain</span><strong style="color: #d4af37;">Open Prairie</strong></li>
+                        <li><span>Season</span><strong style="color: #d4af37;">Fall/Winter</strong></li>
+                    </ul>
+                    <div class="property-price">Contact for pricing</div>
+                </div>
+                
+                <!-- Bundle Deal -->
+                <div class="bundle-card">
+                    <h3 class="bundle-title">ALL SEDGWICK COUNTY GROUND</h3>
+                    <p style="font-size: 20px; margin-bottom: 20px;">
+                        Lease all parcels for exclusive access to our entire Sedgwick County property
+                    </p>
+                    <div class="property-price" style="font-size: 48px;">$300/day</div>
+                    <p style="margin-top: 20px; color: rgba(255,255,255,0.8);">
+                        Best value for groups or extended hunts
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Calendar -->
+    <section class="booking-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Check Availability</h2>
+                <p>Select your dates to see available parcels</p>
+            </div>
+            
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonth" style="padding: 10px 20px; background: #d4af37; border: none; cursor: pointer;">Previous</button>
+                    <h3 id="currentMonth" style="font-family: 'Oswald', sans-serif; font-size: 28px;">November 2025</h3>
+                    <button id="nextMonth" style="padding: 10px 20px; background: #d4af37; border: none; cursor: pointer;">Next</button>
+                </div>
+                
+                <div class="calendar-grid" id="calendar">
+                    <!-- Calendar will be populated by JavaScript -->
+                </div>
+                
+                <div style="margin-top: 30px; display: flex; gap: 30px; justify-content: center;">
+                    <div><span style="display: inline-block; width: 20px; height: 20px; background: #e8f5e8; border: 1px solid #ddd;"></span> Available</div>
+                    <div><span style="display: inline-block; width: 20px; height: 20px; background: #ffebee; border: 1px solid #ddd;"></span> Booked</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Book Your Hunt</h2>
+                <p>
+                    Ready to experience the best hunting Sedgwick County has to offer? 
+                    Contact us to check availability and reserve your dates.
+                </p>
+            </div>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-label">Call</div>
+                    <div class="contact-value">
+                        <a href="tel:970-774-3276">970-774-3276</a>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-label">Email</div>
+                    <div class="contact-value">
+                        <a href="mailto:office@m77ag.com">office@m77ag.com</a>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="parcel-map.html" class="btn-primary">View Interactive Property Map</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+    </footer>
+
+    <script>
+        // Simple calendar generation
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            const daysInMonth = 30;
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.style.fontWeight = 'bold';
+                header.style.textAlign = 'center';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+            
+            // Add empty cells for first week alignment
+            for (let i = 0; i < 3; i++) {
+                const emptyCell = document.createElement('div');
+                calendar.appendChild(emptyCell);
+            }
+            
+            // Add days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                
+                // Random availability for demo
+                if (Math.random() > 0.3) {
+                    dayCell.classList.add('available');
+                } else {
+                    dayCell.classList.add('booked');
+                }
+                
+                calendar.appendChild(dayCell);
+            }
+        }
+        
+        // Initialize calendar on load
+        generateCalendar();
+    </script>
+</body>
+</html>
