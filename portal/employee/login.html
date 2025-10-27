@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M77 AG Employee Portal - Access work schedules, field assignments, and time tracking">
+    <meta name="keywords" content="M77 AG employee, employee login, work portal">
+    <title>Employee Portal - M77 AG</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(212,175,55,.02) 35px, rgba(212,175,55,.02) 70px);
+            pointer-events: none;
+        }
+        
+        /* Back to Home Link */
+        .back-home {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .back-home:hover {
+            color: #d4af37;
+        }
+        
+        .back-home::before {
+            content: '←';
+            font-size: 20px;
+        }
+        
+        /* Login Container */
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            padding: 60px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Employee Badge Style Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            padding-bottom: 30px;
+        }
+        
+        .login-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #d4af37;
+        }
+        
+        .logo-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .portal-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #888;
+        }
+        
+        .employee-icon {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background: #1a1a1a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        /* Form Styles */
+        .login-form {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #fff;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: #f8f8f8;
+        }
+        
+        .form-input.error {
+            border-color: #e74c3c;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* PIN Code Input */
+        .pin-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .pin-digit {
+            width: 50px;
+            height: 60px;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        
+        .pin-digit:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: #f8f8f8;
+        }
+        
+        /* Submit Button */
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-login:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a1a1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner.show {
+            display: block;
+        }
+        
+        /* Quick Access */
+        .quick-access {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 30px;
+            text-align: center;
+        }
+        
+        .quick-access-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .quick-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .quick-link {
+            padding: 10px 20px;
+            background: #f8f7f5;
+            color: #666;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .quick-link:hover {
+            background: #1a1a1a;
+            color: #d4af37;
+        }
+        
+        /* Success Message */
+        .success-message {
+            background: #e8f5e8;
+            color: #2d5016;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        /* Time Clock Status */
+        .time-status {
+            background: #f8f7f5;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .time-status .current-time {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-top: 10px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 568px) {
+            .login-container {
+                padding: 40px 30px;
+            }
+            
+            .back-home {
+                top: 20px;
+                left: 20px;
+            }
+            
+            .pin-digit {
+                width: 45px;
+                height: 55px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../../index.html" class="back-home">Back to Home</a>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <div class="employee-icon">TEAM</div>
+            <div class="logo-text">M77 AG</div>
+            <div class="portal-title">Employee Portal</div>
+        </div>
+        
+        <div class="time-status">
+            <div>Current Time</div>
+            <div class="current-time" id="currentTime">--:--:--</div>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            Access granted! Loading dashboard...
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="employeeId">Employee ID</label>
+                <input 
+                    type="text" 
+                    class="form-input" 
+                    id="employeeId" 
+                    placeholder="Enter your employee ID"
+                    maxlength="10"
+                    required
+                >
+                <div class="error-message" id="idError">Please enter a valid employee ID</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">4-Digit PIN</label>
+                <div class="pin-input-container">
+                    <input type="password" class="pin-digit" maxlength="1" id="pin1" required>
+                    <input type="password" class="pin-digit" maxlength="1" id="pin2" required>
+                    <input type="password" class="pin-digit" maxlength="1" id="pin3" required>
+                    <input type="password" class="pin-digit" maxlength="1" id="pin4" required>
+                </div>
+                <div class="error-message" id="pinError" style="text-align: center;">Invalid PIN</div>
+            </div>
+            
+            <button type="submit" class="btn-login" id="loginButton">
+                Clock In / Access Portal
+            </button>
+            
+            <div class="spinner" id="loadingSpinner"></div>
+        </form>
+        
+        <div class="quick-access">
+            <div class="quick-access-title">Quick Actions</div>
+            <div class="quick-links">
+                <a href="#" class="quick-link" onclick="alert('Contact Kyle: 970-774-3276'); return false;">Call Manager</a>
+                <a href="#" class="quick-link" onclick="alert('Check schedule in portal after login'); return false;">View Schedule</a>
+                <a href="#" class="quick-link" onclick="alert('Submit through portal after login'); return false;">Time Off Request</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // Auto-advance PIN inputs
+        const pinInputs = [
+            document.getElementById('pin1'),
+            document.getElementById('pin2'),
+            document.getElementById('pin3'),
+            document.getElementById('pin4')
+        ];
+        
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '') {
+                    if (index > 0) {
+                        pinInputs[index - 1].focus();
+                    }
+                }
+            });
+        });
+        
+        // Login Form Handling
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(msg => msg.classList.remove('show'));
+            document.querySelectorAll('.form-input, .pin-digit').forEach(input => input.classList.remove('error'));
+            
+            // Get form values
+            const employeeId = document.getElementById('employeeId').value;
+            const pin = pinInputs.map(input => input.value).join('');
+            
+            // Basic validation
+            let hasError = false;
+            
+            if (!employeeId || employeeId.length < 3) {
+                document.getElementById('employeeId').classList.add('error');
+                document.getElementById('idError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (pin.length !== 4) {
+                pinInputs.forEach(input => input.classList.add('error'));
+                document.getElementById('pinError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Show loading state
+            const button = document.getElementById('loginButton');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            button.disabled = true;
+            button.textContent = 'Verifying...';
+            spinner.classList.add('show');
+            
+            // Simulate API call (replace with actual API call)
+            setTimeout(() => {
+                // Show success message
+                document.getElementById('successMessage').classList.add('show');
+                
+                // Hide loading state
+                spinner.classList.remove('show');
+                button.disabled = false;
+                button.textContent = 'Clock In / Access Portal';
+                
+                // Redirect to employee dashboard
+                setTimeout(() => {
+                    window.location.href = 'employee-dashboard.html';
+                }, 1500);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+databases/*.db
+
+# Logs
+logs/
+*.log
+log.txt
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+cache/
+
+# Build files
+dist/
+build/
+
+# Backup files
+*.backup
+*.bak
+backup/
+
+# Uploaded files (if you want to exclude user uploads)
+# uploads/
+# user-uploads/
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Package manager lock files (optional - some prefer to commit these)
+# package-lock.json
+# yarn.lock
+
+# Mac specific
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Windows specific
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Credentials and sensitive data
+credentials/
+secrets/
+*.pem
+*.key
+*.cert
+*.crt
+
+# Local development
+local/
+dev-data/
