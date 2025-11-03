@@ -610,6 +610,10 @@
                         Pay with Venmo
                     </a>
                     
+                    <button type="button" id="cashCheckBtn" class="venmo-btn" style="background: #2e7d32; margin-bottom: 20px;">
+                        Pay with Cash/Check (Book Now, Pay Later)
+                    </button>
+                    
                     <div class="contact-box">
                         <div style="margin-bottom: 10px;">Prefer to book by phone?</div>
                         <a href="tel:970-774-3276">970-774-3276</a>
@@ -891,6 +895,63 @@
         document.getElementById('checkinDate').addEventListener('change', calculateTotal);
         document.getElementById('checkoutDate').addEventListener('change', calculateTotal);
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
+        
+        // Cash/Check payment option
+        document.getElementById('cashCheckBtn').addEventListener('click', function() {
+            // Validate form
+            const form = document.getElementById('bookingForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            if (totalCost === 0) {
+                alert('Please select dates and parcel first');
+                return;
+            }
+            
+            if (!confirm(`Confirm booking for $${totalCost.toFixed(2)}? You can pay the $${depositCost.toFixed(2)} deposit by cash, check, or when you arrive.`)) {
+                return;
+            }
+            
+            const bookingData = {
+                hunterName: document.getElementById('hunterName').value,
+                hunterEmail: document.getElementById('hunterEmail').value,
+                hunterPhone: document.getElementById('hunterPhone').value,
+                parcel: document.getElementById('parcelSelect').value,
+                checkinDate: document.getElementById('checkinDate').value,
+                checkoutDate: document.getElementById('checkoutDate').value,
+                campingIncluded: document.getElementById('campingAddon').checked,
+                totalCost: totalCost,
+                depositPaid: 0,
+                paymentMethod: 'cash',
+                paymentStatus: 'pending',
+                status: 'pending',
+                createdBy: 'customer',
+                notes: 'Customer selected cash/check payment option'
+            };
+            
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookingData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Booking confirmed! Booking ID: ' + data.booking._id + '\n\nPlease bring $' + depositCost.toFixed(2) + ' deposit in cash or check. We will contact you at ' + bookingData.hunterEmail + ' with details.');
+                    document.getElementById('bookingForm').reset();
+                    calculateTotal();
+                    loadBookedDates();
+                } else {
+                    alert('Error creating booking: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating booking. Please call 970-774-3276.');
+            });
+        });
         
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
