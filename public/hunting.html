@@ -313,8 +313,97 @@
         }
         
         .calendar-day.booked {
-            background: #ffebee;
             cursor: not-allowed;
+            position: relative;
+        }
+        
+        .calendar-day.booked-north-south {
+            background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(255, 100, 100, 0.5));
+            border: 2px solid rgba(255, 100, 100, 0.8);
+        }
+        
+        .calendar-day.booked-homestead {
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.3), rgba(100, 150, 255, 0.5));
+            border: 2px solid rgba(100, 150, 255, 0.8);
+        }
+        
+        .calendar-day.booked-rolling-dunes {
+            background: linear-gradient(135deg, rgba(150, 100, 255, 0.3), rgba(150, 100, 255, 0.5));
+            border: 2px solid rgba(150, 100, 255, 0.8);
+        }
+        
+        .calendar-day.booked-prairie {
+            background: linear-gradient(135deg, rgba(255, 180, 100, 0.3), rgba(255, 180, 100, 0.5));
+            border: 2px solid rgba(255, 180, 100, 0.8);
+        }
+        
+        .calendar-day.booked-all-ground {
+            background: linear-gradient(135deg, rgba(50, 50, 50, 0.5), rgba(100, 100, 100, 0.7));
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .calendar-day.booked::after {
+            content: '🏕️';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+        }
+        
+        .parcel-legend {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 5px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid;
+        }
+        
+        .legend-north-south {
+            background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(255, 100, 100, 0.5));
+            border-color: rgba(255, 100, 100, 0.8);
+        }
+        
+        .legend-homestead {
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.3), rgba(100, 150, 255, 0.5));
+            border-color: rgba(100, 150, 255, 0.8);
+        }
+        
+        .legend-rolling-dunes {
+            background: linear-gradient(135deg, rgba(150, 100, 255, 0.3), rgba(150, 100, 255, 0.5));
+            border-color: rgba(150, 100, 255, 0.8);
+        }
+        
+        .legend-prairie {
+            background: linear-gradient(135deg, rgba(255, 180, 100, 0.3), rgba(255, 180, 100, 0.5));
+            border-color: rgba(255, 180, 100, 0.8);
+        }
+        
+        .legend-all-ground {
+            background: linear-gradient(135deg, rgba(50, 50, 50, 0.5), rgba(100, 100, 100, 0.7));
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .legend-game-rest {
+            background: #fff3cd;
+            border-color: rgba(255, 200, 100, 0.8);
         }
         
         /* Contact Section */
@@ -640,17 +729,29 @@
                     <!-- Calendar will be populated by JavaScript -->
                 </div>
                 
-                <div style="margin-top: 30px; display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="display: inline-block; width: 20px; height: 20px; background: #e8f5e8; border: 1px solid #ddd;"></span>
-                        <span>Available</span>
+                <div class="parcel-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-north-south"></div>
+                        <span>North & South Parcels</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="display: inline-block; width: 20px; height: 20px; background: #ffebee; border: 1px solid #ddd;"></span>
-                        <span>Booked</span>
+                    <div class="legend-item">
+                        <div class="legend-color legend-homestead"></div>
+                        <span>Homestead Parcel</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="display: inline-block; width: 20px; height: 20px; background: #fff3cd; border: 1px solid #ddd;"></span>
+                    <div class="legend-item">
+                        <div class="legend-color legend-rolling-dunes"></div>
+                        <span>Rolling Dunes</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-prairie"></div>
+                        <span>Prairie Parcel</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-all-ground"></div>
+                        <span>ALL Ground</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-game-rest"></div>
                         <span>Game Rest Period</span>
                     </div>
                 </div>
@@ -836,10 +937,45 @@
         document.getElementById('checkinDate').setAttribute('min', today);
         document.getElementById('checkoutDate').setAttribute('min', today);
         
-        // Calendar System
+        // Calendar System with Parcel Color Coding
         let currentDate = new Date();
-        const gameRestDates = generateGameRestDates(); // Random dates blocked for wildlife
-        const bookedDates = {}; // Will be populated from database
+        const gameRestDates = generateGameRestDates();
+        const bookedDates = {}; // Will store: { 'YYYY-MM-DD': 'parcel-name' }
+        
+        // Fetch booked dates from server
+        function loadBookedDates() {
+            fetch('/api/bookings/booked-dates')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.bookings) {
+                        // Clear existing
+                        Object.keys(bookedDates).forEach(key => delete bookedDates[key]);
+                        
+                        // Process each booking
+                        data.bookings.forEach(booking => {
+                            const start = new Date(booking.checkinDate);
+                            const end = new Date(booking.checkoutDate);
+                            
+                            // Mark each date in the range
+                            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                                const dateStr = d.toISOString().split('T')[0];
+                                // If date already booked by another parcel, mark as all-ground
+                                if (bookedDates[dateStr] && bookedDates[dateStr] !== booking.parcel) {
+                                    bookedDates[dateStr] = 'all-ground';
+                                } else {
+                                    bookedDates[dateStr] = booking.parcel;
+                                }
+                            }
+                        });
+                        
+                        generateCalendar();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading booked dates:', error);
+                    generateCalendar();
+                });
+        }
         
         function generateGameRestDates() {
             // Block random days for game rest - strategic management
@@ -967,17 +1103,28 @@
                     dayCell.style.cursor = 'not-allowed';
                     dayCell.title = 'Wildlife Rest Period';
                 }
-                // Check if booked
+                // Check if booked - apply parcel-specific color
                 else if (bookedDates[dateString]) {
+                    const parcel = bookedDates[dateString];
                     dayCell.classList.add('booked');
-                    dayCell.title = 'Already Booked';
+                    dayCell.classList.add(`booked-${parcel}`);
+                    
+                    // Format parcel name for display
+                    const parcelNames = {
+                        'north-south': 'North & South',
+                        'homestead': 'Homestead',
+                        'rolling-dunes': 'Rolling Dunes',
+                        'prairie': 'Prairie',
+                        'all-ground': 'ALL Ground'
+                    };
+                    dayCell.title = `Booked: ${parcelNames[parcel] || parcel}`;
                 }
                 // Available
                 else {
                     dayCell.classList.add('available');
-                    dayCell.title = 'Available for Booking';
+                    dayCell.title = 'Available - Click to book';
                     
-                    // Make clickable to auto-fill dates
+                    // Make clickable to auto-fill dates and scroll to form
                     dayCell.addEventListener('click', function() {
                         document.getElementById('checkinDate').value = dateString;
                         // Auto-set checkout to 3 days later
@@ -986,8 +1133,19 @@
                         document.getElementById('checkoutDate').value = checkoutDate.toISOString().split('T')[0];
                         calculateTotal();
                         
+                        // Highlight the booking form
+                        const bookingForm = document.getElementById('bookingForm');
+                        bookingForm.style.transition = 'all 0.3s';
+                        bookingForm.style.transform = 'scale(1.02)';
+                        bookingForm.style.boxShadow = '0 0 30px rgba(212, 175, 55, 0.5)';
+                        
+                        setTimeout(() => {
+                            bookingForm.style.transform = 'scale(1)';
+                            bookingForm.style.boxShadow = 'none';
+                        }, 600);
+                        
                         // Scroll to booking form
-                        document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        bookingForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     });
                 }
                 
@@ -1007,7 +1165,7 @@
         });
         
         // Initialize calendar
-        generateCalendar();
+        loadBookedDates(); // Load from database first, then generate calendar
     </script>
 </body>
 </html>
