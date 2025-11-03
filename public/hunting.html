@@ -218,11 +218,11 @@
         }
         
         .quadrant.booked {
-            background: #ffcccb;
+            background: #ffb3b3;
         }
         
         .quadrant.game-rest {
-            background: #fff4cc;
+            background: #ffe066;
         }
         
         .quadrant.past {
@@ -234,8 +234,9 @@
         .q-north-south::after {
             content: 'N';
             position: absolute;
-            font-size: 8px;
-            color: rgba(0,0,0,0.3);
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.5);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -245,8 +246,9 @@
         .q-homestead::after {
             content: 'H';
             position: absolute;
-            font-size: 8px;
-            color: rgba(0,0,0,0.3);
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.5);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -256,8 +258,9 @@
         .q-rolling-dunes::after {
             content: 'R';
             position: absolute;
-            font-size: 8px;
-            color: rgba(0,0,0,0.3);
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.5);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -267,8 +270,9 @@
         .q-prairie::after {
             content: 'P';
             position: absolute;
-            font-size: 8px;
-            color: rgba(0,0,0,0.3);
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.5);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -303,6 +307,22 @@
         
         .legend-box .q {
             border: 0.5px solid rgba(255,255,255,0.5);
+        }
+        
+        .legend-box .q.available {
+            background: #d4f1d4;
+        }
+        
+        .legend-box .q.booked {
+            background: #ffb3b3;
+        }
+        
+        .legend-box .q.game-rest {
+            background: #ffe066;
+        }
+        
+        .legend-box .q.past {
+            background: #e8e8e8;
         }
         
         /* Booking Form */
