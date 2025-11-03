@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const morgan = require('morgan');
 require('dotenv').config();
 
 // Initialize express app
@@ -8,30 +9,59 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, '../public')));
+// Connect to MongoDB
+const mongoose = require('mongoose');
+const { createDefaultAdmin } = require('./models/user');
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
-// Serve portal files
-app.use('/portal', express.static(path.join(__dirname, '../portal')));
+mongoose.connect(MONGODB_URI)
+  .then(() => {
+    console.log('MongoDB connected successfully');
+    // Create default admin user
+    createDefaultAdmin();
+  })
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// Serve admin files  
-app.use('/admin', express.static(path.join(__dirname, '../admin')));
+// Import routes
+const authRoutes = require('./routes/auth');
 
-// Basic API test route
+// API routes
+app.use('/api/auth', authRoutes);
+
+// Basic test route
 app.get('/api/test', (req, res) => {
-  res.json({ 
-    message: 'M77 AG API is running',
-    timestamp: new Date().toISOString()
-  });
+  res.json({ message: 'API is working' });
 });
 
-// Catch all route - serve index.html
-app.get('*', (req, res) => {
+// Static files
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Simple routes - no wildcards
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+app.get('/account', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/account/login.html'));
+});
+
+// Main route
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!'
+  });
 });
 
 // Start server
