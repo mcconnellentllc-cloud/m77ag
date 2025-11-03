@@ -784,23 +784,43 @@
                             paymentStatus: details.status
                         };
                         
-                        // Send to server
+                        // Send to server - CORRECTED field names to match backend
+                        const serverBookingData = {
+                            hunterName: bookingData.name,
+                            hunterEmail: bookingData.email,
+                            hunterPhone: bookingData.phone,
+                            parcel: bookingData.parcel,
+                            checkinDate: bookingData.checkin,
+                            checkoutDate: bookingData.checkout,
+                            campingIncluded: bookingData.camping,
+                            totalCost: bookingData.totalCost,
+                            depositPaid: bookingData.depositPaid,
+                            paymentMethod: 'paypal',
+                            paymentId: bookingData.paymentId,
+                            paymentStatus: 'deposit-paid',
+                            createdBy: 'customer'
+                        };
+                        
                         fetch('/api/bookings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify(bookingData)
+                            body: JSON.stringify(serverBookingData)
                         })
                         .then(response => response.json())
                         .then(data => {
-                            alert('Booking confirmed! You will receive a confirmation email shortly.');
-                            document.getElementById('bookingForm').reset();
-                            calculateTotal();
+                            if (data.success) {
+                                alert('Booking confirmed! You will receive a confirmation email shortly. Booking ID: ' + data.booking._id);
+                                document.getElementById('bookingForm').reset();
+                                calculateTotal();
+                            } else {
+                                alert('Payment successful but there was an error: ' + data.message + '. Please contact us at 970-774-3276 with your PayPal confirmation.');
+                            }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Payment successful but there was an error saving your booking. Please contact us at 970-774-3276.');
+                            alert('Payment successful but there was an error saving your booking. Please contact us at 970-774-3276 with your PayPal transaction ID.');
                         });
                     });
                 },
