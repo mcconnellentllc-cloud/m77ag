@@ -29,9 +29,11 @@ mongoose.connect(MONGODB_URI)
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const bookingRoutes = require('./routes/bookings');
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Basic test route
 app.get('/api/test', (req, res) => {
