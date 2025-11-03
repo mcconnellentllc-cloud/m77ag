@@ -15,6 +15,9 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/main.css">
     
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AdX73h4Ob3MtFXKDbUGq2sRNctji2Ew30O3pOWJcH78KxfvObnsnqReYQNDPaK6bSiWZ2qwnhel2Gl3X&currency=USD"></script>
+    
     <style>
         * {
             margin: 0;
@@ -206,21 +209,27 @@
         }
         
         .property-card {
-            background: #2a2a2a;
+            background: rgba(255, 255, 255, 0.05);
             padding: 40px;
             transition: all 0.3s;
         }
         
         .property-card:hover {
+            background: rgba(255, 255, 255, 0.08);
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
         
         .property-title {
             font-family: 'Oswald', sans-serif;
             font-size: 32px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: #d4af37;
+        }
+        
+        .property-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
         
         .property-details {
@@ -228,44 +237,46 @@
         }
         
         .property-details li {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
             display: flex;
             justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .property-details li span {
+            color: rgba(255, 255, 255, 0.6);
         }
         
         .property-price {
-            font-size: 28px;
-            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
             color: #d4af37;
             margin-top: 20px;
         }
         
         .bundle-card {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #2d5016 0%, #1a2f0d 100%);
-            text-align: center;
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
             padding: 60px;
+            text-align: center;
+            color: #1a1a1a;
         }
         
         .bundle-title {
-            font-family: 'Bebas Neue', sans-serif;
+            font-family: 'Oswald', sans-serif;
             font-size: 48px;
             margin-bottom: 20px;
         }
         
-        /* Booking Calendar Section */
+        /* Booking Calendar */
         .booking-section {
             padding: 100px 0;
-            background: #f5f3f0;
+            background: #fff;
         }
         
         .calendar-container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
-            background: #fff;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         .calendar-header {
@@ -273,14 +284,13 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #d4af37;
         }
         
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
+            margin-bottom: 20px;
         }
         
         .calendar-day {
@@ -293,34 +303,31 @@
             transition: all 0.3s;
         }
         
-        .calendar-day:hover {
-            background: #f8f7f5;
-            border-color: #d4af37;
-        }
-        
         .calendar-day.available {
             background: #e8f5e8;
-            color: #2d5016;
+        }
+        
+        .calendar-day.available:hover {
+            background: #d4af37;
+            color: #fff;
         }
         
         .calendar-day.booked {
             background: #ffebee;
-            color: #c62828;
             cursor: not-allowed;
         }
         
         /* Contact Section */
         .contact-section {
             padding: 100px 0;
-            background: #fff;
-            text-align: center;
+            background: #f8f7f5;
         }
         
         .contact-info {
             display: flex;
-            justify-content: center;
             gap: 60px;
-            margin-top: 40px;
+            justify-content: center;
+            margin: 40px 0;
         }
         
         .contact-item {
@@ -331,108 +338,85 @@
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #888;
+            color: #999;
             margin-bottom: 10px;
         }
         
         .contact-value {
             font-family: 'Oswald', sans-serif;
-            font-size: 28px;
+            font-size: 32px;
             color: #1a1a1a;
         }
         
         .contact-value a {
-            color: #d4af37;
+            color: #1a1a1a;
             text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .contact-value a:hover {
+            color: #d4af37;
         }
         
         .btn-primary {
             display: inline-block;
-            margin-top: 40px;
-            padding: 18px 40px;
+            padding: 20px 40px;
             background: #d4af37;
             color: #1a1a1a;
             text-decoration: none;
-            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
             text-transform: uppercase;
             letter-spacing: 2px;
             transition: all 0.3s;
+            margin-top: 20px;
         }
         
         .btn-primary:hover {
             background: #1a1a1a;
-            color: #d4af37;
+            color: #fff;
         }
         
         /* Footer */
         .footer {
-            background: #0a0a0a;
             padding: 40px 0;
+            background: #1a1a1a;
+            color: #fff;
             text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        @media (max-width: 1024px) {
-            .amenities-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .property-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .bundle-card {
-                grid-column: span 1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-            
-            .contact-info {
-                flex-direction: column;
-                gap: 30px;
-            }
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <div class="nav-wrapper">
-        <nav class="navbar">
+    <nav class="nav-wrapper">
+        <div class="navbar">
             <div class="navbar-container">
                 <a href="index.html" class="logo">M77 AG</a>
-                
                 <ul class="nav-menu">
                     <li><a href="index.html" class="nav-link">Home</a></li>
                     <li><a href="services.html" class="nav-link">Services</a></li>
                     <li><a href="hunting.html" class="nav-link active">Hunting</a></li>
                     <li><a href="about.html" class="nav-link">About</a></li>
-                    <li><a href="portal/login.html" class="nav-link">Portal</a></li>
-                    <li><a href="portal/employee/login.html" class="nav-link">Team</a></li>
+                    <li><a href="/portal" class="nav-link">Portal</a></li>
+                    <li><a href="/admin" class="nav-link">Team</a></li>
                 </ul>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hunting-hero">
         <div class="hero-content">
-            <h1 class="hero-title">
-                HUNTING & CAMPING<br>
-                SEDGWICK COUNTY
-            </h1>
+            <h1 class="hero-title">HUNTING & CAMPING<br>SEDGWICK COUNTY</h1>
             <p class="hero-subtitle">
                 Historic Swedish homestead from the late 1800s. Premium private land hunting 
-                with deer, pheasant, dove, and coyote. Camping accommodations available with 
-                water and electricity on-site.
+                with deer, pheasant, dove, and coyote. Camping accommodations available 
+                with water and electricity on-site.
             </p>
         </div>
     </section>
 
-    <!-- Overview & Amenities -->
+    <!-- Overview Section -->
     <section class="overview-section">
         <div class="section-container">
             <div class="section-header">
@@ -537,7 +521,7 @@
                         Lease all parcels for exclusive access to our entire Sedgwick County property
                     </p>
                     <div class="property-price" style="font-size: 48px;">$300/day</div>
-                    <p style="margin-top: 20px; color: rgba(255,255,255,0.8);">
+                    <p style="margin-top: 20px; color: rgba(0,0,0,0.7);">
                         Best value for groups or extended hunts
                     </p>
                 </div>
@@ -545,29 +529,95 @@
         </div>
     </section>
 
-    <!-- Booking Calendar -->
-    <section class="booking-section">
+    <!-- Booking & Payment Section -->
+    <section class="booking-payment-section" style="padding: 100px 0; background: #fff;">
         <div class="section-container">
             <div class="section-header">
-                <h2>Check Availability</h2>
-                <p>Select your dates to see available parcels</p>
+                <h2>Reserve Your Hunt</h2>
+                <p>Select your parcel, dates, and secure your reservation with a deposit</p>
             </div>
             
-            <div class="calendar-container">
-                <div class="calendar-header">
-                    <button id="prevMonth" style="padding: 10px 20px; background: #d4af37; border: none; cursor: pointer;">Previous</button>
-                    <h3 id="currentMonth" style="font-family: 'Oswald', sans-serif; font-size: 28px;">November 2025</h3>
-                    <button id="nextMonth" style="padding: 10px 20px; background: #d4af37; border: none; cursor: pointer;">Next</button>
-                </div>
-                
-                <div class="calendar-grid" id="calendar">
-                    <!-- Calendar will be populated by JavaScript -->
-                </div>
-                
-                <div style="margin-top: 30px; display: flex; gap: 30px; justify-content: center;">
-                    <div><span style="display: inline-block; width: 20px; height: 20px; background: #e8f5e8; border: 1px solid #ddd;"></span> Available</div>
-                    <div><span style="display: inline-block; width: 20px; height: 20px; background: #ffebee; border: 1px solid #ddd;"></span> Booked</div>
-                </div>
+            <div style="max-width: 800px; margin: 0 auto; background: #f8f7f5; padding: 40px; border-radius: 10px;">
+                <form id="bookingForm">
+                    <!-- Parcel Selection -->
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px;">Select Parcel</label>
+                        <select id="parcelSelect" required style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px;">
+                            <option value="">Choose a parcel...</option>
+                            <option value="north-south" data-price="40">North & South Parcels - $40/day</option>
+                            <option value="homestead" data-price="40">Homestead Parcel - $40/day</option>
+                            <option value="rolling-dunes" data-price="contact">Rolling Dunes - Contact for Pricing</option>
+                            <option value="prairie" data-price="contact">Prairie Parcel - Contact for Pricing</option>
+                            <option value="all-ground" data-price="300">ALL Sedgwick County Ground - $300/day</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Date Selection -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px;">Check-in Date</label>
+                            <input type="date" id="checkinDate" required style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px;">Check-out Date</label>
+                            <input type="date" id="checkoutDate" required style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px;">
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Info -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px;">Name</label>
+                            <input type="text" id="hunterName" required style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px;">Phone</label>
+                            <input type="tel" id="hunterPhone" required style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px;">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px;">Email</label>
+                        <input type="email" id="hunterEmail" required style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 5px;">
+                    </div>
+                    
+                    <!-- Camping Add-on -->
+                    <div style="margin-bottom: 30px; padding: 20px; background: #fff; border-radius: 5px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="campingAddon" style="width: 20px; height: 20px; margin-right: 10px;">
+                            <span style="font-weight: 600; font-size: 16px;">Add Camping at Homestead ($50/night)</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Price Display -->
+                    <div id="priceDisplay" style="margin-bottom: 30px; padding: 20px; background: #d4af37; color: #1a1a1a; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 18px; margin-bottom: 10px;">Total Amount</div>
+                        <div style="font-size: 36px; font-weight: 700;" id="totalAmount">$0</div>
+                        <div style="font-size: 14px; margin-top: 10px;">50% deposit required to reserve</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 10px;" id="depositAmount">$0 deposit</div>
+                    </div>
+                    
+                    <!-- Payment Options -->
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="font-family: 'Oswald', sans-serif; font-size: 24px; margin-bottom: 20px;">Choose Payment Method</h3>
+                    </div>
+                    
+                    <!-- PayPal Button -->
+                    <div id="paypal-button-container" style="margin-bottom: 20px;"></div>
+                    
+                    <!-- Venmo Option -->
+                    <div style="text-align: center; padding: 20px; background: #008CFF; color: white; border-radius: 5px; margin-bottom: 20px;">
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Or Pay with Venmo</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-bottom: 10px;">@Kyle-McConnell-15</div>
+                        <div style="font-size: 14px;">Send deposit and include your name + hunting dates in the note</div>
+                    </div>
+                    
+                    <!-- Direct Contact Option -->
+                    <div style="text-align: center; padding: 20px; background: #1a1a1a; color: white; border-radius: 5px;">
+                        <div style="font-size: 16px; margin-bottom: 10px;">Prefer to book directly?</div>
+                        <div style="font-size: 20px; font-weight: 700;">Call 970-774-3276</div>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
@@ -576,7 +626,7 @@
     <section class="contact-section">
         <div class="section-container">
             <div class="section-header">
-                <h2>Book Your Hunt</h2>
+                <h2>Questions?</h2>
                 <p>
                     Ready to experience the best hunting Sedgwick County has to offer? 
                     Contact us to check availability and reserve your dates.
@@ -598,8 +648,6 @@
                     </div>
                 </div>
             </div>
-            
-            <a href="parcel-map.html" class="btn-primary">View Interactive Property Map</a>
         </div>
     </section>
 
@@ -609,46 +657,128 @@
     </footer>
 
     <script>
-        // Simple calendar generation
-        function generateCalendar() {
-            const calendar = document.getElementById('calendar');
-            const daysInMonth = 30;
+        // Price Calculator
+        let totalCost = 0;
+        let depositCost = 0;
+        
+        function calculateTotal() {
+            const parcel = document.getElementById('parcelSelect');
+            const checkin = new Date(document.getElementById('checkinDate').value);
+            const checkout = new Date(document.getElementById('checkoutDate').value);
+            const camping = document.getElementById('campingAddon').checked;
             
-            // Add day headers
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayHeaders.forEach(day => {
-                const header = document.createElement('div');
-                header.style.fontWeight = 'bold';
-                header.style.textAlign = 'center';
-                header.textContent = day;
-                calendar.appendChild(header);
-            });
-            
-            // Add empty cells for first week alignment
-            for (let i = 0; i < 3; i++) {
-                const emptyCell = document.createElement('div');
-                calendar.appendChild(emptyCell);
+            if (!parcel.value || !checkin || !checkout) {
+                return;
             }
             
-            // Add days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day';
-                dayCell.textContent = day;
-                
-                // Random availability for demo
-                if (Math.random() > 0.3) {
-                    dayCell.classList.add('available');
-                } else {
-                    dayCell.classList.add('booked');
-                }
-                
-                calendar.appendChild(dayCell);
+            const selectedOption = parcel.options[parcel.selectedIndex];
+            const pricePerDay = parseFloat(selectedOption.dataset.price);
+            
+            if (selectedOption.dataset.price === 'contact') {
+                document.getElementById('totalAmount').textContent = 'Contact for Pricing';
+                document.getElementById('depositAmount').textContent = 'Call 970-774-3276';
+                return;
+            }
+            
+            // Calculate days
+            const days = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+            
+            if (days <= 0) {
+                document.getElementById('totalAmount').textContent = '$0';
+                document.getElementById('depositAmount').textContent = '$0 deposit';
+                return;
+            }
+            
+            // Calculate total
+            totalCost = pricePerDay * days;
+            
+            // Add camping if selected
+            if (camping) {
+                totalCost += (50 * days);
+            }
+            
+            depositCost = totalCost * 0.5; // 50% deposit
+            
+            document.getElementById('totalAmount').textContent = '$' + totalCost.toFixed(2);
+            document.getElementById('depositAmount').textContent = '$' + depositCost.toFixed(2) + ' deposit';
+            
+            // Reinitialize PayPal button with new amount
+            if (depositCost > 0) {
+                document.getElementById('paypal-button-container').innerHTML = '';
+                renderPayPalButton();
             }
         }
         
-        // Initialize calendar on load
-        generateCalendar();
+        // Add event listeners
+        document.getElementById('parcelSelect').addEventListener('change', calculateTotal);
+        document.getElementById('checkinDate').addEventListener('change', calculateTotal);
+        document.getElementById('checkoutDate').addEventListener('change', calculateTotal);
+        document.getElementById('campingAddon').addEventListener('change', calculateTotal);
+        
+        // PayPal Button
+        function renderPayPalButton() {
+            if (depositCost === 0) return;
+            
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: depositCost.toFixed(2),
+                                currency_code: 'USD'
+                            },
+                            description: 'M77 AG Hunting Reservation Deposit'
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        // Collect form data
+                        const bookingData = {
+                            parcel: document.getElementById('parcelSelect').value,
+                            checkin: document.getElementById('checkinDate').value,
+                            checkout: document.getElementById('checkoutDate').value,
+                            name: document.getElementById('hunterName').value,
+                            phone: document.getElementById('hunterPhone').value,
+                            email: document.getElementById('hunterEmail').value,
+                            camping: document.getElementById('campingAddon').checked,
+                            totalCost: totalCost,
+                            depositPaid: depositCost,
+                            paymentId: details.id,
+                            paymentStatus: details.status
+                        };
+                        
+                        // Send to server
+                        fetch('/api/bookings', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(bookingData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert('Booking confirmed! You will receive a confirmation email shortly.');
+                            document.getElementById('bookingForm').reset();
+                            calculateTotal();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Payment successful but there was an error saving your booking. Please contact us at 970-774-3276.');
+                        });
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    alert('There was an error processing your payment. Please try again or contact us at 970-774-3276.');
+                }
+            }).render('#paypal-button-container');
+        }
+        
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('checkinDate').setAttribute('min', today);
+        document.getElementById('checkoutDate').setAttribute('min', today);
     </script>
 </body>
 </html>
