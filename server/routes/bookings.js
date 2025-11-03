@@ -1,16 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const bookingController = require('../controllers/bookingController');
+const { authenticate, isAdmin } = require('../middleware/auth');
 
-// ALL routes are public for now - we'll add authentication later
+// PUBLIC ROUTES (no authentication required)
+// Customers can create bookings and check availability
 router.post('/', bookingController.createBooking);
 router.get('/booked-dates', bookingController.getBookedDates);
-router.get('/', bookingController.getAllBookings);
-router.get('/upcoming', bookingController.getUpcomingBookings);
-router.get('/stats', bookingController.getBookingStats);
-router.get('/:id', bookingController.getBookingById);
-router.put('/:id', bookingController.updateBooking);
-router.patch('/:id/cancel', bookingController.cancelBooking);
-router.delete('/:id', bookingController.deleteBooking);
+
+// ADMIN ROUTES (require authentication and admin role)
+// Only admins can view, modify, and delete bookings
+router.get('/', authenticate, isAdmin, bookingController.getAllBookings);
+router.get('/upcoming', authenticate, isAdmin, bookingController.getUpcomingBookings);
+router.get('/stats', authenticate, isAdmin, bookingController.getBookingStats);
+router.get('/:id', authenticate, isAdmin, bookingController.getBookingById);
+router.put('/:id', authenticate, isAdmin, bookingController.updateBooking);
+router.patch('/:id/cancel', authenticate, isAdmin, bookingController.cancelBooking);
+router.delete('/:id', authenticate, isAdmin, bookingController.deleteBooking);
 
 module.exports = router;
