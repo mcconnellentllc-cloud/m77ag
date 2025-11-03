@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Hunting Bookings - M77 AG</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AdX73h4Ob3MtFXKDbUGq2sRNctji2Ew30O3pOWJcH78KxfvObnsnqReYQNDPaK6bSiWZ2qwnhel2Gl3X&currency=USD"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            background: #0a0a0a;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .top-bar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            letter-spacing: 2px;
+        }
+        
+        .admin-badge {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #d4af37;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        .page-header {
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #d4af37;
+        }
+        
+        .page-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 18px;
+        }
+        
+        .admin-notice {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #d4af37;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        .admin-notice h3 {
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-family: 'Oswald', sans-serif;
+        }
+        
+        /* Booking Form */
+        .booking-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .booking-form {
+            background: rgba(255,255,255,0.05);
+            padding: 40px;
+            border-radius: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #d4af37;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+        }
+        
+        .price-display {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .price-display .label {
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .price-display .amount {
+            font-size: 48px;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #f4d03f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        /* Calendar */
+        .calendar-section {
+            background: rgba(255,255,255,0.05);
+            padding: 40px;
+            border-radius: 10px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .calendar-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+        }
+        
+        .calendar-nav button {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        
+        .calendar-nav button:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        
+        .calendar-day.selected {
+            background: #d4af37;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+        
+        .calendar-day.past {
+            background: rgba(255,255,255,0.02);
+            color: rgba(255,255,255,0.3);
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.booked {
+            background: rgba(255,100,100,0.2);
+            border-color: rgba(255,100,100,0.5);
+        }
+        
+        .calendar-day.game-rest {
+            background: rgba(255,200,100,0.1);
+            border: 2px dashed rgba(255,200,100,0.5);
+        }
+        
+        .calendar-day.game-rest::after {
+            content: '🦌';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        /* Bookings List */
+        .bookings-list {
+            margin-top: 40px;
+        }
+        
+        .bookings-list h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #d4af37;
+        }
+        
+        .booking-card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .booking-card .hunter-info strong {
+            display: block;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+        
+        .booking-card .dates {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="logo">M77 AG</div>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+            <nav class="nav-links">
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/hunting-bookings.html">Hunting Bookings</a>
+                <a href="/">Public Site</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Hunting Bookings Management</h1>
+            <p class="page-subtitle">Full admin control - Override any date restrictions</p>
+        </div>
+
+        <div class="admin-notice">
+            <h3>⚡ Admin Override Enabled</h3>
+            <p>You can book ANY date including game rest periods. These restrictions only apply to public bookings. Use this power wisely to manage the property effectively.</p>
+        </div>
+
+        <div class="booking-container">
+            <!-- Booking Form -->
+            <div class="booking-form">
+                <form id="adminBookingForm">
+                    <div class="form-section">
+                        <h3>Booking Details</h3>
+                        
+                        <div class="form-group">
+                            <label>Parcel</label>
+                            <select id="parcelSelect" required>
+                                <option value="">Select parcel...</option>
+                                <option value="north-south" data-price="40">North & South Parcels - $40/day</option>
+                                <option value="homestead" data-price="40">Homestead Parcel - $40/day</option>
+                                <option value="rolling-dunes" data-price="60">Rolling Dunes - $60/day</option>
+                                <option value="prairie" data-price="50">Prairie Parcel - $50/day</option>
+                                <option value="all-ground" data-price="300">ALL Ground - $300/day</option>
+                            </select>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Check-in Date</label>
+                                <input type="date" id="checkinDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Check-out Date</label>
+                                <input type="date" id="checkoutDate" required>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="campingAddon">
+                            <label style="margin: 0;">Add Camping ($50/night)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Hunter Information</h3>
+                        
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="hunterName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="hunterEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="hunterPhone" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="bookingNotes" rows="3" placeholder="Special requests, group size, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="price-display">
+                        <div class="label">Total Amount</div>
+                        <div class="amount" id="totalAmount">$0</div>
+                        <div style="margin-top: 15px; font-size: 18px; font-weight: 600;" id="depositAmount">$0 deposit (50%)</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-full">Create Booking</button>
+                </form>
+            </div>
+
+            <!-- Calendar -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h3 class="calendar-title" id="currentMonth">November 2025</h3>
+                    <div class="calendar-nav">
+                        <button type="button" id="prevMonth">← Prev</button>
+                        <button type="button" id="nextMonth">Next →</button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid" id="calendar"></div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(255,255,255,0.05);"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(255,100,100,0.2); border: 1px solid rgba(255,100,100,0.5);"></div>
+                        <span>Booked</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(255,200,100,0.1); border: 2px dashed rgba(255,200,100,0.5);"></div>
+                        <span>Game Rest (Can Override)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing Bookings List -->
+        <div class="bookings-list">
+            <h2>Current Bookings</h2>
+            <div id="bookingsList">
+                <!-- Bookings will be loaded here -->
+                <p style="color: rgba(255,255,255,0.5); text-align: center; padding: 40px;">No bookings yet. Create your first one above!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Price Calculator
+        let totalCost = 0;
+        let depositCost = 0;
+        
+        function calculateTotal() {
+            const parcel = document.getElementById('parcelSelect');
+            const checkin = new Date(document.getElementById('checkinDate').value);
+            const checkout = new Date(document.getElementById('checkoutDate').value);
+            const camping = document.getElementById('campingAddon').checked;
+            
+            if (!parcel.value || !checkin || !checkout) {
+                return;
+            }
+            
+            const selectedOption = parcel.options[parcel.selectedIndex];
+            const pricePerDay = parseFloat(selectedOption.dataset.price);
+            
+            // Calculate days
+            const days = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+            
+            if (days <= 0) {
+                document.getElementById('totalAmount').textContent = '$0';
+                document.getElementById('depositAmount').textContent = '$0 deposit (50%)';
+                return;
+            }
+            
+            // Calculate total
+            totalCost = pricePerDay * days;
+            
+            // Add camping if selected
+            if (camping) {
+                totalCost += (50 * days);
+            }
+            
+            depositCost = totalCost * 0.5; // 50% deposit
+            
+            document.getElementById('totalAmount').textContent = '$' + totalCost.toFixed(2);
+            document.getElementById('depositAmount').textContent = '$' + depositCost.toFixed(2) + ' deposit (50%)';
+        }
+        
+        // Event listeners
+        document.getElementById('parcelSelect').addEventListener('change', calculateTotal);
+        document.getElementById('checkinDate').addEventListener('change', calculateTotal);
+        document.getElementById('checkoutDate').addEventListener('change', calculateTotal);
+        document.getElementById('campingAddon').addEventListener('change', calculateTotal);
+        
+        // Calendar System
+        let currentDate = new Date();
+        const bookedDates = {}; // Will be populated from database
+        
+        // Game rest dates (same as public site, but admin can override)
+        function generateGameRestDates() {
+            const restDates = new Set();
+            const year = new Date().getFullYear();
+            const pheasantSeasonStart = new Date(year, 8, 1);
+            const pheasantSeasonEnd = new Date(year + 1, 0, 31);
+            const totalDays = Math.ceil((pheasantSeasonEnd - pheasantSeasonStart) / (1000 * 60 * 60 * 24));
+            const daysToBlock = Math.floor(totalDays * 0.23);
+            
+            let blockedCount = 0;
+            let currentDate = new Date(pheasantSeasonStart);
+            let weekendCounter = 0;
+            
+            while (currentDate <= pheasantSeasonEnd && blockedCount < daysToBlock) {
+                const dayOfWeek = currentDate.getDay();
+                if (dayOfWeek === 6) {
+                    weekendCounter++;
+                    if (weekendCounter % 4 === 0) {
+                        restDates.add(currentDate.toISOString().split('T')[0]);
+                        blockedCount++;
+                        const sunday = new Date(currentDate);
+                        sunday.setDate(sunday.getDate() + 1);
+                        restDates.add(sunday.toISOString().split('T')[0]);
+                        blockedCount++;
+                    }
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            while (blockedCount < daysToBlock) {
+                const randomDay = Math.floor(Math.random() * totalDays);
+                const blockDate = new Date(pheasantSeasonStart);
+                blockDate.setDate(blockDate.getDate() + randomDay);
+                const blockLength = Math.floor(Math.random() * 3) + 1;
+                
+                for (let i = 0; i < blockLength && blockedCount < daysToBlock; i++) {
+                    const dateToBlock = new Date(blockDate);
+                    dateToBlock.setDate(dateToBlock.getDate() + i);
+                    if (dateToBlock <= pheasantSeasonEnd) {
+                        const dateString = dateToBlock.toISOString().split('T')[0];
+                        if (!restDates.has(dateString)) {
+                            restDates.add(dateString);
+                            blockedCount++;
+                        }
+                    }
+                }
+            }
+            return restDates;
+        }
+        
+        const gameRestDates = generateGameRestDates();
+        
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('currentMonth').textContent = monthNames[month] + ' ' + year;
+            
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.style.fontWeight = 'bold';
+                header.style.textAlign = 'center';
+                header.style.padding = '10px';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            for (let i = 0; i < firstDay; i++) {
+                calendar.appendChild(document.createElement('div'));
+            }
+            
+            const todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                
+                const cellDate = new Date(year, month, day);
+                cellDate.setHours(0, 0, 0, 0);
+                const dateString = cellDate.toISOString().split('T')[0];
+                
+                if (cellDate < todayDate) {
+                    dayCell.classList.add('past');
+                } else if (bookedDates[dateString]) {
+                    dayCell.classList.add('booked');
+                    dayCell.title = 'Already Booked';
+                } else if (gameRestDates.has(dateString)) {
+                    dayCell.classList.add('game-rest');
+                    dayCell.title = 'Game Rest Period (Admin can override)';
+                }
+                
+                // Admin can click any future date
+                if (cellDate >= todayDate) {
+                    dayCell.addEventListener('click', function() {
+                        document.getElementById('checkinDate').value = dateString;
+                        const checkoutDate = new Date(cellDate);
+                        checkoutDate.setDate(checkoutDate.getDate() + 3);
+                        document.getElementById('checkoutDate').value = checkoutDate.toISOString().split('T')[0];
+                        calculateTotal();
+                    });
+                }
+                
+                calendar.appendChild(dayCell);
+            }
+        }
+        
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        });
+        
+        // Form submission
+        document.getElementById('adminBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const bookingData = {
+                parcel: document.getElementById('parcelSelect').value,
+                checkin: document.getElementById('checkinDate').value,
+                checkout: document.getElementById('checkoutDate').value,
+                camping: document.getElementById('campingAddon').checked,
+                name: document.getElementById('hunterName').value,
+                email: document.getElementById('hunterEmail').value,
+                phone: document.getElementById('hunterPhone').value,
+                notes: document.getElementById('bookingNotes').value,
+                totalCost: totalCost,
+                depositPaid: 0, // Admin bookings don't require immediate payment
+                status: 'confirmed',
+                createdBy: 'admin'
+            };
+            
+            // Send to server
+            fetch('/api/admin/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Booking created successfully!');
+                document.getElementById('adminBookingForm').reset();
+                calculateTotal();
+                loadBookings();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error creating booking. Please try again.');
+            });
+        });
+        
+        function loadBookings() {
+            // Load existing bookings from server
+            fetch('/api/admin/bookings')
+                .then(response => response.json())
+                .then(bookings => {
+                    const listContainer = document.getElementById('bookingsList');
+                    if (bookings.length === 0) {
+                        listContainer.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center; padding: 40px;">No bookings yet. Create your first one above!</p>';
+                        return;
+                    }
+                    
+                    listContainer.innerHTML = bookings.map(booking => `
+                        <div class="booking-card">
+                            <div class="hunter-info">
+                                <strong>${booking.name}</strong>
+                                <div style="font-size: 14px; color: rgba(255,255,255,0.7);">
+                                    ${booking.email} • ${booking.phone}
+                                </div>
+                            </div>
+                            <div>${booking.parcel}</div>
+                            <div class="dates">
+                                ${new Date(booking.checkin).toLocaleDateString()} - 
+                                ${new Date(booking.checkout).toLocaleDateString()}
+                            </div>
+                            <div style="font-weight: 700; color: #d4af37;">$${booking.totalCost}</div>
+                            <button class="btn btn-small" onclick="deleteBooking('${booking._id}')">Cancel</button>
+                        </div>
+                    `).join('');
+                });
+        }
+        
+        function deleteBooking(id) {
+            if (!confirm('Cancel this booking?')) return;
+            
+            fetch(`/api/admin/bookings/${id}`, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                alert('Booking cancelled');
+                loadBookings();
+            });
+        }
+        
+        function logout() {
+            window.location.href = '/';
+        }
+        
+        // Initialize
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('checkinDate').setAttribute('min', today);
+        document.getElementById('checkoutDate').setAttribute('min', today);
+        generateCalendar();
+        loadBookings();
+    </script>
+</body>
+</html>
