@@ -606,11 +606,10 @@
                     <div id="paypal-button-container" style="margin-bottom: 20px;"></div>
                     
                     <!-- Venmo Option -->
-                    <div style="text-align: center; padding: 20px; background: #008CFF; color: white; border-radius: 5px; margin-bottom: 20px;">
-                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Or Pay with Venmo</div>
-                        <div style="font-size: 24px; font-weight: 700; margin-bottom: 10px;">@Kyle-McConnell-15</div>
-                        <div style="font-size: 14px;">Send deposit and include your name + hunting dates in the note</div>
-                    </div>
+                    <a href="https://venmo.com/u/Kyle-McConnell-15" target="_blank" style="display: block; text-align: center; padding: 20px; background: #008CFF; color: white; border-radius: 5px; margin-bottom: 20px; text-decoration: none; transition: background 0.3s;" onmouseover="this.style.background='#0074CC'" onmouseout="this.style.background='#008CFF'">
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Or Pay with Venmo</div>
+                        <div style="font-size: 14px;">Click here to send deposit securely</div>
+                    </a>
                     
                     <!-- Direct Contact Option -->
                     <div style="text-align: center; padding: 20px; background: #1a1a1a; color: white; border-radius: 5px;">
@@ -618,6 +617,43 @@
                         <div style="font-size: 20px; font-weight: 700;">Call 970-774-3276</div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Calendar -->
+    <section class="booking-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Check Availability</h2>
+                <p>Select your dates to see available parcels. Some dates blocked for wildlife rest periods.</p>
+            </div>
+            
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonth" style="padding: 10px 20px; background: #d4af37; border: none; cursor: pointer; color: #1a1a1a; font-weight: 600;">← Previous</button>
+                    <h3 id="currentMonth" style="font-family: 'Oswald', sans-serif; font-size: 28px;">November 2025</h3>
+                    <button id="nextMonth" style="padding: 10px 20px; background: #d4af37; border: none; cursor: pointer; color: #1a1a1a; font-weight: 600;">Next →</button>
+                </div>
+                
+                <div class="calendar-grid" id="calendar">
+                    <!-- Calendar will be populated by JavaScript -->
+                </div>
+                
+                <div style="margin-top: 30px; display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-block; width: 20px; height: 20px; background: #e8f5e8; border: 1px solid #ddd;"></span>
+                        <span>Available</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-block; width: 20px; height: 20px; background: #ffebee; border: 1px solid #ddd;"></span>
+                        <span>Booked</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-block; width: 20px; height: 20px; background: #fff3cd; border: 1px solid #ddd;"></span>
+                        <span>Game Rest Period</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -779,6 +815,179 @@
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('checkinDate').setAttribute('min', today);
         document.getElementById('checkoutDate').setAttribute('min', today);
+        
+        // Calendar System
+        let currentDate = new Date();
+        const gameRestDates = generateGameRestDates(); // Random dates blocked for wildlife
+        const bookedDates = {}; // Will be populated from database
+        
+        function generateGameRestDates() {
+            // Block random days for game rest - strategic management
+            const restDates = new Set();
+            const year = new Date().getFullYear();
+            
+            // Pheasant season: September 1 - January 31
+            const pheasantSeasonStart = new Date(year, 8, 1); // Sept 1
+            const pheasantSeasonEnd = new Date(year + 1, 0, 31); // Jan 31
+            
+            // During pheasant season: 23% of days blocked (77% available)
+            const totalDays = Math.ceil((pheasantSeasonEnd - pheasantSeasonStart) / (1000 * 60 * 60 * 24));
+            const daysToBlock = Math.floor(totalDays * 0.23);
+            
+            let blockedCount = 0;
+            
+            // Block every 4th weekend (Sat-Sun) for game rest
+            let currentDate = new Date(pheasantSeasonStart);
+            let weekendCounter = 0;
+            
+            while (currentDate <= pheasantSeasonEnd && blockedCount < daysToBlock) {
+                // Check if it's a weekend
+                const dayOfWeek = currentDate.getDay();
+                
+                if (dayOfWeek === 6) { // Saturday - check if this is the 4th weekend
+                    weekendCounter++;
+                    if (weekendCounter % 4 === 0) {
+                        // Block this weekend
+                        restDates.add(currentDate.toISOString().split('T')[0]);
+                        blockedCount++;
+                        
+                        // Block Sunday too
+                        const sunday = new Date(currentDate);
+                        sunday.setDate(sunday.getDate() + 1);
+                        restDates.add(sunday.toISOString().split('T')[0]);
+                        blockedCount++;
+                    }
+                }
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            // Add random 1-3 day blocks throughout the season for additional rest
+            while (blockedCount < daysToBlock) {
+                // Random date in season
+                const randomDay = Math.floor(Math.random() * totalDays);
+                const blockDate = new Date(pheasantSeasonStart);
+                blockDate.setDate(blockDate.getDate() + randomDay);
+                
+                // Random block length: 1-3 days
+                const blockLength = Math.floor(Math.random() * 3) + 1;
+                
+                for (let i = 0; i < blockLength && blockedCount < daysToBlock; i++) {
+                    const dateToBlock = new Date(blockDate);
+                    dateToBlock.setDate(dateToBlock.getDate() + i);
+                    
+                    if (dateToBlock <= pheasantSeasonEnd) {
+                        const dateString = dateToBlock.toISOString().split('T')[0];
+                        if (!restDates.has(dateString)) {
+                            restDates.add(dateString);
+                            blockedCount++;
+                        }
+                    }
+                }
+            }
+            
+            return restDates;
+        }
+        
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('currentMonth').textContent = monthNames[month] + ' ' + year;
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.style.fontWeight = 'bold';
+                header.style.textAlign = 'center';
+                header.style.padding = '10px';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Add empty cells for alignment
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                calendar.appendChild(emptyCell);
+            }
+            
+            // Add days
+            const todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                
+                const cellDate = new Date(year, month, day);
+                cellDate.setHours(0, 0, 0, 0);
+                const dateString = cellDate.toISOString().split('T')[0];
+                
+                // Check if date is in the past
+                if (cellDate < todayDate) {
+                    dayCell.style.background = '#f0f0f0';
+                    dayCell.style.color = '#999';
+                    dayCell.style.cursor = 'not-allowed';
+                }
+                // Check if it's a game rest date
+                else if (gameRestDates.has(dateString)) {
+                    dayCell.style.background = '#fff3cd';
+                    dayCell.style.cursor = 'not-allowed';
+                    dayCell.title = 'Wildlife Rest Period';
+                }
+                // Check if booked
+                else if (bookedDates[dateString]) {
+                    dayCell.classList.add('booked');
+                    dayCell.title = 'Already Booked';
+                }
+                // Available
+                else {
+                    dayCell.classList.add('available');
+                    dayCell.title = 'Available for Booking';
+                    
+                    // Make clickable to auto-fill dates
+                    dayCell.addEventListener('click', function() {
+                        document.getElementById('checkinDate').value = dateString;
+                        // Auto-set checkout to 3 days later
+                        const checkoutDate = new Date(cellDate);
+                        checkoutDate.setDate(checkoutDate.getDate() + 3);
+                        document.getElementById('checkoutDate').value = checkoutDate.toISOString().split('T')[0];
+                        calculateTotal();
+                        
+                        // Scroll to booking form
+                        document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+                }
+                
+                calendar.appendChild(dayCell);
+            }
+        }
+        
+        // Calendar navigation
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        });
+        
+        // Initialize calendar
+        generateCalendar();
     </script>
 </body>
 </html>
