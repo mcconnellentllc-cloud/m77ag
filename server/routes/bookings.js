@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bookingController = require('../controllers/bookingController');
-const { authenticate, isAdmin } = require('../middleware/auth');
+// Auth is in root server directory, not in middleware folder
+const { authenticate, isAdmin } = require('../auth');
 
 // Public routes (no authentication required)
 router.post('/', bookingController.createBooking);
