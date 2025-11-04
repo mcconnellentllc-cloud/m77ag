@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Prairie Peace</name>
+	<gx:CascadingStyle kml:id="__managed_style_1DF90DD76A3B82385EEB">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_00A3E0F0FE3B82385EEB">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1DF90DD76A3B82385EEB</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_21E5F89A0F3B82385EEB</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_2A9B33B11E3B8235B460">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1011AE63323B8235B460">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_21E5F89A0F3B82385EEB">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>12</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_05BF14363A3B8235B460">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1011AE63323B8235B460</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2A9B33B11E3B8235B460</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="0075BBDF6F3B8235B454">
+		<name>The South Section</name>
+		<LookAt>
+			<longitude>-102.629337113534</longitude>
+			<latitude>40.4829567266387</latitude>
+			<altitude>1234.266876575625</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>9396.506578970002</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_05BF14363A3B8235B460</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.6453921821622,40.4883715707774,0 -102.6406320122765,40.48858506074289,0 -102.6405762877655,40.4855034934352,0 -102.645328332979,40.48550068391592,0 -102.6454062356861,40.48236776756816,0 -102.6264721226239,40.48232009237275,0 -102.626403625886,40.49663537735186,0 -102.6454078105344,40.49667040443199,0 -102.6453921821622,40.4883715707774,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0DEF9012A03B82373BAB">
+		<name>Madsen Pasture</name>
+		<LookAt>
+			<longitude>-102.6467268400826</longitude>
+			<latitude>40.48402516615275</latitude>
+			<altitude>1243.663089547828</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>5569.650181945764</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_05BF14363A3B8235B460</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.6549561689746,40.48245642658402,0 -102.6457143527152,40.48245589448893,0 -102.6455622552051,40.48971683161334,0 -102.6550232021017,40.48944967201617,0 -102.6549561689746,40.48245642658402,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="08E97B3D623B82383063">
+		<name>Prairie Peace Camping</name>
+		<LookAt>
+			<longitude>-102.6467268400826</longitude>
+			<latitude>40.48402516615275</latitude>
+			<altitude>1243.663089547828</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>5569.650181945764</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_00A3E0F0FE3B82385EEB</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.6456391401741,40.48626022300213,0 -102.6464787683467,40.48628923636127,0 -102.646478724435,40.48556385856318,0 -102.6455244168275,40.48547678884985,0 -102.6456391401741,40.48626022300213,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0AA53E4B6C3B8239B939">
+		<name>Creek Bed on 14</name>
+		<LookAt>
+			<longitude>-102.6558396945741</longitude>
+			<latitude>40.52357234637902</latitude>
+			<altitude>1241.472512168536</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>5735.285094644059</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_05BF14363A3B8235B460</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.6650231187303,40.52590377671086,0 -102.6550328365576,40.52584605416884,0 -102.6550724317209,40.53314185957156,0 -102.664982544147,40.53322563125905,0 -102.6650231187303,40.52590377671086,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="076CF347073B823C2981">
+		<name>Grass and Fenceline</name>
+		<LookAt>
+			<longitude>-102.6982477572899</longitude>
+			<latitude>40.56526211886968</latitude>
+			<altitude>1257.183774590627</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>10903.11358042527</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_05BF14363A3B8235B460</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.7032968902957,40.57645456013092,0 -102.7032992272859,40.56946870569252,0 -102.6843555264015,40.569471024009,0 -102.6843532951584,40.5768102064291,0 -102.7032968902957,40.57645456013092,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="047DBA9D873B823D103C">
+		<name>Fencelines</name>
+		<LookAt>
+			<longitude>-102.6982477572899</longitude>
+			<latitude>40.56526211886968</latitude>
+			<altitude>1257.183774590627</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>10903.11358042527</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_05BF14363A3B8235B460</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.713014812768,40.58394320460604,0 -102.7130186287963,40.57639502656138,0 -102.703297096883,40.57651183490768,0 -102.7035980802193,40.57702695972807,0 -102.7037466669081,40.58384170201806,0 -102.713014812768,40.58394320460604,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="00D2F499AD3B823EC0B8">
+		<name>Logan County Trees</name>
+		<LookAt>
+			<longitude>-102.7490746516059</longitude>
+			<latitude>40.57100327488207</latitude>
+			<altitude>1281.914957387078</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00086644246782</gx:fovy>
+			<range>8636.337687891211</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_05BF14363A3B8235B460</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.7602521950061,40.57649744300928,0 -102.7507654390334,40.57636544481513,0 -102.7508254826805,40.58064952041864,0 -102.7518939456673,40.58065004441765,0 -102.7520152581643,40.58377116794897,0 -102.7602671702879,40.58353891206301,0 -102.7602521950061,40.57649744300928,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>

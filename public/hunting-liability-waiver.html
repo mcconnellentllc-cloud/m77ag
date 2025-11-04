@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M77 AG Hunting Liability Waiver & Release</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f3f0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2d5016;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2d5016;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .booking-info {
+            background: #f8f6f3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #d4af37;
+        }
+        
+        .booking-info h3 {
+            color: #2d5016;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .critical-notice {
+            background: #fff3cd;
+            border: 3px solid #ff6b6b;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .critical-notice h2 {
+            color: #d32f2f;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .waiver-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .waiver-section h2 {
+            color: #2d5016;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .waiver-section h3 {
+            color: #8b6914;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+        }
+        
+        .waiver-section p, .waiver-section li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        .waiver-section ul {
+            margin-left: 25px;
+        }
+        
+        .warning-box {
+            background: #ffebee;
+            border: 2px solid #c62828;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .warning-box h3 {
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+        
+        .signature-section {
+            background: #e8f5e9;
+            border: 3px solid #4caf50;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+        }
+        
+        .signature-section h2 {
+            color: #2d5016;
+            margin-bottom: 20px;
+        }
+        
+        .signature-canvas-container {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .signature-canvas {
+            width: 100%;
+            height: 200px;
+            cursor: crosshair;
+        }
+        
+        .signature-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #999;
+            pointer-events: none;
+            font-style: italic;
+        }
+        
+        .signature-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-clear {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background: #d32f2f;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="date"]:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+        
+        .checkbox-group {
+            margin: 25px 0;
+            padding: 20px;
+            background: #fff9f0;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            font-size: 16px;
+            line-height: 1.6;
+            cursor: pointer;
+        }
+        
+        .submit-section {
+            background: #2d5016;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .btn-submit {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 18px 60px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit:hover:not(:disabled) {
+            background: #c49d2a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            background: #999;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .submit-section p {
+            color: white;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            background: #ffcdd2;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .success-message {
+            background: #c8e6c9;
+            color: #2e7d32;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        @media print {
+            .signature-buttons, .submit-section {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>M77 AG HUNTING</h1>
+            <h2>LIABILITY WAIVER, RELEASE & INDEMNIFICATION AGREEMENT</h2>
+            <p>McConnell Enterprises LLC</p>
+        </div>
+
+        <!-- Booking Information -->
+        <div class="booking-info">
+            <h3>Reservation Information</h3>
+            <div class="info-row">
+                <span class="info-label">Booking Number:</span>
+                <span id="bookingNumber">Loading...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Property:</span>
+                <span id="propertyName">Loading...</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Hunt Dates:</span>
+                <span id="huntDates">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Critical Notice -->
+        <div class="critical-notice">
+            <h2>PLEASE READ CAREFULLY BEFORE SIGNING</h2>
+            <p><strong>THIS IS A LEGAL DOCUMENT THAT AFFECTS YOUR LEGAL RIGHTS.</strong></p>
+            <p>By signing this waiver, you are giving up important legal rights, including the right to sue for injuries or damages. Please read thoroughly and ensure you understand all terms before signing.</p>
+        </div>
+
+        <!-- Waiver Content -->
+        <div class="waiver-section">
+            <h2>ASSUMPTION OF RISK</h2>
+            <p>I acknowledge that hunting and visiting working farm properties involve inherent and significant risks, dangers, and hazards, including but not limited to:</p>
+            <ul>
+                <li>Risks associated with firearms, ammunition, and other hunting equipment</li>
+                <li>Risks from wildlife, domestic animals, and livestock</li>
+                <li>Risks from uneven terrain, holes, ditches, fences, and natural obstacles</li>
+                <li>Risks from operating farm equipment and machinery</li>
+                <li>Risks from open wells, irrigation systems, and water hazards</li>
+                <li>Risks from barbed wire fences, gates, and other farm infrastructure</li>
+                <li>Risks from chemical storage areas and agricultural operations</li>
+                <li>Risks from extreme weather conditions and natural phenomena</li>
+                <li>Risks from other hunters and persons on the property</li>
+                <li>Risks of serious bodily injury, permanent disability, or death</li>
+            </ul>
+            <p><strong>I VOLUNTARILY ASSUME ALL SUCH RISKS</strong>, known and unknown, and accept full responsibility for my participation in hunting activities on M77 AG properties.</p>
+        </div>
+
+        <div class="waiver-section">
+            <h2>RELEASE AND WAIVER OF LIABILITY</h2>
+            <p>In consideration for being permitted to hunt on M77 AG properties, I hereby:</p>
+            <ul>
+                <li><strong>RELEASE, WAIVE, AND DISCHARGE</strong> M77 AG, McConnell Enterprises LLC, Kyle McConnell, Brandi McConnell, all landowners, property owners, agents, employees, contractors, family members, and anyone associated with M77 AG (collectively, the "Released Parties") from any and all liability, claims, demands, actions, or rights of action for damages, personal injury, death, or property damage</li>
+                <li><strong>AGREE NOT TO SUE</strong> any of the Released Parties for any claims, damages, or injuries arising from my participation in hunting activities</li>
+                <li><strong>WAIVE ALL CLAIMS</strong> I may have or may arise in the future against any of the Released Parties</li>
+            </ul>
+        </div>
+
+        <div class="waiver-section">
+            <h2>INDEMNIFICATION AND HOLD HARMLESS</h2>
+            <p>I agree to <strong>INDEMNIFY, DEFEND, AND HOLD HARMLESS</strong> all Released Parties from and against any and all claims, demands, actions, causes of action, damages, losses, costs, liabilities, and expenses (including attorney fees) arising from:</p>
+            <ul>
+                <li>My participation in hunting activities on M77 AG properties</li>
+                <li>My use of firearms or other hunting equipment</li>
+                <li>Any injuries, damages, or losses I cause to third parties</li>
+                <li>My violation of any laws, regulations, or property rules</li>
+                <li>My trespassing on neighboring properties</li>
+            </ul>
+        </div>
+
+        <!-- Property Boundaries -->
+        <div class="warning-box">
+            <h3>PROPERTY BOUNDARIES & TRESPASSING</h3>
+            <p><strong>I ACKNOWLEDGE AND AGREE:</strong></p>
+            <ul style="margin-left: 25px; margin-top: 10px;">
+                <li>I am <strong>SOLELY RESPONSIBLE</strong> for knowing and staying within designated property boundaries at all times</li>
+                <li>I have been or will be provided with GPS coordinates and boundary maps</li>
+                <li><strong>NEIGHBORING LANDOWNERS WILL PROSECUTE TRESPASSERS</strong> to the full extent of the law</li>
+                <li>M77 AG and all Released Parties are NOT responsible for my trespassing violations</li>
+                <li>Trespassing may result in immediate termination of hunting privileges WITHOUT refund</li>
+                <li>I will NOT enter neighboring properties under ANY circumstances without explicit permission</li>
+            </ul>
+        </div>
+
+        <!-- Downed Game Protocol -->
+        <div class="warning-box">
+            <h3>DOWNED GAME ACROSS PROPERTY LINES</h3>
+            <p><strong>I UNDERSTAND AND AGREE to the following protocol if downed game crosses onto neighboring property:</strong></p>
+            <ol style="margin-left: 25px; margin-top: 10px; line-height: 1.8;">
+                <li>I will STOP IMMEDIATELY and NOT cross the property boundary</li>
+                <li>I will CALL Kyle McConnell at 970-571-1015 immediately</li>
+                <li>I understand that <strong>NO ANSWER DOES NOT EQUAL PERMISSION</strong> to retrieve game</li>
+                <li>I will WAIT for coordination with neighboring landowners before attempting retrieval</li>
+                <li>I will NOT retrieve game from neighboring property without explicit permission</li>
+                <li>I understand that unauthorized retrieval constitutes criminal trespassing</li>
+            </ul>
+        </div>
+
+        <div class="waiver-section">
+            <h2>HUNTER RESPONSIBILITIES</h2>
+            <p><strong>I CERTIFY that:</strong></p>
+            <ul>
+                <li>I possess (or will possess) a valid Colorado hunting license for all game species I intend to hunt</li>
+                <li>I have completed required Hunter Safety certification (if born after January 1, 1949)</li>
+                <li>I will comply with all Colorado Parks & Wildlife regulations and hunting laws</li>
+                <li>I will practice safe firearm handling at all times</li>
+                <li>I will not hunt under the influence of alcohol or drugs</li>
+                <li>I will respect the property, livestock, equipment, and neighboring landowners</li>
+                <li>I will pack out all trash and leave the property as I found it</li>
+                <li>I will report any accidents, injuries, or property damage immediately</li>
+            </ul>
+        </div>
+
+        <div class="waiver-section">
+            <h2>FARM SAFETY ACKNOWLEDGMENT</h2>
+            <p>I acknowledge that M77 AG properties are <strong>WORKING FARMS</strong> with inherent dangers. I understand that:</p>
+            <ul>
+                <li>Farm equipment may be operating at any time</li>
+                <li>There are numerous hazards including machinery, wells, ditches, livestock, and chemicals</li>
+                <li><strong>I ENTER AT MY OWN RISK</strong> and will exercise extreme caution at all times</li>
+                <li>I am responsible for my own safety and the safety of my guests</li>
+                <li>Farms are dangerous environments and accidents can happen despite best precautions</li>
+            </ul>
+        </div>
+
+        <div class="waiver-section">
+            <h2>GENERAL PROVISIONS</h2>
+            <ul>
+                <li><strong>Severability:</strong> If any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full effect</li>
+                <li><strong>Entire Agreement:</strong> This waiver constitutes the entire agreement between the parties</li>
+                <li><strong>Governing Law:</strong> This agreement shall be governed by the laws of the State of Colorado</li>
+                <li><strong>Binding Effect:</strong> This waiver binds my heirs, executors, administrators, and assigns</li>
+                <li><strong>Voluntary Execution:</strong> I am signing this waiver voluntarily and of my own free will</li>
+            </ul>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <h2>ELECTRONIC SIGNATURE</h2>
+            
+            <div class="form-group">
+                <label for="participantName">Full Legal Name *</label>
+                <input type="text" id="participantName" required placeholder="Enter your full legal name">
+            </div>
+
+            <div class="form-group">
+                <label for="participantEmail">Email Address *</label>
+                <input type="email" id="participantEmail" required placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="participantPhone">Phone Number *</label>
+                <input type="text" id="participantPhone" required placeholder="(970) 123-4567">
+            </div>
+
+            <div class="form-group">
+                <label for="signatureDate">Date *</label>
+                <input type="date" id="signatureDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Sign Below *</label>
+                <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                    Use your mouse or finger to sign in the box below. Your signature confirms that you have read, understood, and agree to all terms of this waiver.
+                </p>
+                <div class="signature-canvas-container">
+                    <span class="signature-label">Sign here</span>
+                    <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+                </div>
+                <div class="signature-buttons">
+                    <button type="button" class="btn btn-clear" onclick="clearSignature()">Clear Signature</button>
+                </div>
+            </div>
+
+            <!-- Acknowledgment Checkboxes -->
+            <div class="checkbox-group">
+                <h3 style="margin-bottom: 15px; color: #2d5016;">REQUIRED ACKNOWLEDGMENTS</h3>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check1" required>
+                    <label for="check1">I have read and understand this entire waiver and agreement</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check2" required>
+                    <label for="check2">I understand that I am giving up important legal rights by signing this waiver</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check3" required>
+                    <label for="check3">I am at least 18 years old and legally competent to sign this agreement</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check4" required>
+                    <label for="check4">I am signing this waiver voluntarily and of my own free will</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check5" required>
+                    <label for="check5">I acknowledge my responsibility to stay within property boundaries at all times</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check6" required>
+                    <label for="check6">I understand the downed game protocol and will call Kyle McConnell (970-571-1015) if game crosses property lines</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check7" required>
+                    <label for="check7">I accept full responsibility for my safety and well-being on farm property</label>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check8" required>
+                    <label for="check8">I agree to indemnify and hold harmless all Released Parties as described above</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message">
+            <h2>Waiver Submitted Successfully!</h2>
+            <p>Thank you for completing the liability waiver. Your hunting reservation is now complete.</p>
+            <p>We look forward to seeing you!</p>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <button type="button" id="submitButton" class="btn-submit" onclick="submitWaiver()">
+                SUBMIT WAIVER & COMPLETE RESERVATION
+            </button>
+            <p>By clicking submit, I certify that all information is true and accurate</p>
+        </div>
+    </div>
+
+    <script>
+        // Signature canvas setup
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let hasSignature = false;
+
+        // Set canvas size
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = 200;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch events
+        canvas.addEventListener('touchstart', handleTouch);
+        canvas.addEventListener('touchmove', handleTouch);
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            hasSignature = true;
+            document.querySelector('.signature-label').style.display = 'none';
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false;
+            document.querySelector('.signature-label').style.display = 'block';
+        }
+
+        // Set today's date as default
+        document.getElementById('signatureDate').valueAsDate = new Date();
+
+        // Load booking information
+        function loadBookingInfo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('booking');
+            
+            // In production, fetch from API
+            // For now, using URL parameters
+            document.getElementById('bookingNumber').textContent = urlParams.get('bookingNumber') || bookingId;
+            document.getElementById('propertyName').textContent = urlParams.get('property') || 'M77 AG Heritage Farm';
+            document.getElementById('huntDates').textContent = urlParams.get('dates') || 'Loading...';
+        }
+        loadBookingInfo();
+
+        // Submit waiver
+        async function submitWaiver() {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            // Validation
+            const name = document.getElementById('participantName').value.trim();
+            const email = document.getElementById('participantEmail').value.trim();
+            const phone = document.getElementById('participantPhone').value.trim();
+            const date = document.getElementById('signatureDate').value;
+
+            if (!name || !email || !phone || !date) {
+                errorDiv.textContent = 'Please fill in all required fields.';
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            if (!hasSignature) {
+                errorDiv.textContent = 'Please sign in the signature box.';
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Check all checkboxes
+            const checkboxes = ['check1', 'check2', 'check3', 'check4', 'check5', 'check6', 'check7', 'check8'];
+            for (const id of checkboxes) {
+                if (!document.getElementById(id).checked) {
+                    errorDiv.textContent = 'Please check all required acknowledgment boxes.';
+                    errorDiv.style.display = 'block';
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+            }
+
+            // Get signature as image
+            const signatureData = canvas.toDataURL();
+
+            // Prepare data
+            const waiverData = {
+                bookingId: new URLSearchParams(window.location.search).get('booking'),
+                participantName: name,
+                participantEmail: email,
+                participantPhone: phone,
+                signatureDate: date,
+                signature: signatureData,
+                ipAddress: '', // Will be captured server-side
+                timestamp: new Date().toISOString()
+            };
+
+            // Submit to server
+            try {
+                document.getElementById('submitButton').disabled = true;
+                document.getElementById('submitButton').textContent = 'SUBMITTING...';
+
+                const response = await fetch('/api/hunting/submit-waiver', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(waiverData)
+                });
+
+                if (response.ok) {
+                    successDiv.style.display = 'block';
+                    successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    document.querySelector('.container').style.opacity = '0.7';
+                    
+                    // Redirect after 5 seconds
+                    setTimeout(() => {
+                        window.location.href = '/hunting-confirmation.html?booking=' + waiverData.bookingId;
+                    }, 5000);
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'An error occurred while submitting the waiver. Please try again or contact us at 970-571-1015.';
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.getElementById('submitButton').disabled = false;
+                document.getElementById('submitButton').textContent = 'SUBMIT WAIVER & COMPLETE RESERVATION';
+            }
+        }
+    </script>
+</body>
+</html>
