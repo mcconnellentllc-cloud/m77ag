@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prairie Peace - Logan County Hunting | M77 AG</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+        }
+        
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        
+        .navbar {
+            padding: 20px 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #d4af37;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            height: 70vh;
+            position: relative;
+            background: linear-gradient(135deg, #8b6914 0%, #c49d2a 50%, #d4af37 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><circle cx="300" cy="400" r="3" fill="rgba(139,105,20,0.3)"/><circle cx="400" cy="450" r="2" fill="rgba(139,105,20,0.3)"/><circle cx="500" cy="350" r="3" fill="rgba(139,105,20,0.3)"/><circle cx="600" cy="500" r="2" fill="rgba(139,105,20,0.3)"/><circle cx="700" cy="420" r="3" fill="rgba(139,105,20,0.3)"/><circle cx="800" cy="380" r="2" fill="rgba(139,105,20,0.3)"/><circle cx="900" cy="460" r="3" fill="rgba(139,105,20,0.3)"/></svg>');
+            opacity: 0.4;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+        
+        .location-badge {
+            display: inline-block;
+            background: rgba(139, 105, 20, 0.3);
+            border: 2px solid #8b6914;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            color: #f4e5c2;
+        }
+        
+        .hero-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 3px;
+        }
+        
+        .hero-subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 50px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Oswald', sans-serif;
+            font-size: 54px;
+            font-weight: 700;
+            color: #8b6914;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+        
+        /* Pricing Banner */
+        .pricing-banner {
+            background: linear-gradient(135deg, #6b5310 0%, #8b6914 100%);
+            padding: 40px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .pricing-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        
+        .price-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .price-main {
+            font-family: 'Oswald', sans-serif;
+            font-size: 54px;
+            font-weight: 700;
+            color: #f4e5c2;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .price-note {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .btn-book {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-book:hover {
+            background: #c49d2a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .camping-addon {
+            text-align: right;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: #8b6914;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #666;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 60px;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #8b6914;
+            margin-bottom: 15px;
+        }
+        
+        .feature-description {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #666;
+        }
+        
+        /* Dawn to Dusk Section */
+        .dawn-dusk-section {
+            background: linear-gradient(to right, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            padding: 80px 20px;
+            margin: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dawn-dusk-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to bottom, rgba(255,165,0,0.1), transparent);
+        }
+        
+        .dawn-dusk-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, rgba(72,61,139,0.1), transparent);
+        }
+        
+        .dawn-dusk-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dawn-dusk-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .timeline-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .timeline-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-5px);
+        }
+        
+        .timeline-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-time {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .timeline-activity {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-description {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        
+        /* Prairie Dog Spotlight */
+        .prairie-dog-section {
+            background: white;
+            padding: 80px 20px;
+            margin: 80px 0;
+        }
+        
+        .prairie-dog-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .spotlight-icon {
+            font-size: 72px;
+            margin-bottom: 30px;
+        }
+        
+        .spotlight-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            color: #8b6914;
+            margin-bottom: 30px;
+        }
+        
+        .spotlight-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .highlight-box {
+            background: #f8f6f3;
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: left;
+        }
+        
+        .highlight-box h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #8b6914;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-box p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        /* Game Section */
+        .game-section {
+            background: #f8f6f3;
+            padding: 80px 0;
+            margin: 80px 0;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .game-card {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #8b6914;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.1);
+        }
+        
+        .game-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .game-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #8b6914;
+        }
+        
+        /* Parcels Section */
+        .parcels-section {
+            margin: 80px 0;
+        }
+        
+        .parcels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .parcel-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .parcel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+        }
+        
+        .parcel-header {
+            background: linear-gradient(135deg, #8b6914, #c49d2a);
+            padding: 30px;
+            color: white;
+        }
+        
+        .parcel-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .parcel-acreage {
+            font-size: 18px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .parcel-content {
+            padding: 30px;
+        }
+        
+        .parcel-features {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        /* Hunter Recommendations */
+        .recommendations-section {
+            background: linear-gradient(135deg, #8b6914 0%, #c49d2a 100%);
+            padding: 80px 20px;
+            margin: 80px 0;
+            color: white;
+        }
+        
+        .recommendations-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .rec-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            margin-bottom: 30px;
+        }
+        
+        .rec-text {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        .rec-highlight {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(26,26,26,0.3);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .rec-highlight strong {
+            font-size: 24px;
+            color: #1a1a1a;
+        }
+        
+        .rec-highlight p {
+            margin-top: 20px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta-subtitle {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .btn-cta {
+            display: inline-block;
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-cta:hover {
+            background: #c49d2a;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+        }
+        
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: rgba(255,255,255,0.7);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 42px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .pricing-content {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .camping-addon {
+                text-align: center;
+            }
+            
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                gap: 20px;
+                font-size: 12px;
+            }
+            
+            .parcels-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="logo">M77 AG</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="hunting.html" class="nav-link">Hunting</a></li>
+                    <li><a href="services.html" class="nav-link">Services</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="location-badge">Logan County • South of Haxtun</div>
+            <h1 class="hero-title">PRAIRIE PEACE</h1>
+            <p class="hero-subtitle">Intimate Small-Group Hunting Experience • Dawn to Dusk Action</p>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">1,550</div>
+                    <div class="stat-label">Total Acres</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Unique Parcels</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Game Species</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Banner -->
+    <section class="pricing-banner">
+        <div class="pricing-content">
+            <div>
+                <div class="price-label">Exclusive Daily Rate</div>
+                <div class="price-main">$200</div>
+                <div class="price-note">All 1,550 acres • Perfect for 3-4 hunters</div>
+            </div>
+            
+            <a href="hunting.html" class="btn-book">Book Your Hunt</a>
+            
+            <div class="camping-addon">
+                <div class="price-label">Camping Add-On</div>
+                <div class="price-main">+$50</div>
+                <div class="price-note">Water & 110V electric</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="section-title">Small Group Paradise</h2>
+        <p class="section-subtitle">
+            Prairie Peace offers a unique hunting experience perfectly suited for solo hunters or small groups of 3-4 people. 
+            Located south of Haxtun, this 1,550-acre property provides the intimacy and variety 
+            that larger operations can't match. Very peaceful with minimal traffic - hunt birds at dawn, shoot prairie dogs all day, 
+            and return to nesting zones at dusk for an unforgettable full-day adventure.
+        </p>
+
+        <!-- Features -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3 class="feature-title">Small Group Focus</h3>
+                <p class="feature-description">
+                    Designed for 3-4 hunters, Prairie Peace offers an intimate experience without the crowds. 
+                    No large grass fields requiring big groups - just quality hunting for those who prefer a personal touch.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Dawn to Dusk Variety</h3>
+                <p class="feature-description">
+                    Start with bird hunting at sunrise, transition to prairie dog shooting through midday, 
+                    then return to nesting zones for evening hunts. Non-stop action from sunup to sundown.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Seven Diverse Parcels</h3>
+                <p class="feature-description">
+                    From creek bottoms perfect for doves to open prairie teeming with prairie dogs, each of our seven parcels 
+                    offers unique terrain and hunting opportunities across 1,550 acres.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Prairie Dog Haven</h3>
+                <p class="feature-description">
+                    Lots of prairie dogs - our main attraction! Active colonies provide challenging long-range shooting 
+                    all day long. Perfect for honing your skills between morning and evening bird hunts.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Creek Bottom Hotspot</h3>
+                <p class="feature-description">
+                    The Creek Bed on 14 parcel is prime dove and pheasant territory. Natural waterways and vegetation 
+                    create ideal habitat for exceptional bird hunting opportunities.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Peace & Quiet</h3>
+                <p class="feature-description">
+                    True to its name - very peaceful location with minimal traffic. Located south of Haxtun, 
+                    you'll enjoy solitude and serenity rarely found on hunting properties.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dawn to Dusk Timeline -->
+    <section class="dawn-dusk-section">
+        <div class="dawn-dusk-content">
+            <h2 class="dawn-dusk-title">Your Full Day at Prairie Peace</h2>
+            <div class="timeline">
+                <div class="timeline-card">
+                    <div class="timeline-time">Dawn</div>
+                    <div class="timeline-activity">Bird Hunting</div>
+                    <p class="timeline-description">
+                        Start your morning with pheasant and dove hunting as birds move to feeding areas. 
+                        The creek bottom and field edges come alive at first light.
+                    </p>
+                </div>
+
+                <div class="timeline-card">
+                    <div class="timeline-time">Midday</div>
+                    <div class="timeline-activity">Prairie Dog Shooting</div>
+                    <p class="timeline-description">
+                        When birds bed down, the prairie dogs come out to play! Enjoy hours of challenging 
+                        long-range shooting on our extensive colonies.
+                    </p>
+                </div>
+
+                <div class="timeline-card">
+                    <div class="timeline-time">Dusk</div>
+                    <div class="timeline-activity">Back to Birds</div>
+                    <p class="timeline-description">
+                        Return to nesting zones as birds fly back from feeding. Evening flights offer 
+                        exciting fast-paced shooting to cap off your day.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prairie Dog Spotlight -->
+    <section class="prairie-dog-section">
+        <div class="prairie-dog-content">
+            <h2 class="spotlight-title">Prairie Dog Paradise</h2>
+            <p class="spotlight-text">
+                The centerpiece of Prairie Peace is our extensive prairie dog colonies. These active towns provide 
+                hours of challenging long-range shooting opportunities throughout the day when other game is bedded down.
+            </p>
+            
+            <div class="highlight-box">
+                <h4>Why Prairie Dogs?</h4>
+                <p>
+                    • <strong>Perfect for practicing long-range shooting skills</strong><br>
+                    • <strong>Action-packed midday activity</strong> when birds aren't moving<br>
+                    • <strong>Challenging targets</strong> that test accuracy and wind reading<br>
+                    • <strong>Pest control</strong> that benefits the land and cattle operations<br>
+                    • <strong>Fun for all skill levels</strong> from beginners to experts
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Species -->
+    <section class="game-section">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 60px;">Game Species</h2>
+            <div class="game-grid">
+                <div class="game-card">
+                    <div class="game-name">Whitetail Deer</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Wild Turkey</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Coyote</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Ring-Neck Pheasant</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Mourning Dove</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Prairie Dogs</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parcels Overview -->
+    <section class="parcels-section">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 60px;">Seven Diverse Parcels</h2>
+            <div class="parcels-grid">
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">The South Section</h3>
+                        <div class="parcel-acreage">598 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Our largest parcel offering open prairie and prime prairie dog colonies. 
+                            Excellent deer movement along edges and plenty of room for long-range shooting practice.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Madsen Pasture</h3>
+                        <div class="parcel-acreage">155 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Mixed terrain with good cover for deer and turkey. The varied landscape creates natural funnels 
+                            and provides excellent ambush points for multiple species.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Creek Bed on 14</h3>
+                        <div class="parcel-acreage">169 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Prime dove and pheasant habitat! The creek bottom provides natural water and vegetation that 
+                            attracts birds throughout the day. This is your go-to spot for exceptional wing shooting.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Grass and Fenceline</h3>
+                        <div class="parcel-acreage">316 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Strategic fencelines and grass provide natural travel corridors for deer and excellent 
+                            pheasant cover. The mix of open areas and structure makes this parcel highly productive.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Fencelines</h3>
+                        <div class="parcel-acreage">162 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Named for its prominent fence structures that create perfect game corridors. 
+                            Ideal for setting up and waiting for deer during morning and evening movements.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Logan County Trees</h3>
+                        <div class="parcel-acreage">151 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Tree-lined areas provide roosting habitat for turkeys and shelter for deer. 
+                            The contrast between wooded areas and open ground creates dynamic hunting opportunities.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Prairie Peace Camping</h3>
+                        <div class="parcel-acreage">Camping Area</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Your basecamp for multi-day adventures. Water and 110V electric available. 
+                            Perfect for multi-day hunting adventures. Enjoy evenings under the stars in true prairie peace.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hunter Recommendations -->
+    <section class="recommendations-section">
+        <div class="recommendations-content">
+            <h3 class="rec-title">Perfect for 3-4 Hunters</h3>
+            <p class="rec-text">
+                Prairie Peace is intentionally designed for small groups who value quality over quantity. 
+                The property layout doesn't require large hunting parties like big grass operations do. 
+                Instead, it excels at providing an intimate, varied hunting experience for solo hunters, 
+                pairs, or small groups of friends or family.
+            </p>
+            <div class="rec-highlight">
+                <strong>Recommended: 3-4 hunters</strong>
+                <p>
+                    With seven diverse parcels totaling 1,550 acres, small groups have plenty of room to spread out 
+                    while maintaining the intimate feel that makes Prairie Peace special. You're not managing logistics 
+                    for a dozen hunters - you're enjoying quality time pursuing multiple species throughout the day. 
+                    Perfect for friends, father-son trips, or small hunting parties who want variety without the chaos.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">Experience Prairie Peace</h2>
+        <p class="cta-subtitle">1,550 acres of solitude, variety, and non-stop action</p>
+        <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+        <p style="margin-top: 10px; opacity: 0.7;">Logan County • South of Haxtun, Colorado</p>
+    </footer>
+</body>
+</html>

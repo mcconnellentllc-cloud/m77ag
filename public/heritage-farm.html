@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M77 AG Heritage Farm - Sedgwick County Hunting | M77 AG</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+        }
+        
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        
+        .navbar {
+            padding: 20px 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #d4af37;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            height: 70vh;
+            position: relative;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2b 50%, #6b9646 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+            opacity: 0.8;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+        
+        .heritage-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid #d4af37;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            color: #d4af37;
+        }
+        
+        .hero-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 3px;
+        }
+        
+        .hero-subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 50px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Oswald', sans-serif;
+            font-size: 54px;
+            font-weight: 700;
+            color: #d4af37;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+        
+        /* Pricing Banner */
+        .pricing-banner {
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4e 100%);
+            padding: 40px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .pricing-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        
+        .price-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .price-main {
+            font-family: 'Oswald', sans-serif;
+            font-size: 54px;
+            font-weight: 700;
+            color: #d4af37;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        
+        .price-note {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .btn-book {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-book:hover {
+            background: #c49d2a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .camping-addon {
+            text-align: right;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #666;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 60px;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 4px solid #2d5016;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+        }
+        
+        .feature-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d5016;
+            margin-bottom: 15px;
+        }
+        
+        .feature-description {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #666;
+        }
+        
+        /* Game Section */
+        .game-section {
+            background: white;
+            padding: 80px 0;
+            margin: 80px 0;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .game-card {
+            background: #f8f6f3;
+            padding: 40px 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #2d5016;
+            background: white;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.1);
+        }
+        
+        .game-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+        
+        .game-note {
+            font-size: 13px;
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* Parcels Section */
+        .parcels-section {
+            margin: 80px 0;
+        }
+        
+        .parcels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .parcel-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .parcel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+        }
+        
+        .parcel-header {
+            background: linear-gradient(135deg, #2d5016, #4a7c2b);
+            padding: 30px;
+            color: white;
+        }
+        
+        .parcel-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .parcel-acreage {
+            font-size: 18px;
+            color: #d4af37;
+            font-weight: 600;
+        }
+        
+        .parcel-content {
+            padding: 30px;
+        }
+        
+        .parcel-features {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        /* Hunting Experience Section */
+        .experience-section {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2b 100%);
+            padding: 80px 20px;
+            color: white;
+        }
+        
+        .experience-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .experience-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .experience-text {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        
+        .highlight-box {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .highlight-box h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+        
+        .highlight-box p {
+            font-size: 16px;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+        
+        .highlight-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .highlight-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .highlight-list li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #d4af37;
+            font-weight: bold;
+        }
+        
+        /* Hunter Recommendations */
+        .recommendations-section {
+            background: #f8f6f3;
+            padding: 60px 20px;
+            margin: 80px 0;
+            border-radius: 15px;
+        }
+        
+        .recommendations-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .rec-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #2d5016;
+            margin-bottom: 20px;
+        }
+        
+        .rec-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        .rec-highlight {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 5px solid #d4af37;
+        }
+        
+        .rec-highlight strong {
+            color: #2d5016;
+            font-size: 20px;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4e 100%);
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta-subtitle {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .btn-cta {
+            display: inline-block;
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-cta:hover {
+            background: #c49d2a;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+        }
+        
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: rgba(255,255,255,0.7);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 42px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .pricing-content {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .camping-addon {
+                text-align: center;
+            }
+            
+            .nav-menu {
+                gap: 20px;
+                font-size: 12px;
+            }
+            
+            .parcels-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="logo">M77 AG</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="hunting.html" class="nav-link">Hunting</a></li>
+                    <li><a href="services.html" class="nav-link">Services</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="heritage-badge">Est. Late 1800s • 4 Generations</div>
+            <h1 class="hero-title">M77 AG HERITAGE FARM</h1>
+            <p class="hero-subtitle">Premium Sedgwick County Hunting on Historic Swedish Homestead Land</p>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">1,160</div>
+                    <div class="stat-label">Total Acres</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Diverse Parcels</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Generations</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Banner -->
+    <section class="pricing-banner">
+        <div class="pricing-content">
+            <div>
+                <div class="price-label">All-Access Daily Rate</div>
+                <div class="price-main">$200</div>
+                <div class="price-note">Hunt all 1,160 acres</div>
+            </div>
+            
+            <a href="hunting.html" class="btn-book">Book Your Hunt</a>
+            
+            <div class="camping-addon">
+                <div class="price-label">Camping Add-On</div>
+                <div class="price-main">+$50</div>
+                <div class="price-note">Per night at homestead</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="section-title">Your All-Access Hunting Experience</h2>
+        <p class="section-subtitle">
+            The M77 AG Heritage Farm offers some of our best all-around hunting across 1,160 acres of diverse habitat in Sedgwick County, Colorado. 
+            Hunt the same land our Swedish ancestors homesteaded in the late 1800s, now optimized for trophy wildlife and unforgettable hunting experiences.
+        </p>
+
+        <!-- Features -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3 class="feature-title">Diverse Terrain</h3>
+                <p class="feature-description">
+                    From rolling dunes and native tallgrass prairie to CRP fields, multiple crop types, and established tree shelterbelts - every parcel offers unique hunting opportunities.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Year-Round Water</h3>
+                <p class="feature-description">
+                    Reliable water sources throughout the property attract and hold wildlife year-round, creating consistent hunting opportunities across all seasons.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Premium Habitat</h3>
+                <p class="feature-description">
+                    Extensive fencelines, grass borders, and surrounding habitat provide exceptional cover and travel corridors, making this some of our best all-around hunting ground.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Historic Camping</h3>
+                <p class="feature-description">
+                    Camp at the original homestead site with water and 110V electric hookups. Experience the same land four generations of our family have called home.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Five Parcels</h3>
+                <p class="feature-description">
+                    Rolling Dunes, Prairie Parcel, Homestead, North Side, and South Side - each parcel offers distinct terrain and hunting opportunities within one all-access package.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Trophy Potential</h3>
+                <p class="feature-description">
+                    Mature whitetail deer, ringneck pheasants, mourning doves, coyotes, and occasional elk migrations make this property a multi-species paradise.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Species -->
+    <section class="game-section">
+        <div class="container">
+            <h2 class="section-title">Available Game Species</h2>
+            <div class="game-grid">
+                <div class="game-card">
+                    <div class="game-name">Whitetail Deer</div>
+                    <p class="game-note">Primary species</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Ring-Neck Pheasant</div>
+                    <p class="game-note">Excellent habitat</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Mourning Dove</div>
+                    <p class="game-note">September flights</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Coyote</div>
+                    <p class="game-note">Year-round</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-name">Elk</div>
+                    <p class="game-note">Occasional migrations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parcels Overview -->
+    <section class="parcels-section">
+        <div class="container">
+            <h2 class="section-title">Five Historic Parcels</h2>
+            <div class="parcels-grid">
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Rolling Dunes</h3>
+                        <div class="parcel-acreage">240 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            True to its name, this parcel features undulating terrain with native grasses and strategic tree plantings. 
+                            The varied topography creates natural funnels and bedding areas for deer, while providing excellent cover for pheasants. 
+                            Perfect for spot-and-stalk hunting with multiple vantage points.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Prairie Parcel</h3>
+                        <div class="parcel-acreage">320 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Expansive tallgrass prairie interspersed with CRP fields and crop edges. This is classic Great Plains hunting at its finest, 
+                            offering long-range opportunities for deer and exceptional pheasant habitat. The open terrain allows for visibility while 
+                            maintaining pockets of cover that hold birds and game throughout the season.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Sedgwick County Homestead</h3>
+                        <div class="parcel-acreage">200 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass, 
+                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds. 
+                            The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">North Side</h3>
+                        <div class="parcel-acreage">180 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            A diverse mix of native grass, tall grass, CRP, crops, and established tree lines. This parcel excels at holding deer 
+                            and pheasants due to its varied habitat structure. The combination of food sources, cover, and water creates an ideal 
+                            environment for wildlife. Occasional elk have been spotted passing through this area during migration.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">South Side</h3>
+                        <div class="parcel-acreage">220 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Similar in character to the North Side, this parcel features native grass, tall grass, CRP fields, multiple crops, 
+                            and protective tree shelterbelts. Extensive fencelines and bordering habitat create natural travel corridors. 
+                            The variety of habitat types attracts diverse wildlife and provides excellent hunting opportunities year-round.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hunter Recommendations -->
+    <section class="recommendations-section">
+        <div class="recommendations-content">
+            <h3 class="rec-title">🎯 Ideal for Medium to Large Groups</h3>
+            <p class="rec-text">
+                With 1,160 acres of diverse terrain across five distinct parcels, the M77 AG Heritage Farm is perfectly suited for 
+                groups of hunters looking for a comprehensive hunting experience. The property can comfortably accommodate multiple hunting parties 
+                simultaneously, with each group finding their own space across the various parcels.
+            </p>
+            <div class="rec-highlight">
+                <strong>Recommended: 6-12 hunters</strong>
+                <p style="margin-top: 15px; font-size: 16px; line-height: 1.7;">
+                    The size and diversity of our parcels make this an excellent choice for hunting clubs, family groups, or corporate outings. 
+                    Whether you're organizing a pheasant drive across the Prairie Parcel or setting up deer stands throughout the property, 
+                    there's ample space and habitat for everyone to enjoy a quality hunt.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Heritage Story -->
+    <section class="experience-section">
+        <div class="experience-content">
+            <h2 class="experience-title">Four Generations of Swedish Heritage</h2>
+            <p class="experience-text">
+                Our Swedish ancestors first homesteaded this land in the late 1800s, breaking sod and building a life on the Colorado prairie. 
+                Today, you can camp at the very site where they built their home, surrounded by the same rolling hills and grasslands they knew. 
+                Over four generations, our family has carefully stewarded this land, creating the perfect balance of agricultural production and 
+                wildlife habitat.
+            </p>
+            <div class="highlight-box">
+                <h4>What Makes Heritage Farm Special</h4>
+                <p>
+                    • <strong>Historic Significance:</strong> Hunt on land continuously farmed by the same family since the 1880s<br>
+                    • <strong>Optimized Habitat:</strong> 140+ years of land management creating ideal wildlife conditions<br>
+                    • <strong>Diverse Terrain:</strong> Five distinct parcels each offering unique hunting opportunities<br>
+                    • <strong>All-Season Water:</strong> Year-round water sources ensuring consistent game presence<br>
+                    • <strong>Modern Amenities:</strong> Historic charm meets modern convenience with electric camping hookups<br>
+                    • <strong>Family Legacy:</strong> Experience the same hunting grounds four generations have treasured
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">Experience Heritage Farm</h2>
+        <p class="cta-subtitle">1,160 acres of historic hunting grounds • $200 per day all-access</p>
+        <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+        <p style="margin-top: 10px; opacity: 0.7;">Four generations of family farming • Est. Late 1800s</p>
+    </footer>
+</body>
+</html>d game throughout the season.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">Sedgwick County Homestead</h3>
+                        <div class="parcel-acreage">160 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            The heart of our Swedish heritage - the original homestead parcel from the late 1800s. Features diverse habitat including 
+                            native grass, CRP, tree shelterbelts, and crop edges. Home to our camping area with water and 110V electric. 
+                            Rich with history and wildlife alike.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">North Side</h3>
+                        <div class="parcel-acreage">240 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Combines native grass, tallgrass prairie, CRP fields, multiple crop types, and established tree plantings. 
+                            The varied habitat provides excellent cover and holds deer, pheasants, and occasionally elk during migration periods. 
+                            Abundant wildlife activity with lots of grass and habitat bordering the property.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="parcel-card">
+                    <div class="parcel-header">
+                        <h3 class="parcel-name">South Side</h3>
+                        <div class="parcel-acreage">200 acres</div>
+                    </div>
+                    <div class="parcel-content">
+                        <p class="parcel-features">
+                            Similar to the North Side, this parcel features native grass, tallgrass, CRP, diverse crops, and tree coverage. 
+                            The space and habitat diversity support deer, pheasants, and the occasional elk has been known to pass through. 
+                            Extensive bordering grass and habitat create natural corridors and bedding areas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hunting Experience Section -->
+    <section class="experience-section">
+        <div class="experience-content">
+            <h2 class="experience-title">The Heritage Farm Experience</h2>
+            <p class="experience-text">
+                When you hunt the M77 AG Heritage Farm, you're not just accessing 1,160 acres of prime habitat - you're stepping into a legacy 
+                that spans four generations of family stewardship. Our Swedish ancestors first homesteaded this land in the late 1800s, and today 
+                we continue their tradition of respecting the land while harvesting its bounty.
+            </p>
+            <p class="experience-text">
+                The diverse terrain across our five parcels creates a hunting experience that caters to all styles. Whether you prefer the rolling 
+                topography of the Dunes, the wide-open vistas of the Prairie Parcel, or the intimate cover along fencelines and shelterbelts, 
+                you'll find your perfect setup here.
+            </p>
+            
+            <div class="highlight-box">
+                <h4>What Makes Heritage Farm Special</h4>
+                <ul class="highlight-list">
+                    <li>Year-round water sources that consistently attract and hold wildlife</li>
+                    <li>Strategic mix of CRP, crops, and native grasses creating ideal habitat</li>
+                    <li>Extensive fencelines and tree shelterbelts providing natural travel corridors</li>
+                    <li>Bordering habitat that extends hunting opportunities beyond property lines</li>
+                    <li>Multiple crops providing food sources throughout the seasons</li>
+                    <li>Historic homestead camping with modern amenities</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hunter Recommendations -->
+    <section class="recommendations-section">
+        <div class="recommendations-content">
+            <h3 class="rec-title">Recommended for Larger Groups</h3>
+            <p class="rec-text">
+                With 1,160 acres of diverse terrain, the Heritage Farm is ideal for groups of 4-8 hunters. The expansive prairie parcels 
+                can accommodate multiple hunting parties without interference, while the varied habitat types allow hunters to target 
+                different species simultaneously. Perfect for family hunts or group outings where everyone wants their own space.
+            </p>
+            
+            <div class="rec-highlight">
+                <strong>Ideal Group Size:</strong> 4-8 hunters for optimal experience
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 class="cta-title">Experience Four Generations of Heritage</h2>
+        <p class="cta-subtitle">Book your hunt on historic Swedish homestead land</p>
+        <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+        <p style="margin-top: 10px; opacity: 0.7;">Four generations of family farming • Est. Late 1800s</p>
+    </footer>
+</body>
+</html>

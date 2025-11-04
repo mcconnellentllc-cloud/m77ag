@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="1Q35pCx-Tx40rVFVFEEijjy6xrqgDYIw4">
+	<name>Sedgwick Cty Deer / Pheasant</name>
+	<gx:CascadingStyle kml:id="__managed_style_125FD687023B8240EBD4">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0A0B6782063B8240EBD4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_125FD687023B8240EBD4</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2B66D577293B8240EBD4</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_2087177C0F3B8211B07C">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_2B66D577293B8240EBD4">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_130DC367A03B8211B07C">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_06D1FA895F3B8211B07C">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_130DC367A03B8211B07C</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2087177C0F3B8211B07C</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="099B7706523B1DE7AC8C">
+		<name>Rolling Dunes </name>
+		<LookAt>
+			<longitude>-102.5468946458129</longitude>
+			<latitude>40.75425696487959</latitude>
+			<altitude>1221.132902297482</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>6202.791736552608</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_06D1FA895F3B8211B07C</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.5553006839962,40.76419660226973,0 -102.555002748076,40.75257939658974,0 -102.5524500325787,40.75265808653829,0 -102.5525022534011,40.7519082819058,0 -102.5550550057702,40.7513560295148,0 -102.5549959281369,40.74965542113099,0 -102.5356683980178,40.74962660693239,0 -102.5357078189743,40.75328849363144,0 -102.5456702688148,40.75336892915493,0 -102.5456431350413,40.75698346227591,0 -102.5358591075116,40.75692429015647,0 -102.5359542427886,40.7642830496031,0 -102.5553006839962,40.76419660226973,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0E27BFBFC13B1DED60D4">
+		<name>Prarie Parcel</name>
+		<LookAt>
+			<longitude>-102.5276655237775</longitude>
+			<latitude>40.77207595249313</latitude>
+			<altitude>1213.67936653721</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>8467.023284939351</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_06D1FA895F3B8211B07C</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.5266342014333,40.77910452470026,0 -102.5263482349874,40.76428296276979,0 -102.5166004053595,40.76423362678152,0 -102.5168840877097,40.77900009413871,0 -102.5266342014333,40.77910452470026,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0E9BE3CD5B3B1DEF3454">
+		<name>Sedgwick CTY Homestead</name>
+		<LookAt>
+			<longitude>-102.5276655237775</longitude>
+			<latitude>40.77207595249313</latitude>
+			<altitude>1213.67936653721</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>8467.023284939351</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_06D1FA895F3B8211B07C</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.5166716039743,40.76417975741008,0 -102.5116190227973,40.76417899146374,0 -102.5118932199659,40.77905754412616,0 -102.5168840869502,40.77905398181701,0 -102.5166716039743,40.76417975741008,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0743F45F773B1DF08796">
+		<name>South Side </name>
+		<LookAt>
+			<longitude>-102.6173648289348</longitude>
+			<latitude>40.76746212001439</latitude>
+			<altitude>1228.515511009091</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>4009.337901461986</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_06D1FA895F3B8211B07C</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.6226642116566,40.76423905701073,0 -102.6174121773986,40.76431448342588,0 -102.6174123918032,40.76671195554878,0 -102.6184232400525,40.76666090909045,0 -102.6184555601179,40.76938994380667,0 -102.6220139410363,40.76937990626888,0 -102.6220489777921,40.7686395209244,0 -102.6226240403887,40.76850922143287,0 -102.6226642116566,40.76423905701073,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="009BB519233B1DF300D8">
+		<name>North Side</name>
+		<LookAt>
+			<longitude>-102.6179023669506</longitude>
+			<latitude>40.77403784316125</latitude>
+			<altitude>1234.487317411756</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>2423.911301415937</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_06D1FA895F3B8211B07C</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.6181165210023,40.76941517701488,0 -102.6156744342258,40.76943152384258,0 -102.61562973108,40.76816503580413,0 -102.6131842091422,40.76824226707731,0 -102.6132444075342,40.77148396840443,0 -102.6170467312973,40.77146036277056,0 -102.6181972541771,40.77145806192557,0 -102.6181165210023,40.76941517701488,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="01B9F9D3613B8240A8BC">
+		<name>Sedgwick Cty Campsite</name>
+		<LookAt>
+			<longitude>-102.515956945578</longitude>
+			<latitude>40.76868765804554</latitude>
+			<altitude>1211.529248670802</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00000054836107</gx:fovy>
+			<range>990.6514819218139</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0A0B6782063B8240EBD4</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-102.5166010702548,40.76898706308389,0 -102.5155030438656,40.76898231023139,0 -102.5155167091039,40.76925109614482,0 -102.5165978430525,40.76921720561357,0 -102.5166010702548,40.76898706308389,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>
