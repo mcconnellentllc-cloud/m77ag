@@ -53,10 +53,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Static files - serve from root directories
-app.use(express.static(path.join(__dirname, '..')));
+// Static files - serve from public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
-// Admin routes - serve from public/admin
+// Admin routes - PUBLIC/ADMIN folder
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
@@ -73,7 +73,7 @@ app.get('/admin/hunting-bookings.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
-// Portal routes - serve from portal folder
+// Portal routes - PORTAL folder
 app.get('/portal/login.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../portal/login.html'));
 });
@@ -82,7 +82,7 @@ app.get('/portal/dashboard.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../portal/dashboard.html'));
 });
 
-// Hunting routes
+// Hunting pages
 app.get('/hunting.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting.html'));
 });
@@ -97,6 +97,15 @@ app.get('/heritage-farm.html', (req, res) => {
 
 app.get('/prairie-peace.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/prairie-peace.html'));
+});
+
+// Other pages
+app.get('/about.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/about.html'));
+});
+
+app.get('/services.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/services.html'));
 });
 
 // Main route
