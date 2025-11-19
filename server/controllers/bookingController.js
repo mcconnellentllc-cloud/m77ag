@@ -5,34 +5,29 @@ const bookingController = {
   createBooking: async (req, res) => {
     try {
       const {
-        hunterName,
-        hunterEmail,
-        hunterPhone,
+        customerName,
+        email,
+        phone,
         parcel,
         checkinDate,
         checkoutDate,
-        campingIncluded,
-        totalCost,
-        depositPaid,
+        numHunters,
+        vehicleMake,
+        vehicleModel,
+        vehicleColor,
+        vehicleLicense,
+        dailyRate,
+        numNights,
+        campingFee,
+        totalPrice,
         paymentMethod,
-        paymentId,
-        paymentStatus,
-        notes,
-        createdBy
+        notes
       } = req.body;
-
-      // Validate required fields
-      if (!hunterName || !hunterEmail || !hunterPhone || !parcel || !checkinDate || !checkoutDate) {
-        return res.status(400).json({
-          success: false,
-          message: 'Missing required fields'
-        });
-      }
 
       // Check if dates are already booked for this parcel
       const existingBooking = await Booking.findOne({
-        parcel: parcel,
-        status: { $ne: 'cancelled' },
+        parcel,
+        status: { $in: ['pending', 'confirmed'] },
         $or: [
           {
             checkinDate: { $lte: new Date(checkoutDate) },
@@ -49,28 +44,39 @@ const bookingController = {
       }
 
       // Create new booking
-      const booking = await Booking.create({
-        hunterName,
-        hunterEmail,
-        hunterPhone,
+      const booking = new Booking({
+        customerName,
+        email,
+        phone,
         parcel,
         checkinDate: new Date(checkinDate),
         checkoutDate: new Date(checkoutDate),
-        campingIncluded: campingIncluded || false,
-        totalCost,
-        depositPaid: depositPaid || 0,
-        paymentMethod: paymentMethod || 'paypal',
-        paymentId,
-        paymentStatus: paymentStatus || 'pending',
+        numHunters,
+        vehicleMake,
+        vehicleModel,
+        vehicleColor,
+        vehicleLicense,
+        dailyRate,
+        numNights,
+        campingFee,
+        totalPrice,
+        paymentMethod,
         notes,
-        createdBy: createdBy || 'customer',
-        status: depositPaid > 0 ? 'confirmed' : 'pending'
+        balanceDue: totalPrice
       });
+
+      await booking.save();
 
       res.status(201).json({
         success: true,
         message: 'Booking created successfully',
-        booking
+        booking: {
+          id: booking._id,
+          customerName: booking.customerName,
+          checkinDate: booking.checkinDate,
+          checkoutDate: booking.checkoutDate,
+          totalPrice: booking.totalPrice
+        }
       });
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -81,11 +87,11 @@ const bookingController = {
     }
   },
 
-  // Get all bookings
+  // Get all bookings (admin only)
   getAllBookings: async (req, res) => {
     try {
       const bookings = await Booking.find()
-        .sort({ checkinDate: 1 })
+        .sort({ createdAt: -1 })
         .lean();
 
       res.json({
@@ -101,15 +107,13 @@ const bookingController = {
     }
   },
 
-  // Get upcoming bookings
+  // Get upcoming bookings (admin only)
   getUpcomingBookings: async (req, res) => {
     try {
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
       const bookings = await Booking.find({
         checkinDate: { $gte: today },
-        status: { $in: ['confirmed', 'pending'] }
+        status: { $in: ['pending', 'confirmed'] }
       })
         .sort({ checkinDate: 1 })
         .lean();
@@ -131,7 +135,7 @@ const bookingController = {
   getBookingById: async (req, res) => {
     try {
       const { id } = req.params;
-      const booking = await Booking.findById(id);
+      const booking = await Booking.findById(id).lean();
 
       if (!booking) {
         return res.status(404).json({
@@ -161,7 +165,7 @@ const bookingController = {
 
       const booking = await Booking.findByIdAndUpdate(
         id,
-        updateData,
+        { $set: updateData },
         { new: true, runValidators: true }
       );
 
@@ -190,10 +194,10 @@ const bookingController = {
   cancelBooking: async (req, res) => {
     try {
       const { id } = req.params;
-
+      
       const booking = await Booking.findByIdAndUpdate(
         id,
-        { status: 'cancelled' },
+        { $set: { status: 'cancelled' } },
         { new: true }
       );
 
@@ -218,11 +222,11 @@ const bookingController = {
     }
   },
 
-  // Delete booking (admin only)
+  // Delete booking (admin only - permanent)
   deleteBooking: async (req, res) => {
     try {
       const { id } = req.params;
-
+      
       const booking = await Booking.findByIdAndDelete(id);
 
       if (!booking) {
@@ -254,12 +258,14 @@ const bookingController = {
       
       const revenueData = await Booking.aggregate([
         {
-          $match: { status: { $in: ['confirmed', 'completed'] } }
+          $match: {
+            status: { $in: ['confirmed', 'completed'] }
+          }
         },
         {
           $group: {
             _id: null,
-            totalRevenue: { $sum: '$totalCost' },
+            totalRevenue: { $sum: '$totalPrice' },
             totalDeposits: { $sum: '$depositPaid' },
             totalBalance: { $sum: '$balanceDue' }
           }

@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
-  // Hunter Information
-  hunterName: {
+  // Customer Information
+  customerName: {
     type: String,
     required: true
   },
-  hunterEmail: {
+  email: {
     type: String,
     required: true
   },
-  hunterPhone: {
+  phone: {
     type: String,
     required: true
   },
@@ -18,8 +18,7 @@ const bookingSchema = new mongoose.Schema({
   // Booking Details
   parcel: {
     type: String,
-    required: true,
-    enum: ['north-south', 'homestead', 'rolling-dunes', 'prairie', 'all-ground']
+    required: true
   },
   checkinDate: {
     type: Date,
@@ -29,15 +28,32 @@ const bookingSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  
-  // Add-ons
-  campingIncluded: {
-    type: Boolean,
-    default: false
+  numHunters: {
+    type: Number,
+    required: true,
+    min: 1
   },
   
+  // Vehicle Information
+  vehicleMake: String,
+  vehicleModel: String,
+  vehicleColor: String,
+  vehicleLicense: String,
+  
   // Pricing
-  totalCost: {
+  dailyRate: {
+    type: Number,
+    required: true
+  },
+  numNights: {
+    type: Number,
+    required: true
+  },
+  campingFee: {
+    type: Number,
+    default: 0
+  },
+  totalPrice: {
     type: Number,
     required: true
   },
@@ -50,20 +66,18 @@ const bookingSchema = new mongoose.Schema({
     default: 0
   },
   
-  // Payment Info
+  // Payment Information
   paymentMethod: {
     type: String,
-    enum: ['paypal', 'venmo', 'cash', 'check', 'admin'],
-    default: 'paypal'
-  },
-  paymentId: {
-    type: String  // PayPal transaction ID
+    enum: ['cash', 'check', 'venmo', 'paypal'],
+    default: 'cash'
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'deposit-paid', 'paid-in-full'],
+    enum: ['pending', 'deposit_paid', 'paid_in_full'],
     default: 'pending'
   },
+  paypalTransactionId: String,
   
   // Booking Status
   status: {
@@ -72,29 +86,31 @@ const bookingSchema = new mongoose.Schema({
     default: 'pending'
   },
   
-  // Additional Info
-  notes: {
-    type: String
-  },
+  // Additional Notes
+  notes: String,
+  adminNotes: String,
   
-  // Admin tracking
-  createdBy: {
-    type: String,
-    enum: ['customer', 'admin'],
-    default: 'customer'
-  }
-}, {
-  timestamps: { 
-    createdAt: 'created_at', 
-    updatedAt: 'updated_at' 
+  // Timestamps
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 });
 
-// Calculate balance due before saving
+// Update the updatedAt timestamp before saving
 bookingSchema.pre('save', function(next) {
-  this.balanceDue = this.totalCost - this.depositPaid;
+  this.updatedAt = Date.now();
   next();
 });
+
+// Create indexes for faster queries
+bookingSchema.index({ checkinDate: 1, checkoutDate: 1, parcel: 1 });
+bookingSchema.index({ email: 1 });
+bookingSchema.index({ status: 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

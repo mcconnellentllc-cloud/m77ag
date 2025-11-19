@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(morgan('dev'));
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Connect to MongoDB
 const mongoose = require('mongoose');
@@ -21,42 +21,29 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag'
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    console.log('✅ MongoDB connected successfully');
+    console.log('MongoDB connected successfully');
+    // Create default admin user
     createDefaultAdmin();
   })
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Import routes
 const authRoutes = require('./routes/auth');
-const huntingRoutes = require('./routes/hunting');
+const bookingRoutes = require('./routes/bookings');
 
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/hunting', huntingRoutes);
+app.use('/api/bookings', bookingRoutes);
 
-// Test route
+// Basic test route
 app.get('/api/test', (req, res) => {
-  res.json({ 
-    message: 'API is working',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString()
-  });
+  res.json({ message: 'API is working' });
 });
 
 // Static files - serve from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Admin routes - PUBLIC/ADMIN folder
+// Admin routes
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
@@ -65,47 +52,13 @@ app.get('/admin/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/login.html'));
 });
 
-app.get('/admin/dashboard.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
-});
-
-app.get('/admin/hunting-bookings.html', (req, res) => {
+app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
-// Portal routes - PORTAL folder
-app.get('/portal/login.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../portal/login.html'));
-});
-
-app.get('/portal/dashboard.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../portal/dashboard.html'));
-});
-
-// Hunting pages
-app.get('/hunting.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/hunting.html'));
-});
-
-app.get('/hunting-liability-waiver.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/hunting-liability-waiver.html'));
-});
-
-app.get('/heritage-farm.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/heritage-farm.html'));
-});
-
-app.get('/prairie-peace.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/prairie-peace.html'));
-});
-
-// Other pages
-app.get('/about.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/about.html'));
-});
-
-app.get('/services.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/services.html'));
+// Account routes
+app.get('/account', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/account/login.html'));
 });
 
 // Main route
@@ -115,37 +68,17 @@ app.get('/', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Server Error:', err.stack);
-  
-  const errorResponse = {
+  console.error(err.stack);
+  res.status(500).json({
     success: false,
-    message: process.env.NODE_ENV === 'production' 
-      ? 'An error occurred' 
-      : err.message
-  };
-
-  if (process.env.NODE_ENV !== 'production') {
-    errorResponse.stack = err.stack;
-  }
-
-  res.status(err.status || 500).json(errorResponse);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  mongoose.connection.close(false, () => {
-    console.log('MongoDB connection closed');
-    process.exit(0);
+    message: 'Something went wrong!'
   });
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log('========================================');
-  console.log(`🚀 M77 AG Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📧 Email Service: ${process.env.EMAIL_USER ? 'Configured' : 'NOT CONFIGURED'}`);
-  console.log(`💳 PayPal: ${process.env.PAYPAL_CLIENT_ID ? 'Configured' : 'NOT CONFIGURED'}`);
-  console.log('========================================');
+  console.log(`M77 AG Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`MongoDB: ${MONGODB_URI ? 'Connected' : 'Not connected'}`);
+  console.log(`Admin: ${process.env.ADMIN_EMAIL || 'admin@m77ag.com'}`);
 });
