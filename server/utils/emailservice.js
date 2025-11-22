@@ -50,7 +50,7 @@ const sendBookingConfirmation = async (booking) => {
               <p><strong>Number of Nights:</strong> ${booking.numNights}</p>
               ${booking.campingFee > 0 ? `<p><strong>Camping:</strong> Included</p>` : ''}
               <p class="price"><strong>Total Price:</strong> $${booking.totalPrice}</p>
-              <p><strong>Payment Status:</strong> ${booking.paymentStatus === 'pending' ? 'Pay on Arrival' : 'Paid'}</p>
+              <p><strong>Payment Status:</strong> ${booking.paymentStatus === 'pending' ? 'Pay on Arrival' : 'Paid via PayPal'}</p>
             </div>
             
             <h3>Important Information:</h3>
@@ -65,7 +65,7 @@ const sendBookingConfirmation = async (booking) => {
             <h3>Contact Information:</h3>
             <p><strong>Kyle McConnell</strong></p>
             <p>Phone: <a href="tel:970-571-1015">970-571-1015</a></p>
-            <p>Email: <a href="mailto:hunting@m77ag.com">hunting@m77ag.com</a></p>
+            <p>Email: <a href="mailto:office@m77ag.com">office@m77ag.com</a></p>
           </div>
           
           <div class="footer">
@@ -79,18 +79,18 @@ const sendBookingConfirmation = async (booking) => {
     
     // Email to customer
     await transporter.sendMail({
-      from: `M77 AG Hunting <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
-      replyTo: 'hunting@m77ag.com',
+      from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
+      replyTo: 'office@m77ag.com',
       to: booking.email,
       subject: `Hunting Reservation Confirmed - ${booking.parcel}`,
       html: emailHTML
     });
     
-    // Email to admin
+    // Email to admin/Kyle
     await transporter.sendMail({
-      from: `M77 AG Hunting <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
-      replyTo: 'hunting@m77ag.com',
-      to: 'hunting@m77ag.com',
+      from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
+      replyTo: 'office@m77ag.com',
+      to: 'office@m77ag.com',
       subject: `New Booking: ${booking.customerName} - ${booking.parcel}`,
       html: `
         <h2>New Hunting Reservation</h2>
