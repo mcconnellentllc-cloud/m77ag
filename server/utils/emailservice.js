@@ -62,6 +62,21 @@ const sendBookingConfirmation = async (booking) => {
               <li>Pack out what you pack in</li>
             </ul>
             
+            <div style="background: #fff3cd; border: 2px solid #856404; padding: 20px; margin: 20px 0; border-radius: 5px;">
+              <h3 style="color: #856404; margin-top: 0;">⚠️ REQUIRED: Sign Liability Waiver</h3>
+              <p style="margin: 10px 0;"><strong>Before your hunt, you MUST sign the liability waiver.</strong></p>
+              <a href="https://m77ag.com/hunting.html#waiver" style="background: #d4af37; color: white; padding: 12px 30px; text-decoration: none; display: inline-block; margin: 10px 0; border-radius: 5px; font-weight: bold;">SIGN WAIVER NOW</a>
+              <p style="font-size: 14px; margin: 10px 0;">You will not be allowed to hunt without a signed waiver.</p>
+            </div>
+            
+            <h3>Property Maps & Boundaries:</h3>
+            <p>Download your property map and boundary information:</p>
+            <ul>
+              <li><a href="https://m77ag.com/maps/${booking.parcel === 'M77 AG Heritage Farm' ? 'heritage-farm-map.pdf' : 'prairie-peace-map.pdf'}" style="color: #2d5016; font-weight: bold;">📍 Download ${booking.parcel} Map</a></li>
+              <li>Respect all posted boundaries and game rest areas</li>
+              <li>Orange areas on map indicate rest periods (no hunting)</li>
+            </ul>
+            
             <h3>Contact Information:</h3>
             <p><strong>Kyle McConnell</strong></p>
             <p>Phone: <a href="tel:970-571-1015">970-571-1015</a></p>
@@ -90,7 +105,7 @@ const sendBookingConfirmation = async (booking) => {
     await transporter.sendMail({
       from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
       replyTo: 'office@m77ag.com',
-      to: 'office@m77ag.com',
+      to: 'hunting@m77ag.com',
       subject: `New Booking: ${booking.customerName} - ${booking.parcel}`,
       html: `
         <h2>New Hunting Reservation</h2>
