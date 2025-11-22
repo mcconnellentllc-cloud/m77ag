@@ -1,5 +1,5 @@
 const Booking = require('../models/booking');
-const { sendBookingConfirmation } = require('../utils/emailService');
+const { sendBookingConfirmation } = require('../utils/emailservice');
 
 const bookingController = {
   // Create a new booking
