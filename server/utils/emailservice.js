@@ -1,8 +1,15 @@
 const nodemailer = require('nodemailer');
 
+// Verify nodemailer loaded correctly
+if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
+  console.error('CRITICAL: nodemailer not loaded correctly!');
+  console.error('nodemailer object:', nodemailer);
+}
+
 // Create email transporter for Office 365
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  // Use createTransport (not createTransporter) - this might be the issue!
+  return nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
     secure: false,
