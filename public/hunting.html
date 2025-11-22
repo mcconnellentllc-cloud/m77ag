@@ -158,7 +158,7 @@
         .property-half.available { background: #d4f1d4; }
         .property-half.booked { background: #ffb3b3; }
         .property-half.past { background: #e8e8e8; }
-        .property-half.game-rest { background: #ffe066; }
+        .property-half.game-rest { background: #8B4049; }
         .property-half.high-demand { background: #ffd700; border: 2px solid #d4af37; }
         
         /* Legend */
@@ -187,7 +187,7 @@
         
         .legend-box.available { background: #d4f1d4; }
         .legend-box.booked { background: #ffb3b3; }
-        .legend-box.game-rest { background: #ffe066; }
+        .legend-box.game-rest { background: #8B4049; }
         .legend-box.high-demand { background: #ffd700; }
         .legend-box.past { background: #e8e8e8; }
         
@@ -342,7 +342,7 @@
         <!-- Calendar -->
         <div class="calendar-section">
             <h2 class="section-title">Check Availability</h2>
-            <p class="section-subtitle">HF=Heritage Farm | PP=Prairie Peace<br>Green=Available | Red=Booked | Yellow=Game Rest | Gold=High Demand</p>
+            <p class="section-subtitle">HF=Heritage Farm | PP=Prairie Peace<br>Green=Available | Red=Booked | Dark Maroon=Game Rest | Gold=High Demand</p>
             
             <div class="calendar-header">
                 <button class="calendar-nav-btn" id="prevMonth">← Previous</button>
@@ -569,22 +569,22 @@
         
         // Load booked dates
         function loadBookedDates() {
-            fetch('/api/hunting/bookings/booked-dates')
+            fetch('/api/bookings/booked-dates')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.bookings) {
                         Object.keys(bookedDates).forEach(key => delete bookedDates[key]);
                         
                         data.bookings.forEach(booking => {
-                            const start = new Date(booking.startDate);
-                            const end = new Date(booking.endDate);
+                            const start = new Date(booking.checkinDate);
+                            const end = new Date(booking.checkoutDate);
                             
                             for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                                 const dateStr = d.toISOString().split('T')[0];
                                 if (!bookedDates[dateStr]) {
                                     bookedDates[dateStr] = {};
                                 }
-                                bookedDates[dateStr][booking.property] = true;
+                                bookedDates[dateStr][booking.parcel] = true;
                             }
                         });
                         
@@ -716,7 +716,7 @@
             if (totalCost === 0) return;
             
             const container = document.getElementById('paypal-button-container');
-            container.innerHTML = ''; // Clear existing
+            container.innerHTML = '';
             
             paypal.Buttons({
                 createOrder: function(data, actions) {
@@ -759,24 +759,24 @@
             if (document.getElementById('turkey').checked) gameSpecies.push('Turkey');
             
             const bookingData = {
-                property: document.getElementById('propertySelect').value,
-                hunterInfo: {
-                    name: document.getElementById('hunterName').value,
-                    email: document.getElementById('hunterEmail').value,
-                    phone: document.getElementById('hunterPhone').value
-                },
-                startDate: document.getElementById('startDate').value,
-                endDate: document.getElementById('endDate').value,
-                numberOfHunters: parseInt(document.getElementById('numHunters').value),
-                gameSpecies: gameSpecies,
-                camping: document.getElementById('campingAddon').checked,
-                totalCost: totalCost,
+                customerName: document.getElementById('hunterName').value,
+                email: document.getElementById('hunterEmail').value,
+                phone: document.getElementById('hunterPhone').value,
+                parcel: document.getElementById('propertySelect').value,
+                checkinDate: document.getElementById('startDate').value,
+                checkoutDate: document.getElementById('endDate').value,
+                numHunters: parseInt(document.getElementById('numHunters').value),
+                gameSpecies: gameSpecies.join(', '),
+                campingFee: document.getElementById('campingAddon').checked ? CAMPING_RATE : 0,
+                totalPrice: totalCost,
                 paymentStatus: paymentStatus,
                 paymentMethod: paymentStatus === 'paid' ? 'paypal' : 'cash',
-                paymentTransactionId: transactionId
+                paypalTransactionId: transactionId,
+                dailyRate: DAILY_RATE,
+                numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000)
             };
             
-            fetch('/api/hunting/bookings', {
+            fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingData)
