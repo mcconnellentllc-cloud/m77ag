@@ -1,4 +1,5 @@
 const Booking = require('../models/booking');
+const { sendBookingConfirmation } = require('../utils/emailService');
 
 const bookingController = {
   // Create a new booking
@@ -66,6 +67,9 @@ const bookingController = {
       });
 
       await booking.save();
+
+      // Send confirmation email
+      await sendBookingConfirmation(booking);
 
       res.status(201).json({
         success: true,
