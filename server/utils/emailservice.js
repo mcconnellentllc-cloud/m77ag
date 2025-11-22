@@ -5,9 +5,9 @@ const createTransporter = () => {
   return nodemailer.createTransporter({
     host: 'smtp.office365.com',
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
-      user: process.env.EMAIL_AUTH_USER || 'Kyle@togoag.com', // Your account that has access
+      user: process.env.EMAIL_AUTH_USER || 'Kyle@togoag.com',
       pass: process.env.EMAIL_PASS
     },
     tls: {
@@ -32,7 +32,6 @@ const sendBookingConfirmation = async (booking) => {
           .content { background: #f9f9f9; padding: 30px; }
           .details { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #d4af37; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
-          .button { background: #d4af37; color: white; padding: 12px 30px; text-decoration: none; display: inline-block; margin: 20px 0; border-radius: 5px; }
           h2 { color: #2d5016; }
           .price { font-size: 24px; font-weight: bold; color: #d4af37; }
         </style>
