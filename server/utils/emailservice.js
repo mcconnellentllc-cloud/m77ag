@@ -1,24 +1,12 @@
 const nodemailer = require('nodemailer');
 
-// Verify nodemailer loaded correctly
-if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
-  console.error('CRITICAL: nodemailer not loaded correctly!');
-  console.error('nodemailer object:', nodemailer);
-}
-
-// Create email transporter for Office 365
+// Create email transporter for Gmail
 const createTransporter = () => {
-  // Use createTransport (not createTransporter) - this might be the issue!
   return nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    port: 587,
-    secure: false,
+    service: 'gmail',
     auth: {
-      user: process.env.EMAIL_AUTH_USER || 'Kyle@togoag.com',
+      user: process.env.EMAIL_USER || 'm77ag.notify@gmail.com',
       pass: process.env.EMAIL_PASS
-    },
-    tls: {
-      ciphers: 'SSLv3'
     }
   });
 };
@@ -91,7 +79,8 @@ const sendBookingConfirmation = async (booking) => {
     
     // Email to customer
     await transporter.sendMail({
-      from: `M77 AG Hunting <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
+      from: `M77 AG Hunting <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
+      replyTo: 'hunting@m77ag.com',
       to: booking.email,
       subject: `Hunting Reservation Confirmed - ${booking.parcel}`,
       html: emailHTML
@@ -99,8 +88,9 @@ const sendBookingConfirmation = async (booking) => {
     
     // Email to admin
     await transporter.sendMail({
-      from: `M77 AG Hunting <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      to: process.env.EMAIL_USER || 'hunting@m77ag.com',
+      from: `M77 AG Hunting <${process.env.EMAIL_USER || 'm77ag.notify@gmail.com'}>`,
+      replyTo: 'hunting@m77ag.com',
+      to: 'hunting@m77ag.com',
       subject: `New Booking: ${booking.customerName} - ${booking.parcel}`,
       html: `
         <h2>New Hunting Reservation</h2>
