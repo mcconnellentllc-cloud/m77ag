@@ -29,9 +29,11 @@ mongoose.connect(MONGODB_URI)
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const bookingRoutes = require('./routes/bookings');
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Basic test route
 app.get('/api/test', (req, res) => {
@@ -68,4 +70,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`M77 AG Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`MongoDB: ${MONGODB_URI ? 'Connected' : 'Not configured'}`);
+  console.log(`Admin: admin@m77ag.com`);
 });
