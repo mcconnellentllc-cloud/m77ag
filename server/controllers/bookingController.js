@@ -207,6 +207,92 @@ const bookingController = {
         message: 'Failed to delete booking'
       });
     }
+  },
+
+  // Get upcoming bookings
+  getUpcomingBookings: async (req, res) => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const bookings = await Booking.find({
+        checkinDate: { $gte: today },
+        status: { $in: ['pending', 'confirmed'] }
+      }).sort({ checkinDate: 1 });
+
+      res.json({
+        success: true,
+        bookings
+      });
+    } catch (error) {
+      console.error('Error fetching upcoming bookings:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch upcoming bookings'
+      });
+    }
+  },
+
+  // Get booking statistics
+  getBookingStats: async (req, res) => {
+    try {
+      const totalBookings = await Booking.countDocuments();
+      const confirmedBookings = await Booking.countDocuments({ status: 'confirmed' });
+      const pendingBookings = await Booking.countDocuments({ status: 'pending' });
+      const cancelledBookings = await Booking.countDocuments({ status: 'cancelled' });
+
+      const totalRevenue = await Booking.aggregate([
+        { $match: { status: { $in: ['confirmed', 'pending'] } } },
+        { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+      ]);
+
+      res.json({
+        success: true,
+        stats: {
+          totalBookings,
+          confirmedBookings,
+          pendingBookings,
+          cancelledBookings,
+          totalRevenue: totalRevenue[0]?.total || 0
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching booking stats:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch booking stats'
+      });
+    }
+  },
+
+  // Cancel booking
+  cancelBooking: async (req, res) => {
+    try {
+      const booking = await Booking.findByIdAndUpdate(
+        req.params.id,
+        { status: 'cancelled' },
+        { new: true }
+      );
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Booking cancelled successfully',
+        booking
+      });
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to cancel booking'
+      });
+    }
   }
 };
 
