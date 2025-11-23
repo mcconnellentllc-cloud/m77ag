@@ -61,7 +61,21 @@
             list-style: none;
             gap: 40px;
         }
-        
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: rgba(255,255,255,0.8);
+            transition: 0.3s;
+        }
+
         .nav-link {
             color: rgba(255,255,255,0.8);
             text-decoration: none;
@@ -572,11 +586,26 @@
                 text-align: center;
             }
             
-            .nav-menu {
-                gap: 20px;
-                font-size: 12px;
+            .hamburger {
+                display: flex;
             }
-            
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.95);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
             .parcels-grid {
                 grid-template-columns: 1fr;
             }
@@ -588,13 +617,20 @@
     <div class="nav-wrapper">
         <nav class="navbar">
             <div class="navbar-container">
-                <a href="index.html" class="logo">M77 AG</a>
-                <ul class="nav-menu">
-                    <li><a href="index.html" class="nav-link">Home</a></li>
-                    <li><a href="hunting.html" class="nav-link">Hunting</a></li>
-                    <li><a href="services.html" class="nav-link">Services</a></li>
-                    <li><a href="about.html" class="nav-link">About</a></li>
-                    <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <a href="/" class="logo">M77 AG</a>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                    <li><a href="/admin" class="nav-link">Admin</a></li>
                 </ul>
             </div>
         </nav>
@@ -860,6 +896,22 @@
         <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
         <p style="margin-top: 10px; opacity: 0.7;">Four generations of family farming • Est. Late 1800s</p>
     </footer>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+    </script>
 </body>
 </html>d game throughout the season.
                         </p>
