@@ -784,7 +784,7 @@
                     // Redirect to property page with maps after 3 seconds
                     setTimeout(() => {
                         const booking = result.booking;
-                        const propertyPage = booking.parcel === 'heritage-farm' ? 'heritage-farm.html' : 'prairie-peace.html';
+                        const propertyPage = booking.parcel === 'heritage-farm' ? 'heritage-farm-map.html' : 'prairie-peace-map.html';
                         window.location.href = `/${propertyPage}?bookingId=${bookingId}`;
                     }, 3000);
                 } else {
