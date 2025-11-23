@@ -1,26 +1,30 @@
-// Email template for waiver confirmation - sent after customer signs waiver
-// Includes printable vehicle dash card and property boundary information
+// waiver-confirmation-email.js
+// Final email sent AFTER customer signs waiver
+// Contains printable vehicle dash card and property boundary maps
 
 function getWaiverConfirmationEmail(booking) {
   const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  const propertyLocation = booking.parcel === 'heritage-farm' ? 'Sedgwick County, Colorado' : 'Logan County, Colorado';
-  const propertyAcres = booking.parcel === 'heritage-farm' ? '1,160 acres' : '1,550 acres';
+  const propertyLocation = booking.parcel === 'heritage-farm' ? 'Sedgwick County, Colorado' : 'Logan County, Colorado (South of Haxtun)';
   
-  // Format dates
-  const checkinDate = new Date(booking.checkinDate).toLocaleDateString('en-US', { 
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+  const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
-  const checkoutDate = new Date(booking.checkoutDate).toLocaleDateString('en-US', { 
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-  });
-  
+
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    @media print {
+      .no-print { display: none; }
+      .page-break { page-break-after: always; }
+      body { margin: 0; padding: 20px; }
+    }
+    
     body {
       font-family: Arial, sans-serif;
       line-height: 1.6;
@@ -29,479 +33,435 @@ function getWaiverConfirmationEmail(booking) {
       margin: 0 auto;
       padding: 20px;
     }
-    .header {
-      background-color: #2c5530;
-      color: white;
-      padding: 30px;
-      text-align: center;
-      border-radius: 8px 8px 0 0;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-    .content {
-      background-color: #f9f9f9;
-      padding: 30px;
-      border-radius: 0 0 8px 8px;
-    }
-    .success-box {
-      background-color: #e8f5e9;
-      border: 3px solid #4caf50;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .success-box h2 {
-      color: #2c5530;
-      margin-top: 0;
-    }
     
-    /* PRINTABLE VEHICLE DASH CARD */
     .dash-card {
-      background: white;
-      border: 4px solid #2c5530;
-      padding: 20px;
-      margin: 30px 0;
-      page-break-after: always;
-      border-radius: 8px;
-    }
-    .dash-card h2 {
-      background-color: #2c5530;
-      color: white;
-      padding: 15px;
-      margin: -20px -20px 20px -20px;
-      text-align: center;
-      font-size: 24px;
-      border-radius: 4px 4px 0 0;
-    }
-    .dash-card .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 2px solid #ddd;
-      font-size: 16px;
-    }
-    .dash-card .info-label {
-      font-weight: bold;
-      color: #2c5530;
-    }
-    .dash-card .emergency {
-      background-color: #fff3cd;
-      border: 2px solid #ff6b6b;
-      padding: 15px;
-      margin: 20px 0;
-      border-radius: 5px;
-      text-align: center;
-    }
-    .dash-card .emergency .phone {
-      font-size: 24px;
-      font-weight: bold;
-      color: #c62828;
-      margin: 10px 0;
+      border: 3px solid #000;
+      padding: 30px;
+      margin: 40px 0;
+      background: #fff;
     }
     
-    /* PROPERTY BOUNDARIES SECTION */
-    .boundaries-section {
-      background: white;
-      border: 3px solid #d4a54a;
-      padding: 25px;
-      margin: 30px 0;
-      border-radius: 8px;
-    }
-    .boundaries-section h2 {
+    .dash-card h1 {
       color: #2c5530;
-      margin-top: 0;
+      text-align: center;
+      margin: 0 0 20px 0;
+      font-size: 28px;
       border-bottom: 3px solid #d4a54a;
-      padding-bottom: 10px;
-    }
-    .boundaries-section h3 {
-      color: #8b6914;
-      margin-top: 20px;
+      padding-bottom: 15px;
     }
     
-    .warning-box {
-      background-color: #fff3cd;
-      border: 3px solid #ff6b6b;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 8px;
-    }
-    .warning-box h3 {
-      color: #c62828;
-      margin-top: 0;
+    .info-row {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f5f5f5;
     }
     
-    .hunting-rules {
-      background-color: #f8f6f3;
-      padding: 20px;
-      margin: 20px 0;
-      border-left: 5px solid #d4a54a;
-      border-radius: 5px;
-    }
-    
-    .print-button {
-      background-color: #2c5530;
-      color: white;
-      padding: 15px 40px;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 18px;
+    .info-label {
       font-weight: bold;
+      color: #2c5530;
       display: inline-block;
+      width: 150px;
+    }
+    
+    .emergency {
+      background: #ffebee;
+      border-left: 5px solid #c62828;
+      padding: 15px;
       margin: 20px 0;
-      text-align: center;
     }
     
-    .footer {
-      text-align: center;
+    .property-section {
+      margin: 30px 0;
       padding: 20px;
-      color: #666;
-      font-size: 14px;
-      border-top: 2px solid #ddd;
-      margin-top: 30px;
+      background: #f8f6f3;
+      border-left: 5px solid #d4a54a;
     }
     
-    ul {
-      margin: 10px 0;
-      padding-left: 25px;
-    }
-    li {
-      margin: 8px 0;
-      line-height: 1.6;
+    .parcel-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
     }
     
-    @media print {
-      .no-print { display: none; }
-      .dash-card { page-break-after: always; }
-      body { margin: 0; padding: 20px; }
+    .parcel-table th, .parcel-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    
+    .parcel-table th {
+      background: #2c5530;
+      color: white;
+    }
+    
+    .coordinates {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="header no-print">
-    <h1>✅ Waiver Confirmed - You're All Set!</h1>
-    <p>M77 AG - Four Generations of Agricultural Excellence</p>
-  </div>
-  
-  <div class="content">
-    <div class="success-box no-print">
-      <h2>🎉 Your Hunting Reservation is Complete!</h2>
-      <p><strong>Thank you for signing the liability waiver, ${booking.customerName}.</strong></p>
-      <p>You are now fully confirmed for your hunt on ${propertyName}.</p>
+
+  <!-- PAGE 1: VEHICLE DASH CARD -->
+  <div class="dash-card">
+    <h1>M77 AG HUNTING AUTHORIZATION</h1>
+    
+    <div class="info-row">
+      <span class="info-label">HUNTER NAME:</span>
+      <span style="font-size: 18px; font-weight: bold;">${booking.customerName}</span>
     </div>
     
-    <!-- PRINTABLE VEHICLE DASH CARD -->
-    <div class="dash-card">
-      <h2>🚗 VEHICLE DASH CARD - KEEP IN VEHICLE</h2>
+    <div class="info-row">
+      <span class="info-label">BOOKING ID:</span>
+      <span style="font-family: monospace; font-size: 16px;">${booking._id}</span>
+    </div>
+    
+    <div class="info-row">
+      <span class="info-label">PROPERTY:</span>
+      <span style="font-size: 16px; font-weight: bold;">${propertyName}</span>
+    </div>
+    
+    <div class="info-row">
+      <span class="info-label">LOCATION:</span>
+      <span>${propertyLocation}</span>
+    </div>
+    
+    <div class="info-row">
+      <span class="info-label">HUNT DATE:</span>
+      <span style="font-size: 16px; font-weight: bold;">${huntDate}</span>
+    </div>
+    
+    <div class="info-row">
+      <span class="info-label">NUMBER OF HUNTERS:</span>
+      <span>${booking.numHunters}</span>
+    </div>
+    
+    <div class="emergency">
+      <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - CALL IMMEDIATELY:</p>
+      <p style="margin: 0; font-size: 24px; font-weight: bold;">Kyle McConnell: 970-571-1015</p>
+      <p style="margin: 10px 0 0 0; font-size: 14px;">Do not retrieve downed game without calling. No answer does NOT mean permission to proceed.</p>
+    </div>
+    
+    <div style="border-top: 2px solid #ddd; margin-top: 25px; padding-top: 20px; text-align: center;">
+      <p style="margin: 5px 0; font-weight: bold;">KEEP THIS CARD VISIBLE IN VEHICLE DASHBOARD</p>
+      <p style="margin: 5px 0;">Waiver Status: SIGNED | Payment: ${booking.paymentStatus}</p>
+      <p style="margin: 5px 0; font-size: 12px;">M77 AG | McConnell Enterprises LLC | hunting@m77ag.com</p>
+    </div>
+  </div>
+  
+  <div class="page-break"></div>
+  
+  <!-- PAGE 2: PROPERTY BOUNDARIES & MAPS -->
+  <div class="property-section">
+    <h2 style="color: #2c5530; margin-top: 0;">Property Boundaries & Hunting Areas</h2>
+    
+    <p><strong>Download Maps:</strong></p>
+    <ul class="no-print">
+      <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
+      <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Map.pdf">Download PDF Map</a></li>
+    </ul>
+
+    ${booking.parcel === 'heritage-farm' ? `
+    <!-- HERITAGE FARM PARCELS -->
+    <h3 style="color: #2c5530;">M77 AG Heritage Farm - 1,160 Acres</h3>
+    <p><strong>Sedgwick County, Colorado | 5 Hunting Parcels</strong></p>
+    
+    <table class="parcel-table">
+      <thead>
+        <tr>
+          <th>Parcel Name</th>
+          <th>Approx. Acres</th>
+          <th>Primary Game</th>
+          <th>GPS Corner Coordinates</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Rolling Dunes</strong></td>
+          <td>320 acres</td>
+          <td>Deer, Pheasant</td>
+          <td class="coordinates">40.7542°N, 102.5468°W (NW)<br>40.7390°N, 102.5333°W (SE)</td>
+        </tr>
+        <tr>
+          <td><strong>Prairie Parcel</strong></td>
+          <td>280 acres</td>
+          <td>Pheasant, Dove</td>
+          <td class="coordinates">40.7791°N, 102.5266°W (NE)<br>40.7643°N, 102.5263°W (SE)</td>
+        </tr>
+        <tr>
+          <td><strong>Sedgwick County Homestead</strong></td>
+          <td>240 acres</td>
+          <td>Deer, Turkey, Pheasant<br><strong>CAMPING AREA</strong></td>
+          <td class="coordinates">40.7791°N, 102.5117°W (NE)<br>40.7642°N, 102.5119°W (SE)<br><strong>Camp: 40.7690°N, 102.5161°W</strong></td>
+        </tr>
+        <tr>
+          <td><strong>North Side</strong></td>
+          <td>160 acres</td>
+          <td>Deer, Coyote</td>
+          <td class="coordinates">40.7715°N, 102.6132°W (NW)<br>40.7642°N, 102.6174°W (SE)</td>
+        </tr>
+        <tr>
+          <td><strong>South Side</strong></td>
+          <td>160 acres</td>
+          <td>Deer, Pheasant, Dove</td>
+          <td class="coordinates">40.7642°N, 102.6227°W (NW)<br>40.7568°N, 102.6177°W (SE)</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px 0;">
+      <p style="margin: 0 0 10px 0; font-weight: bold; color: #856404;">GAME REST PERIODS (Do Not Hunt These Areas):</p>
+      <ul style="margin: 5px 0;">
+        <li><strong>Rolling Dunes:</strong> Closed Nov 15-21, Dec 1-7, Dec 20-26</li>
+        <li><strong>Homestead:</strong> Closed Nov 22-28, Dec 8-14</li>
+        <li><strong>North Side:</strong> Closed Nov 8-14, Nov 29-Dec 5</li>
+      </ul>
+      <p style="margin: 10px 0 0 0; font-size: 13px; color: #856404;">Rest periods allow game recovery. Check calendar before hunting each parcel.</p>
+    </div>
+    ` : `
+    <!-- PRAIRIE PEACE PARCELS -->
+    <h3 style="color: #2c5530;">Prairie Peace - 1,550 Acres</h3>
+    <p><strong>Logan County, Colorado (South of Haxtun) | 7 Hunting Parcels</strong></p>
+    
+    <table class="parcel-table">
+      <thead>
+        <tr>
+          <th>Parcel Name</th>
+          <th>Approx. Acres</th>
+          <th>Primary Game</th>
+          <th>GPS Boundary Coordinates</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>The South Section</strong></td>
+          <td>598 acres</td>
+          <td>Deer, Pheasant, Prairie Dogs</td>
+          <td class="coordinates">
+            40.4884°N, 102.6454°W (NW)<br>
+            40.4886°N, 102.6406°W (NE)<br>
+            40.4823°N, 102.6265°W (SW)<br>
+            40.4967°N, 102.6454°W (N)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Madsen Pasture</strong></td>
+          <td>155 acres</td>
+          <td>Deer, Prairie Dogs</td>
+          <td class="coordinates">
+            40.4825°N, 102.6550°W (NW)<br>
+            40.4825°N, 102.6457°W (NE)<br>
+            40.4897°N, 102.6456°W (SE)<br>
+            40.4894°N, 102.6550°W (SW)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Prairie Peace Camping</strong></td>
+          <td>Camping Area</td>
+          <td><strong>CAMPING FACILITIES</strong><br>Water & 110V Electric</td>
+          <td class="coordinates">
+            <strong>Camp Location:</strong><br>
+            40.4859°N, 102.6460°W
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Creek Bed on 14</strong></td>
+          <td>169 acres</td>
+          <td><strong>Dove, Pheasant</strong><br>Prime creek habitat</td>
+          <td class="coordinates">
+            40.5259°N, 102.6650°W (NW)<br>
+            40.5258°N, 102.6550°W (NE)<br>
+            40.5331°N, 102.6551°W (SE)<br>
+            40.5332°N, 102.6650°W (SW)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Grass and Fenceline</strong></td>
+          <td>316 acres</td>
+          <td>Deer, Coyote</td>
+          <td class="coordinates">
+            40.5765°N, 102.7033°W (NW)<br>
+            40.5695°N, 102.7033°W (NE)<br>
+            40.5695°N, 102.6844°W (SE)<br>
+            40.5768°N, 102.6844°W (SW)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Fencelines</strong></td>
+          <td>162 acres</td>
+          <td>Deer, Turkey</td>
+          <td class="coordinates">
+            40.5839°N, 102.7130°W (NW)<br>
+            40.5764°N, 102.7130°W (NE)<br>
+            40.5765°N, 102.7033°W (SE)<br>
+            40.5838°N, 102.7037°W (SW)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Logan County Trees</strong></td>
+          <td>151 acres</td>
+          <td>Deer, Turkey roosting</td>
+          <td class="coordinates">
+            40.5765°N, 102.7603°W (NW)<br>
+            40.5764°N, 102.7508°W (NE)<br>
+            40.5838°N, 102.7520°W (SE)<br>
+            40.5835°N, 102.7603°W (SW)
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; margin: 20px 0;">
+      <p style="margin: 0 0 10px 0; font-weight: bold; color: #2e7d32;">PRAIRIE PEACE HUNTING STRATEGY:</p>
+      <ul style="margin: 5px 0; color: #2e7d32;">
+        <li><strong>Dawn:</strong> Bird hunting in Creek Bed on 14, The South Section</li>
+        <li><strong>Mid-Day:</strong> Prairie dog shooting (abundant throughout property)</li>
+        <li><strong>Evening:</strong> Return to nesting zones for birds, deer movement</li>
+        <li><strong>Best for:</strong> Small groups (3-4 hunters recommended)</li>
+      </ul>
+    </div>
+    `}
+    
+    <!-- COMMON HUNTING RULES -->
+    <div style="border-top: 3px solid #2c5530; margin-top: 30px; padding-top: 20px;">
+      <h3 style="color: #2c5530;">Critical Hunting Rules & Protocols</h3>
       
-      <div class="info-row">
-        <span class="info-label">Hunter Name:</span>
-        <span>${booking.customerName}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">Property:</span>
-        <span>${propertyName}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">Location:</span>
-        <span>${propertyLocation}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">Property Size:</span>
-        <span>${propertyAcres}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">Hunt Dates:</span>
-        <span>${checkinDate} - ${checkoutDate}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">Number of Hunters:</span>
-        <span>${booking.numHunters}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">Vehicle:</span>
-        <span>${booking.vehicleMake} ${booking.vehicleModel} - ${booking.vehicleColor}</span>
-      </div>
-      
-      <div class="info-row">
-        <span class="info-label">License Plate:</span>
-        <span>${booking.vehicleLicense}</span>
-      </div>
-      
-      <div class="emergency">
-        <strong>⚠️ EMERGENCY CONTACT / DOWNED GAME PROTOCOL</strong>
-        <div class="phone">970-571-1015</div>
-        <p><strong>Kyle McConnell - M77 AG</strong></p>
-        <p style="font-size: 14px; margin: 10px 0 0 0;">
-          MUST call immediately if game crosses property lines
+      <div style="background: #ffebee; border-left: 5px solid #c62828; padding: 15px; margin: 15px 0;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; color: #c62828; font-size: 16px;">PROPERTY BOUNDARIES - CRIMINAL TRESPASSING WARNING</p>
+        <p style="margin: 0; color: #c62828;">
+          Stay INSIDE property boundaries at all times. GPS devices can have 30-50 foot errors. 
+          When in doubt, move toward the CENTER of the property. Trespassing on adjacent land 
+          will result in immediate loss of hunting privileges and criminal prosecution.
         </p>
       </div>
       
-      <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #666;">
-        <strong>Print this card and keep visible in your vehicle dashboard</strong>
-      </p>
-    </div>
-    
-    <!-- PROPERTY BOUNDARIES & HUNTING AREAS -->
-    <div class="boundaries-section">
-      <h2>📍 Property Boundaries & Hunting Areas</h2>
-      
-      ${booking.parcel === 'heritage-farm' ? `
-      <h3>M77 AG Heritage Farm - Sedgwick County</h3>
-      <p><strong>Total Property: 1,160 acres</strong></p>
-      
-      <div class="warning-box">
-        <h3>⚠️ CRITICAL BOUNDARY INFORMATION</h3>
-        <p><strong>You MUST stay within property boundaries at all times.</strong></p>
-        <ul>
-          <li>Property is marked with posted signs at regular intervals</li>
-          <li>Use your GPS to verify boundaries (coordinates provided below)</li>
-          <li>Orange areas on map indicate GAME REST PERIODS - NO HUNTING</li>
-          <li>Crossing property lines is TRESPASSING and may result in criminal charges</li>
-        </ul>
+      <div style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 15px 0;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; color: #856404; font-size: 16px;">DOWNED GAME PROTOCOL - MANDATORY</p>
+        <p style="margin: 0 0 5px 0; color: #856404; font-size: 18px;"><strong>Kyle McConnell: 970-571-1015</strong></p>
+        <p style="margin: 0; color: #856404;">
+          Call IMMEDIATELY when game is down. Do not pursue onto neighboring properties without 
+          explicit permission coordinated through Kyle. NO ANSWER DOES NOT MEAN PERMISSION.
+          Unauthorized retrieval is criminal trespassing.
+        </p>
       </div>
       
-      <h3>Boundary Coordinates (Use for GPS Verification):</h3>
-      <ul>
-        <li><strong>North Boundary:</strong> County Road 28</li>
-        <li><strong>South Boundary:</strong> County Road 26</li>
-        <li><strong>East Boundary:</strong> Road 52</li>
-        <li><strong>West Boundary:</strong> Road 51</li>
-      </ul>
-      
-      <h3>Huntable Areas:</h3>
-      <ul>
-        <li><strong>North Section:</strong> Approximately 580 acres - mix of CRP grassland and wheat stubble</li>
-        <li><strong>South Section:</strong> Approximately 580 acres - dryland wheat and sorghum fields</li>
-        <li><strong>Shelterbelts:</strong> Tree rows provide excellent bird cover - hunt with caution near edges</li>
-      </ul>
-      
-      <h3>Game Rest Periods (NO HUNTING):</h3>
-      <ul>
-        <li>Orange-marked areas on your property map indicate fields in rest rotation</li>
-        <li>These areas allow game to feed and recover between hunting pressure</li>
-        <li>Rest areas change periodically throughout season</li>
-        <li>Current rest areas are clearly marked on your downloadable map</li>
-      </ul>
-      
-      <h3>Property Features & Landmarks:</h3>
-      <ul>
-        <li><strong>Historic Homestead Buildings:</strong> Located in center section - built late 1800s by Swedish homesteaders</li>
-        <li><strong>Windmill:</strong> Southwest corner - good landmark for navigation</li>
-        <li><strong>Waterway:</strong> Seasonal drainage runs north-south through property</li>
-        <li><strong>Pivot Irrigation:</strong> Active equipment - stay clear of machinery</li>
-      </ul>
-      ` : `
-      <h3>Prairie Peace - Logan County</h3>
-      <p><strong>Total Property: 1,550 acres</strong></p>
-      
-      <div class="warning-box">
-        <h3>⚠️ CRITICAL BOUNDARY INFORMATION</h3>
-        <p><strong>You MUST stay within property boundaries at all times.</strong></p>
-        <ul>
-          <li>Property is marked with posted signs at regular intervals</li>
-          <li>Use your GPS to verify boundaries (coordinates provided below)</li>
-          <li>Orange areas on map indicate GAME REST PERIODS - NO HUNTING</li>
-          <li>Crossing property lines is TRESPASSING and may result in criminal charges</li>
-        </ul>
+      <div style="background: #e3f2fd; border-left: 5px solid #1976d2; padding: 15px; margin: 15px 0;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; color: #1565c0;">WORKING FARM - SAFETY HAZARDS</p>
+        <p style="margin: 0; color: #1565c0;">
+          This is an active agricultural operation. Watch for farm equipment, livestock, irrigation 
+          systems, fence lines, and other hazards. You are entering at your own risk and assume 
+          all responsibility for your safety and well-being.
+        </p>
       </div>
       
-      <h3>Boundary Coordinates (Use for GPS Verification):</h3>
-      <ul>
-        <li><strong>North Boundary:</strong> County Road 36</li>
-        <li><strong>South Boundary:</strong> County Road 34</li>
-        <li><strong>East Boundary:</strong> Road 64</li>
-        <li><strong>West Boundary:</strong> Road 62</li>
-      </ul>
-      
-      <h3>Huntable Areas:</h3>
-      <ul>
-        <li><strong>North Quarter:</strong> Approximately 400 acres - native prairie grass and CRP</li>
-        <li><strong>Central Section:</strong> Approximately 750 acres - dryland wheat and corn stubble</li>
-        <li><strong>South Quarter:</strong> Approximately 400 acres - mixed grain fields and grassland</li>
-        <li><strong>Draw Areas:</strong> Natural drainages provide excellent pheasant habitat</li>
-      </ul>
-      
-      <h3>Game Rest Periods (NO HUNTING):</h3>
-      <ul>
-        <li>Orange-marked areas on your property map indicate fields in rest rotation</li>
-        <li>These areas allow game to feed and recover between hunting pressure</li>
-        <li>Rest areas change periodically throughout season</li>
-        <li>Current rest areas are clearly marked on your downloadable map</li>
-      </ul>
-      
-      <h3>Property Features & Landmarks:</h3>
-      <ul>
-        <li><strong>Stock Pond:</strong> Southwest section - good landmark, cattle may be present</li>
-        <li><strong>Shelterbelt Rows:</strong> Multiple tree rows running east-west - prime bird cover</li>
-        <li><strong>Old Farmstead:</strong> Northwest corner - structural hazards, approach with caution</li>
-        <li><strong>Cattle Operation:</strong> Active grazing in some sections - respect livestock</li>
-      </ul>
-      `}
-      
-      <h3>Download Property Map:</h3>
-      <p style="margin: 15px 0;">
-        <a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm-Boundaries.kml' : 'Prairie-Peace-Boundaries.kml'}" 
-           style="background-color: #d4a54a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
-          📥 Download ${propertyName} Map (KML File)
-        </a>
-      </p>
-      <p style="font-size: 14px; color: #666;">
-        Open this KML file with Google Earth, OnX Hunt, or similar mapping app on your phone for GPS navigation.
-      </p>
-    </div>
-    
-    <!-- HUNTING RULES & PROTOCOLS -->
-    <div class="hunting-rules">
-      <h2 style="color: #2c5530; margin-top: 0;">🦌 Hunting Rules & Protocols</h2>
-      
-      <h3 style="color: #8b6914;">Required Before Hunting:</h3>
-      <ul>
-        <li>✅ Valid Colorado hunting license</li>
-        <li>✅ Appropriate stamps (habitat stamp, federal waterfowl stamp if hunting dove)</li>
-        <li>✅ Hunter orange clothing as required by Colorado law</li>
-        <li>✅ This vehicle dash card visible in vehicle</li>
-      </ul>
-      
-      <h3 style="color: #8b6914;">Downed Game Protocol:</h3>
-      <ul>
-        <li><strong>IF GAME CROSSES PROPERTY LINES:</strong> STOP IMMEDIATELY</li>
-        <li>Call Kyle McConnell at <strong>970-571-1015</strong> before pursuing</li>
-        <li>Do NOT enter neighboring property without permission</li>
-        <li>Failure to follow this protocol may result in trespassing charges</li>
-      </ul>
-      
-      <h3 style="color: #8b6914;">Safety Requirements:</h3>
-      <ul>
-        <li>Know your target and what is beyond it before shooting</li>
-        <li>Maintain muzzle control at all times</li>
-        <li>Never shoot toward buildings, roads, or property boundaries</li>
-        <li>Watch for agricultural equipment and livestock</li>
-        <li>Cell service may be limited - hunt with a partner when possible</li>
-      </ul>
-      
-      <h3 style="color: #8b6914;">Property Respect:</h3>
-      <ul>
+      <h4 style="color: #2c5530; margin-top: 25px;">General Hunting Guidelines:</h4>
+      <ul style="line-height: 1.8;">
+        <li>Valid Colorado hunting license and appropriate tags REQUIRED</li>
+        <li>No shooting within 50 yards of buildings, roads, or property boundaries</li>
+        <li>Close all gates behind you</li>
         <li>Pack out ALL trash and spent shells</li>
-        <li>Close all gates as you found them</li>
-        <li>Stay on designated vehicle paths</li>
-        <li>Do not damage crops or fences</li>
-        <li>Report any property damage to Kyle immediately</li>
+        <li>Respect livestock and farm equipment - do not disturb</li>
+        <li>Obey all Colorado Parks & Wildlife regulations</li>
+        <li>Hunt safely and ethically at all times</li>
+        <li>Report any issues to Kyle immediately: 970-571-1015</li>
       </ul>
       
-      <h3 style="color: #8b6914;">Camping Information:</h3>
-      <ul>
-        <li>Camping fee: $50/night (if reserved)</li>
-        <li>Boondocking sites available (no hookups)</li>
-        <li>Pack out all waste and trash</li>
-        <li>No open fires without permission</li>
-        <li>Respect quiet hours after dark</li>
-      </ul>
-    </div>
-    
-    <div class="no-print" style="text-align: center; margin: 30px 0; padding: 20px; background: #e8f5e9; border-radius: 8px;">
-      <h3 style="color: #2c5530;">Ready to Print Your Documents</h3>
-      <p>Use your browser's print function (Ctrl+P or Cmd+P) to print:</p>
-      <ul style="text-align: left; display: inline-block; margin: 15px 0;">
-        <li><strong>Page 1:</strong> Vehicle Dash Card (keep in vehicle)</li>
-        <li><strong>Page 2:</strong> Property Boundaries & Hunting Information</li>
-      </ul>
-      <p style="margin-top: 20px;">
-        <strong>Download your property map above for GPS navigation while hunting.</strong>
-      </p>
-    </div>
-    
-    <div class="no-print" style="background: #f8f6f3; padding: 20px; border-left: 5px solid #d4a54a; margin: 20px 0;">
-      <h3 style="color: #2c5530; margin-top: 0;">Questions or Need Assistance?</h3>
-      <p><strong>Kyle McConnell</strong><br>
-      Phone: <strong>970-571-1015</strong><br>
-      Email: hunting@m77ag.com</p>
-      <p>We're here to ensure you have a safe and successful hunt!</p>
+      <h4 style="color: #2c5530; margin-top: 25px;">Using GPS Coordinates:</h4>
+      <ol style="line-height: 1.8;">
+        <li>Download the KML file and open in Google Earth on your phone</li>
+        <li>Save boundary coordinates to your GPS device</li>
+        <li>Print this page and keep in your vehicle</li>
+        <li>Walk property boundaries before hunting to familiarize yourself</li>
+        <li>Enable GPS tracking on your device to monitor your location</li>
+        <li>Remember: Cell phone GPS can have 30-50 foot accuracy errors</li>
+      </ol>
     </div>
   </div>
   
-  <div class="footer no-print">
-    <p><strong>M77 AG | Northeast Colorado</strong></p>
-    <p>Four Generations of Agricultural Excellence Since the Late 1800s</p>
-    <p style="margin-top: 15px; font-size: 12px;">
-      This email contains your complete hunting package. Save this email for your records.<br>
-      Your signed waiver is securely stored in our system.
+  <!-- CONTACT & FOOTER -->
+  <div class="no-print" style="border-top: 3px solid #2c5530; margin-top: 40px; padding-top: 20px; text-align: center;">
+    <h3 style="color: #2c5530;">Questions or Emergency Contact</h3>
+    <p><strong>Kyle McConnell</strong></p>
+    <p>Cell: <strong>970-571-1015</strong> (Downed game & emergencies)</p>
+    <p>Office: 970-774-3276</p>
+    <p>Email: hunting@m77ag.com</p>
+    <p style="margin-top: 20px; font-size: 14px; color: #666;">
+      M77 AG | McConnell Enterprises LLC<br>
+      Four Generations of Agricultural Excellence<br>
+      Northeast Colorado
     </p>
   </div>
+  
+  <div class="no-print" style="background: #f5f5f5; padding: 20px; margin-top: 30px; text-align: center; border-radius: 5px;">
+    <p style="margin: 0; font-weight: bold;">PRINT INSTRUCTIONS</p>
+    <p style="margin: 10px 0 0 0;">Use your browser's print function (Ctrl+P or Cmd+P):</p>
+    <ul style="text-align: left; display: inline-block; margin: 10px 0; line-height: 1.8;">
+      <li><strong>Page 1:</strong> Vehicle Dash Card - Keep visible in dashboard while hunting</li>
+      <li><strong>Page 2:</strong> Property Boundaries - Reference map with GPS coordinates</li>
+    </ul>
+  </div>
+  
 </body>
 </html>
   `;
 }
 
-// Admin notification for waiver signed
+// Admin notification
 function getAdminWaiverNotification(booking) {
   const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  
+  const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background-color: #4caf50; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-    .content { background-color: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
-    .detail { margin: 10px 0; padding: 8px 0; border-bottom: 1px solid #ddd; }
-    .label { font-weight: bold; color: #2c5530; }
-    .signature-box { background: white; border: 2px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 5px; }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #2c5530; color: white; padding: 20px; text-align: center; }
+    .content { background: #f8f6f3; padding: 20px; margin: 20px 0; }
+    .info-row { margin: 10px 0; padding: 10px; background: white; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h2>✅ Waiver Signed - Booking Complete</h2>
+  <div class="header">
+    <h2 style="margin: 0;">WAIVER SIGNED - Booking Complete</h2>
+  </div>
+  
+  <div class="content">
+    <p><strong>Liability waiver has been signed and booking is now complete.</strong></p>
+    
+    <div class="info-row">
+      <strong>Hunter:</strong> ${booking.customerName}<br>
+      <strong>Email:</strong> ${booking.email}<br>
+      <strong>Phone:</strong> ${booking.phone}
     </div>
     
-    <div class="content">
-      <h3>Customer Information:</h3>
-      <div class="detail"><span class="label">Name:</span> ${booking.customerName}</div>
-      <div class="detail"><span class="label">Email:</span> ${booking.email}</div>
-      <div class="detail"><span class="label">Phone:</span> ${booking.phone}</div>
-      
-      <h3>Booking Details:</h3>
-      <div class="detail"><span class="label">Property:</span> ${propertyName}</div>
-      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkinDate).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkoutDate).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">Hunters:</span> ${booking.numHunters}</div>
-      <div class="detail"><span class="label">Total Price:</span> $${booking.totalPrice}</div>
-      <div class="detail"><span class="label">Payment Status:</span> ${booking.paymentStatus}</div>
-      
-      <h3>Waiver Information:</h3>
-      <div class="detail"><span class="label">Signed By:</span> ${booking.waiverData.participantName}</div>
-      <div class="detail"><span class="label">Signed Date:</span> ${new Date(booking.waiverData.signatureDate).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">IP Address:</span> ${booking.waiverData.ipAddress}</div>
-      
-      <div class="signature-box">
-        <p><strong>Digital Signature Captured:</strong></p>
-        <p style="font-size: 12px; color: #666;">Signature image stored in database with booking ID: ${booking._id}</p>
-      </div>
-      
-      <p style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 5px;">
-        <strong>✅ This booking is now FULLY COMPLETE.</strong><br>
-        Customer has been sent printable documents and property maps.
-      </p>
-      
-      <p style="margin-top: 20px;">
-        <a href="https://m77ag.com/admin/hunting-bookings.html" 
-           style="background-color: #2c5530; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
-          View in Admin Dashboard
-        </a>
-      </p>
+    <div class="info-row">
+      <strong>Property:</strong> ${propertyName}<br>
+      <strong>Hunt Date:</strong> ${huntDate}<br>
+      <strong>Hunters:</strong> ${booking.numHunters}<br>
+      <strong>Total Paid:</strong> $${booking.totalPrice}
     </div>
+    
+    <div class="info-row">
+      <strong>Booking ID:</strong> ${booking._id}<br>
+      <strong>Waiver Signed:</strong> ${new Date().toLocaleString()}<br>
+      <strong>Status:</strong> COMPLETE - Ready to Hunt
+    </div>
+    
+    <p style="margin-top: 20px;">
+      <a href="https://m77ag.com/admin/hunting-bookings.html" 
+         style="background: #2c5530; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block;">
+        View in Admin Dashboard
+      </a>
+    </p>
   </div>
 </body>
 </html>

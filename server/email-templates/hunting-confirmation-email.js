@@ -101,7 +101,7 @@ function getHuntingConfirmationEmail(booking) {
 </head>
 <body>
   <div class="header">
-    <h1>🦌 Hunting Reservation Confirmed!</h1>
+    <h1>Hunting Reservation Confirmed!</h1>
     <p>M77 AG - Four Generations of Agricultural Excellence</p>
   </div>
   
@@ -143,7 +143,7 @@ function getHuntingConfirmationEmail(booking) {
     </div>
 
     <div class="warning-box">
-      <h3>⚠️ REQUIRED: Sign Liability Waiver</h3>
+      <h3>REQUIRED: Sign Liability Waiver</h3>
       <p><strong>Before your hunt, you MUST sign the liability waiver.</strong></p>
       <p>You will not be allowed to hunt without a signed waiver.</p>
       <a href="https://m77ag.com/hunting-liability-waiver.html?bookingId=${booking._id}" class="btn">SIGN WAIVER NOW</a>
@@ -164,7 +164,7 @@ function getHuntingConfirmationEmail(booking) {
     <p>
       <strong>Kyle McConnell</strong><br>
       Phone: 970-571-1015<br>
-      Email: hunting@m77ag.com
+      Email: office@m77ag.com
     </p>
     
     <p>We look forward to hosting you!</p>
@@ -204,7 +204,7 @@ function getAdminNotificationEmail(booking) {
 <body>
   <div class="container">
     <div class="header">
-      <h2>🦌 New Hunting Booking Received</h2>
+      <h2>New Hunting Booking Received</h2>
     </div>
     
     <div class="content">
