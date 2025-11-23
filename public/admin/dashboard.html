@@ -17,7 +17,6 @@
             color: #2c2c2c;
         }
 
-        /* Header */
         .header {
             background: #1a1a1a;
             color: white;
@@ -61,7 +60,6 @@
             background: #c49d2e;
         }
 
-        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -83,7 +81,6 @@
             color: #666;
         }
 
-        /* Business Areas Grid */
         .business-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -183,7 +180,6 @@
             background: #c49d2e;
         }
 
-        /* Quick Stats Section */
         .overview-section {
             background: white;
             padding: 40px;
@@ -224,7 +220,6 @@
             color: #666;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
@@ -234,7 +229,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="logo">M77 AG</div>
         <div class="header-right">
@@ -243,15 +237,12 @@
         </div>
     </div>
 
-    <!-- Main Container -->
     <div class="container">
-        <!-- Welcome Section -->
         <div class="welcome-section">
             <h1 class="page-title">Admin Dashboard</h1>
             <p class="page-subtitle">Manage all aspects of M77 AG operations</p>
         </div>
 
-        <!-- Quick Overview Stats -->
         <div class="overview-section">
             <h2 class="section-title">Quick Overview</h2>
             <div class="overview-grid">
@@ -274,12 +265,10 @@
             </div>
         </div>
 
-        <!-- Business Areas Grid -->
         <div class="business-grid">
-            <!-- Hunting Reservations -->
-            <a href="/admin/hunting-bookings.html" class="business-card">
+            <a href="/admin/hunting-bookings" class="business-card">
                 <div class="card-header">
-                    <div class="card-icon">🦌</div>
+                    <div class="card-icon">Hunting</div>
                     <div class="card-title">Hunting Reservations</div>
                 </div>
                 <div class="card-body">
@@ -300,143 +289,85 @@
                             <div class="stat-label">Acres</div>
                         </div>
                     </div>
-                    <div class="view-dashboard-btn">View Dashboard →</div>
+                    <div class="view-dashboard-btn">View Dashboard</div>
                 </div>
             </a>
 
-            <!-- Custom Farming Services -->
-            <a href="/admin/farming-services.html" class="business-card">
+            <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
                 <div class="card-header" style="background: linear-gradient(135deg, #d4af37 0%, #c49d2e 100%);">
-                    <div class="card-icon">🚜</div>
+                    <div class="card-icon">Farming</div>
                     <div class="card-title">Custom Farming</div>
                 </div>
                 <div class="card-body">
                     <p class="card-description">
-                        Manage service proposals, track equipment usage, schedule field work, and handle customer contracts for planting, spraying, and harvesting.
+                        Coming soon - Manage service proposals, track equipment usage, and handle customer contracts.
                     </p>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <div class="stat-number" id="farmingProposals">0</div>
-                            <div class="stat-label">Proposals</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="farmingRevenue">$0</div>
-                            <div class="stat-label">Revenue</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="acresServiced">0</div>
-                            <div class="stat-label">Acres</div>
-                        </div>
-                    </div>
-                    <div class="view-dashboard-btn">View Dashboard →</div>
                 </div>
-            </a>
+            </div>
 
-            <!-- Our Farm Operations -->
-            <a href="/admin/farm-operations.html" class="business-card">
+            <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
                 <div class="card-header" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
-                    <div class="card-icon">🐄</div>
+                    <div class="card-icon">Cattle</div>
                     <div class="card-title">Our Farm Operations</div>
                 </div>
                 <div class="card-body">
                     <p class="card-description">
-                        Track cattle inventory, monitor feed and health records, manage pasture rotations, and oversee internal farming operations on owned land.
+                        Coming soon - Track cattle inventory, monitor feed and health records, manage pasture rotations.
                     </p>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <div class="stat-number" id="cattleCount">0</div>
-                            <div class="stat-label">Cattle</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">2</div>
-                            <div class="stat-label">Properties</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="cropAcres">0</div>
-                            <div class="stat-label">Crop Acres</div>
-                        </div>
-                    </div>
-                    <div class="view-dashboard-btn">View Dashboard →</div>
                 </div>
-            </a>
+            </div>
 
-            <!-- Chemical Sales -->
-            <a href="/admin/chemical-sales.html" class="business-card">
+            <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
                 <div class="card-header" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
-                    <div class="card-icon">🧪</div>
+                    <div class="card-icon">Chemical</div>
                     <div class="card-title">Chemical Sales</div>
                 </div>
                 <div class="card-body">
                     <p class="card-description">
-                        Manage chemical inventory, track sales to customers, maintain spray records, and ensure regulatory compliance for agricultural inputs.
+                        Coming soon - Manage chemical inventory, track sales, and maintain spray records.
                     </p>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <div class="stat-number" id="chemicalOrders">0</div>
-                            <div class="stat-label">Orders</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="chemicalRevenue">$0</div>
-                            <div class="stat-label">Revenue</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="productsInStock">0</div>
-                            <div class="stat-label">Products</div>
-                        </div>
-                    </div>
-                    <div class="view-dashboard-btn">View Dashboard →</div>
                 </div>
-            </a>
+            </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
-        © 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.
+        2025 M77 AG. All rights reserved. McConnell Enterprises LLC.
     </div>
 
     <script>
-        // Load dashboard data
         async function loadDashboardData() {
             try {
-                // Get authentication token
                 const token = localStorage.getItem('adminToken');
                 if (!token) {
                     window.location.href = '/admin/login';
                     return;
                 }
 
-                // Fetch hunting bookings data
-                const huntingResponse = await fetch('/api/hunting/bookings/stats', {
+                const response = await fetch('/api/bookings', {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': 'Bearer ' + token
                     }
                 });
 
-                if (huntingResponse.ok) {
-                    const huntingData = await huntingResponse.json();
-                    if (huntingData.success) {
-                        document.getElementById('huntingBookings').textContent = huntingData.stats.totalBookings || 0;
-                        document.getElementById('huntingRevenue').textContent = '$' + (huntingData.stats.totalRevenue || 0).toLocaleString();
-                        document.getElementById('activeBookings').textContent = huntingData.stats.activeBookings || 0;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        document.getElementById('huntingBookings').textContent = data.count || 0;
+                        document.getElementById('activeBookings').textContent = data.count || 0;
                     }
                 }
-
-                // TODO: Fetch other business area data when APIs are ready
-                // Farming services, farm operations, chemical sales
-
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
             }
         }
 
-        // Logout function
         function logout() {
             localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
             window.location.href = '/admin/login';
         }
 
-        // Check authentication on page load
         window.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('adminToken');
             if (!token) {
