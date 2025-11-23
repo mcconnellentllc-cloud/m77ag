@@ -4,14 +4,17 @@ const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// Initialize express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Connect to MongoDB
 const mongoose = require('mongoose');
 const { createDefaultAdmin } = require('./models/user');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
@@ -19,49 +22,100 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag'
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('MongoDB connected successfully');
+    console.log('Database:', MONGODB_URI.split('@')[1] || 'localhost');
+    // Create default admin user
     createDefaultAdmin();
   })
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err.message);
+    // Continue running even if MongoDB fails (for testing)
+  });
 
+// Import routes
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const huntingRoutes = require('./routes/hunting');
 
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/hunting', huntingRoutes);
 
+// Health check / test route
 app.get('/api/test', (req, res) => {
-  res.json({ message: 'API is working', timestamp: new Date() });
+  res.json({ 
+    message: 'M77 AG API is working',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
 });
 
+// Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
+
+// Route handlers for specific pages
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
 
 app.get('/admin/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/login.html'));
-});
-
-app.get('/admin/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
 
 app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
+// Main routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
+app.get('/hunting', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/hunting.html'));
+});
+
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/about.html'));
+});
+
+app.get('/services', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/services.html'));
+});
+
+// 404 handler - must come after all other routes
+app.use((req, res) => {
+  res.status(404).json({
     success: false,
-    message: 'Something went wrong!'
+    message: 'Route not found',
+    path: req.path
   });
 });
 
-app.listen(PORT, () => {
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('='.repeat(50));
   console.log(`M77 AG Server running on port ${PORT}`);
-  console.log(`Admin: admin@m77ag.com / M77admin2024!`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Time: ${new Date().toLocaleString()}`);
+  console.log('='.repeat(50));
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server...');
+  mongoose.connection.close(false, () => {
+    console.log('MongoDB connection closed');
+    process.exit(0);
+  });
 });
