@@ -327,7 +327,7 @@ function getWaiverConfirmationEmail(booking) {
       <div style="background: #f0f8ff; border-left: 5px solid #4caf50; padding: 20px; margin: 20px 0;">
         <h3 style="color: #2e7d32; margin-top: 0;">VIEW YOUR PROPERTY BOUNDARIES:</h3>
         <div style="margin: 15px 0;">
-          <a href="https://m77ag.com/${booking.parcel === 'heritage-farm' ? 'heritage-farm' : 'prairie-peace'}-map.html" 
+          <a href="https://m77ag.com/${booking.parcel === 'heritage-farm' ? 'heritage-farm' : 'prairie-peace'}.html" 
              style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
             VIEW INTERACTIVE MAP
           </a>
