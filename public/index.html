@@ -74,6 +74,24 @@
             list-style: none;
             gap: 40px;
         }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        .nav-wrapper.scrolled .hamburger span {
+            background: #4a4a4a;
+        }
         
         .nav-link {
             color: rgba(255, 255, 255, 0.9);
@@ -541,11 +559,32 @@
             .hero-title {
                 font-size: 60px;
             }
-            
+
+            .hamburger {
+                display: flex;
+            }
+
             .nav-menu {
                 display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.95);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
             }
-            
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-wrapper.scrolled .nav-menu {
+                background: #fff;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+
             .footer-content {
                 grid-template-columns: 1fr;
             }
@@ -558,8 +597,14 @@
         <nav class="navbar">
             <div class="navbar-container">
                 <a href="index.html" class="logo">M77 AG</a>
-                
-                <ul class="nav-menu">
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
                     <li><a href="index.html" class="nav-link">Home</a></li>
                     <li><a href="services.html" class="nav-link">Services</a></li>
                     <li><a href="hunting.html" class="nav-link">Hunting</a></li>
@@ -741,6 +786,21 @@
             } else {
                 navbar.classList.remove('scrolled');
             }
+        });
+
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
         });
         
         // Smooth scroll for anchor links
