@@ -164,7 +164,7 @@ function getHuntingConfirmationEmail(booking) {
     <p>
       <strong>Kyle McConnell</strong><br>
       Phone: 970-571-1015<br>
-      Email: office@m77ag.com
+      Email: hunting@m77ag.com
     </p>
     
     <p>We look forward to hosting you!</p>

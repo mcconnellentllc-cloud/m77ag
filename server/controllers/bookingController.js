@@ -1,5 +1,5 @@
 const Booking = require('../models/booking');
-const { sendBookingConfirmation } = require('../utils/emailservice');
+const { sendBookingConfirmation, sendWaiverConfirmation } = require('../utils/emailservice');
 
 const bookingController = {
   // Create a new booking
@@ -71,11 +71,12 @@ const bookingController = {
 
       await booking.save();
 
-      // Send confirmation email
+      // Send booking confirmation email (Step 2)
       try {
         await sendBookingConfirmation(booking);
+        console.log('Booking confirmation emails sent successfully');
       } catch (emailError) {
-        console.error('Failed to send confirmation email:', emailError);
+        console.error('Failed to send booking confirmation email:', emailError);
         // Don't fail the booking if email fails
       }
 
@@ -139,13 +140,24 @@ const bookingController = {
 
       await booking.save();
 
+      // Send waiver confirmation email (Step 4) - with printable docs and maps
+      try {
+        await sendWaiverConfirmation(booking);
+        console.log('Waiver confirmation emails sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send waiver confirmation email:', emailError);
+        // Continue even if email fails - waiver is still saved
+      }
+
       res.json({
         success: true,
         message: 'Waiver submitted successfully',
         booking: {
           _id: booking._id,
           parcel: booking.parcel,
-          waiverSigned: booking.waiverSigned
+          waiverSigned: booking.waiverSigned,
+          customerName: booking.customerName,
+          email: booking.email
         }
       });
     } catch (error) {
