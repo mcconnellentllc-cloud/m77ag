@@ -629,7 +629,7 @@
         async function loadBookings() {
             try {
                 const token = localStorage.getItem('adminToken');
-                const response = await fetch('/api/hunting/admin/bookings', {
+                const response = await fetch('/api/hunting/bookings', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
