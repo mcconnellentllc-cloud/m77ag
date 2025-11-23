@@ -629,7 +629,7 @@
         async function loadBookings() {
             try {
                 const token = localStorage.getItem('adminToken');
-                const response = await fetch('/api/hunting/admin/bookings', {
+                const response = await fetch('/api/hunting/bookings', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -656,12 +656,12 @@
         // Update statistics
         function updateStats() {
             const total = allBookings.length;
-            const totalRev = allBookings.reduce((sum, b) => sum + (b.totalCost || 0), 0);
-            const pending = allBookings.filter(b => b.paymentStatus === 'pending').reduce((sum, b) => sum + (b.totalCost || 0), 0);
+            const totalRev = allBookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+            const pending = allBookings.filter(b => b.paymentStatus === 'pending').reduce((sum, b) => sum + (b.totalPrice || 0), 0);
             const upcoming = allBookings.filter(b => {
-                const startDate = new Date(b.startDate);
+                const checkinDate = new Date(b.checkinDate);
                 const today = new Date();
-                return startDate > today && b.status === 'confirmed';
+                return checkinDate > today && b.status === 'confirmed';
             }).length;
 
             document.getElementById('totalBookings').textContent = total;
@@ -687,17 +687,17 @@
             }
 
             tbody.innerHTML = bookings.map(booking => {
-                const startDate = new Date(booking.startDate).toLocaleDateString();
-                const endDate = new Date(booking.endDate).toLocaleDateString();
-                
+                const checkinDate = new Date(booking.checkinDate).toLocaleDateString();
+                const checkoutDate = new Date(booking.checkoutDate).toLocaleDateString();
+
                 return `
                     <tr>
                         <td><strong>${booking._id.slice(-8)}</strong></td>
-                        <td>${booking.hunterInfo.name}</td>
-                        <td>${booking.property}</td>
-                        <td>${startDate} - ${endDate}</td>
-                        <td>${booking.numberOfHunters}</td>
-                        <td><strong>$${booking.totalCost}</strong></td>
+                        <td>${booking.customerName}</td>
+                        <td>${booking.parcel}</td>
+                        <td>${checkinDate} - ${checkoutDate}</td>
+                        <td>${booking.numHunters}</td>
+                        <td><strong>$${booking.totalPrice}</strong></td>
                         <td><span class="payment-badge payment-${booking.paymentStatus}">${booking.paymentStatus}</span></td>
                         <td><span class="status-badge status-${booking.status || 'pending'}">${booking.status || 'pending'}</span></td>
                         <td>
@@ -717,8 +717,8 @@
             currentBooking = allBookings.find(b => b._id === bookingId);
             if (!currentBooking) return;
 
-            const startDate = new Date(currentBooking.startDate).toLocaleDateString();
-            const endDate = new Date(currentBooking.endDate).toLocaleDateString();
+            const checkinDate = new Date(currentBooking.checkinDate).toLocaleDateString();
+            const checkoutDate = new Date(currentBooking.checkoutDate).toLocaleDateString();
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="detail-grid">
@@ -732,43 +732,43 @@
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Hunter Name</div>
-                        <div class="detail-value">${currentBooking.hunterInfo.name}</div>
+                        <div class="detail-value">${currentBooking.customerName}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Email</div>
-                        <div class="detail-value">${currentBooking.hunterInfo.email}</div>
+                        <div class="detail-value">${currentBooking.email}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Phone</div>
-                        <div class="detail-value">${currentBooking.hunterInfo.phone}</div>
+                        <div class="detail-value">${currentBooking.phone}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Property</div>
-                        <div class="detail-value">${currentBooking.property}</div>
+                        <div class="detail-value">${currentBooking.parcel}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Start Date</div>
-                        <div class="detail-value">${startDate}</div>
+                        <div class="detail-label">Check-in Date</div>
+                        <div class="detail-value">${checkinDate}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">End Date</div>
-                        <div class="detail-value">${endDate}</div>
+                        <div class="detail-label">Check-out Date</div>
+                        <div class="detail-value">${checkoutDate}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Number of Hunters</div>
-                        <div class="detail-value">${currentBooking.numberOfHunters}</div>
+                        <div class="detail-value">${currentBooking.numHunters}</div>
                     </div>
                     <div class="detail-item">
-                        <div class="detail-label">Game Species</div>
-                        <div class="detail-value">${currentBooking.gameSpecies.join(', ')}</div>
+                        <div class="detail-label">Vehicle</div>
+                        <div class="detail-value">${currentBooking.vehicleColor} ${currentBooking.vehicleMake} ${currentBooking.vehicleModel} (${currentBooking.vehicleLicense})</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Camping</div>
-                        <div class="detail-value">${currentBooking.camping ? 'Yes' : 'No'}</div>
+                        <div class="detail-value">${currentBooking.campingFee > 0 ? 'Yes ($' + currentBooking.campingFee + ')' : 'No'}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Total Cost</div>
-                        <div class="detail-value">$${currentBooking.totalCost}</div>
+                        <div class="detail-value">$${currentBooking.totalPrice}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Payment Status</div>
@@ -777,6 +777,10 @@
                     <div class="detail-item">
                         <div class="detail-label">Payment Method</div>
                         <div class="detail-value">${currentBooking.paymentMethod}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Waiver Signed</div>
+                        <div class="detail-value">${currentBooking.waiverSigned ? 'Yes' : 'No'}</div>
                     </div>
                 </div>
             `;
