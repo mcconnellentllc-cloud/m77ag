@@ -593,11 +593,7 @@
                     <a href="https://venmo.com/u/ToGoAg" target="_blank" class="payment-btn venmo-btn">
                         Pay with Venmo (@ToGoAg)
                     </a>
-                    
-                    <button type="button" id="cashCheckBtn" class="payment-btn cash-btn">
-                        Pay Cash/Check at Arrival
-                    </button>
-                    
+
                     <div class="contact-box">
                         <div style="margin-bottom: 10px;">Questions? Call Kyle</div>
                         <a href="tel:970-571-1015">970-571-1015</a>
@@ -978,24 +974,7 @@
         document.getElementById('startDate').addEventListener('change', calculateTotal);
         document.getElementById('endDate').addEventListener('change', calculateTotal);
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
-        
-        document.getElementById('cashCheckBtn').addEventListener('click', function() {
-            const form = document.getElementById('bookingForm');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            if (totalCost === 0) {
-                alert('Please select dates and property');
-                return;
-            }
-            
-            if (confirm(`Confirm $${totalCost} booking? You can pay when you arrive.`)) {
-                submitBooking('pending');
-            }
-        });
-        
+
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             generateCalendar();
