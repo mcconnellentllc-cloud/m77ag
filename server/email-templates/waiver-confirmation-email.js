@@ -166,46 +166,47 @@ function getWaiverConfirmationEmail(booking) {
     <!-- HERITAGE FARM PARCELS -->
     <h3 style="color: #2c5530;">M77 AG Heritage Farm - 1,160 Acres</h3>
     <p><strong>Sedgwick County, Colorado | 5 Hunting Parcels</strong></p>
+    <p style="margin-bottom: 20px;">Click "Navigate" to open Google Maps and get directions to each parcel:</p>
     
     <table class="parcel-table">
       <thead>
         <tr>
           <th>Parcel Name</th>
-          <th>Approx. Acres</th>
+          <th>Acres</th>
           <th>Primary Game</th>
-          <th>GPS Corner Coordinates</th>
+          <th>Navigate</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>Rolling Dunes</strong></td>
-          <td>320 acres</td>
+          <td>320</td>
           <td>Deer, Pheasant</td>
-          <td class="coordinates">40.7542°N, 102.5468°W (NW)<br>40.7390°N, 102.5333°W (SE)</td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7466,-102.5400" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Prairie Parcel</strong></td>
-          <td>280 acres</td>
+          <td>280</td>
           <td>Pheasant, Dove</td>
-          <td class="coordinates">40.7791°N, 102.5266°W (NE)<br>40.7643°N, 102.5263°W (SE)</td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7717,-102.5265" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Sedgwick County Homestead</strong></td>
-          <td>240 acres</td>
-          <td>Deer, Turkey, Pheasant<br><strong>CAMPING AREA</strong></td>
-          <td class="coordinates">40.7791°N, 102.5117°W (NE)<br>40.7642°N, 102.5119°W (SE)<br><strong>Camp: 40.7690°N, 102.5161°W</strong></td>
+          <td>240</td>
+          <td>Deer, Turkey, Pheasant<br><strong>CAMPING</strong></td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7690,-102.5161" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>North Side</strong></td>
-          <td>160 acres</td>
+          <td>160</td>
           <td>Deer, Coyote</td>
-          <td class="coordinates">40.7715°N, 102.6132°W (NW)<br>40.7642°N, 102.6174°W (SE)</td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7678,-102.6153" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>South Side</strong></td>
-          <td>160 acres</td>
+          <td>160</td>
           <td>Deer, Pheasant, Dove</td>
-          <td class="coordinates">40.7642°N, 102.6227°W (NW)<br>40.7568°N, 102.6177°W (SE)</td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7605,-102.6202" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
       </tbody>
     </table>
@@ -223,91 +224,59 @@ function getWaiverConfirmationEmail(booking) {
     <!-- PRAIRIE PEACE PARCELS -->
     <h3 style="color: #2c5530;">Prairie Peace - 1,550 Acres</h3>
     <p><strong>Logan County, Colorado (South of Haxtun) | 7 Hunting Parcels</strong></p>
+    <p style="margin-bottom: 20px;">Click "Navigate" to open Google Maps and get directions to each parcel:</p>
     
     <table class="parcel-table">
       <thead>
         <tr>
           <th>Parcel Name</th>
-          <th>Approx. Acres</th>
+          <th>Acres</th>
           <th>Primary Game</th>
-          <th>GPS Boundary Coordinates</th>
+          <th>Navigate</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>The South Section</strong></td>
-          <td>598 acres</td>
+          <td>598</td>
           <td>Deer, Pheasant, Prairie Dogs</td>
-          <td class="coordinates">
-            40.4884°N, 102.6454°W (NW)<br>
-            40.4886°N, 102.6406°W (NE)<br>
-            40.4823°N, 102.6265°W (SW)<br>
-            40.4967°N, 102.6454°W (N)
-          </td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4875,-102.6359" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Madsen Pasture</strong></td>
-          <td>155 acres</td>
+          <td>155</td>
           <td>Deer, Prairie Dogs</td>
-          <td class="coordinates">
-            40.4825°N, 102.6550°W (NW)<br>
-            40.4825°N, 102.6457°W (NE)<br>
-            40.4897°N, 102.6456°W (SE)<br>
-            40.4894°N, 102.6550°W (SW)
-          </td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4861,-102.6502" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Prairie Peace Camping</strong></td>
-          <td>Camping Area</td>
-          <td><strong>CAMPING FACILITIES</strong><br>Water & 110V Electric</td>
-          <td class="coordinates">
-            <strong>Camp Location:</strong><br>
-            40.4859°N, 102.6460°W
-          </td>
+          <td>Camp</td>
+          <td>Water & 110V Electric</td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4859,-102.6460" style="background: #1976d2; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Creek Bed on 14</strong></td>
-          <td>169 acres</td>
-          <td><strong>Dove, Pheasant</strong><br>Prime creek habitat</td>
-          <td class="coordinates">
-            40.5259°N, 102.6650°W (NW)<br>
-            40.5258°N, 102.6550°W (NE)<br>
-            40.5331°N, 102.6551°W (SE)<br>
-            40.5332°N, 102.6650°W (SW)
-          </td>
+          <td>169</td>
+          <td>Dove, Pheasant (Creek)</td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5296,-102.6600" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Grass and Fenceline</strong></td>
-          <td>316 acres</td>
+          <td>316</td>
           <td>Deer, Coyote</td>
-          <td class="coordinates">
-            40.5765°N, 102.7033°W (NW)<br>
-            40.5695°N, 102.7033°W (NE)<br>
-            40.5695°N, 102.6844°W (SE)<br>
-            40.5768°N, 102.6844°W (SW)
-          </td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5731,-102.6938" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Fencelines</strong></td>
-          <td>162 acres</td>
+          <td>162</td>
           <td>Deer, Turkey</td>
-          <td class="coordinates">
-            40.5839°N, 102.7130°W (NW)<br>
-            40.5764°N, 102.7130°W (NE)<br>
-            40.5765°N, 102.7033°W (SE)<br>
-            40.5838°N, 102.7037°W (SW)
-          </td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5802,-102.7082" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
           <td><strong>Logan County Trees</strong></td>
-          <td>151 acres</td>
+          <td>151</td>
           <td>Deer, Turkey roosting</td>
-          <td class="coordinates">
-            40.5765°N, 102.7603°W (NW)<br>
-            40.5764°N, 102.7508°W (NE)<br>
-            40.5838°N, 102.7520°W (SE)<br>
-            40.5835°N, 102.7603°W (SW)
-          </td>
+          <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5795,-102.7555" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
       </tbody>
     </table>
@@ -355,6 +324,27 @@ function getWaiverConfirmationEmail(booking) {
         </p>
       </div>
       
+      <div style="background: #f0f8ff; border-left: 5px solid #4caf50; padding: 20px; margin: 20px 0;">
+        <h3 style="color: #2e7d32; margin-top: 0;">VIEW YOUR PROPERTY BOUNDARIES:</h3>
+        <div style="margin: 15px 0;">
+          <a href="https://m77ag.com/${booking.parcel === 'heritage-farm' ? 'heritage-farm' : 'prairie-peace'}-map.html" 
+             style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+            VIEW INTERACTIVE MAP
+          </a>
+          <a href="https://earth.google.com/web/search/${booking.parcel === 'heritage-farm' ? 'Sedgwick+County,+CO' : 'Logan+County,+CO'}/@${booking.parcel === 'heritage-farm' ? '40.77,102.54' : '40.53,102.68'},1500d" 
+             style="display: inline-block; background: #1976d2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+            OPEN IN GOOGLE EARTH
+          </a>
+          <a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml" 
+             style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+            DOWNLOAD KML FILE
+          </a>
+        </div>
+        <p style="margin: 10px 0 0 0; color: #555; font-size: 14px;">
+          Click "VIEW INTERACTIVE MAP" to see boundaries on satellite imagery, or "DOWNLOAD KML FILE" to use on your GPS device.
+        </p>
+      </div>
+      
       <h4 style="color: #2c5530; margin-top: 25px;">General Hunting Guidelines:</h4>
       <ul style="line-height: 1.8;">
         <li>Valid Colorado hunting license and appropriate tags REQUIRED</li>
@@ -367,15 +357,20 @@ function getWaiverConfirmationEmail(booking) {
         <li>Report any issues to Kyle immediately: 970-571-1015</li>
       </ul>
       
-      <h4 style="color: #2c5530; margin-top: 25px;">Using GPS Coordinates:</h4>
+      <h4 style="color: #2c5530; margin-top: 25px;">How to See Property Boundaries While Hunting:</h4>
       <ol style="line-height: 1.8;">
-        <li>Download the KML file and open in Google Earth on your phone</li>
-        <li>Save boundary coordinates to your GPS device</li>
-        <li>Print this page and keep in your vehicle</li>
-        <li>Walk property boundaries before hunting to familiarize yourself</li>
-        <li>Enable GPS tracking on your device to monitor your location</li>
-        <li>Remember: Cell phone GPS can have 30-50 foot accuracy errors</li>
+        <li><strong>Download the KML file</strong> from the link above (before you arrive)</li>
+        <li><strong>Import into OnX Hunt app:</strong> Open OnX > Waypoints > Import > Select the KML file</li>
+        <li>Property boundaries will display on your OnX maps with your real-time GPS location</li>
+        <li><strong>Alternative:</strong> Open KML file in Google Earth app on your phone to see boundaries</li>
+        <li>Walk property boundaries when you arrive to familiarize yourself with the area</li>
+        <li><strong>GPS Accuracy Warning:</strong> Cell phone GPS can have 30-50 foot errors - stay well inside boundaries</li>
       </ol>
+      
+      <p style="margin-top: 15px; padding: 15px; background: #fff8dc; border-left: 4px solid #ffc107;">
+        <strong>Don't have OnX Hunt?</strong> Most hunters use OnX for property boundaries and navigation. 
+        Download at <a href="https://www.onxmaps.com" style="color: #1976d2;">onxmaps.com</a>
+      </p>
     </div>
   </div>
   
