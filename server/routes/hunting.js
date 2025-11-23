@@ -11,6 +11,7 @@ router.get('/booked-dates', bookingController.getBookedDates);
 // Admin routes (protected) - these match what the frontend expects
 router.get('/bookings', authenticate, isAdmin, bookingController.getAllBookings);
 router.get('/bookings/:id', authenticate, isAdmin, bookingController.getBookingById);
+router.put('/bookings/:id', authenticate, isAdmin, bookingController.updateBooking);
 router.delete('/bookings/:id', authenticate, isAdmin, bookingController.cancelBooking);
 router.post('/bookings/:id/resend-confirmation', authenticate, isAdmin, bookingController.resendConfirmation);
 
