@@ -199,7 +199,8 @@
         
         .form-group input[type="text"],
         .form-group input[type="email"],
-        .form-group input[type="date"] {
+        .form-group input[type="date"],
+        .form-group input[type="tel"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -209,7 +210,8 @@
         
         .form-group input[type="text"]:focus,
         .form-group input[type="email"]:focus,
-        .form-group input[type="date"]:focus {
+        .form-group input[type="date"]:focus,
+        .form-group input[type="tel"]:focus {
             outline: none;
             border-color: #2d5016;
         }
@@ -231,77 +233,95 @@
         .checkbox-item input[type="checkbox"] {
             width: 20px;
             height: 20px;
-            margin-right: 15px;
-            margin-top: 3px;
+            margin-right: 12px;
+            margin-top: 2px;
+            flex-shrink: 0;
             cursor: pointer;
         }
         
         .checkbox-item label {
-            font-size: 16px;
-            line-height: 1.6;
             cursor: pointer;
+            user-select: none;
         }
         
         .submit-section {
-            background: #2d5016;
-            padding: 30px;
-            border-radius: 10px;
             text-align: center;
-            margin-top: 40px;
+            margin: 40px 0;
         }
         
         .btn-submit {
-            background: #d4af37;
-            color: #1a1a1a;
-            padding: 18px 60px;
-            font-size: 20px;
-            font-weight: bold;
+            background: #2d5016;
+            color: white;
+            padding: 18px 50px;
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(45,80,22,0.3);
         }
         
-        .btn-submit:hover:not(:disabled) {
-            background: #c49d2a;
+        .btn-submit:hover {
+            background: #1f3710;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 6px 20px rgba(45,80,22,0.4);
         }
         
         .btn-submit:disabled {
-            background: #999;
+            background: #ccc;
             cursor: not-allowed;
-            opacity: 0.5;
+            transform: none;
         }
         
         .submit-section p {
-            color: white;
             margin-top: 15px;
+            color: #666;
             font-size: 14px;
         }
         
         .error-message {
-            background: #ffcdd2;
+            background: #ffebee;
+            border: 2px solid #f44336;
             color: #c62828;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            display: none;
-        }
-        
-        .success-message {
-            background: #c8e6c9;
-            color: #2e7d32;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             margin: 20px 0;
             display: none;
             text-align: center;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            border: 3px solid #4caf50;
+            color: #2d5016;
+            padding: 40px;
+            border-radius: 10px;
+            margin: 30px 0;
+            display: none;
+            text-align: center;
+        }
+        
+        .success-message h2 {
+            color: #2d5016;
+            margin-bottom: 20px;
+        }
+        
+        .success-message p {
             font-size: 18px;
+            margin: 15px 0;
         }
         
         @media print {
-            .signature-buttons, .submit-section {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .btn, .signature-buttons {
                 display: none;
             }
         }
@@ -309,15 +329,16 @@
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>M77 AG HUNTING</h1>
-            <h2>LIABILITY WAIVER, RELEASE & INDEMNIFICATION AGREEMENT</h2>
-            <p>McConnell Enterprises LLC</p>
+            <h1>M77 AG Hunting Liability Waiver & Release</h1>
+            <p>Four Generations of Agricultural Excellence Since the Late 1800s</p>
+            <p>Northeast Colorado</p>
         </div>
 
         <!-- Booking Information -->
         <div class="booking-info">
-            <h3>Reservation Information</h3>
+            <h3>Your Booking Information</h3>
             <div class="info-row">
                 <span class="info-label">Booking Number:</span>
                 <span id="bookingNumber">Loading...</span>
@@ -332,149 +353,133 @@
             </div>
         </div>
 
-        <!-- Critical Notice -->
+        <!-- Critical Property Boundary Notice -->
         <div class="critical-notice">
-            <h2>PLEASE READ CAREFULLY BEFORE SIGNING</h2>
-            <p><strong>THIS IS A LEGAL DOCUMENT THAT AFFECTS YOUR LEGAL RIGHTS.</strong></p>
-            <p>By signing this waiver, you are giving up important legal rights, including the right to sue for injuries or damages. Please read thoroughly and ensure you understand all terms before signing.</p>
-        </div>
-
-        <!-- Waiver Content -->
-        <div class="waiver-section">
-            <h2>ASSUMPTION OF RISK</h2>
-            <p>I acknowledge that hunting and visiting working farm properties involve inherent and significant risks, dangers, and hazards, including but not limited to:</p>
-            <ul>
-                <li>Risks associated with firearms, ammunition, and other hunting equipment</li>
-                <li>Risks from wildlife, domestic animals, and livestock</li>
-                <li>Risks from uneven terrain, holes, ditches, fences, and natural obstacles</li>
-                <li>Risks from operating farm equipment and machinery</li>
-                <li>Risks from open wells, irrigation systems, and water hazards</li>
-                <li>Risks from barbed wire fences, gates, and other farm infrastructure</li>
-                <li>Risks from chemical storage areas and agricultural operations</li>
-                <li>Risks from extreme weather conditions and natural phenomena</li>
-                <li>Risks from other hunters and persons on the property</li>
-                <li>Risks of serious bodily injury, permanent disability, or death</li>
+            <h2>⚠️ CRITICAL: PROPERTY BOUNDARIES</h2>
+            <p><strong>YOU MUST STAY WITHIN PROPERTY BOUNDARIES AT ALL TIMES.</strong></p>
+            <p>Crossing property lines is:</p>
+            <ul style="margin: 15px 0 15px 30px;">
+                <li>A violation of Colorado hunting laws</li>
+                <li>Trespassing on neighboring properties</li>
+                <li>Grounds for immediate termination of your hunt with no refund</li>
+                <li>Subject to criminal prosecution</li>
             </ul>
-            <p><strong>I VOLUNTARILY ASSUME ALL SUCH RISKS</strong>, known and unknown, and accept full responsibility for my participation in hunting activities on M77 AG properties.</p>
-        </div>
-
-        <div class="waiver-section">
-            <h2>RELEASE AND WAIVER OF LIABILITY</h2>
-            <p>In consideration for being permitted to hunt on M77 AG properties, I hereby:</p>
-            <ul>
-                <li><strong>RELEASE, WAIVE, AND DISCHARGE</strong> M77 AG, McConnell Enterprises LLC, Kyle McConnell, Brandi McConnell, all landowners, property owners, agents, employees, contractors, family members, and anyone associated with M77 AG (collectively, the "Released Parties") from any and all liability, claims, demands, actions, or rights of action for damages, personal injury, death, or property damage</li>
-                <li><strong>AGREE NOT TO SUE</strong> any of the Released Parties for any claims, damages, or injuries arising from my participation in hunting activities</li>
-                <li><strong>WAIVE ALL CLAIMS</strong> I may have or may arise in the future against any of the Released Parties</li>
-            </ul>
-        </div>
-
-        <div class="waiver-section">
-            <h2>INDEMNIFICATION AND HOLD HARMLESS</h2>
-            <p>I agree to <strong>INDEMNIFY, DEFEND, AND HOLD HARMLESS</strong> all Released Parties from and against any and all claims, demands, actions, causes of action, damages, losses, costs, liabilities, and expenses (including attorney fees) arising from:</p>
-            <ul>
-                <li>My participation in hunting activities on M77 AG properties</li>
-                <li>My use of firearms or other hunting equipment</li>
-                <li>Any injuries, damages, or losses I cause to third parties</li>
-                <li>My violation of any laws, regulations, or property rules</li>
-                <li>My trespassing on neighboring properties</li>
-            </ul>
-        </div>
-
-        <!-- Property Boundaries -->
-        <div class="warning-box">
-            <h3>PROPERTY BOUNDARIES & TRESPASSING</h3>
-            <p><strong>I ACKNOWLEDGE AND AGREE:</strong></p>
-            <ul style="margin-left: 25px; margin-top: 10px;">
-                <li>I am <strong>SOLELY RESPONSIBLE</strong> for knowing and staying within designated property boundaries at all times</li>
-                <li>I have been or will be provided with GPS coordinates and boundary maps</li>
-                <li><strong>NEIGHBORING LANDOWNERS WILL PROSECUTE TRESPASSERS</strong> to the full extent of the law</li>
-                <li>M77 AG and all Released Parties are NOT responsible for my trespassing violations</li>
-                <li>Trespassing may result in immediate termination of hunting privileges WITHOUT refund</li>
-                <li>I will NOT enter neighboring properties under ANY circumstances without explicit permission</li>
-            </ul>
+            <p><strong>Property maps will be provided AFTER you complete this waiver.</strong></p>
         </div>
 
         <!-- Downed Game Protocol -->
         <div class="warning-box">
-            <h3>DOWNED GAME ACROSS PROPERTY LINES</h3>
-            <p><strong>I UNDERSTAND AND AGREE to the following protocol if downed game crosses onto neighboring property:</strong></p>
-            <ol style="margin-left: 25px; margin-top: 10px; line-height: 1.8;">
-                <li>I will STOP IMMEDIATELY and NOT cross the property boundary</li>
-                <li>I will CALL Kyle McConnell at 970-571-1015 immediately</li>
-                <li>I understand that <strong>NO ANSWER DOES NOT EQUAL PERMISSION</strong> to retrieve game</li>
-                <li>I will WAIT for coordination with neighboring landowners before attempting retrieval</li>
-                <li>I will NOT retrieve game from neighboring property without explicit permission</li>
-                <li>I understand that unauthorized retrieval constitutes criminal trespassing</li>
-            </ul>
+            <h3>🦌 DOWNED GAME PROTOCOL</h3>
+            <p><strong>IF GAME CROSSES PROPERTY LINES:</strong></p>
+            <p>You MUST immediately call Kyle McConnell at <strong>970-571-1015</strong> before pursuing or retrieving any downed game that has crossed onto neighboring property.</p>
+            <p>Failure to follow this protocol may result in trespassing charges and termination of hunting privileges.</p>
         </div>
 
+        <!-- Waiver Content -->
         <div class="waiver-section">
-            <h2>HUNTER RESPONSIBILITIES</h2>
-            <p><strong>I CERTIFY that:</strong></p>
-            <ul>
-                <li>I possess (or will possess) a valid Colorado hunting license for all game species I intend to hunt</li>
-                <li>I have completed required Hunter Safety certification (if born after January 1, 1949)</li>
-                <li>I will comply with all Colorado Parks & Wildlife regulations and hunting laws</li>
-                <li>I will practice safe firearm handling at all times</li>
-                <li>I will not hunt under the influence of alcohol or drugs</li>
-                <li>I will respect the property, livestock, equipment, and neighboring landowners</li>
-                <li>I will pack out all trash and leave the property as I found it</li>
-                <li>I will report any accidents, injuries, or property damage immediately</li>
-            </ul>
-        </div>
+            <h2>LIABILITY WAIVER AND RELEASE OF CLAIMS</h2>
+            
+            <p><strong>READ CAREFULLY BEFORE SIGNING</strong></p>
+            
+            <p>This is a legally binding agreement. By signing this document, you are waiving certain legal rights, including the right to sue. Please read carefully and seek legal advice if you have questions.</p>
 
-        <div class="waiver-section">
-            <h2>FARM SAFETY ACKNOWLEDGMENT</h2>
-            <p>I acknowledge that M77 AG properties are <strong>WORKING FARMS</strong> with inherent dangers. I understand that:</p>
+            <h3>1. ACKNOWLEDGMENT OF RISKS</h3>
+            <p>I understand and acknowledge that hunting and outdoor recreational activities on agricultural land involve inherent and significant risks, including but not limited to:</p>
             <ul>
-                <li>Farm equipment may be operating at any time</li>
-                <li>There are numerous hazards including machinery, wells, ditches, livestock, and chemicals</li>
-                <li><strong>I ENTER AT MY OWN RISK</strong> and will exercise extreme caution at all times</li>
-                <li>I am responsible for my own safety and the safety of my guests</li>
-                <li>Farms are dangerous environments and accidents can happen despite best precautions</li>
+                <li>Risks from firearms, including accidental discharge, ricochets, and other firearm-related injuries</li>
+                <li>Risks from wildlife, including aggressive animals, disease-carrying animals, and unpredictable wildlife behavior</li>
+                <li>Environmental hazards including extreme weather, terrain obstacles, hidden holes, uneven ground, and natural obstacles</li>
+                <li>Agricultural hazards including farm equipment, irrigation systems, livestock, and agricultural structures</li>
+                <li>Medical emergencies in remote locations with limited access to emergency services</li>
+                <li>Personal injury or death from any of the above risks</li>
             </ul>
-        </div>
 
-        <div class="waiver-section">
-            <h2>GENERAL PROVISIONS</h2>
+            <h3>2. ASSUMPTION OF RISK</h3>
+            <p>I voluntarily assume all risks associated with hunting and outdoor activities on M77 AG properties, whether those risks are known or unknown, anticipated or unanticipated. I understand that no amount of care, caution, instruction, or expertise can eliminate these risks.</p>
+
+            <h3>3. RELEASE OF LIABILITY</h3>
+            <p>In consideration of being permitted to hunt on M77 AG properties, I hereby RELEASE, WAIVE, DISCHARGE, and COVENANT NOT TO SUE the following parties (collectively "Released Parties"):</p>
             <ul>
-                <li><strong>Severability:</strong> If any provision of this waiver is found to be unenforceable, the remaining provisions shall remain in full effect</li>
-                <li><strong>Entire Agreement:</strong> This waiver constitutes the entire agreement between the parties</li>
-                <li><strong>Governing Law:</strong> This agreement shall be governed by the laws of the State of Colorado</li>
-                <li><strong>Binding Effect:</strong> This waiver binds my heirs, executors, administrators, and assigns</li>
-                <li><strong>Voluntary Execution:</strong> I am signing this waiver voluntarily and of my own free will</li>
+                <li>M77 AG, ToGo AG, and any affiliated business entities</li>
+                <li>Kyle McConnell, Brandi McConnell, and all family members</li>
+                <li>All landowners, property managers, and employees</li>
+                <li>All predecessors, successors, assigns, and affiliates</li>
             </ul>
+            <p>From any and all liability, claims, demands, actions, and causes of action whatsoever arising out of or related to any loss, damage, or injury, including death, that may be sustained by me while participating in hunting activities or while on M77 AG properties.</p>
+
+            <h3>4. INDEMNIFICATION</h3>
+            <p>I agree to INDEMNIFY and HOLD HARMLESS the Released Parties from any loss, liability, damage, or costs, including attorney fees, that may arise due to my participation in hunting activities on M77 AG properties, whether caused by negligence of the Released Parties or otherwise.</p>
+
+            <h3>5. PROPERTY BOUNDARIES AND LEGAL COMPLIANCE</h3>
+            <p>I acknowledge and agree that:</p>
+            <ul>
+                <li>I am solely responsible for knowing and staying within property boundaries</li>
+                <li>Property maps are provided as a courtesy but may contain errors</li>
+                <li>I will verify boundaries using GPS, posted signs, and landmarks</li>
+                <li>Crossing property lines constitutes trespassing and may result in criminal charges</li>
+                <li>I must possess all required Colorado hunting licenses and stamps</li>
+                <li>I will comply with all Colorado hunting regulations and seasons</li>
+                <li>I will follow all M77 AG property rules and guidelines</li>
+            </ul>
+
+            <h3>6. DOWNED GAME RETRIEVAL</h3>
+            <p>I understand that if wounded or downed game crosses property lines, I MUST:</p>
+            <ul>
+                <li>Immediately cease pursuit</li>
+                <li>Contact Kyle McConnell at 970-571-1015 before proceeding</li>
+                <li>Wait for authorization before entering neighboring property</li>
+                <li>Follow all directions provided by property management</li>
+            </ul>
+            <p>I understand that unauthorized pursuit onto neighboring property will result in immediate termination of my hunting privileges with no refund and may result in criminal trespassing charges.</p>
+
+            <h3>7. FIREARMS AND SAFETY</h3>
+            <p>I certify that:</p>
+            <ul>
+                <li>I am legally permitted to possess and use firearms</li>
+                <li>I am experienced in safe firearm handling</li>
+                <li>I will follow all firearm safety rules at all times</li>
+                <li>I will properly identify my target and what is beyond it before shooting</li>
+                <li>I accept sole responsibility for any discharge of my firearm</li>
+            </ul>
+
+            <h3>8. MEDICAL TREATMENT</h3>
+            <p>I authorize M77 AG representatives to obtain emergency medical treatment for me if necessary. I agree to assume all costs of such treatment and release the Released Parties from any liability related to medical treatment decisions or transportation.</p>
+
+            <h3>9. LEGAL PROVISIONS</h3>
+            <p>I understand that:</p>
+            <ul>
+                <li>This agreement is governed by Colorado law</li>
+                <li>This waiver is binding upon my heirs, next of kin, executors, and administrators</li>
+                <li>If any provision is found invalid, the remaining provisions remain in full effect</li>
+                <li>This is the entire agreement and supersedes all prior agreements</li>
+            </ul>
+
+            <h3>10. VOLUNTARY PARTICIPATION</h3>
+            <p>I certify that I am at least 18 years old, legally competent, and signing this agreement voluntarily without any inducement or assurance. I have read this waiver, fully understand its contents, and understand that I am giving up substantial legal rights including the right to sue.</p>
         </div>
 
         <!-- Signature Section -->
         <div class="signature-section">
-            <h2>ELECTRONIC SIGNATURE</h2>
+            <h2>Electronic Signature & Acknowledgment</h2>
             
             <div class="form-group">
                 <label for="participantName">Full Legal Name *</label>
                 <input type="text" id="participantName" required placeholder="Enter your full legal name">
             </div>
-
+            
             <div class="form-group">
                 <label for="participantEmail">Email Address *</label>
                 <input type="email" id="participantEmail" required placeholder="your.email@example.com">
             </div>
-
+            
             <div class="form-group">
                 <label for="participantPhone">Phone Number *</label>
-                <input type="text" id="participantPhone" required placeholder="(970) 123-4567">
+                <input type="tel" id="participantPhone" required placeholder="(970) 555-1234">
             </div>
-
+            
             <div class="form-group">
-                <label for="signatureDate">Date *</label>
-                <input type="date" id="signatureDate" required>
-            </div>
-
-            <div class="form-group">
-                <label>Sign Below *</label>
-                <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
-                    Use your mouse or finger to sign in the box below. Your signature confirms that you have read, understood, and agree to all terms of this waiver.
-                </p>
+                <label>Electronic Signature *</label>
+                <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Sign using your mouse or finger on touchscreen</p>
                 <div class="signature-canvas-container">
                     <span class="signature-label">Sign here</span>
                     <canvas id="signatureCanvas" class="signature-canvas"></canvas>
@@ -483,10 +488,15 @@
                     <button type="button" class="btn btn-clear" onclick="clearSignature()">Clear Signature</button>
                 </div>
             </div>
+            
+            <div class="form-group">
+                <label for="signatureDate">Date *</label>
+                <input type="date" id="signatureDate" required>
+            </div>
 
-            <!-- Acknowledgment Checkboxes -->
+            <!-- Required Acknowledgments -->
             <div class="checkbox-group">
-                <h3 style="margin-bottom: 15px; color: #2d5016;">REQUIRED ACKNOWLEDGMENTS</h3>
+                <h3 style="margin-bottom: 20px; color: #2d5016;">Required Acknowledgments</h3>
                 
                 <div class="checkbox-item">
                     <input type="checkbox" id="check1" required>
@@ -533,15 +543,15 @@
         <!-- Error/Success Messages -->
         <div id="errorMessage" class="error-message"></div>
         <div id="successMessage" class="success-message">
-            <h2>Waiver Submitted Successfully!</h2>
-            <p>Thank you for completing the liability waiver. Your hunting reservation is now complete.</p>
-            <p>We look forward to seeing you!</p>
+            <h2>✅ Waiver Submitted Successfully!</h2>
+            <p>Thank you for completing the liability waiver.</p>
+            <p><strong>You will now be redirected to view your property maps and hunting information.</strong></p>
         </div>
 
         <!-- Submit Section -->
         <div class="submit-section">
             <button type="button" id="submitButton" class="btn-submit" onclick="submitWaiver()">
-                SUBMIT WAIVER & COMPLETE RESERVATION
+                SUBMIT WAIVER & VIEW PROPERTY MAPS
             </button>
             <p>By clicking submit, I certify that all information is true and accurate</p>
         </div>
@@ -616,16 +626,33 @@
         // Set today's date as default
         document.getElementById('signatureDate').valueAsDate = new Date();
 
-        // Load booking information
+        // Load booking information from URL parameters
         function loadBookingInfo() {
             const urlParams = new URLSearchParams(window.location.search);
-            const bookingId = urlParams.get('booking');
+            const bookingId = urlParams.get('bookingId');
             
-            // In production, fetch from API
-            // For now, using URL parameters
-            document.getElementById('bookingNumber').textContent = urlParams.get('bookingNumber') || bookingId;
-            document.getElementById('propertyName').textContent = urlParams.get('property') || 'M77 AG Heritage Farm';
-            document.getElementById('huntDates').textContent = urlParams.get('dates') || 'Loading...';
+            if (bookingId) {
+                // Fetch booking details from API
+                fetch(`/api/bookings/${bookingId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.booking) {
+                            const booking = data.booking;
+                            document.getElementById('bookingNumber').textContent = bookingId.slice(-8).toUpperCase();
+                            document.getElementById('propertyName').textContent = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
+                            document.getElementById('huntDates').textContent = `${new Date(booking.checkinDate).toLocaleDateString()} - ${new Date(booking.checkoutDate).toLocaleDateString()}`;
+                            
+                            // Pre-fill form if customer info matches
+                            document.getElementById('participantName').value = booking.customerName || '';
+                            document.getElementById('participantEmail').value = booking.email || '';
+                            document.getElementById('participantPhone').value = booking.phone || '';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading booking:', error);
+                        document.getElementById('bookingNumber').textContent = bookingId.slice(-8).toUpperCase();
+                    });
+            }
         }
         loadBookingInfo();
 
@@ -670,15 +697,18 @@
             // Get signature as image
             const signatureData = canvas.toDataURL();
 
+            // Get bookingId from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('bookingId');
+
             // Prepare data
             const waiverData = {
-                bookingId: new URLSearchParams(window.location.search).get('booking'),
+                bookingId: bookingId,
                 participantName: name,
                 participantEmail: email,
                 participantPhone: phone,
                 signatureDate: date,
                 signature: signatureData,
-                ipAddress: '', // Will be captured server-side
                 timestamp: new Date().toISOString()
             };
 
@@ -687,7 +717,7 @@
                 document.getElementById('submitButton').disabled = true;
                 document.getElementById('submitButton').textContent = 'SUBMITTING...';
 
-                const response = await fetch('/api/hunting/submit-waiver', {
+                const response = await fetch('/api/bookings/submit-waiver', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -695,24 +725,29 @@
                     body: JSON.stringify(waiverData)
                 });
 
-                if (response.ok) {
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     successDiv.style.display = 'block';
                     successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     document.querySelector('.container').style.opacity = '0.7';
                     
-                    // Redirect after 5 seconds
+                    // Redirect to property page with maps after 3 seconds
                     setTimeout(() => {
-                        window.location.href = '/hunting-confirmation.html?booking=' + waiverData.bookingId;
-                    }, 5000);
+                        const booking = result.booking;
+                        const propertyPage = booking.parcel === 'heritage-farm' ? 'heritage-farm.html' : 'prairie-peace.html';
+                        window.location.href = `/${propertyPage}?bookingId=${bookingId}`;
+                    }, 3000);
                 } else {
-                    throw new Error('Submission failed');
+                    throw new Error(result.message || 'Submission failed');
                 }
             } catch (error) {
+                console.error('Waiver submission error:', error);
                 errorDiv.textContent = 'An error occurred while submitting the waiver. Please try again or contact us at 970-571-1015.';
                 errorDiv.style.display = 'block';
                 errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 document.getElementById('submitButton').disabled = false;
-                document.getElementById('submitButton').textContent = 'SUBMIT WAIVER & COMPLETE RESERVATION';
+                document.getElementById('submitButton').textContent = 'SUBMIT WAIVER & VIEW PROPERTY MAPS';
             }
         }
     </script>

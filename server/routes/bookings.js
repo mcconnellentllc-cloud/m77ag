@@ -6,6 +6,7 @@ const { authenticate, isAdmin } = require('../middleware/auth');
 // Public routes (no authentication required)
 router.post('/', bookingController.createBooking);
 router.get('/booked-dates', bookingController.getBookedDates);
+router.post('/submit-waiver', bookingController.submitWaiver);
 
 // Admin routes (require authentication)
 router.get('/', authenticate, isAdmin, bookingController.getAllBookings);

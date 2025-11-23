@@ -65,7 +65,8 @@ const bookingController = {
         paymentMethod: paymentMethod || 'paypal',
         paymentStatus: paymentStatus || 'pending',
         notes,
-        status: 'confirmed'
+        status: 'confirmed',
+        waiverSigned: false // Waiver not signed yet
       });
 
       await booking.save();
@@ -88,6 +89,70 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to create booking'
+      });
+    }
+  },
+
+  // Submit waiver for booking
+  submitWaiver: async (req, res) => {
+    try {
+      const {
+        bookingId,
+        participantName,
+        participantEmail,
+        participantPhone,
+        signatureDate,
+        signature,
+        timestamp
+      } = req.body;
+
+      if (!bookingId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Booking ID is required'
+        });
+      }
+
+      // Find the booking
+      const booking = await Booking.findById(bookingId);
+      
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      // Update booking with waiver information
+      booking.waiverSigned = true;
+      booking.waiverSignedDate = new Date(timestamp);
+      booking.waiverData = {
+        participantName,
+        participantEmail,
+        participantPhone,
+        signatureDate: new Date(signatureDate),
+        signatureImage: signature,
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.headers['user-agent'],
+        timestamp: new Date(timestamp)
+      };
+
+      await booking.save();
+
+      res.json({
+        success: true,
+        message: 'Waiver submitted successfully',
+        booking: {
+          _id: booking._id,
+          parcel: booking.parcel,
+          waiverSigned: booking.waiverSigned
+        }
+      });
+    } catch (error) {
+      console.error('Error submitting waiver:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to submit waiver'
       });
     }
   },
@@ -240,6 +305,7 @@ const bookingController = {
       const confirmedBookings = await Booking.countDocuments({ status: 'confirmed' });
       const pendingBookings = await Booking.countDocuments({ status: 'pending' });
       const cancelledBookings = await Booking.countDocuments({ status: 'cancelled' });
+      const waiversSigned = await Booking.countDocuments({ waiverSigned: true });
 
       const totalRevenue = await Booking.aggregate([
         { $match: { status: { $in: ['confirmed', 'pending'] } } },
@@ -253,6 +319,7 @@ const bookingController = {
           confirmedBookings,
           pendingBookings,
           cancelledBookings,
+          waiversSigned,
           totalRevenue: totalRevenue[0]?.total || 0
         }
       });
