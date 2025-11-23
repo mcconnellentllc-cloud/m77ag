@@ -354,6 +354,89 @@
             margin: 10px 0;
         }
 
+        .dash-card-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .dash-card {
+            border: 3px solid #000;
+            padding: 25px;
+            background: #fff;
+            margin: 20px 0;
+        }
+
+        .dash-card h2 {
+            color: #2c5530;
+            text-align: center;
+            margin: 0 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #d4a54a;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .dash-card .info-row {
+            margin: 12px 0;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .dash-card .info-label {
+            font-weight: bold;
+            color: #2c5530;
+            display: inline-block;
+            width: 140px;
+        }
+
+        .dash-card .emergency {
+            background: #ffebee;
+            border-left: 5px solid #c62828;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .dash-card .emergency p {
+            margin: 0;
+        }
+
+        .print-btn {
+            background: #2c5530;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .print-btn:hover {
+            background: #1e3d22;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .dash-card, .dash-card * {
+                visibility: visible;
+            }
+            .dash-card {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: 2px solid #000;
+            }
+            .print-btn, .nav-wrapper, .no-print {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 768px) {
             .hamburger {
                 display: flex;
@@ -423,6 +506,53 @@
         <div class="header">
             <h1>Prairie Peace - Property Maps</h1>
             <p>Logan County, Colorado | 1,550 Acres | 7 Hunting Parcels</p>
+        </div>
+
+        <div class="dash-card-section">
+            <h2 style="color: #2c5530; font-family: 'Oswald', sans-serif; margin-bottom: 15px;">Vehicle Dash Card</h2>
+            <p class="no-print">Print this card and keep it visible on your vehicle dashboard while hunting.</p>
+
+            <div class="dash-card" id="dashCard">
+                <h2>M77 AG HUNTING AUTHORIZATION</h2>
+
+                <div class="info-row">
+                    <span class="info-label">HUNTER:</span>
+                    <span id="dashHunterName" style="font-size: 18px; font-weight: bold;">Loading...</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">BOOKING ID:</span>
+                    <span id="dashBookingId" style="font-family: monospace;">Loading...</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">PROPERTY:</span>
+                    <span style="font-weight: bold;">Prairie Peace</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">HUNT DATE:</span>
+                    <span id="dashHuntDate" style="font-weight: bold;">Loading...</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">VEHICLE:</span>
+                    <span id="dashVehicle">Loading...</span>
+                </div>
+
+                <div class="emergency">
+                    <p style="font-size: 16px; font-weight: bold; color: #c62828; margin-bottom: 10px;">DOWNED GAME - CALL IMMEDIATELY:</p>
+                    <p style="font-size: 22px; font-weight: bold;">Kyle McConnell: 970-571-1015</p>
+                    <p style="font-size: 12px; margin-top: 8px;">No answer does NOT mean permission to proceed.</p>
+                </div>
+
+                <div style="text-align: center; border-top: 2px solid #ddd; margin-top: 20px; padding-top: 15px;">
+                    <p style="margin: 5px 0; font-weight: bold;">KEEP THIS CARD VISIBLE IN VEHICLE DASHBOARD</p>
+                    <p style="margin: 5px 0; font-size: 12px;">M77 AG | McConnell Enterprises LLC | hunting@m77ag.com</p>
+                </div>
+            </div>
+
+            <button class="print-btn no-print" onclick="window.print()">PRINT DASH CARD</button>
         </div>
 
         <div class="download-section">
@@ -559,5 +689,50 @@
             <p style="margin-top: 15px;">Email: hunting@m77ag.com</p>
         </div>
     </div>
+
+    <script>
+        // Load booking data for dash card
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('bookingId');
+
+            if (!bookingId) {
+                document.getElementById('dashHunterName').textContent = 'No booking found';
+                document.getElementById('dashBookingId').textContent = '-';
+                document.getElementById('dashHuntDate').textContent = '-';
+                document.getElementById('dashVehicle').textContent = '-';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/hunting/bookings/${bookingId}`);
+                const data = await response.json();
+
+                if (data.success && data.booking) {
+                    const booking = data.booking;
+                    document.getElementById('dashHunterName').textContent = booking.customerName || 'Unknown';
+                    document.getElementById('dashBookingId').textContent = booking._id;
+
+                    const huntDate = new Date(booking.checkinDate || booking.checkIn);
+                    document.getElementById('dashHuntDate').textContent = huntDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    // Vehicle info from waiver data
+                    if (booking.waiverData) {
+                        const vehicle = `${booking.waiverData.vehicleColor || ''} ${booking.waiverData.vehicleMake || ''} ${booking.waiverData.vehicleModel || ''}`.trim();
+                        document.getElementById('dashVehicle').textContent = vehicle || 'Not provided';
+                    } else {
+                        document.getElementById('dashVehicle').textContent = 'Not provided';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading booking:', error);
+            }
+        });
+    </script>
 </body>
 </html>
