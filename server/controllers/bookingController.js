@@ -66,18 +66,17 @@ const bookingController = {
         paymentStatus: paymentStatus || 'pending',
         notes,
         status: 'confirmed',
-        waiverSigned: false // Waiver not signed yet
+        waiverSigned: false
       });
 
       await booking.save();
 
-      // Send booking confirmation email (Step 2)
+      // Send booking confirmation email
       try {
         await sendBookingConfirmation(booking);
         console.log('Booking confirmation emails sent successfully');
       } catch (emailError) {
         console.error('Failed to send booking confirmation email:', emailError);
-        // Don't fail the booking if email fails
       }
 
       res.status(201).json({
@@ -114,7 +113,6 @@ const bookingController = {
         });
       }
 
-      // Find the booking
       const booking = await Booking.findById(bookingId);
       
       if (!booking) {
@@ -124,7 +122,6 @@ const bookingController = {
         });
       }
 
-      // Update booking with waiver information
       booking.waiverSigned = true;
       booking.waiverSignedDate = new Date(timestamp);
       booking.waiverData = {
@@ -140,13 +137,11 @@ const bookingController = {
 
       await booking.save();
 
-      // Send waiver confirmation email (Step 4) - with printable docs and maps
       try {
         await sendWaiverConfirmation(booking);
         console.log('Waiver confirmation emails sent successfully');
       } catch (emailError) {
         console.error('Failed to send waiver confirmation email:', emailError);
-        // Continue even if email fails - waiver is still saved
       }
 
       res.json({
@@ -370,6 +365,38 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to cancel booking'
+      });
+    }
+  },
+
+  // Resend confirmation email
+  resendConfirmation: async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      // Send appropriate confirmation based on waiver status
+      if (booking.waiverSigned) {
+        await sendWaiverConfirmation(booking);
+      } else {
+        await sendBookingConfirmation(booking);
+      }
+
+      res.json({
+        success: true,
+        message: 'Confirmation email resent successfully'
+      });
+    } catch (error) {
+      console.error('Error resending confirmation:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to resend confirmation email'
       });
     }
   }
