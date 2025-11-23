@@ -594,7 +594,7 @@
                 
                 <div class="checkbox-item">
                     <input type="checkbox" id="check6" required>
-                    <label for="check6">I understand the downed game protocol and will call Kyle McConnell (970-571-1015) if game crosses property lines</label>
+                    <label for="check6">I understand the downed game protocol and will call Kyle McConnell (970-571-1015) if downed game goes outside of property controlled by M77 AG</label>
                 </div>
                 
                 <div class="checkbox-item">
@@ -605,6 +605,11 @@
                 <div class="checkbox-item">
                     <input type="checkbox" id="check8" required>
                     <label for="check8">I agree to indemnify and hold harmless all Released Parties as described above</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check9" required>
+                    <label for="check9">I accept full monetary responsibility for any property damage, intentional or accidental, including fires caused during my hunt</label>
                 </div>
             </div>
         </div>
@@ -756,7 +761,7 @@
             }
 
             // Check all checkboxes
-            const checkboxes = ['check1', 'check2', 'check3', 'check4', 'check5', 'check6', 'check7', 'check8'];
+            const checkboxes = ['check1', 'check2', 'check3', 'check4', 'check5', 'check6', 'check7', 'check8', 'check9'];
             for (const id of checkboxes) {
                 if (!document.getElementById(id).checked) {
                     errorDiv.textContent = 'Please check all required acknowledgment boxes.';
