@@ -28,7 +28,6 @@ mongoose.connect(MONGODB_URI)
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
-    // Continue running even if MongoDB fails (for testing)
   });
 
 // Import routes
@@ -53,8 +52,8 @@ app.get('/api/test', (req, res) => {
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Route handlers for specific pages
-app.get('/admin', (req, res) => {
+// Admin routes
+app.get('/admin/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
 
@@ -66,11 +65,11 @@ app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
-// Main routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
 
+// Public page routes
 app.get('/hunting', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting.html'));
 });
@@ -81,6 +80,23 @@ app.get('/about', (req, res) => {
 
 app.get('/services', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/services.html'));
+});
+
+app.get('/heritage-farm', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/heritage-farm.html'));
+});
+
+app.get('/prairie-peace', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/prairie-peace.html'));
+});
+
+app.get('/hunting-liability-waiver', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/hunting-liability-waiver.html'));
+});
+
+// Main route - must come last among GET routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // 404 handler - must come after all other routes
