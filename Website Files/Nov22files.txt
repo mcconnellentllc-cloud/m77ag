@@ -1,3 +1,4 @@
+|   |       index.js
 |   |       LICENSE
 |   |       package.json
 |   |       README.md
@@ -2969,14 +2970,12 @@
 |   +---controllers
 |   |       authController.js
 |   |       bookingController.js
-|   |       bookingMangaementController.js
+|   |       bookingManagementController.js
 |   |       huntingAnalyticsController.js
-|   |
-|   +---email templates
-|   |       hunting-confirmation-email.js
 |   |
 |   +---email-templates
 |   |       hunting-confirmation-email.js
+|   |       waiver-confirmation-email.js
 |   |
 |   +---middleware
 |   |       auth.js
@@ -2994,6 +2993,7 @@
 |           emailservice.js
 |
 \---Website Files
+        Nov22files.txt
         Prairie Peace.kml
         Sedgwick Cty Deer _ Pheasant (2).kml
 
