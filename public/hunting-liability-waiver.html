@@ -525,7 +525,27 @@
                 <label for="participantPhone">Phone Number *</label>
                 <input type="tel" id="participantPhone" required placeholder="(970) 555-1234">
             </div>
-            
+
+            <h3 style="margin: 30px 0 20px; color: #2d5016;">Vehicle Information (for property identification)</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107;">
+                <strong>Why we need this:</strong> Vehicle information allows us to identify authorized hunters from a distance so we do not disrupt your hunt. If a vehicle does not match our records and there is no authorization card displayed in the dashboard, we will pursue trespassing charges.
+            </p>
+
+            <div class="form-group">
+                <label for="vehicleMake">Vehicle Make *</label>
+                <input type="text" id="vehicleMake" required placeholder="e.g., Ford, Chevrolet, Toyota">
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleModel">Vehicle Model *</label>
+                <input type="text" id="vehicleModel" required placeholder="e.g., F-150, Silverado, Tacoma">
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleColor">Vehicle Color *</label>
+                <input type="text" id="vehicleColor" required placeholder="e.g., White, Black, Red">
+            </div>
+
             <div class="form-group">
                 <label>Electronic Signature *</label>
                 <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Sign using your mouse or finger on touchscreen</p>
@@ -716,10 +736,13 @@
             const name = document.getElementById('participantName').value.trim();
             const email = document.getElementById('participantEmail').value.trim();
             const phone = document.getElementById('participantPhone').value.trim();
+            const vehicleMake = document.getElementById('vehicleMake').value.trim();
+            const vehicleModel = document.getElementById('vehicleModel').value.trim();
+            const vehicleColor = document.getElementById('vehicleColor').value.trim();
             const date = document.getElementById('signatureDate').value;
 
-            if (!name || !email || !phone || !date) {
-                errorDiv.textContent = 'Please fill in all required fields.';
+            if (!name || !email || !phone || !vehicleMake || !vehicleModel || !vehicleColor || !date) {
+                errorDiv.textContent = 'Please fill in all required fields including vehicle information.';
                 errorDiv.style.display = 'block';
                 errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
@@ -756,6 +779,9 @@
                 participantName: name,
                 participantEmail: email,
                 participantPhone: phone,
+                vehicleMake: vehicleMake,
+                vehicleModel: vehicleModel,
+                vehicleColor: vehicleColor,
                 signatureDate: date,
                 signature: signatureData,
                 timestamp: new Date().toISOString()

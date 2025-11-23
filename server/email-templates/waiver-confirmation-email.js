@@ -357,20 +357,54 @@ function getWaiverConfirmationEmail(booking) {
         <li>Report any issues to Kyle immediately: 970-571-1015</li>
       </ul>
       
-      <h4 style="color: #2c5530; margin-top: 25px;">How to See Property Boundaries While Hunting:</h4>
-      <ol style="line-height: 1.8;">
-        <li><strong>Download the KML file</strong> from the link above (before you arrive)</li>
-        <li><strong>Import into OnX Hunt app:</strong> Open OnX > Waypoints > Import > Select the KML file</li>
-        <li>Property boundaries will display on your OnX maps with your real-time GPS location</li>
-        <li><strong>Alternative:</strong> Open KML file in Google Earth app on your phone to see boundaries</li>
-        <li>Walk property boundaries when you arrive to familiarize yourself with the area</li>
-        <li><strong>GPS Accuracy Warning:</strong> Cell phone GPS can have 30-50 foot errors - stay well inside boundaries</li>
-      </ol>
-      
-      <p style="margin-top: 15px; padding: 15px; background: #fff8dc; border-left: 4px solid #ffc107;">
-        <strong>Don't have OnX Hunt?</strong> Most hunters use OnX for property boundaries and navigation. 
-        Download at <a href="https://www.onxmaps.com" style="color: #1976d2;">onxmaps.com</a>
-      </p>
+      <h4 style="color: #2c5530; margin-top: 25px;">How to View Property Boundaries - DETAILED INSTRUCTIONS:</h4>
+
+      <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 20px; margin: 15px 0; border-radius: 8px;">
+        <h5 style="color: #2e7d32; margin: 0 0 15px 0;">OPTION 1: Google Earth (Desktop)</h5>
+        <ol style="line-height: 2; margin: 0; padding-left: 20px;">
+          <li>Click the "DOWNLOAD KML FILE" button above to save the file to your computer</li>
+          <li>Open Google Earth Pro on your computer (free download at earth.google.com)</li>
+          <li>Go to <strong>File > Open</strong> and select the downloaded KML file</li>
+          <li>Look in the left sidebar under <strong>"Places"</strong> - you will see "${booking.parcel === 'heritage-farm' ? 'Heritage Farm' : 'Prairie Peace'}"</li>
+          <li>Click the <strong>arrow/triangle</strong> next to the property name to expand and see all parcels</li>
+          <li>Double-click any parcel name to zoom to that location</li>
+          <li>Boundaries will appear as <strong>colored polygons</strong> on the satellite imagery</li>
+        </ol>
+      </div>
+
+      <div style="background: #e3f2fd; border: 2px solid #1976d2; padding: 20px; margin: 15px 0; border-radius: 8px;">
+        <h5 style="color: #1565c0; margin: 0 0 15px 0;">OPTION 2: OnX Hunt App (Recommended for Field Use)</h5>
+        <ol style="line-height: 2; margin: 0; padding-left: 20px;">
+          <li>Download OnX Hunt app from App Store or Google Play</li>
+          <li>Download the KML file to your phone</li>
+          <li>Open the OnX Hunt app</li>
+          <li>Tap <strong>Menu (☰) > Waypoints > Import</strong></li>
+          <li>Select the KML file from your downloads</li>
+          <li>Property boundaries will now display on your OnX map</li>
+          <li>Your GPS location will show in real-time relative to boundaries</li>
+        </ol>
+        <p style="margin: 10px 0 0 0; font-size: 13px; color: #1565c0;">
+          <strong>Note:</strong> OnX requires a subscription but is the best tool for hunters. Download at <a href="https://www.onxmaps.com" style="color: #1976d2;">onxmaps.com</a>
+        </p>
+      </div>
+
+      <div style="background: #fff3e0; border: 2px solid #ff9800; padding: 20px; margin: 15px 0; border-radius: 8px;">
+        <h5 style="color: #e65100; margin: 0 0 15px 0;">OPTION 3: Google Earth Mobile App</h5>
+        <ol style="line-height: 2; margin: 0; padding-left: 20px;">
+          <li>Download Google Earth app from App Store or Google Play</li>
+          <li>Download the KML file to your phone</li>
+          <li>Open your file manager and tap the KML file</li>
+          <li>Select "Open with Google Earth"</li>
+          <li>The app will zoom to the property location</li>
+          <li>Tap the <strong>menu icon</strong> and look under <strong>"Projects"</strong> to see parcel list</li>
+        </ol>
+      </div>
+
+      <div style="background: #ffebee; border-left: 5px solid #c62828; padding: 15px; margin: 15px 0;">
+        <p style="margin: 0; color: #c62828;">
+          <strong>GPS ACCURACY WARNING:</strong> Cell phone GPS can have 30-50 foot errors. Always stay well inside the boundary lines shown. When in doubt, move toward the CENTER of the property. Walk the boundaries when you first arrive to familiarize yourself with the terrain.
+        </p>
+      </div>
     </div>
   </div>
   
