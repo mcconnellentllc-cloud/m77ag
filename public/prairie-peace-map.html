@@ -705,7 +705,7 @@
             }
 
             try {
-                const response = await fetch(`/api/hunting/bookings/${bookingId}`);
+                const response = await fetch(`/api/hunting/booking-info/${bookingId}`);
                 const data = await response.json();
 
                 if (data.success && data.booking) {

@@ -7,6 +7,7 @@ const { authenticate, isAdmin } = require('../middleware/auth');
 router.post('/bookings', bookingController.createBooking);
 router.post('/submit-waiver', bookingController.submitWaiver);
 router.get('/booked-dates', bookingController.getBookedDates);
+router.get('/booking-info/:id', bookingController.getBookingInfo);
 
 // Admin routes (protected) - these match what the frontend expects
 router.get('/bookings', authenticate, isAdmin, bookingController.getAllBookings);
