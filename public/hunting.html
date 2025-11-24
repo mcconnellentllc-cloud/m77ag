@@ -778,7 +778,7 @@
         
         // Load booked dates
         function loadBookedDates() {
-            fetch('/api/bookings/booked-dates')
+            fetch('/api/hunting/booked-dates')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.bookings) {
@@ -1072,7 +1072,7 @@
                 originalPrice: originalCost
             };
             
-            fetch('/api/bookings', {
+            fetch('/api/hunting/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingData)
@@ -1085,11 +1085,13 @@
                     calculateTotal();
                     loadBookedDates();
                 } else {
-                    alert('Error: ' + data.message);
+                    alert('Error: ' + (data.message || 'Unable to complete booking. Please contact hunting@m77ag.com'));
+                    console.error('Booking error:', data);
                 }
             })
             .catch(error => {
-                alert('Error. Please call 970-571-1015.');
+                console.error('Booking error:', error);
+                alert('Error creating booking. Please try again or contact hunting@m77ag.com');
             });
         }
         
