@@ -39,6 +39,8 @@ const fieldRoutes = require('./routes/field');
 const transactionRoutes = require('./routes/transaction');
 const ledgerRoutes = require('./routes/ledger');
 const harvestDataRoutes = require('./routes/harvestData');
+const serviceRoutes = require('./routes/services');
+const chemicalRoutes = require('./routes/chemicals');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -49,6 +51,8 @@ app.use('/api/fields', fieldRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/ledger', ledgerRoutes);
 app.use('/api/harvest', harvestDataRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/chemicals', chemicalRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
