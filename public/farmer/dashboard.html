@@ -549,7 +549,10 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Property Management</h3>
-                        <button class="btn btn-primary" onclick="openPropertyModal()">+ Add Property</button>
+                        <div>
+                            <button class="btn btn-secondary btn-small" onclick="openM77AGImport()">📥 Import M77AG Workbook</button>
+                            <button class="btn btn-primary" onclick="openPropertyModal()">+ Add Property</button>
+                        </div>
                     </div>
                     <div id="propertiesList" class="loading">
                         <div class="spinner"></div>
@@ -654,5 +657,6 @@
     <script src="/farmer/forms.js"></script>
     <script src="/farmer/bulk-import.js"></script>
     <script src="/farmer/rotation.js"></script>
+    <script src="/farmer/m77ag-parser.js"></script>
 </body>
 </html>
