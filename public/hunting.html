@@ -610,10 +610,14 @@
                 
                 <div class="payment-section">
                     <h3 class="payment-title">Choose Payment Method</h3>
-                    
+
                     <div id="paypal-button-container"></div>
-                    
-                    <a href="https://venmo.com/u/ToGoAg" target="_blank" class="payment-btn venmo-btn">
+
+                    <button id="freeBookingBtn" onclick="submitFreeBooking()" onmouseover="this.style.background='#1f3d21'" onmouseout="this.style.background='#2c5530'" style="display: none; width: 100%; background: #2c5530; color: white; border: none; padding: 18px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 15px; transition: background 0.3s;">
+                        Complete Free Booking
+                    </button>
+
+                    <a href="https://venmo.com/u/ToGoAg" target="_blank" class="payment-btn venmo-btn" id="venmoBtn">
                         Pay with Venmo (@ToGoAg)
                     </a>
 
@@ -948,8 +952,22 @@
 
             document.getElementById('totalAmount').textContent = '$' + totalCost;
 
-            if (totalCost >= 0) {
-                document.getElementById('paypal-button-container').innerHTML = '';
+            // Show/hide payment options based on total cost
+            const freeBookingBtn = document.getElementById('freeBookingBtn');
+            const paypalContainer = document.getElementById('paypal-button-container');
+            const venmoBtn = document.getElementById('venmoBtn');
+
+            if (totalCost === 0) {
+                // Free booking - show submit button, hide payment options
+                freeBookingBtn.style.display = 'block';
+                paypalContainer.style.display = 'none';
+                venmoBtn.style.display = 'none';
+            } else {
+                // Paid booking - show payment options, hide free button
+                freeBookingBtn.style.display = 'none';
+                paypalContainer.style.display = 'block';
+                venmoBtn.style.display = 'block';
+                paypalContainer.innerHTML = '';
                 renderPayPalButton();
             }
         }
@@ -994,6 +1012,38 @@
             });
         }
         
+        // Submit free booking (KCP100)
+        function submitFreeBooking() {
+            // Validate form
+            const form = document.getElementById('bookingForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Validate required fields
+            if (!document.getElementById('hunterName').value ||
+                !document.getElementById('hunterEmail').value ||
+                !document.getElementById('hunterPhone').value ||
+                !document.getElementById('propertySelect').value ||
+                !document.getElementById('startDate').value ||
+                !document.getElementById('endDate').value) {
+                alert('Please fill out all required fields');
+                return;
+            }
+
+            // Validate at least one game species is selected
+            const gameChecked = document.getElementById('deer').checked ||
+                               document.getElementById('pheasant').checked ||
+                               document.getElementById('turkey').checked;
+            if (!gameChecked) {
+                alert('Please select at least one game species');
+                return;
+            }
+
+            submitBooking('complimentary', 'KCP100-FREE');
+        }
+
         // Submit booking
         function submitBooking(paymentStatus, transactionId = null) {
             const gameSpecies = [];
@@ -1013,7 +1063,7 @@
                 campingFee: document.getElementById('campingAddon').checked ? CAMPING_RATE : 0,
                 totalPrice: totalCost,
                 paymentStatus: paymentStatus,
-                paymentMethod: paymentStatus === 'paid' ? 'paypal' : 'cash',
+                paymentMethod: paymentStatus === 'paid' ? 'paypal' : (paymentStatus === 'complimentary' ? 'complimentary' : 'cash'),
                 paypalTransactionId: transactionId,
                 dailyRate: DAILY_RATE,
                 numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000),
