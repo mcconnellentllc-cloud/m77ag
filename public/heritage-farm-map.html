@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heritage Farm Property Maps | M77 AG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+            line-height: 1.6;
+        }
+
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar {
+            padding: 20px 0;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: rgba(255,255,255,0.8);
+            transition: 0.3s;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #d4af37;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 40px 60px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5530 0%, #3d7c47 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .download-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .download-section h2 {
+            color: #2c5530;
+            margin-bottom: 20px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-gold {
+            background: #d4a54a;
+            color: #2c3e50;
+        }
+
+        .parcel-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .parcel-section h2 {
+            color: #2c5530;
+            margin-bottom: 10px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .parcel-section h3 {
+            color: #666;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .parcel-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .parcel-table th,
+        .parcel-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .parcel-table th {
+            background: #2c5530;
+            color: white;
+            font-weight: 600;
+        }
+
+        .parcel-table tr:hover {
+            background: #f8f6f3;
+        }
+
+        .nav-btn {
+            background: #4caf50;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: #388e3c;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .warning-box ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+
+        .warning-box li {
+            margin: 8px 0;
+        }
+
+        .danger-box {
+            background: #ffebee;
+            border-left: 5px solid #c62828;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .danger-box h3 {
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+
+        .danger-box p {
+            color: #c62828;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #1976d2;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box h3 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #1565c0;
+        }
+
+        .rules-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .rules-section h2 {
+            color: #2c5530;
+            margin-bottom: 20px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .rules-section h4 {
+            color: #2c5530;
+            margin: 25px 0 15px;
+        }
+
+        .rules-section ul,
+        .rules-section ol {
+            margin-left: 20px;
+        }
+
+        .rules-section li {
+            margin: 10px 0;
+        }
+
+        .contact-section {
+            background: #2c5530;
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .contact-section h2 {
+            font-family: 'Oswald', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .contact-section .phone {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 10px 0;
+        }
+
+        .dash-card-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .dash-card {
+            border: 3px solid #000;
+            padding: 25px;
+            background: #fff;
+            margin: 20px 0;
+        }
+
+        .dash-card h2 {
+            color: #2c5530;
+            text-align: center;
+            margin: 0 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #d4a54a;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .dash-card .info-row {
+            margin: 12px 0;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .dash-card .info-label {
+            font-weight: bold;
+            color: #2c5530;
+            display: inline-block;
+            width: 140px;
+        }
+
+        .dash-card .emergency {
+            background: #ffebee;
+            border-left: 5px solid #c62828;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .dash-card .emergency p {
+            margin: 0;
+        }
+
+        .print-btn {
+            background: #2c5530;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .print-btn:hover {
+            background: #1e3d22;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .dash-card, .dash-card * {
+                visibility: visible;
+            }
+            .dash-card {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: 2px solid #000;
+            }
+            .print-btn, .nav-wrapper, .no-print {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(26, 26, 26, 0.98);
+                padding: 20px;
+                gap: 20px;
+                display: none;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .container {
+                padding: 100px 20px 40px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+            }
+
+            .parcel-table {
+                font-size: 14px;
+            }
+
+            .parcel-table th,
+            .parcel-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="logo">M77 AG</a>
+                <div class="hamburger" onclick="document.querySelector('.nav-menu').classList.toggle('active')">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                    <li><a href="/admin" class="nav-link">Admin</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>M77 AG Heritage Farm - Property Maps</h1>
+            <p>Sedgwick County, Colorado | 1,160 Acres | 5 Hunting Parcels</p>
+        </div>
+
+        <div class="dash-card-section">
+            <h2 style="color: #2c5530; font-family: 'Oswald', sans-serif; margin-bottom: 15px;">Vehicle Dash Card</h2>
+            <p class="no-print">Print this card and keep it visible on your vehicle dashboard while hunting.</p>
+
+            <div class="dash-card" id="dashCard">
+                <h2>M77 AG HUNTING AUTHORIZATION</h2>
+
+                <div class="info-row">
+                    <span class="info-label">HUNTER:</span>
+                    <span id="dashHunterName" style="font-size: 18px; font-weight: bold;">Loading...</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">BOOKING ID:</span>
+                    <span id="dashBookingId" style="font-family: monospace;">Loading...</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">PROPERTY:</span>
+                    <span style="font-weight: bold;">M77 AG Heritage Farm</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">HUNT DATE:</span>
+                    <span id="dashHuntDate" style="font-weight: bold;">Loading...</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">VEHICLE:</span>
+                    <span id="dashVehicle">Loading...</span>
+                </div>
+
+                <div class="emergency">
+                    <p style="font-size: 16px; font-weight: bold; color: #c62828; margin-bottom: 10px;">DOWNED GAME - CALL IMMEDIATELY:</p>
+                    <p style="font-size: 22px; font-weight: bold;">Kyle McConnell: 970-571-1015</p>
+                    <p style="font-size: 12px; margin-top: 8px;">No answer does NOT mean permission to proceed.</p>
+                </div>
+
+                <div style="text-align: center; border-top: 2px solid #ddd; margin-top: 20px; padding-top: 15px;">
+                    <p style="margin: 5px 0; font-weight: bold;">KEEP THIS CARD VISIBLE IN VEHICLE DASHBOARD</p>
+                    <p style="margin: 5px 0; font-size: 12px;">M77 AG | McConnell Enterprises LLC | hunting@m77ag.com</p>
+                </div>
+            </div>
+
+            <button class="print-btn no-print" onclick="window.print()">PRINT DASH CARD</button>
+        </div>
+
+        <div class="download-section">
+            <h2>Download Property Boundaries</h2>
+            <div class="download-buttons">
+                <a href="/maps/Heritage-Farm-Boundaries.kml" class="btn btn-gold" download>Download KML File (OnX/Google Earth)</a>
+                <a href="/maps/Heritage-Farm-Map.pdf" class="btn btn-primary" download>Download PDF Map</a>
+                <a href="https://earth.google.com/web/search/Sedgwick+County,+CO/@40.77,-102.54,1500d" class="btn btn-secondary" target="_blank">Open in Google Earth</a>
+            </div>
+        </div>
+
+        <div class="parcel-section">
+            <h2>Hunting Parcels</h2>
+            <h3>Click "Navigate" to open Google Maps directions</h3>
+
+            <table class="parcel-table">
+                <thead>
+                    <tr>
+                        <th>Parcel Name</th>
+                        <th>Acres</th>
+                        <th>Primary Game</th>
+                        <th>Navigate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Rolling Dunes</strong></td>
+                        <td>320</td>
+                        <td>Deer, Pheasant</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7466,-102.5400" class="nav-btn" target="_blank">Navigate</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prairie Parcel</strong></td>
+                        <td>280</td>
+                        <td>Pheasant, Dove</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7717,-102.5265" class="nav-btn" target="_blank">Navigate</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sedgwick County Homestead</strong></td>
+                        <td>240</td>
+                        <td>Deer, Turkey, Pheasant<br><strong style="color: #1976d2;">CAMPING</strong></td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7690,-102.5161" class="nav-btn" target="_blank">Navigate</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>North Side</strong></td>
+                        <td>160</td>
+                        <td>Deer, Coyote</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7678,-102.6153" class="nav-btn" target="_blank">Navigate</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>South Side</strong></td>
+                        <td>160</td>
+                        <td>Deer, Pheasant, Dove</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7605,-102.6202" class="nav-btn" target="_blank">Navigate</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-box">
+                <h3>GAME REST PERIODS (Do Not Hunt These Areas)</h3>
+                <ul>
+                    <li><strong>Rolling Dunes:</strong> Closed Nov 15-21, Dec 1-7, Dec 20-26</li>
+                    <li><strong>Homestead:</strong> Closed Nov 22-28, Dec 8-14</li>
+                    <li><strong>North Side:</strong> Closed Nov 8-14, Nov 29-Dec 5</li>
+                </ul>
+                <p style="margin-top: 10px; font-size: 13px; color: #856404;">Rest periods allow game recovery. Check calendar before hunting each parcel.</p>
+            </div>
+        </div>
+
+        <div class="rules-section">
+            <h2>Critical Hunting Rules & Protocols</h2>
+
+            <div class="danger-box">
+                <h3>PROPERTY BOUNDARIES - CRIMINAL TRESPASSING WARNING</h3>
+                <p>Stay INSIDE property boundaries at all times. GPS devices can have 30-50 foot errors. When in doubt, move toward the CENTER of the property. Trespassing on adjacent land will result in immediate loss of hunting privileges and criminal prosecution.</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>DOWNED GAME PROTOCOL - MANDATORY</h3>
+                <p style="font-size: 20px; font-weight: bold; color: #856404;">Kyle McConnell: 970-571-1015</p>
+                <p style="color: #856404;">Call IMMEDIATELY when game is down. Do not pursue onto neighboring properties without explicit permission coordinated through Kyle. NO ANSWER DOES NOT MEAN PERMISSION. Unauthorized retrieval is criminal trespassing.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>WORKING FARM - SAFETY HAZARDS</h3>
+                <p>This is an active agricultural operation. Watch for farm equipment, livestock, irrigation systems, fence lines, and other hazards. You are entering at your own risk and assume all responsibility for your safety and well-being.</p>
+            </div>
+
+            <h4>General Hunting Guidelines</h4>
+            <ul>
+                <li>Valid Colorado hunting license and appropriate tags REQUIRED</li>
+                <li>No shooting within 50 yards of buildings, roads, or property boundaries</li>
+                <li>Close all gates behind you</li>
+                <li>Pack out ALL trash and spent shells</li>
+                <li>Respect livestock and farm equipment - do not disturb</li>
+                <li>Obey all Colorado Parks & Wildlife regulations</li>
+                <li>Hunt safely and ethically at all times</li>
+                <li>Report any issues to Kyle immediately: 970-571-1015</li>
+            </ul>
+
+            <h4>How to See Property Boundaries While Hunting</h4>
+            <ol>
+                <li><strong>Download the KML file</strong> from the button above (before you arrive)</li>
+                <li><strong>Import into OnX Hunt app:</strong> Open OnX > Waypoints > Import > Select the KML file</li>
+                <li>Property boundaries will display on your OnX maps with your real-time GPS location</li>
+                <li><strong>Alternative:</strong> Open KML file in Google Earth app on your phone to see boundaries</li>
+                <li>Walk property boundaries when you arrive to familiarize yourself with the area</li>
+                <li><strong>GPS Accuracy Warning:</strong> Cell phone GPS can have 30-50 foot errors - stay well inside boundaries</li>
+            </ol>
+
+            <div class="warning-box">
+                <h3>Don't have OnX Hunt?</h3>
+                <p style="color: #856404;">Most hunters use OnX for property boundaries and navigation. Download at <a href="https://www.onxmaps.com" style="color: #1976d2;">onxmaps.com</a></p>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h2>Questions or Emergency Contact</h2>
+            <p><strong>Kyle McConnell</strong></p>
+            <p class="phone">970-571-1015</p>
+            <p>Downed game & emergencies</p>
+            <p style="margin-top: 15px;">Email: hunting@m77ag.com</p>
+        </div>
+    </div>
+
+    <script>
+        // Load booking data for dash card
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('bookingId');
+
+            if (!bookingId) {
+                document.getElementById('dashHunterName').textContent = 'No booking found';
+                document.getElementById('dashBookingId').textContent = '-';
+                document.getElementById('dashHuntDate').textContent = '-';
+                document.getElementById('dashVehicle').textContent = '-';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/hunting/booking-info/${bookingId}`);
+                const data = await response.json();
+
+                if (data.success && data.booking) {
+                    const booking = data.booking;
+                    document.getElementById('dashHunterName').textContent = booking.customerName || 'Unknown';
+                    document.getElementById('dashBookingId').textContent = booking._id;
+
+                    const huntDate = new Date(booking.checkinDate || booking.checkIn);
+                    document.getElementById('dashHuntDate').textContent = huntDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    // Vehicle info from waiver data
+                    if (booking.waiverData) {
+                        const vehicle = `${booking.waiverData.vehicleColor || ''} ${booking.waiverData.vehicleMake || ''} ${booking.waiverData.vehicleModel || ''}`.trim();
+                        document.getElementById('dashVehicle').textContent = vehicle || 'Not provided';
+                    } else {
+                        document.getElementById('dashVehicle').textContent = 'Not provided';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading booking:', error);
+            }
+        });
+    </script>
+</body>
+</html>

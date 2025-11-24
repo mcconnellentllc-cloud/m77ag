@@ -49,8 +49,18 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, '../public')));
+// Serve static files from public directory with cache control
+app.use(express.static(path.join(__dirname, '../public'), {
+  etag: false,
+  setHeaders: (res, filePath) => {
+    // Disable caching for HTML files to prevent stale content
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // Admin routes
 app.get('/admin/dashboard', (req, res) => {
@@ -130,7 +140,7 @@ app.listen(PORT, '0.0.0.0', () => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, closing server...');
-  mongoose.connection.close(false, () => {
+  mongoose.connection.close(false).then(() => {
     console.log('MongoDB connection closed');
     process.exit(0);
   });

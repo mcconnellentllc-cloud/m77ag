@@ -101,6 +101,9 @@ const bookingController = {
         participantName,
         participantEmail,
         participantPhone,
+        vehicleMake,
+        vehicleModel,
+        vehicleColor,
         signatureDate,
         signature,
         timestamp
@@ -128,6 +131,9 @@ const bookingController = {
         participantName,
         participantEmail,
         participantPhone,
+        vehicleMake,
+        vehicleModel,
+        vehicleColor,
         signatureDate: new Date(signatureDate),
         signatureImage: signature,
         ipAddress: req.ip || req.connection.remoteAddress,
@@ -202,10 +208,47 @@ const bookingController = {
   },
 
   // Get single booking by ID
+  // Public endpoint for dash card - returns limited booking info
+  getBookingInfo: async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      // Return only data needed for dash card (no sensitive info)
+      res.json({
+        success: true,
+        booking: {
+          _id: booking._id,
+          customerName: booking.customerName,
+          parcel: booking.parcel,
+          checkinDate: booking.checkinDate,
+          checkoutDate: booking.checkoutDate,
+          waiverData: booking.waiverData ? {
+            vehicleMake: booking.waiverData.vehicleMake,
+            vehicleModel: booking.waiverData.vehicleModel,
+            vehicleColor: booking.waiverData.vehicleColor
+          } : null
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching booking info:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch booking info'
+      });
+    }
+  },
+
   getBookingById: async (req, res) => {
     try {
       const booking = await Booking.findById(req.params.id);
-      
+
       if (!booking) {
         return res.status(404).json({
           success: false,
