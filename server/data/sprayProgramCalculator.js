@@ -254,6 +254,7 @@ function calculateProgramCosts() {
 }
 
 // Calculate for specific acreage
+// Note: Chemical sales are at DIRECT COST - no volume discounts
 function calculateForAcres(acres, programType = 'standard') {
   const costs = calculateProgramCosts();
   const pricePerAcre = programType === 'standard'
@@ -262,15 +263,10 @@ function calculateForAcres(acres, programType = 'standard') {
 
   const baseTotal = acres * pricePerAcre;
 
-  // Apply volume discounts
-  let discount = 0;
-  if (acres >= 1000) discount = 0.10;
-  else if (acres >= 500) discount = 0.07;
-  else if (acres >= 250) discount = 0.05;
-  else if (acres >= 100) discount = 0.03;
-
-  const discountAmount = baseTotal * discount;
-  const finalTotal = baseTotal - discountAmount;
+  // Chemical sales have NO volume discounts - direct cost only
+  const discount = 0;
+  const discountAmount = 0;
+  const finalTotal = baseTotal;
 
   // Calculate containers needed for each product
   const pass3Products = programType === 'standard'
@@ -324,9 +320,10 @@ function calculateForAcres(acres, programType = 'standard') {
     programType: programType.toUpperCase(),
     pricePerAcre: pricePerAcre.toFixed(2),
     baseTotal: baseTotal.toFixed(2),
-    discountPercentage: (discount * 100).toFixed(0),
-    discountAmount: discountAmount.toFixed(2),
+    discountPercentage: 0,
+    discountAmount: '0.00',
     finalTotal: finalTotal.toFixed(2),
+    pricingNote: 'Chemical sales at direct cost - no volume discounts',
     costBreakdown: costs,
     containerDetails: containerDetails
   };

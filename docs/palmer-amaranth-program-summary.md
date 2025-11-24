@@ -36,32 +36,41 @@
 
 ## Total Program Costs
 
-| Program Type | Base Cost/Acre | Cost Breakdown |
-|--------------|----------------|----------------|
+| Program Type | Cost/Acre | Cost Breakdown |
+|--------------|-----------|----------------|
 | **Standard** | **$31.73** | Pass1: $7.31 + Pass2: $7.31 + Pass3: $7.67 + Pass4: $9.44 |
 | **Premium** | **$32.37** | Pass1: $7.31 + Pass2: $7.31 + Pass3: $8.31 + Pass4: $9.44 |
 
+### ⚠️ IMPORTANT: Direct Cost Pricing
+
+**Chemical sales are sold at DIRECT COST with NO volume discounts.**
+- 100 acres = $31.73/acre = $3,173 total (Standard)
+- 500 acres = $31.73/acre = $15,865 total (Standard)
+- 1,000 acres = $31.73/acre = $31,730 total (Standard)
+
+**Volume discounts only apply to Custom Farming services, not chemical sales.**
+
 ---
 
-## Volume Discount Pricing
+## Total Program Costs by Acreage
 
-### Standard Program ($31.73/acre base)
+### Standard Program ($31.73/acre - Direct Cost)
 
-| Acres | Discount | Price/Acre | Total Program Cost |
-|-------|----------|------------|-------------------|
-| 100 | 3% | $30.78 | $3,078 |
-| 250 | 5% | $30.14 | $7,535 |
-| 500 | 7% | $29.51 | $14,755 |
-| 1,000 | 10% | $28.56 | $28,560 |
+| Acres | Price/Acre | Total Program Cost |
+|-------|------------|-------------------|
+| 100 | $31.73 | $3,173 |
+| 250 | $31.73 | $7,933 |
+| 500 | $31.73 | $15,865 |
+| 1,000 | $31.73 | $31,730 |
 
-### Premium Program ($32.37/acre base)
+### Premium Program ($32.37/acre - Direct Cost)
 
-| Acres | Discount | Price/Acre | Total Program Cost |
-|-------|----------|------------|-------------------|
-| 100 | 3% | $31.40 | $3,140 |
-| 250 | 5% | $30.75 | $7,688 |
-| 500 | 7% | $30.10 | $15,050 |
-| 1,000 | 10% | $29.13 | $29,130 |
+| Acres | Price/Acre | Total Program Cost |
+|-------|------------|-------------------|
+| 100 | $32.37 | $3,237 |
+| 250 | $32.37 | $8,093 |
+| 500 | $32.37 | $16,185 |
+| 1,000 | $32.37 | $32,370 |
 
 ---
 
@@ -92,7 +101,7 @@
 ✅ **Multiple Modes of Action** (Group 4, 5, 9, 14) for resistance management
 ✅ **Most Economical Products** using CPD alternate suppliers
 ✅ **Proven Palmer Amaranth Control** with 85-95% effectiveness
-✅ **Volume Discounts** up to 10% on 1000+ acres
+✅ **Direct Cost Pricing** - no markup, no volume discounts
 ✅ **Two Drop-off Points** (M77 AG, Mollohan Farms)
 
 ---
@@ -102,9 +111,25 @@
 - Payment due 10 days prior to each application window
 - Minimum 100 acres
 - Custom programs available for unique situations
+- Chemical sales at direct cost only
+
+---
+
+## Pricing Structure
+
+**Chemical Programs:**
+- Sold at direct cost from supplier
+- NO volume discounts
+- Payment due 10 days prior to delivery
+
+**Custom Farming Services:**
+- Volume discounts available (see Services page)
+- 7-14% discounts based on acreage
+- Separate pricing from chemical sales
 
 ---
 
 **Pricing verified:** November 2024  
 **Calculator:** sprayProgramCalculator.js  
-**Source:** Crop Protect Direct pricing
+**Source:** Crop Protect Direct pricing  
+**Policy:** Direct cost, no markup, no volume discounts on chemicals

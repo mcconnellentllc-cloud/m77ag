@@ -265,13 +265,9 @@ const palmerAmaranthCornProgram = {
     cleanEquipment: 'Clean equipment between fields to prevent seed spread'
   },
 
-  // Volume Discounts
-  volumeDiscounts: [
-    { minAcres: 100, discountPercentage: 3 },
-    { minAcres: 250, discountPercentage: 5 },
-    { minAcres: 500, discountPercentage: 7 },
-    { minAcres: 1000, discountPercentage: 10 }
-  ],
+  // Chemical sales are at DIRECT COST - no volume discounts
+  // Volume discounts only apply to custom farming services
+  volumeDiscounts: [],
 
   // Drop-off points
   availableDropOffPoints: [

@@ -32,13 +32,8 @@ const defaultPrograms = [
     applicationTiming: 'Pre-plant burndown',
     season: 'Spring',
     availableDropOffPoints: dropOffPoints,
-    paymentTerms: 'Payment due 10 days prior to delivery',
+    paymentTerms: 'Payment due 10 days prior to delivery. Chemical sales at direct cost - no volume discounts.',
     minimumAcres: 50,
-    volumeDiscounts: [
-      { minAcres: 100, discountPercentage: 5 },
-      { minAcres: 250, discountPercentage: 7 },
-      { minAcres: 500, discountPercentage: 10 }
-    ],
     active: true
   },
   {
@@ -49,13 +44,8 @@ const defaultPrograms = [
     applicationTiming: 'Post-emerge',
     season: 'Spring/Summer',
     availableDropOffPoints: dropOffPoints,
-    paymentTerms: 'Payment due 10 days prior to delivery',
+    paymentTerms: 'Payment due 10 days prior to delivery. Chemical sales at direct cost - no volume discounts.',
     minimumAcres: 50,
-    volumeDiscounts: [
-      { minAcres: 100, discountPercentage: 5 },
-      { minAcres: 250, discountPercentage: 7 },
-      { minAcres: 500, discountPercentage: 10 }
-    ],
     active: true
   },
   {
@@ -66,13 +56,8 @@ const defaultPrograms = [
     applicationTiming: 'Pre-emerge + Post-emerge',
     season: 'Full Season',
     availableDropOffPoints: dropOffPoints,
-    paymentTerms: 'Payment due 10 days prior to delivery',
+    paymentTerms: 'Payment due 10 days prior to delivery. Chemical sales at direct cost - no volume discounts.',
     minimumAcres: 100,
-    volumeDiscounts: [
-      { minAcres: 250, discountPercentage: 5 },
-      { minAcres: 500, discountPercentage: 8 },
-      { minAcres: 1000, discountPercentage: 12 }
-    ],
     active: true
   }
 ];

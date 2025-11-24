@@ -58,11 +58,8 @@ const chemicalProgramSchema = new mongoose.Schema({
   minimumAcres: Number,
   maximumAcres: Number,
 
-  // Volume Discounts
-  volumeDiscounts: [{
-    minAcres: Number,
-    discountPercentage: Number
-  }],
+  // Note: No volume discounts for chemical sales - direct cost only
+  // Volume discounts only apply to custom farming services
 
   // Status
   active: {
@@ -81,6 +78,7 @@ chemicalProgramSchema.index({ active: 1 });
 chemicalProgramSchema.index({ targetCrops: 1 });
 
 // Method to calculate total cost for given acres
+// Note: Chemical sales are at DIRECT COST - no volume discounts applied
 chemicalProgramSchema.methods.calculateCost = function(acres) {
   let totalCost = 0;
   const productsBreakdown = [];
@@ -103,25 +101,13 @@ chemicalProgramSchema.methods.calculateCost = function(acres) {
     });
   });
 
-  // Apply volume discounts
-  let discount = 0;
-  if (this.volumeDiscounts && this.volumeDiscounts.length > 0) {
-    const sortedDiscounts = this.volumeDiscounts.sort((a, b) => b.minAcres - a.minAcres);
-    for (const tier of sortedDiscounts) {
-      if (acres >= tier.minAcres) {
-        discount = tier.discountPercentage / 100;
-        break;
-      }
-    }
-  }
-
-  const discountAmount = totalCost * discount;
-  const finalTotal = totalCost - discountAmount;
+  // Chemical sales are at direct cost - no discounts
+  const finalTotal = totalCost;
 
   return {
     baseTotal: totalCost,
-    discountPercentage: discount * 100,
-    discountAmount: discountAmount,
+    discountPercentage: 0,
+    discountAmount: 0,
     finalTotal: finalTotal,
     pricePerAcre: finalTotal / acres,
     productsBreakdown: productsBreakdown
