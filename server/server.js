@@ -35,12 +35,14 @@ const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const huntingRoutes = require('./routes/hunting');
 const serviceRoutes = require('./routes/services');
+const chemicalRoutes = require('./routes/chemicals');
 
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/hunting', huntingRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/chemicals', chemicalRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
