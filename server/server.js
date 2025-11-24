@@ -89,6 +89,19 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
 });
 
+// Farmer routes
+app.get('/farmer/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/dashboard.html'));
+});
+
+app.get('/farmer/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
+app.get('/farmer', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
 // Public page routes
 app.get('/hunting', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting.html'));
