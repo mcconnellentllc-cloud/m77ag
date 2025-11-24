@@ -512,49 +512,9 @@ function openHarvestModal(harvestId = null) {
     showAlert('Harvest form coming in next update. Use bulk import for now.', 'info');
 }
 
-// Open Bulk Import Modal
+// Open Bulk Import Modal - redirects to enhanced version
 function openBulkImportModal() {
-    const modalHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Bulk Import Harvest Data</h3>
-                <button class="modal-close" onclick="closeModal('bulkImportModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-info">
-                    <strong>CSV Format Expected:</strong><br>
-                    Field Name, Crop Type, Crop Year, Acres, Yield per Acre, Total Bushels, Moisture, Test Weight
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Select CSV File</label>
-                    <input type="file" id="csvFile" class="form-control" accept=".csv">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Import Source</label>
-                    <select id="importSource" class="form-control">
-                        <option value="csv">Manual CSV</option>
-                        <option value="combine_data">Combine Data</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div id="importPreview" style="margin-top: 1rem; display: none;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Preview:</h4>
-                    <div id="previewContent" style="font-size: 0.85rem; max-height: 200px; overflow-y: auto;"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('bulkImportModal')">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="processBulkImport()" id="importBtn">Import Data</button>
-            </div>
-        </div>
-    `;
-
-    showModal('bulkImportModal', modalHTML);
-
-    document.getElementById('csvFile').addEventListener('change', previewCSV);
+    openEnhancedBulkImport();
 }
 
 // Preview CSV
