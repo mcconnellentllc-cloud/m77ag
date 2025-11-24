@@ -34,11 +34,21 @@ mongoose.connect(MONGODB_URI)
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const huntingRoutes = require('./routes/hunting');
+const propertyRoutes = require('./routes/property');
+const fieldRoutes = require('./routes/field');
+const transactionRoutes = require('./routes/transaction');
+const ledgerRoutes = require('./routes/ledger');
+const harvestDataRoutes = require('./routes/harvestData');
 
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/hunting', huntingRoutes);
+app.use('/api/properties', propertyRoutes);
+app.use('/api/fields', fieldRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/ledger', ledgerRoutes);
+app.use('/api/harvest', harvestDataRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
