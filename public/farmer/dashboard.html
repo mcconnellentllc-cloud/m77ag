@@ -478,6 +478,10 @@
                     <span class="nav-icon">🚜</span>
                     <span>Harvest Data</span>
                 </li>
+                <li class="nav-item" data-view="rotation">
+                    <span class="nav-icon">🔄</span>
+                    <span>Crop Rotation</span>
+                </li>
                 <li class="nav-item" data-view="analytics">
                     <span class="nav-icon">📈</span>
                     <span>Analytics</span>
@@ -613,6 +617,17 @@
                 </div>
             </div>
 
+            <!-- Rotation Section -->
+            <div id="rotation" class="view-section">
+                <h2 style="margin-bottom: 1.5rem;">Crop Rotation Management</h2>
+                <div id="rotationTable">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading rotation table...</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Analytics Section -->
             <div id="analytics" class="view-section">
                 <h2 style="margin-bottom: 1.5rem;">Financial Analytics</h2>
@@ -638,5 +653,6 @@
     <script src="/farmer/modals.js"></script>
     <script src="/farmer/forms.js"></script>
     <script src="/farmer/bulk-import.js"></script>
+    <script src="/farmer/rotation.js"></script>
 </body>
 </html>
