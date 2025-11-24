@@ -23,7 +23,10 @@ const bookingController = {
         totalPrice,
         paymentMethod,
         paymentStatus,
-        notes
+        notes,
+        discountCode,
+        discountPercent,
+        originalPrice
       } = req.body;
 
       // Check if dates are already booked for this parcel
@@ -65,6 +68,9 @@ const bookingController = {
         paymentMethod: paymentMethod || 'paypal',
         paymentStatus: paymentStatus || 'pending',
         notes,
+        discountCode,
+        discountPercent,
+        originalPrice,
         status: 'confirmed',
         waiverSigned: false
       });

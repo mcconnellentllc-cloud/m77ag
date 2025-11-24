@@ -595,10 +595,17 @@
                     <label>Email Address</label>
                     <input type="email" id="hunterEmail" required>
                 </div>
-                
+
+                <div class="form-group">
+                    <label>Discount Code (optional)</label>
+                    <input type="text" id="discountCode" placeholder="Enter code if you have one" style="text-transform: uppercase;">
+                    <div id="discountMessage" style="margin-top: 8px; font-size: 14px; display: none;"></div>
+                </div>
+
                 <div class="price-display">
                     <div class="price-label">Total Amount</div>
                     <div class="price-amount" id="totalAmount">$0</div>
+                    <div id="discountApplied" style="font-size: 14px; color: #2c5530; margin-top: 5px; display: none;"></div>
                 </div>
                 
                 <div class="payment-section">
@@ -665,9 +672,19 @@
 
         let currentDate = new Date();
         let totalCost = 0;
+        let originalCost = 0;
+        let discountPercent = 0;
+        let appliedDiscountCode = '';
         const bookedDates = {};
         const DAILY_RATE = 200;
         const CAMPING_RATE = 50;
+
+        // Kyle Cares Program discount codes
+        const DISCOUNT_CODES = {
+            'KCP100': 100,
+            'KCP50': 50,
+            'KCP25': 25
+        };
         
         // PHEASANT SEASON: Sept 1 - Jan 31
         const PHEASANT_SEASON_START = new Date(new Date().getFullYear(), 8, 1); // Sept 1
@@ -876,24 +893,62 @@
             const start = new Date(document.getElementById('startDate').value);
             const end = new Date(document.getElementById('endDate').value);
             const camping = document.getElementById('campingAddon').checked;
-            
+            const codeInput = document.getElementById('discountCode').value.toUpperCase().trim();
+
             if (!property || !start || !end || isNaN(start) || isNaN(end)) {
                 document.getElementById('totalAmount').textContent = '$0';
+                document.getElementById('discountApplied').style.display = 'none';
                 return;
             }
-            
+
             const days = Math.ceil((end - start) / 86400000) + 1;
             if (days <= 0) {
                 document.getElementById('totalAmount').textContent = '$0';
+                document.getElementById('discountApplied').style.display = 'none';
                 return;
             }
-            
-            totalCost = DAILY_RATE * days;
-            if (camping) totalCost += (CAMPING_RATE * days);
-            
+
+            originalCost = DAILY_RATE * days;
+            if (camping) originalCost += (CAMPING_RATE * days);
+
+            // Apply discount code
+            const discountMsg = document.getElementById('discountMessage');
+            const discountApplied = document.getElementById('discountApplied');
+
+            if (codeInput && DISCOUNT_CODES[codeInput]) {
+                discountPercent = DISCOUNT_CODES[codeInput];
+                appliedDiscountCode = codeInput;
+                totalCost = originalCost * (1 - discountPercent / 100);
+
+                discountMsg.textContent = 'Code applied! ' + discountPercent + '% discount';
+                discountMsg.style.color = '#2c5530';
+                discountMsg.style.display = 'block';
+
+                if (discountPercent === 100) {
+                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> FREE - Kyle Cares Program';
+                } else {
+                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> ' + discountPercent + '% off';
+                }
+                discountApplied.style.display = 'block';
+            } else if (codeInput) {
+                discountPercent = 0;
+                appliedDiscountCode = '';
+                totalCost = originalCost;
+                discountMsg.textContent = 'Invalid code';
+                discountMsg.style.color = '#c62828';
+                discountMsg.style.display = 'block';
+                discountApplied.style.display = 'none';
+            } else {
+                discountPercent = 0;
+                appliedDiscountCode = '';
+                totalCost = originalCost;
+                discountMsg.style.display = 'none';
+                discountApplied.style.display = 'none';
+            }
+
             document.getElementById('totalAmount').textContent = '$' + totalCost;
-            
-            if (totalCost > 0) {
+
+            if (totalCost >= 0) {
                 document.getElementById('paypal-button-container').innerHTML = '';
                 renderPayPalButton();
             }
@@ -961,7 +1016,10 @@
                 paymentMethod: paymentStatus === 'paid' ? 'paypal' : 'cash',
                 paypalTransactionId: transactionId,
                 dailyRate: DAILY_RATE,
-                numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000)
+                numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000),
+                discountCode: appliedDiscountCode,
+                discountPercent: discountPercent,
+                originalPrice: originalCost
             };
             
             fetch('/api/bookings', {
@@ -990,6 +1048,7 @@
         document.getElementById('startDate').addEventListener('change', calculateTotal);
         document.getElementById('endDate').addEventListener('change', calculateTotal);
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
+        document.getElementById('discountCode').addEventListener('input', calculateTotal);
 
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
