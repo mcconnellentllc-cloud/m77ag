@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prairie Peace Property Map & Information - M77 AG</title>
+
+    <style>
+        @media print {
+            @page {
+                margin: 0.5in;
+                size: letter;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+        }
+
+        .container {
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b6914 0%, #c49d2a 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #8b6914;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .parcel-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .parcel-table th {
+            background: #8b6914;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .parcel-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        .parcel-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .success-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: #ffebee;
+            border-left: 5px solid #c62828;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .warning-box strong {
+            color: #c62828;
+        }
+
+        .download-section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #c49d2a;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            color: #666;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #8b6914;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            background: #6d5410;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ PRINT THIS PAGE</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>PRAIRIE PEACE</h1>
+            <p>1,550 Acres | Logan County, Colorado (South of Haxtun)</p>
+            <p>Colorado DOW Big Game Unit: 98</p>
+        </div>
+
+        <!-- Property Overview -->
+        <div class="section">
+            <h2 class="section-title">Property Information</h2>
+            <p><strong>Total Acreage:</strong> 1,550 acres across 7 diverse hunting parcels</p>
+            <p><strong>Location:</strong> Logan County, South of Haxtun, Colorado</p>
+            <p><strong>Hunting Unit:</strong> Colorado DOW Unit 98</p>
+            <p><strong>Property Type:</strong> Intimate multi-species hunting property perfect for 3-4 hunters</p>
+        </div>
+
+        <!-- Download Maps Section -->
+        <div class="download-section no-print">
+            <h3 style="margin-bottom: 15px;">📥 Download Property Maps</h3>
+            <a href="/maps/Prairie-Peace-Boundaries.kml" class="btn" download>Download KML File (Google Earth / OnX)</a>
+            <a href="/maps/Prairie-Peace-Map.pdf" class="btn" download>Download PDF Map</a>
+        </div>
+
+        <!-- Parcel Table -->
+        <div class="section">
+            <h2 class="section-title">Seven Hunting Parcels - GPS Coordinates</h2>
+            <p style="margin-bottom: 15px;">Use these coordinates to navigate to each parcel. Click coordinates to open in Google Maps.</p>
+
+            <table class="parcel-table">
+                <thead>
+                    <tr>
+                        <th>Parcel Name</th>
+                        <th>Acres</th>
+                        <th>Primary Game</th>
+                        <th>GPS Coordinates</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>The South Section</strong></td>
+                        <td>598</td>
+                        <td>Deer, Pheasant, Prairie Dogs</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4875,-102.6359" target="_blank">40.4875, -102.6359</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Madsen Pasture</strong></td>
+                        <td>155</td>
+                        <td>Deer, Prairie Dogs</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4861,-102.6502" target="_blank">40.4861, -102.6502</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prairie Peace Camping</strong></td>
+                        <td>Camp Site</td>
+                        <td>Water & 110V Electric</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4859,-102.6460" target="_blank">40.4859, -102.6460</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creek Bed on 14</strong></td>
+                        <td>169</td>
+                        <td>Dove, Pheasant (Creek Habitat)</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5296,-102.6600" target="_blank">40.5296, -102.6600</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grass and Fenceline</strong></td>
+                        <td>316</td>
+                        <td>Deer, Coyote</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5731,-102.6938" target="_blank">40.5731, -102.6938</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fencelines</strong></td>
+                        <td>162</td>
+                        <td>Deer, Turkey</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5802,-102.7082" target="_blank">40.5802, -102.7082</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Logan County Trees</strong></td>
+                        <td>151</td>
+                        <td>Deer, Turkey roosting</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.5795,-102.7555" target="_blank">40.5795, -102.7555</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Hunting Strategy -->
+        <div class="section">
+            <div class="success-box">
+                <h3>🎯 PRAIRIE PEACE HUNTING STRATEGY</h3>
+                <ul>
+                    <li><strong>Dawn:</strong> Bird hunting in Creek Bed on 14, The South Section</li>
+                    <li><strong>Mid-Day:</strong> Prairie dog shooting (abundant throughout property)</li>
+                    <li><strong>Evening:</strong> Return to nesting zones for birds, deer movement at Fencelines and Grass parcels</li>
+                    <li><strong>Best for:</strong> Small groups (3-4 hunters recommended) - maximum variety, minimal coordination</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Critical Rules -->
+        <div class="section">
+            <h2 class="section-title">Critical Hunting Rules & Safety</h2>
+
+            <div class="warning-box">
+                <p><strong>DOWNED GAME PROTOCOL:</strong> If you down game and it runs onto neighboring property (outside of property controlled by M77 AG), you MUST call Kyle immediately at <strong>970-571-1015</strong> before pursuing. Do NOT enter neighboring property without authorization.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>⚠️ IMPORTANT REMINDERS</h3>
+                <ul>
+                    <li>All hunters must have valid Colorado hunting licenses</li>
+                    <li>Call Kyle for any downed game issues: <strong>970-571-1015</strong></li>
+                    <li>Respect property boundaries at all times</li>
+                    <li>Pack out what you pack in - leave no trace</li>
+                    <li>You have exclusive access to the property for your booked dates</li>
+                    <li>Vehicle dash card must be visible in windshield while hunting</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>GPS ACCURACY WARNING:</strong> Cell phone GPS can have 30-50 foot errors. Always stay well inside the boundary lines. When in doubt, move toward the CENTER of the property. Walk the boundaries when you first arrive to familiarize yourself with the terrain.</p>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="section">
+            <h2 class="section-title">Emergency Contact & Questions</h2>
+            <p><strong>Kyle McConnell</strong></p>
+            <p>Cell: <strong>970-571-1015</strong> (Downed game & emergencies)</p>
+            <p>Office: 970-774-3276</p>
+            <p>Email: hunting@m77ag.com</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>M77 AG | McConnell Enterprises LLC</strong></p>
+            <p>Four Generations of Agricultural Excellence</p>
+            <p>Northeast Colorado</p>
+        </div>
+    </div>
+</body>
+</html>
