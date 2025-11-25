@@ -160,6 +160,7 @@ function getWaiverConfirmationEmail(booking) {
     <ul class="no-print">
       <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
       <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Map.pdf">Download PDF Map</a></li>
+      ${booking.parcel === 'prairie-peace' ? `<li><a href="https://m77ag.com/prairie-peace-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: Prairie Peace Property Guide (Easy Print)</a></li>` : ''}
     </ul>
 
     ${booking.parcel === 'heritage-farm' ? `
