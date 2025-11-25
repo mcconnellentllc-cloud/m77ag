@@ -1077,10 +1077,17 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingData)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
-                    document.getElementById('bookingSuccessModal').style.display = 'flex';
+                    console.log('Showing success modal');
+                    const modal = document.getElementById('bookingSuccessModal');
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                     document.getElementById('bookingForm').reset();
                     calculateTotal();
                     loadBookedDates();
