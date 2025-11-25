@@ -652,7 +652,7 @@
                 <p style="color: #666; margin-bottom: 20px;">
                     After signing the waiver, you'll receive property maps and your vehicle dash card.
                 </p>
-                <button onclick="document.getElementById('bookingSuccessModal').style.display='none'" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
+                <button onclick="document.getElementById('bookingSuccessModal').style.display='none'; document.body.style.overflow='auto';" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
                     GOT IT
                 </button>
             </div>
@@ -1077,10 +1077,17 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingData)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
-                    document.getElementById('bookingSuccessModal').style.display = 'flex';
+                    console.log('Showing success modal');
+                    const modal = document.getElementById('bookingSuccessModal');
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                     document.getElementById('bookingForm').reset();
                     calculateTotal();
                     loadBookedDates();

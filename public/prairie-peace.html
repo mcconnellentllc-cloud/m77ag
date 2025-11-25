@@ -604,44 +604,129 @@
             margin: 80px 0;
         }
 
-        .gallery-grid {
+        .gallery-tiles {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
             margin-top: 40px;
         }
 
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
+        .gallery-tile {
+            background: white;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
         }
 
-        .gallery-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+        .gallery-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
         }
 
-        .gallery-item img {
+        .gallery-tile-header {
+            background: linear-gradient(135deg, #2d5016, #3d6526);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .carousel-container {
+            position: relative;
             width: 100%;
-            height: 300px;
-            object-fit: cover;
+            height: 350px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide.active {
             display: block;
         }
 
-        .gallery-caption {
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .carousel-nav {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
             color: white;
-            font-size: 16px;
-            font-weight: 600;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .carousel-prev {
+            left: 10px;
+        }
+
+        .carousel-next {
+            right: 10px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .gallery-tile-footer {
+            padding: 20px;
+            text-align: center;
+            background: #f8f6f3;
+            font-size: 14px;
+            color: #666;
         }
 
         /* Testimonials Section */
@@ -1156,30 +1241,38 @@
                 a premier destination for intimate, multi-species hunting adventures.
             </p>
 
-            <div class="gallery-grid">
-                <div class="gallery-item" onclick="openLightbox('assets/images/ppdeer1.jpg', 'Prairie Peace Deer')">
-                    <img src="assets/images/ppdeer1.jpg" alt="Deer at Prairie Peace">
-                    <div class="gallery-caption">Prairie Peace Deer</div>
+            <div class="gallery-tiles">
+                <!-- Big Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">🦌 BIG GAME</div>
+                    <div class="carousel-container" id="bigGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge • Auto-rotates every 4 seconds
+                    </div>
                 </div>
 
-                <div class="gallery-item" onclick="openLightbox('assets/images/deer-habitat.jpg', 'Deer Habitat')">
-                    <img src="assets/images/deer-habitat.jpg" alt="Deer Habitat at Prairie Peace">
-                    <div class="gallery-caption">Prime Deer Habitat</div>
+                <!-- Small Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">🦅 SMALL GAME</div>
+                    <div class="carousel-container" id="smallGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge • Auto-rotates every 4 seconds
+                    </div>
                 </div>
 
-                <div class="gallery-item" onclick="openLightbox('assets/images/dove-hunting.jpg', 'Dove Hunting')">
-                    <img src="assets/images/dove-hunting.jpg" alt="Dove Hunting at Prairie Peace">
-                    <div class="gallery-caption">Exceptional Dove Hunting</div>
-                </div>
-
-                <div class="gallery-item" onclick="openLightbox('assets/images/hunting-landscape.jpg', 'Prairie Landscape')">
-                    <img src="assets/images/hunting-landscape.jpg" alt="Prairie Peace Landscape">
-                    <div class="gallery-caption">Diverse Prairie Landscape</div>
-                </div>
-
-                <div class="gallery-item" onclick="openLightbox('assets/images/hunting-property.jpg', 'Hunting Property')">
-                    <img src="assets/images/hunting-property.jpg" alt="Prairie Peace Hunting Property">
-                    <div class="gallery-caption">1,550 Acres of Adventure</div>
+                <!-- Property Pictures Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">🏞️ PROPERTY VIEWS</div>
+                    <div class="carousel-container" id="propertyCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge • Auto-rotates every 4 seconds
+                    </div>
                 </div>
             </div>
         </div>
@@ -1285,6 +1378,143 @@
             if (e.key === 'Escape') {
                 closeLightbox();
             }
+        });
+
+        // Gallery Carousel System
+        // TO ADD MORE PHOTOS: Simply add the filename to the appropriate array below
+        // Place your images in: /assets/images/prairie-peace/big-game/, /small-game/, or /property-pictures/
+
+        const galleryImages = {
+            bigGame: [
+                'deer-habitat.jpg',
+                // Add more big game images here - just the filename (e.g., 'ppdeer1.jpg', 'deer-1.jpg')
+            ],
+            smallGame: [
+                'dove-hunting.jpg',
+                // Add more small game images here - just the filename (e.g., 'pheasant-1.jpg', 'dove-2.jpg')
+            ],
+            propertyPictures: [
+                'hunting-landscape.jpg',
+                'hunting-property.jpg',
+                // Add more property images here - just the filename (e.g., 'property-view-1.jpg')
+            ]
+        };
+
+        class Carousel {
+            constructor(containerId, images, basePath) {
+                this.container = document.getElementById(containerId);
+                this.images = images;
+                this.basePath = basePath;
+                this.currentIndex = 0;
+                this.autoPlayInterval = null;
+                this.init();
+            }
+
+            init() {
+                if (!this.container || this.images.length === 0) return;
+
+                this.renderSlides();
+                this.renderControls();
+                this.showSlide(0);
+                this.startAutoPlay();
+            }
+
+            renderSlides() {
+                this.images.forEach((img, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `<img src="${this.basePath}${img}" alt="Image ${index + 1}" onclick="openLightbox('${this.basePath}${img}', 'Prairie Peace')">`;
+                    this.container.appendChild(slide);
+                });
+            }
+
+            renderControls() {
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav carousel-prev';
+                prevBtn.innerHTML = '&#10094;';
+                prevBtn.onclick = () => this.navigate(-1);
+                this.container.appendChild(prevBtn);
+
+                // Next button
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav carousel-next';
+                nextBtn.innerHTML = '&#10095;';
+                nextBtn.onclick = () => this.navigate(1);
+                this.container.appendChild(nextBtn);
+
+                // Counter
+                const counter = document.createElement('div');
+                counter.className = 'carousel-counter';
+                counter.id = `${this.container.id}-counter`;
+                this.container.appendChild(counter);
+
+                // Indicators
+                if (this.images.length > 1) {
+                    const indicators = document.createElement('div');
+                    indicators.className = 'carousel-indicators';
+                    indicators.id = `${this.container.id}-indicators`;
+
+                    this.images.forEach((_, index) => {
+                        const dot = document.createElement('span');
+                        dot.className = 'carousel-dot';
+                        dot.onclick = () => this.showSlide(index);
+                        indicators.appendChild(dot);
+                    });
+
+                    this.container.appendChild(indicators);
+                }
+            }
+
+            showSlide(index) {
+                const slides = this.container.querySelectorAll('.carousel-slide');
+                const dots = this.container.querySelectorAll('.carousel-dot');
+                const counter = this.container.querySelector('.carousel-counter');
+
+                if (slides.length === 0) return;
+
+                // Wrap around
+                if (index >= slides.length) index = 0;
+                if (index < 0) index = slides.length - 1;
+
+                this.currentIndex = index;
+
+                // Update slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                // Update dots
+                dots.forEach(dot => dot.classList.remove('active'));
+                if (dots[index]) dots[index].classList.add('active');
+
+                // Update counter
+                if (counter) {
+                    counter.textContent = `${index + 1} / ${slides.length}`;
+                }
+            }
+
+            navigate(direction) {
+                this.showSlide(this.currentIndex + direction);
+                this.resetAutoPlay();
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.showSlide(this.currentIndex + 1);
+                }, 4000); // Change image every 4 seconds
+            }
+
+            resetAutoPlay() {
+                clearInterval(this.autoPlayInterval);
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize carousels when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new Carousel('bigGameCarousel', galleryImages.bigGame, 'assets/images/prairie-peace/big-game/');
+            new Carousel('smallGameCarousel', galleryImages.smallGame, 'assets/images/prairie-peace/small-game/');
+            new Carousel('propertyCarousel', galleryImages.propertyPictures, 'assets/images/prairie-peace/property-pictures/');
         });
     </script>
 </body>
