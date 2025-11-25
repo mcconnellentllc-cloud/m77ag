@@ -422,6 +422,20 @@ function getWaiverConfirmationEmail(booking) {
     </p>
   </div>
   
+  <div class="no-print" style="background: #e8f5e9; border: 2px solid #4caf50; padding: 25px; margin-top: 30px; text-align: center; border-radius: 8px;">
+    <h3 style="color: #2e7d32; margin: 0 0 15px 0;">Share Your Hunting Experience!</h3>
+    <p style="margin: 0 0 20px 0; color: #2e7d32; font-size: 16px;">
+      After your hunt, we'd love to hear about your experience.<br>
+      Your review helps other hunters discover our property!
+    </p>
+    <a href="https://m77ag.com/hunting.html#reviews" style="display: inline-block; background: #4caf50; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin: 10px 0;">
+      LEAVE A REVIEW
+    </a>
+    <p style="margin: 15px 0 0 0; color: #666; font-size: 14px;">
+      Or email your review to: hunting@m77ag.com
+    </p>
+  </div>
+
   <div class="no-print" style="background: #f5f5f5; padding: 20px; margin-top: 30px; text-align: center; border-radius: 5px;">
     <p style="margin: 0; font-weight: bold;">PRINT INSTRUCTIONS</p>
     <p style="margin: 10px 0 0 0;">Use your browser's print function (Ctrl+P or Cmd+P):</p>
