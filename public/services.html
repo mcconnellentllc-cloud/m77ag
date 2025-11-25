@@ -216,172 +216,27 @@
             border-bottom: 1px solid rgba(0,0,0,0.1);
             color: #666;
         }
-        
-        /* Calculator Section */
-        #calculator {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #2d5016 0%, #1a2f0d 100%);
-        }
-        
-        .calculator-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px;
-            background: #fff;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
-        
-        .calculator-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .calculator-header h2 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 42px;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-        }
-        
-        .form-group {
-            margin-bottom: 30px;
-        }
-        
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 14px;
-        }
-        
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: #d4af37;
-        }
-        
-        .btn-calculate {
-            width: 100%;
-            padding: 20px;
+
+        .service-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
             background: #d4af37;
             color: #1a1a1a;
-            border: none;
-            font-size: 18px;
-            font-weight: 700;
+            text-decoration: none;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
+            letter-spacing: 1px;
             transition: all 0.3s;
+            border: 2px solid #d4af37;
         }
-        
-        .btn-calculate:hover {
+
+        .service-btn:hover {
             background: #1a1a1a;
             color: #d4af37;
+            border-color: #1a1a1a;
         }
-        
-        .result-box {
-            margin-top: 40px;
-            padding: 30px;
-            background: #f8f7f5;
-            border-left: 4px solid #d4af37;
-            display: none;
-        }
-        
-        .result-box.show {
-            display: block;
-        }
-        
-        .result-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-        }
-        
-        .result-details {
-            list-style: none;
-        }
-        
-        .result-details li {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .result-total {
-            font-size: 32px;
-            font-weight: 700;
-            color: #d4af37;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .discount-notice {
-            background: #e8f5e8;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-            text-align: center;
-            color: #2d5016;
-        }
-        
-        /* Pricing Info */
-        .pricing-section {
-            padding: 100px 0;
-            background: #f5f3f0;
-        }
-        
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-top: 60px;
-        }
-        
-        .pricing-card {
-            background: #fff;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .discount-percentage {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 48px;
-            color: #d4af37;
-            margin-bottom: 10px;
-        }
-        
-        .discount-acres {
-            font-family: 'Oswald', sans-serif;
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-        }
-        
-        .discount-description {
-            color: #666;
-            line-height: 1.6;
-        }
-        
+
         /* Footer */
         .footer {
             background: #0a0a0a;
@@ -391,8 +246,7 @@
         }
         
         @media (max-width: 1024px) {
-            .services-grid,
-            .pricing-grid {
+            .services-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -417,10 +271,6 @@
 
             .nav-menu.active {
                 display: flex;
-            }
-
-            .calculator-container {
-                padding: 30px;
             }
         }
     </style>
@@ -490,6 +340,7 @@
                             <li>Drilling - Accurate seeding</li>
                             <li>Field Cultivation - Seedbed prep</li>
                         </ul>
+                        <a href="/custom-farming" class="service-btn">Get Quote & Pricing</a>
                     </div>
                 </div>
 
@@ -510,6 +361,7 @@
                             <li>Automated invoicing system</li>
                             <li>Convenient payment terms</li>
                         </ul>
+                        <a href="/chemical-programs" class="service-btn">View Programs & Pricing</a>
                     </div>
                 </div>
 
@@ -530,126 +382,8 @@
                             <li>Secure fencing and facilities</li>
                             <li>Flexible boarding options</li>
                         </ul>
+                        <a href="/custom-cow-care" class="service-btn">Request Information</a>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Calculator Section -->
-    <section id="calculator">
-        <div class="section-container">
-            <div class="calculator-container">
-                <div class="calculator-header">
-                    <h2>Service Price Calculator</h2>
-                    <p>Get instant pricing with automatic volume discounts</p>
-                </div>
-                
-                <form id="price-calculator">
-                    <div class="form-group">
-                        <label class="form-label">Service Type</label>
-                        <select class="form-select" id="service-type" required>
-                            <option value="">Select a service</option>
-                            <optgroup label="Custom Farming">
-                                <option value="planting">Planting - $35/acre</option>
-                                <option value="disking">Disking - $25/acre</option>
-                                <option value="ripping">Ripping - $30/acre</option>
-                                <option value="deep-ripping">Deep Ripping - $40/acre</option>
-                                <option value="harvesting-corn">Harvesting (Corn) - $45/acre</option>
-                                <option value="harvesting-wheat">Harvesting (Wheat) - $40/acre</option>
-                                <option value="harvesting-milo">Harvesting (Milo) - $42/acre</option>
-                                <option value="drilling">Drilling - $28/acre</option>
-                                <option value="field-cultivation">Field Cultivation - $22/acre</option>
-                            </optgroup>
-                            <optgroup label="Chemical Programs">
-                                <option value="chemical-basic">Basic Program - Contact for pricing</option>
-                                <option value="chemical-standard">Standard Program - Contact for pricing</option>
-                                <option value="chemical-premium">Premium Program - Contact for pricing</option>
-                            </optgroup>
-                            <optgroup label="Cow Care">
-                                <option value="cow-care">Custom Cow Care - Contact for pricing</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Number of Acres</label>
-                        <input type="number" class="form-input" id="acres" placeholder="Enter acres" min="1" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Your Name</label>
-                        <input type="text" class="form-input" id="name" placeholder="Enter your name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-input" id="phone" placeholder="Enter phone number" required>
-                    </div>
-                    
-                    <button type="submit" class="btn-calculate">Calculate Price</button>
-                </form>
-                
-                <div id="result" class="result-box">
-                    <h3 class="result-title">Your Quote</h3>
-                    <ul class="result-details">
-                        <li>
-                            <span>Service:</span>
-                            <span id="result-service"></span>
-                        </li>
-                        <li>
-                            <span>Acres:</span>
-                            <span id="result-acres"></span>
-                        </li>
-                        <li>
-                            <span>Base Price:</span>
-                            <span id="result-base"></span>
-                        </li>
-                        <li>
-                            <span>Discount:</span>
-                            <span id="result-discount"></span>
-                        </li>
-                    </ul>
-                    <div class="result-total">
-                        Total: <span id="result-total"></span>
-                    </div>
-                    <div class="discount-notice" id="discount-notice"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Info -->
-    <section class="pricing-section">
-        <div class="section-container">
-            <div class="section-header">
-                <h2>Volume Discounts</h2>
-                <p>Save more with larger acreage</p>
-            </div>
-            
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="discount-percentage">7%</div>
-                    <div class="discount-acres">100+ Acres</div>
-                    <p class="discount-description">
-                        Automatic discount applied for operations over 100 acres
-                    </p>
-                </div>
-                
-                <div class="pricing-card">
-                    <div class="discount-percentage">10%</div>
-                    <div class="discount-acres">200+ Acres</div>
-                    <p class="discount-description">
-                        Increased savings for mid-size operations
-                    </p>
-                </div>
-                
-                <div class="pricing-card">
-                    <div class="discount-percentage">14%</div>
-                    <div class="discount-acres">300+ Acres</div>
-                    <p class="discount-description">
-                        Maximum discount for large-scale farming operations
-                    </p>
                 </div>
             </div>
         </div>
@@ -675,123 +409,6 @@
             });
         });
 
-        // Price Calculator
-        document.getElementById('price-calculator').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const service = document.getElementById('service-type').value;
-            const acres = parseInt(document.getElementById('acres').value);
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            
-            // Base prices
-            const prices = {
-                planting: 35,
-                disking: 25,
-                ripping: 30,
-                'deep-ripping': 40,
-                'harvesting-corn': 45,
-                'harvesting-wheat': 40,
-                'harvesting-milo': 42,
-                drilling: 28,
-                'field-cultivation': 22,
-                'chemical-basic': 0,
-                'chemical-standard': 0,
-                'chemical-premium': 0,
-                'cow-care': 0
-            };
-            
-            // Calculate discount
-            let discount = 0;
-            if (acres >= 300) {
-                discount = 0.14;
-            } else if (acres >= 200) {
-                discount = 0.10;
-            } else if (acres >= 100) {
-                discount = 0.07;
-            }
-            
-            // Check if service requires contact
-            const contactServices = ['chemical-basic', 'chemical-standard', 'chemical-premium', 'cow-care'];
-
-            if (contactServices.includes(service)) {
-                // Display contact message for services without pricing
-                const serviceNames = {
-                    'chemical-basic': 'Chemical Program - Basic',
-                    'chemical-standard': 'Chemical Program - Standard',
-                    'chemical-premium': 'Chemical Program - Premium',
-                    'cow-care': 'Custom Cow Care Service'
-                };
-
-                document.getElementById('result-service').textContent = serviceNames[service];
-                document.getElementById('result-acres').textContent = acres;
-                document.getElementById('result-base').textContent = 'Contact for pricing';
-                document.getElementById('result-discount').textContent = 'N/A';
-                document.getElementById('result-total').textContent = 'Contact us';
-
-                const notice = document.getElementById('discount-notice');
-                notice.textContent = 'Please contact us at your provided phone number for detailed pricing and program information. We will reach out within 24 hours.';
-            } else {
-                // Calculate totals for priced services
-                const basePrice = prices[service] * acres;
-                const discountAmount = basePrice * discount;
-                const totalPrice = basePrice - discountAmount;
-
-                // Display results
-                const serviceName = service.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-                document.getElementById('result-service').textContent = serviceName;
-                document.getElementById('result-acres').textContent = acres;
-                document.getElementById('result-base').textContent = '$' + basePrice.toFixed(2);
-                document.getElementById('result-discount').textContent = discount > 0 ?
-                    discount * 100 + '% (-$' + discountAmount.toFixed(2) + ')' : 'None';
-                document.getElementById('result-total').textContent = '$' + totalPrice.toFixed(2);
-
-                // Show discount notice
-                const notice = document.getElementById('discount-notice');
-                if (discount > 0) {
-                    notice.textContent = 'Volume discount applied! You saved $' + discountAmount.toFixed(2);
-                } else if (acres < 100) {
-                    const needed = 100 - acres;
-                    notice.textContent = 'Add ' + needed + ' more acres to qualify for 7% discount';
-                }
-            }
-
-            // Show result box
-            document.getElementById('result').classList.add('show');
-
-            // Send data to backend API
-            try {
-                const response = await fetch('/api/services/request', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        phone: phone,
-                        serviceType: service,
-                        acres: acres,
-                        notes: `Service request from web calculator`
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    console.log('Service request saved successfully:', data.data);
-                    // Optionally show a success message to the user
-                    const notice = document.getElementById('discount-notice');
-                    if (!contactServices.includes(service)) {
-                        notice.innerHTML = notice.textContent + '<br><br><strong>Your request has been submitted! We will contact you soon.</strong>';
-                    }
-                } else {
-                    console.error('Failed to save service request:', data.message);
-                }
-            } catch (error) {
-                console.error('Error submitting service request:', error);
-                // Still show the quote even if API call fails
-            }
-        });
     </script>
 </body>
 </html>
