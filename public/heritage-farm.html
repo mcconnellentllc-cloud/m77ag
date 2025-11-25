@@ -836,7 +836,7 @@
             <div class="feature-card">
                 <h3 class="feature-title">Trophy Potential</h3>
                 <p class="feature-description">
-                    Mature whitetail deer, ringneck pheasants, mourning doves, coyotes, and occasional elk migrations make this property a multi-species paradise.
+                    Mature mule deer, abundant pheasants in tall grass, mourning doves at one of the area's best hunting spots, coyotes, and occasional elk migrations make this property a multi-species paradise.
                 </p>
             </div>
         </div>
@@ -848,16 +848,16 @@
             <h2 class="section-title">Available Game Species</h2>
             <div class="game-grid">
                 <div class="game-card">
-                    <div class="game-name">Whitetail Deer</div>
+                    <div class="game-name">Mule Deer</div>
                     <p class="game-note">Primary species</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Ring-Neck Pheasant</div>
-                    <p class="game-note">Excellent habitat</p>
+                    <p class="game-note">Tall grass - abundant population</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Mourning Dove</div>
-                    <p class="game-note">September flights</p>
+                    <p class="game-note">Area's best dove hunting</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Coyote</div>
@@ -911,9 +911,9 @@
                     </div>
                     <div class="parcel-content">
                         <p class="parcel-features">
-                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass, 
-                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds. 
-                            The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
+                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass,
+                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds.
+                            <strong>Known as one of the area's best dove hunting spots.</strong> The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
                         </p>
                     </div>
                 </div>
@@ -979,24 +979,54 @@
             </p>
 
             <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="assets/images/deer-hf1.jpg" alt="Whitetail Deer at Heritage Farm">
-                    <div class="gallery-caption">Trophy Whitetail Deer</div>
+                <div class="gallery-item" onclick="openLightbox('assets/images/deer-hf1.jpg', 'Trophy Mule Deer')">
+                    <img src="assets/images/deer-hf1.jpg" alt="Mule Deer at Heritage Farm">
+                    <div class="gallery-caption">Trophy Mule Deer</div>
                 </div>
 
-                <div class="gallery-item">
+                <div class="gallery-item" onclick="openLightbox('assets/images/pheasant-hf1.jpg', 'Ring-neck Pheasant')">
                     <img src="assets/images/pheasant-hf1.jpg" alt="Ring-neck Pheasant at Heritage Farm">
                     <div class="gallery-caption">Ring-neck Pheasant</div>
                 </div>
 
-                <div class="gallery-item">
-                    <img src="assets/images/homestead-historic.jpg" alt="Historic Homestead Site">
-                    <div class="gallery-caption">Historic Homestead</div>
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage1.png', 'Heritage Farm')">
+                    <img src="assets/images/heritage1.png" alt="Heritage Farm Property">
+                    <div class="gallery-caption">Heritage Farm Views</div>
                 </div>
 
-                <div class="gallery-item">
-                    <img src="assets/images/hunting-landscape.jpg" alt="Heritage Farm Landscape">
-                    <div class="gallery-caption">Prairie Hunting Grounds</div>
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage2.png', 'Prairie Landscape')">
+                    <img src="assets/images/heritage2.png" alt="Prairie Landscape">
+                    <div class="gallery-caption">Prairie Landscape</div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage3.png', 'Hunting Grounds')">
+                    <img src="assets/images/heritage3.png" alt="Hunting Grounds">
+                    <div class="gallery-caption">Hunting Grounds</div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage4.png', 'Wildlife Habitat')">
+                    <img src="assets/images/heritage4.png" alt="Wildlife Habitat">
+                    <div class="gallery-caption">Wildlife Habitat</div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage5.png', 'Property Features')">
+                    <img src="assets/images/heritage5.png" alt="Property Features">
+                    <div class="gallery-caption">Property Features</div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage6.png', 'Hunting Areas')">
+                    <img src="assets/images/heritage6.png" alt="Hunting Areas">
+                    <div class="gallery-caption">Hunting Areas</div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage7.png', 'Heritage Property')">
+                    <img src="assets/images/heritage7.png" alt="Heritage Property">
+                    <div class="gallery-caption">Heritage Property</div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox('assets/images/heritage8.png', 'Farm Landscape')">
+                    <img src="assets/images/heritage8.png" alt="Farm Landscape">
+                    <div class="gallery-caption">Farm Landscape</div>
                 </div>
             </div>
         </div>
@@ -1078,6 +1108,15 @@
         <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
     </section>
 
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; cursor: pointer;" onclick="closeLightbox()">
+        <div style="position: relative; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+            <img id="lightboxImage" src="" alt="" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <p id="lightboxCaption" style="color: white; font-size: 20px; margin-top: 20px; text-align: center; font-weight: 600;"></p>
+            <button onclick="closeLightbox()" style="position: absolute; top: -50px; right: -50px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">&times;</button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
@@ -1097,6 +1136,26 @@
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
+        });
+
+        // Lightbox functions
+        function openLightbox(imageSrc, caption) {
+            document.getElementById('lightboxImage').src = imageSrc;
+            document.getElementById('lightboxCaption').textContent = caption;
+            document.getElementById('lightbox').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
         });
     </script>
 </body>

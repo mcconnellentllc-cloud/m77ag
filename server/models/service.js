@@ -71,6 +71,10 @@ const serviceRequestSchema = new mongoose.Schema({
     }],
     totalGallons: Number,
     totalCost: Number,
+    dropOffPoint: {
+      type: String,
+      enum: ['M77 AG', 'Mollohan Farms']
+    },
     deliveryDate: Date,
     paymentDueDate: Date,
     invoiceSent: {

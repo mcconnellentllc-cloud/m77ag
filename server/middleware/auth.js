@@ -93,11 +93,23 @@ exports.isEmployee = (req, res, next) => {
 // Middleware to check if authenticated user is a landlord
 exports.isLandlord = (req, res, next) => {
   if (!req.userRole || !['admin', 'landlord'].includes(req.userRole)) {
-    return res.status(403).json({ 
+    return res.status(403).json({
       success: false,
-      message: 'Landlord access required.' 
+      message: 'Landlord access required.'
     });
   }
-  
+
+  next();
+};
+
+// Middleware to check if authenticated user is a farmer
+exports.isFarmer = (req, res, next) => {
+  if (!req.userRole || !['admin', 'farmer'].includes(req.userRole)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Farmer access required. Only farmers and admins can access this resource.'
+    });
+  }
+
   next();
 };

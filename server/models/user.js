@@ -16,10 +16,42 @@ const userSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  role: { 
-    type: String, 
+  role: {
+    type: String,
     default: 'user',
-    enum: ['user', 'admin'] 
+    enum: ['user', 'admin', 'landlord', 'farmer', 'employee']
+  },
+  // Additional profile information
+  firstName: {
+    type: String
+  },
+  lastName: {
+    type: String
+  },
+  phone: {
+    type: String
+  },
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    zip: String
+  },
+  // For landlords - link to their properties
+  properties: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property'
+  }],
+  // For employees/farmers - employment details
+  employeeDetails: {
+    hireDate: Date,
+    position: String,
+    hourlyRate: Number
+  },
+  // Active status
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, { 
   timestamps: { 

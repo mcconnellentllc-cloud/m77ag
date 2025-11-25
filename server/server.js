@@ -34,13 +34,25 @@ mongoose.connect(MONGODB_URI)
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const huntingRoutes = require('./routes/hunting');
+const propertyRoutes = require('./routes/property');
+const fieldRoutes = require('./routes/field');
+const transactionRoutes = require('./routes/transaction');
+const ledgerRoutes = require('./routes/ledger');
+const harvestDataRoutes = require('./routes/harvestData');
 const serviceRoutes = require('./routes/services');
+const chemicalRoutes = require('./routes/chemicals');
 
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/hunting', huntingRoutes);
+app.use('/api/properties', propertyRoutes);
+app.use('/api/fields', fieldRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/ledger', ledgerRoutes);
+app.use('/api/harvest', harvestDataRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/chemicals', chemicalRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -79,6 +91,19 @@ app.get('/admin/hunting-bookings', (req, res) => {
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+// Farmer routes
+app.get('/farmer/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/dashboard.html'));
+});
+
+app.get('/farmer/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
+app.get('/farmer', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
 });
 
 // Public page routes
