@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="M77 AG Trophy Big Game Hunting">
+    <meta property="og:description" content="Premium big game hunting on 2,710 acres in Colorado. Mule Deer, Antelope, and Elk.">
+    <meta property="og:image" content="https://m77ag.com/assets/images/heritage-farm/big-game/deer1-hf.jpg">
+    <meta property="og:url" content="https://m77ag.com/hunting.html">
+    <title>M77 AG Big Game Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a3a1a 0%, #2d5016 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .carousel-wrapper {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .carousel-header {
+            background: linear-gradient(135deg, #2d5016, #3d6526);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .carousel-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .carousel-header p {
+            font-size: 16px;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+            padding: 30px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            font-size: 28px;
+            transition: all 0.3s;
+            z-index: 10;
+            border-radius: 50%;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-prev {
+            left: 20px;
+        }
+
+        .carousel-next {
+            right: 20px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.8);
+        }
+
+        .carousel-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .carousel-footer {
+            background: #f8f6f3;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .carousel-footer h3 {
+            color: #2d5016;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .carousel-footer p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d5016, #3d6526);
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .carousel-container {
+                height: 400px;
+            }
+
+            .carousel-header h1 {
+                font-size: 24px;
+            }
+
+            .carousel-nav {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .carousel-prev {
+                left: 10px;
+            }
+
+            .carousel-next {
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-wrapper">
+        <div class="carousel-header">
+            <h1>M77 AG BIG GAME HUNTING</h1>
+            <p>Trophy Mule Deer • Antelope • Elk on 2,710 Colorado Acres</p>
+        </div>
+
+        <div class="carousel-container" id="bigGameCarousel">
+            <!-- Slides will be populated by JavaScript -->
+        </div>
+
+        <div class="carousel-footer">
+            <h3>🎯 Book Your Trophy Hunt Today</h3>
+            <p>
+                <strong>Heritage Farm:</strong> 1,160 acres - $200/day all-access<br>
+                <strong>Prairie Peace:</strong> 1,550 acres - $200/day exclusive
+            </p>
+            <a href="https://m77ag.com/hunting.html" class="cta-button">RESERVE YOUR DATES</a>
+        </div>
+    </div>
+
+    <script>
+        const bigGameImages = [
+            // Heritage Farm Big Game
+            { src: 'assets/images/heritage-farm/big-game/deer1-hf.jpg', caption: 'Trophy Mule Deer - Heritage Farm' },
+            { src: 'assets/images/heritage-farm/big-game/deer2-hf.jpg', caption: 'Mule Deer Buck - Heritage Farm' },
+            { src: 'assets/images/heritage-farm/big-game/deer3-hf.jpg', caption: 'Big Game Hunting - Heritage Farm' },
+            { src: 'assets/images/heritage-farm/big-game/deer4-hf.jpg', caption: 'Mule Deer - Heritage Farm' },
+            { src: 'assets/images/heritage-farm/big-game/deer5-hf.jpeg', caption: 'Trophy Buck - Heritage Farm' },
+            { src: 'assets/images/heritage-farm/big-game/deer7-pp.jpeg', caption: 'Big Game - Heritage Farm' },
+            // Prairie Peace Big Game
+            { src: 'assets/images/prairie-peace/big-game/antelope1-pp.jpg', caption: 'Antelope - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/ppdeer1.jpg', caption: 'Mule Deer - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer-habitat.jpg', caption: 'Prime Deer Habitat - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer2-pp.jpg', caption: 'Trophy Deer - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer3-pp.jpeg', caption: 'Mule Deer Buck - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer4-pp.jpeg', caption: 'Big Game - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer5-pp.jpeg', caption: 'Deer Hunting - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer6-pp.jpeg', caption: 'Trophy Mule Deer - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/deer7-pp.jpeg', caption: 'Big Game - Prairie Peace' },
+            { src: 'assets/images/prairie-peace/big-game/hunting-landscape.jpg', caption: 'Hunting Grounds - Prairie Peace' }
+        ];
+
+        class BigGameCarousel {
+            constructor(containerId, images) {
+                this.container = document.getElementById(containerId);
+                this.images = images;
+                this.currentIndex = 0;
+                this.autoPlayInterval = null;
+                this.init();
+            }
+
+            init() {
+                this.renderSlides();
+                this.renderControls();
+                this.showSlide(0);
+                this.startAutoPlay();
+            }
+
+            renderSlides() {
+                this.images.forEach((img, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `
+                        <img src="${img.src}" alt="${img.caption}">
+                        <div class="carousel-caption">${img.caption}</div>
+                    `;
+                    this.container.appendChild(slide);
+                });
+            }
+
+            renderControls() {
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav carousel-prev';
+                prevBtn.innerHTML = '&#10094;';
+                prevBtn.onclick = () => this.navigate(-1);
+                this.container.appendChild(prevBtn);
+
+                // Next button
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav carousel-next';
+                nextBtn.innerHTML = '&#10095;';
+                nextBtn.onclick = () => this.navigate(1);
+                this.container.appendChild(nextBtn);
+
+                // Counter
+                const counter = document.createElement('div');
+                counter.className = 'carousel-counter';
+                counter.id = 'carouselCounter';
+                this.container.appendChild(counter);
+
+                // Indicators
+                const indicators = document.createElement('div');
+                indicators.className = 'carousel-indicators';
+                indicators.id = 'carouselIndicators';
+
+                this.images.forEach((_, index) => {
+                    const dot = document.createElement('span');
+                    dot.className = 'carousel-dot';
+                    dot.onclick = () => this.showSlide(index);
+                    indicators.appendChild(dot);
+                });
+
+                this.container.appendChild(indicators);
+            }
+
+            showSlide(index) {
+                const slides = this.container.querySelectorAll('.carousel-slide');
+                const dots = this.container.querySelectorAll('.carousel-dot');
+                const counter = document.getElementById('carouselCounter');
+
+                if (index >= slides.length) index = 0;
+                if (index < 0) index = slides.length - 1;
+
+                this.currentIndex = index;
+
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                dots.forEach(dot => dot.classList.remove('active'));
+                dots[index].classList.add('active');
+
+                counter.textContent = `${index + 1} / ${slides.length}`;
+            }
+
+            navigate(direction) {
+                this.showSlide(this.currentIndex + direction);
+                this.resetAutoPlay();
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.showSlide(this.currentIndex + 1);
+                }, 4000);
+            }
+
+            resetAutoPlay() {
+                clearInterval(this.autoPlayInterval);
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize carousel when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new BigGameCarousel('bigGameCarousel', bigGameImages);
+        });
+    </script>
+</body>
+</html>
