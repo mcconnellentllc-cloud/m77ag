@@ -240,7 +240,7 @@ function getWaiverConfirmationEmail(booking) {
       </ul>
       <p style="margin: 10px 0 0 0; font-size: 13px; color: #856404;">Rest periods allow game recovery. Check calendar before hunting each parcel.</p>
     </div>
-    `}
+    ` : ''}
 
     ${(booking.parcel === 'Both Properties' || booking.parcel === 'Prairie Peace' || booking.parcel === 'prairie-peace' || (booking.parcel !== 'Heritage Farm' && booking.parcel !== 'heritage-farm')) ? `
     <!-- PRAIRIE PEACE PARCELS -->
@@ -312,8 +312,8 @@ function getWaiverConfirmationEmail(booking) {
         <li><strong>Best for:</strong> Small groups (3-4 hunters recommended)</li>
       </ul>
     </div>
-    `}
-    
+    ` : ''}
+
     <!-- COMMON HUNTING RULES -->
     <div style="border-top: 3px solid #2c5530; margin-top: 30px; padding-top: 20px;">
       <h3 style="color: #2c5530;">Critical Hunting Rules & Protocols</h3>
