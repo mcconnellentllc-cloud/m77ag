@@ -12,7 +12,7 @@ function getWaiverConfirmationEmail(booking) {
     : (booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick County, Colorado'
     : 'Logan County, Colorado (South of Haxtun)';
   
-  const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
+  const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -497,7 +497,7 @@ function getWaiverConfirmationEmail(booking) {
 // Admin notification
 function getAdminWaiverNotification(booking) {
   const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
+  const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
