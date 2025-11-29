@@ -3,8 +3,14 @@
 // Contains printable vehicle dash card and property boundary maps
 
 function getWaiverConfirmationEmail(booking) {
-  const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  const propertyLocation = booking.parcel === 'heritage-farm' ? 'Sedgwick County, Colorado' : 'Logan County, Colorado (South of Haxtun)';
+  const propertyName = booking.parcel === 'Both Properties' ? 'Both Properties (Heritage Farm & Prairie Peace)'
+    : booking.parcel === 'Heritage Farm' ? 'M77 AG Heritage Farm'
+    : booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm'
+    : booking.parcel === 'Prairie Peace' ? 'Prairie Peace'
+    : 'Prairie Peace';
+  const propertyLocation = booking.parcel === 'Both Properties' ? 'Sedgwick & Logan Counties, Colorado'
+    : (booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick County, Colorado'
+    : 'Logan County, Colorado (South of Haxtun)';
   
   const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -158,12 +164,18 @@ function getWaiverConfirmationEmail(booking) {
     
     <p><strong>Download Maps:</strong></p>
     <ul class="no-print">
-      <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
-      <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Map.pdf">Download PDF Map</a></li>
-      ${booking.parcel === 'prairie-peace' ? `<li><a href="https://m77ag.com/prairie-peace-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: Prairie Peace Property Guide (Easy Print)</a></li>` : ''}
+      ${booking.parcel === 'Both Properties' ? `
+        <li><a href="https://m77ag.com/maps/Heritage-Farm-Boundaries.kml">Download Heritage Farm KML File (Google Earth)</a></li>
+        <li><a href="https://m77ag.com/maps/Prairie-Peace-Boundaries.kml">Download Prairie Peace KML File (Google Earth)</a></li>
+        <li><a href="https://m77ag.com/heritage-farm-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: Heritage Farm Property Guide</a></li>
+        <li><a href="https://m77ag.com/prairie-peace-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: Prairie Peace Property Guide</a></li>
+      ` : `
+        <li><a href="https://m77ag.com/maps/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
+        <li><a href="https://m77ag.com/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'heritage-farm-map-printable.html' : 'prairie-peace-map-printable.html'}" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: ${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage Farm' : 'Prairie Peace'} Property Guide (Easy Print)</a></li>
+      `}
     </ul>
 
-    ${booking.parcel === 'heritage-farm' ? `
+    ${(booking.parcel === 'Both Properties' || booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? `
     <!-- HERITAGE FARM PARCELS -->
     <h3 style="color: #2c5530;">M77 AG Heritage Farm - 1,160 Acres</h3>
     <p><strong>Sedgwick County, Colorado | 5 Hunting Parcels</strong></p>
@@ -221,7 +233,9 @@ function getWaiverConfirmationEmail(booking) {
       </ul>
       <p style="margin: 10px 0 0 0; font-size: 13px; color: #856404;">Rest periods allow game recovery. Check calendar before hunting each parcel.</p>
     </div>
-    ` : `
+    `}
+
+    ${(booking.parcel === 'Both Properties' || booking.parcel === 'Prairie Peace' || booking.parcel === 'prairie-peace' || (booking.parcel !== 'Heritage Farm' && booking.parcel !== 'heritage-farm')) ? `
     <!-- PRAIRIE PEACE PARCELS -->
     <h3 style="color: #2c5530;">Prairie Peace - 1,550 Acres</h3>
     <p><strong>Logan County, Colorado (South of Haxtun) | 7 Hunting Parcels</strong></p>
@@ -328,18 +342,40 @@ function getWaiverConfirmationEmail(booking) {
       <div style="background: #f0f8ff; border-left: 5px solid #4caf50; padding: 20px; margin: 20px 0;">
         <h3 style="color: #2e7d32; margin-top: 0;">VIEW YOUR PROPERTY BOUNDARIES:</h3>
         <div style="margin: 15px 0;">
-          <a href="https://m77ag.com/${booking.parcel === 'heritage-farm' ? 'heritage-farm' : 'prairie-peace'}-map.html" 
-             style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
-            VIEW INTERACTIVE MAP
-          </a>
-          <a href="https://earth.google.com/web/search/${booking.parcel === 'heritage-farm' ? 'Sedgwick+County,+CO' : 'Logan+County,+CO'}/@${booking.parcel === 'heritage-farm' ? '40.77,102.54' : '40.53,102.68'},1500d" 
+          ${booking.parcel === 'Both Properties' ? `
+            <a href="https://m77ag.com/heritage-farm-map.html"
+               style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+              VIEW HERITAGE FARM MAP
+            </a>
+            <a href="https://m77ag.com/prairie-peace-map.html"
+               style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+              VIEW PRAIRIE PEACE MAP
+            </a>
+          ` : `
+            <a href="https://m77ag.com/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'heritage-farm' : 'prairie-peace'}-map.html"
+               style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+              VIEW INTERACTIVE MAP
+            </a>
+          `}
+          <a href="https://earth.google.com/web/search/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick+County,+CO' : booking.parcel === 'Both Properties' ? 'Sedgwick+County,+CO' : 'Logan+County,+CO'}/@${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? '40.77,-102.54' : booking.parcel === 'Both Properties' ? '40.53,-102.68' : '40.53,-102.68'},1500d"
              style="display: inline-block; background: #1976d2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
             OPEN IN GOOGLE EARTH
           </a>
-          <a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml" 
-             style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
-            DOWNLOAD KML FILE
-          </a>
+          ${booking.parcel === 'Both Properties' ? `
+            <a href="https://m77ag.com/maps/Heritage-Farm-Boundaries.kml"
+               style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+              DOWNLOAD HERITAGE FARM KML
+            </a>
+            <a href="https://m77ag.com/maps/Prairie-Peace-Boundaries.kml"
+               style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+              DOWNLOAD PRAIRIE PEACE KML
+            </a>
+          ` : `
+            <a href="https://m77ag.com/maps/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml"
+               style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+              DOWNLOAD KML FILE
+            </a>
+          `}
         </div>
         <p style="margin: 10px 0 0 0; color: #555; font-size: 14px;">
           Click "VIEW INTERACTIVE MAP" to see boundaries on satellite imagery, or "DOWNLOAD KML FILE" to use on your GPS device.
