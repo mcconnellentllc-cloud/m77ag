@@ -520,6 +520,7 @@
                         <option value="">Choose a property...</option>
                         <option value="Heritage Farm">M77 AG Heritage Farm - Sedgwick County ($200/day)</option>
                         <option value="Prairie Peace">Prairie Peace - Logan County ($200/day)</option>
+                        <option value="Both Properties">BOTH PROPERTIES - All 2,710 Acres ($300/day)</option>
                     </select>
                 </div>
                 
@@ -962,7 +963,10 @@
                 return;
             }
 
-            originalCost = DAILY_RATE * days;
+            // Determine daily rate based on property selection
+            const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
+
+            originalCost = dailyRate * days;
             if (camping) originalCost += (CAMPING_RATE * days);
 
             // Apply discount code
@@ -1100,7 +1104,10 @@
             if (document.getElementById('deer').checked) gameSpecies.push('Deer');
             if (document.getElementById('pheasant').checked) gameSpecies.push('Pheasant');
             if (document.getElementById('turkey').checked) gameSpecies.push('Turkey');
-            
+
+            const property = document.getElementById('propertySelect').value;
+            const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
+
             const bookingData = {
                 customerName: document.getElementById('hunterName').value,
                 email: document.getElementById('hunterEmail').value,
@@ -1115,7 +1122,7 @@
                 paymentStatus: paymentStatus,
                 paymentMethod: paymentStatus === 'paid' ? 'paypal' : (paymentStatus === 'complimentary' ? 'complimentary' : 'cash'),
                 paypalTransactionId: transactionId,
-                dailyRate: DAILY_RATE,
+                dailyRate: dailyRate,
                 numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000),
                 discountCode: appliedDiscountCode,
                 discountPercent: discountPercent,

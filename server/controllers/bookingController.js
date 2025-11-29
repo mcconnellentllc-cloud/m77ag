@@ -31,23 +31,48 @@ const bookingController = {
         originalPrice
       } = req.body;
 
-      // Check if dates are already booked for this parcel
-      const existingBooking = await Booking.findOne({
-        parcel,
-        status: { $in: ['pending', 'confirmed'] },
-        $or: [
-          {
-            checkinDate: { $lte: new Date(checkoutDate) },
-            checkoutDate: { $gte: new Date(checkinDate) }
-          }
-        ]
-      });
+      // Check if dates are already booked
+      let existingBooking;
 
-      if (existingBooking) {
-        return res.status(400).json({
-          success: false,
-          message: 'These dates are already booked for this parcel'
+      if (parcel === 'Both Properties') {
+        // If booking both properties, check if either property is already booked
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: 'Heritage Farm' },
+            { parcel: 'Prairie Peace' },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: new Date(checkoutDate) },
+          checkoutDate: { $gte: new Date(checkinDate) }
         });
+
+        if (existingBooking) {
+          return res.status(400).json({
+            success: false,
+            message: `Cannot book both properties - ${existingBooking.parcel} is already booked for these dates`
+          });
+        }
+      } else {
+        // Check if this specific parcel is booked OR if both properties are booked
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: parcel },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: new Date(checkoutDate) },
+          checkoutDate: { $gte: new Date(checkinDate) }
+        });
+
+        if (existingBooking) {
+          return res.status(400).json({
+            success: false,
+            message: existingBooking.parcel === 'Both Properties'
+              ? 'These dates are booked - both properties are reserved'
+              : 'These dates are already booked for this parcel'
+          });
+        }
       }
 
       // Create new booking
