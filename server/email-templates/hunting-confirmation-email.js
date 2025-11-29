@@ -118,11 +118,11 @@ function getHuntingConfirmationEmail(booking) {
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkIn).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkinDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkOut).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkoutDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
@@ -229,8 +229,8 @@ function getAdminNotificationEmail(booking) {
       
       <h3>Booking Details:</h3>
       <div class="detail"><span class="label">Property:</span> ${propertyName}</div>
-      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkIn).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkOut).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkinDate).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkoutDate).toLocaleDateString()}</div>
       <div class="detail"><span class="label">Hunters:</span> ${booking.numberOfHunters}</div>
       <div class="detail"><span class="label">Nights:</span> ${booking.numberOfNights}</div>
       <div class="detail"><span class="label">Total Price:</span> $${booking.totalPrice}</div>
