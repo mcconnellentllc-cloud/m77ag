@@ -652,9 +652,52 @@
                 <p style="color: #666; margin-bottom: 20px;">
                     After signing the waiver, you'll receive property maps and your vehicle dash card.
                 </p>
-                <button onclick="document.getElementById('bookingSuccessModal').style.display='none'" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
+                <button onclick="document.getElementById('bookingSuccessModal').style.display='none'; document.body.style.overflow='auto';" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
                     GOT IT
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Rest Request Modal -->
+    <div id="gameRestModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: white; max-width: 600px; margin: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <div style="background: #2c5530; color: white; padding: 30px; text-align: center;">
+                <h2 style="margin: 0; font-size: 28px;">Request to Move Game Rest Period</h2>
+            </div>
+            <div style="padding: 30px;">
+                <p style="margin-bottom: 20px; color: #666; line-height: 1.6;">
+                    This date is currently scheduled for game rest. We may be able to accommodate your hunt by moving the rest period.
+                </p>
+                <div style="background: #f8f6f3; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-weight: bold; color: #2c5530;" id="restRequestDetails"></p>
+                </div>
+                <form id="gameRestForm" style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Your Name:</label>
+                        <input type="text" id="restName" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Your Email:</label>
+                        <input type="email" id="restEmail" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Your Phone:</label>
+                        <input type="tel" id="restPhone" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Additional Notes (optional):</label>
+                        <textarea id="restNotes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                    </div>
+                </form>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="submitGameRestRequest()" style="flex: 1; background: #2c5530; color: white; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
+                        SUBMIT REQUEST
+                    </button>
+                    <button onclick="closeGameRestModal()" style="flex: 1; background: #ccc; color: #333; border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
+                        CANCEL
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -859,11 +902,18 @@
                     const half = document.createElement('div');
                     half.className = 'property-half';
                     half.setAttribute('data-label', labels[idx]);
-                    
+
                     if (isPast) {
                         half.classList.add('past');
                     } else if (isGameRest) {
                         half.classList.add('game-rest');
+                        half.innerHTML = '<small style="font-size: 10px;">Rest</small>';
+                        half.style.cursor = 'pointer';
+                        half.title = 'Click to request moving game rest period';
+                        half.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            showGameRestRequest(dateStr, property);
+                        });
                     } else if (bookings[property]) {
                         half.classList.add('booked');
                     } else if (isHighDemand) {
@@ -871,11 +921,11 @@
                     } else {
                         half.classList.add('available');
                     }
-                    
+
                     dayDiv.appendChild(half);
                 });
-                
-                // Click to select date
+
+                // Click to select date (only if not game rest)
                 if (!isPast && !isGameRest) {
                     dayDiv.addEventListener('click', () => {
                         document.getElementById('startDate').value = dateStr;
@@ -1077,10 +1127,17 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bookingData)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
-                    document.getElementById('bookingSuccessModal').style.display = 'flex';
+                    console.log('Showing success modal');
+                    const modal = document.getElementById('bookingSuccessModal');
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                     document.getElementById('bookingForm').reset();
                     calculateTotal();
                     loadBookedDates();
@@ -1120,6 +1177,69 @@
         // Initialize
         document.getElementById('paypal-button-container').innerHTML = '<div style="padding: 40px; text-align: center; background: #f0f0f0; border-radius: 5px; color: #666;">Fill out form to see payment options</div>';
         loadBookedDates();
+
+        // Game Rest Request Functions
+        let currentRestRequest = { date: '', property: '' };
+
+        function showGameRestRequest(date, property) {
+            currentRestRequest = { date, property };
+            const dateObj = new Date(date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('restRequestDetails').textContent =
+                `Property: ${property} • Date: ${formattedDate}`;
+
+            document.getElementById('gameRestModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGameRestModal() {
+            document.getElementById('gameRestModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('gameRestForm').reset();
+        }
+
+        function submitGameRestRequest() {
+            const name = document.getElementById('restName').value.trim();
+            const email = document.getElementById('restEmail').value.trim();
+            const phone = document.getElementById('restPhone').value.trim();
+            const notes = document.getElementById('restNotes').value.trim();
+
+            if (!name || !email || !phone) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const requestData = {
+                name,
+                email,
+                phone,
+                notes,
+                date: currentRestRequest.date,
+                property: currentRestRequest.property,
+                requestType: 'game-rest-move'
+            };
+
+            // Send request to admin
+            fetch('/api/hunting/game-rest-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thank you! Your request has been submitted. We will contact you within 24 hours to discuss moving the game rest period.');
+                    closeGameRestModal();
+                } else {
+                    alert('Error submitting request. Please call us at (970) 520-5167 or email hunting@m77ag.com');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting request. Please call us at (970) 520-5167 or email hunting@m77ag.com');
+            });
+        }
     </script>
 </body>
 </html>

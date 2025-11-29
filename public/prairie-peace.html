@@ -598,7 +598,191 @@
             font-size: 16px;
             line-height: 1.8;
         }
-        
+
+        /* Gallery Section */
+        .gallery-section {
+            margin: 80px 0;
+        }
+
+        .gallery-tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .gallery-tile {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        }
+
+        .gallery-tile-header {
+            background: linear-gradient(135deg, #2d5016, #3d6526);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide.active {
+            display: block;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .carousel-prev {
+            left: 10px;
+        }
+
+        .carousel-next {
+            right: 10px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .gallery-tile-footer {
+            padding: 20px;
+            text-align: center;
+            background: #f8f6f3;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            background: white;
+            padding: 80px 20px;
+            margin: 80px 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto 0;
+        }
+
+        .testimonial-card {
+            background: #f8f6f3;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 5px solid #d4af37;
+            transition: transform 0.3s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #8b6914;
+            font-size: 16px;
+        }
+
+        .testimonial-details {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .testimonial-rating {
+            color: #d4af37;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
         /* CTA Section */
         .cta-section {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -701,6 +885,14 @@
             .parcels-grid {
                 grid-template-columns: 1fr;
             }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -767,6 +959,52 @@
                 <div class="price-label">Camping Add-On</div>
                 <div class="price-main">+$50</div>
                 <div class="price-note">Water & 110V electric</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <h2 class="section-title">Prairie Peace Gallery</h2>
+            <p class="section-subtitle">
+                Explore the diverse hunting opportunities and beautiful landscapes that make Prairie Peace
+                a premier destination for intimate, multi-species hunting adventures.
+            </p>
+
+            <div class="gallery-tiles">
+                <!-- Big Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">BIG GAME</div>
+                    <div class="carousel-container" id="bigGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+
+                <!-- Small Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">SMALL GAME</div>
+                    <div class="carousel-container" id="smallGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+
+                <!-- Property Pictures Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">PROPERTY VIEWS</div>
+                    <div class="carousel-container" id="propertyCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1040,12 +1278,66 @@
         </div>
     </section>
 
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title">What Hunters Are Saying</h2>
+            <p class="section-subtitle">
+                Hear from hunters who have experienced Prairie Peace firsthand
+            </p>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">
+                        "Prairie Peace is the perfect name - it's exactly that. Just me and my son, seven parcels to explore,
+                        and no pressure. We prairie dog shot in the morning, hunted doves at Creek Bed on 14 at midday, and
+                        set up for deer in the evening. Three species in one day! This is my new favorite hunting property."
+                    </p>
+                    <div class="testimonial-author">David M.</div>
+                    <div class="testimonial-details">Sterling, CO • Multi-species Hunt • September 2024</div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">
+                        "Brought my two buddies for a long weekend. The variety here is incredible - we hunted different parcels
+                        each day and never felt crowded. The South Section alone kept us busy for a full day. Prairie dog towns
+                        everywhere, great fencelines for deer. Best decision was choosing a property sized for our small group."
+                    </p>
+                    <div class="testimonial-author">Tom R.</div>
+                    <div class="testimonial-details">Fort Morgan, CO • Prairie Dog & Deer Hunt • October 2024</div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">
+                        "Solo hunter here - Prairie Peace is perfect when you don't want to coordinate with a big group.
+                        I spent three days exploring different areas, following the game. The camping spot is quiet and well-equipped.
+                        Kyle's recommendations on where to hunt what species were spot-on. Will definitely return."
+                    </p>
+                    <div class="testimonial-author">Carl B.</div>
+                    <div class="testimonial-details">Brush, CO • Solo Hunt • November 2024</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA -->
     <section class="cta-section">
         <h2 class="cta-title">Experience Prairie Peace</h2>
         <p class="cta-subtitle">1,550 acres of solitude, variety, and non-stop action</p>
         <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
     </section>
+
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; cursor: pointer;" onclick="closeLightbox()">
+        <div style="position: relative; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+            <img id="lightboxImage" src="" alt="" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <p id="lightboxCaption" style="color: white; font-size: 20px; margin-top: 20px; text-align: center; font-weight: 600;"></p>
+            <button onclick="closeLightbox()" style="position: absolute; top: -50px; right: -50px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">&times;</button>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -1066,6 +1358,173 @@
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
+        });
+
+        // Lightbox functions
+        function openLightbox(imageSrc, caption) {
+            document.getElementById('lightboxImage').src = imageSrc;
+            document.getElementById('lightboxCaption').textContent = caption;
+            document.getElementById('lightbox').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Gallery Carousel System
+        // TO ADD MORE PHOTOS: Simply add the filename to the appropriate array below
+        // Place your images in: /assets/images/prairie-peace/big-game/, /small-game/, or /property-pictures/
+
+        const galleryImages = {
+            bigGame: [
+                'antelope1-pp.jpg',
+                'deer-habitat.jpg',
+                'deer2-pp.jpg',
+                'deer3-pp.jpeg',
+                'deer4-pp.jpeg',
+                'deer5-pp.jpeg',
+                'deer6-pp.jpeg',
+                'deer7-pp.jpeg',
+                'hunting-landscape.jpg',
+                'ppdeer1.jpg'
+            ],
+            smallGame: [
+                'badger1-pp.jpg',
+                'coyote1.jpg',
+                'coyote2.jpg'
+            ],
+            propertyPictures: [
+                'camping-site.jpg',
+                'dove-hunting.jpg',
+                'hunting-landscape.jpg',
+                'hunting-property.jpg'
+            ]
+        };
+
+        class Carousel {
+            constructor(containerId, images, basePath) {
+                this.container = document.getElementById(containerId);
+                this.images = images;
+                this.basePath = basePath;
+                this.currentIndex = 0;
+                this.autoPlayInterval = null;
+                this.init();
+            }
+
+            init() {
+                if (!this.container || this.images.length === 0) return;
+
+                this.renderSlides();
+                this.renderControls();
+                this.showSlide(0);
+                this.startAutoPlay();
+            }
+
+            renderSlides() {
+                this.images.forEach((img, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `<img src="${this.basePath}${img}" alt="Image ${index + 1}" onclick="openLightbox('${this.basePath}${img}', 'Prairie Peace')">`;
+                    this.container.appendChild(slide);
+                });
+            }
+
+            renderControls() {
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav carousel-prev';
+                prevBtn.innerHTML = '&#10094;';
+                prevBtn.onclick = () => this.navigate(-1);
+                this.container.appendChild(prevBtn);
+
+                // Next button
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav carousel-next';
+                nextBtn.innerHTML = '&#10095;';
+                nextBtn.onclick = () => this.navigate(1);
+                this.container.appendChild(nextBtn);
+
+                // Counter
+                const counter = document.createElement('div');
+                counter.className = 'carousel-counter';
+                counter.id = `${this.container.id}-counter`;
+                this.container.appendChild(counter);
+
+                // Indicators
+                if (this.images.length > 1) {
+                    const indicators = document.createElement('div');
+                    indicators.className = 'carousel-indicators';
+                    indicators.id = `${this.container.id}-indicators`;
+
+                    this.images.forEach((_, index) => {
+                        const dot = document.createElement('span');
+                        dot.className = 'carousel-dot';
+                        dot.onclick = () => this.showSlide(index);
+                        indicators.appendChild(dot);
+                    });
+
+                    this.container.appendChild(indicators);
+                }
+            }
+
+            showSlide(index) {
+                const slides = this.container.querySelectorAll('.carousel-slide');
+                const dots = this.container.querySelectorAll('.carousel-dot');
+                const counter = this.container.querySelector('.carousel-counter');
+
+                if (slides.length === 0) return;
+
+                // Wrap around
+                if (index >= slides.length) index = 0;
+                if (index < 0) index = slides.length - 1;
+
+                this.currentIndex = index;
+
+                // Update slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                // Update dots
+                dots.forEach(dot => dot.classList.remove('active'));
+                if (dots[index]) dots[index].classList.add('active');
+
+                // Update counter
+                if (counter) {
+                    counter.textContent = `${index + 1} / ${slides.length}`;
+                }
+            }
+
+            navigate(direction) {
+                this.showSlide(this.currentIndex + direction);
+                this.resetAutoPlay();
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.showSlide(this.currentIndex + 1);
+                }, 4000); // Change image every 4 seconds
+            }
+
+            resetAutoPlay() {
+                clearInterval(this.autoPlayInterval);
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize carousels when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new Carousel('bigGameCarousel', galleryImages.bigGame, 'assets/images/prairie-peace/big-game/');
+            new Carousel('smallGameCarousel', galleryImages.smallGame, 'assets/images/prairie-peace/small-game/');
+            new Carousel('propertyCarousel', galleryImages.propertyPictures, 'assets/images/prairie-peace/property-pictures/');
         });
     </script>
 </body>

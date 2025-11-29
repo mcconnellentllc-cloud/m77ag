@@ -476,44 +476,129 @@
             margin: 80px 0;
         }
 
-        .gallery-grid {
+        .gallery-tiles {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
             margin-top: 40px;
         }
 
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
+        .gallery-tile {
+            background: white;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
         }
 
-        .gallery-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+        .gallery-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
         }
 
-        .gallery-item img {
+        .gallery-tile-header {
+            background: linear-gradient(135deg, #2d5016, #3d6526);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .carousel-container {
+            position: relative;
             width: 100%;
-            height: 300px;
-            object-fit: cover;
+            height: 350px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide.active {
             display: block;
         }
 
-        .gallery-caption {
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .carousel-nav {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
             color: white;
-            font-size: 16px;
-            font-weight: 600;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .carousel-prev {
+            left: 10px;
+        }
+
+        .carousel-next {
+            right: 10px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .gallery-tile-footer {
+            padding: 20px;
+            text-align: center;
+            background: #f8f6f3;
+            font-size: 14px;
+            color: #666;
         }
 
         /* Testimonials Section */
@@ -786,6 +871,52 @@
         </div>
     </section>
 
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <h2 class="section-title">Heritage Farm Gallery</h2>
+            <p class="section-subtitle">
+                Experience the beauty and diversity of our 1,160-acre property through these images showcasing
+                the wildlife, landscape, and historic homestead that make Heritage Farm special.
+            </p>
+
+            <div class="gallery-tiles">
+                <!-- Big Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">BIG GAME</div>
+                    <div class="carousel-container" id="bigGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+
+                <!-- Small Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">SMALL GAME</div>
+                    <div class="carousel-container" id="smallGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+
+                <!-- Property Pictures Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">PROPERTY VIEWS</div>
+                    <div class="carousel-container" id="propertyCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content -->
     <div class="container">
         <h2 class="section-title">Your All-Access Hunting Experience</h2>
@@ -836,7 +967,7 @@
             <div class="feature-card">
                 <h3 class="feature-title">Trophy Potential</h3>
                 <p class="feature-description">
-                    Mature whitetail deer, ringneck pheasants, mourning doves, coyotes, and occasional elk migrations make this property a multi-species paradise.
+                    Mature mule deer, abundant pheasants in tall grass, mourning doves at one of the area's best hunting spots, coyotes, and occasional elk migrations make this property a multi-species paradise.
                 </p>
             </div>
         </div>
@@ -848,16 +979,16 @@
             <h2 class="section-title">Available Game Species</h2>
             <div class="game-grid">
                 <div class="game-card">
-                    <div class="game-name">Whitetail Deer</div>
+                    <div class="game-name">Mule Deer</div>
                     <p class="game-note">Primary species</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Ring-Neck Pheasant</div>
-                    <p class="game-note">Excellent habitat</p>
+                    <p class="game-note">Tall grass - abundant population</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Mourning Dove</div>
-                    <p class="game-note">September flights</p>
+                    <p class="game-note">Area's best dove hunting</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Coyote</div>
@@ -911,9 +1042,9 @@
                     </div>
                     <div class="parcel-content">
                         <p class="parcel-features">
-                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass, 
-                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds. 
-                            The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
+                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass,
+                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds.
+                            <strong>Known as one of the area's best dove hunting spots.</strong> The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
                         </p>
                     </div>
                 </div>
@@ -965,39 +1096,6 @@
                     Whether you're organizing a pheasant drive across the Prairie Parcel or setting up deer stands throughout the property, 
                     there's ample space and habitat for everyone to enjoy a quality hunt.
                 </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Gallery Section -->
-    <section class="gallery-section">
-        <div class="container">
-            <h2 class="section-title">Heritage Farm Gallery</h2>
-            <p class="section-subtitle">
-                Experience the beauty and diversity of our 1,160-acre property through these images showcasing
-                the wildlife, landscape, and historic homestead that make Heritage Farm special.
-            </p>
-
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="assets/images/deer-hf1.jpg" alt="Whitetail Deer at Heritage Farm">
-                    <div class="gallery-caption">Trophy Whitetail Deer</div>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/images/pheasant-hf1.jpg" alt="Ring-neck Pheasant at Heritage Farm">
-                    <div class="gallery-caption">Ring-neck Pheasant</div>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/images/homestead-historic.jpg" alt="Historic Homestead Site">
-                    <div class="gallery-caption">Historic Homestead</div>
-                </div>
-
-                <div class="gallery-item">
-                    <img src="assets/images/hunting-landscape.jpg" alt="Heritage Farm Landscape">
-                    <div class="gallery-caption">Prairie Hunting Grounds</div>
-                </div>
             </div>
         </div>
     </section>
@@ -1078,6 +1176,15 @@
         <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
     </section>
 
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; cursor: pointer;" onclick="closeLightbox()">
+        <div style="position: relative; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+            <img id="lightboxImage" src="" alt="" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <p id="lightboxCaption" style="color: white; font-size: 20px; margin-top: 20px; text-align: center; font-weight: 600;"></p>
+            <button onclick="closeLightbox()" style="position: absolute; top: -50px; right: -50px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">&times;</button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <p>© 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
@@ -1097,6 +1204,173 @@
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
+        });
+
+        // Lightbox functions
+        function openLightbox(imageSrc, caption) {
+            document.getElementById('lightboxImage').src = imageSrc;
+            document.getElementById('lightboxCaption').textContent = caption;
+            document.getElementById('lightbox').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Gallery Carousel System
+        // TO ADD MORE PHOTOS: Simply add the filename to the appropriate array below
+        // Place your images in: /assets/images/heritage-farm/big-game/, /small-game/, or /property-pictures/
+
+        const galleryImages = {
+            bigGame: [
+                'deer1-hf.jpg',
+                'deer2-hf.jpg',
+                'deer3-hf.jpg',
+                'deer4-hf.jpg',
+                'deer5-hf.jpeg',
+                'deer7-pp.jpeg'
+            ],
+            smallGame: [
+                'coyote2-hf.jpg',
+                'coyote3-hf.jpg',
+                'pheasant-hf1.jpg'
+            ],
+            propertyPictures: [
+                'heritage1.png',
+                'heritage2.png',
+                'heritage3.png',
+                'heritage4.png',
+                'heritage5.png',
+                'heritage6.png',
+                'heritage7.png',
+                'heritage8.png'
+            ]
+        };
+
+        class Carousel {
+            constructor(containerId, images, basePath) {
+                this.container = document.getElementById(containerId);
+                this.images = images;
+                this.basePath = basePath;
+                this.currentIndex = 0;
+                this.autoPlayInterval = null;
+                this.init();
+            }
+
+            init() {
+                if (!this.container || this.images.length === 0) return;
+
+                this.renderSlides();
+                this.renderControls();
+                this.showSlide(0);
+                this.startAutoPlay();
+            }
+
+            renderSlides() {
+                this.images.forEach((img, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `<img src="${this.basePath}${img}" alt="Image ${index + 1}" onclick="openLightbox('${this.basePath}${img}', 'Heritage Farm')">`;
+                    this.container.appendChild(slide);
+                });
+            }
+
+            renderControls() {
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav carousel-prev';
+                prevBtn.innerHTML = '&#10094;';
+                prevBtn.onclick = () => this.navigate(-1);
+                this.container.appendChild(prevBtn);
+
+                // Next button
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav carousel-next';
+                nextBtn.innerHTML = '&#10095;';
+                nextBtn.onclick = () => this.navigate(1);
+                this.container.appendChild(nextBtn);
+
+                // Counter
+                const counter = document.createElement('div');
+                counter.className = 'carousel-counter';
+                counter.id = `${this.container.id}-counter`;
+                this.container.appendChild(counter);
+
+                // Indicators
+                if (this.images.length > 1) {
+                    const indicators = document.createElement('div');
+                    indicators.className = 'carousel-indicators';
+                    indicators.id = `${this.container.id}-indicators`;
+
+                    this.images.forEach((_, index) => {
+                        const dot = document.createElement('span');
+                        dot.className = 'carousel-dot';
+                        dot.onclick = () => this.showSlide(index);
+                        indicators.appendChild(dot);
+                    });
+
+                    this.container.appendChild(indicators);
+                }
+            }
+
+            showSlide(index) {
+                const slides = this.container.querySelectorAll('.carousel-slide');
+                const dots = this.container.querySelectorAll('.carousel-dot');
+                const counter = this.container.querySelector('.carousel-counter');
+
+                if (slides.length === 0) return;
+
+                // Wrap around
+                if (index >= slides.length) index = 0;
+                if (index < 0) index = slides.length - 1;
+
+                this.currentIndex = index;
+
+                // Update slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                // Update dots
+                dots.forEach(dot => dot.classList.remove('active'));
+                if (dots[index]) dots[index].classList.add('active');
+
+                // Update counter
+                if (counter) {
+                    counter.textContent = `${index + 1} / ${slides.length}`;
+                }
+            }
+
+            navigate(direction) {
+                this.showSlide(this.currentIndex + direction);
+                this.resetAutoPlay();
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.showSlide(this.currentIndex + 1);
+                }, 4000); // Change image every 4 seconds
+            }
+
+            resetAutoPlay() {
+                clearInterval(this.autoPlayInterval);
+                this.startAutoPlay();
+            }
+        }
+
+        // Initialize carousels when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new Carousel('bigGameCarousel', galleryImages.bigGame, 'assets/images/heritage-farm/big-game/');
+            new Carousel('smallGameCarousel', galleryImages.smallGame, 'assets/images/heritage-farm/small-game/');
+            new Carousel('propertyCarousel', galleryImages.propertyPictures, 'assets/images/heritage-farm/property-pictures/');
         });
     </script>
 </body>
