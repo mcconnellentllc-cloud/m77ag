@@ -142,7 +142,14 @@ function getWaiverConfirmationEmail(booking) {
       <span class="info-label">NUMBER OF HUNTERS:</span>
       <span>${booking.numHunters}</span>
     </div>
-    
+
+    ${booking.vehicleMake || booking.vehicleModel || booking.vehicleColor ? `
+    <div class="info-row">
+      <span class="info-label">VEHICLE:</span>
+      <span style="font-size: 16px; font-weight: bold;">${booking.vehicleColor || ''} ${booking.vehicleMake || ''} ${booking.vehicleModel || ''}</span>
+    </div>
+    ` : ''}
+
     <div class="emergency">
       <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - CALL IMMEDIATELY:</p>
       <p style="margin: 0; font-size: 24px; font-weight: bold;">Kyle McConnell: 970-571-1015</p>
