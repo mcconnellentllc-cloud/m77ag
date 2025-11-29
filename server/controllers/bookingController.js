@@ -452,6 +452,70 @@ const bookingController = {
         message: 'Failed to resend confirmation email'
       });
     }
+  },
+
+  // Submit game rest request
+  submitGameRestRequest: async (req, res) => {
+    try {
+      const { name, email, phone, notes, date, property } = req.body;
+
+      if (!name || !email || !phone || !date || !property) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields'
+        });
+      }
+
+      // Send email notification to admin
+      const nodemailer = require('nodemailer');
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+
+      const dateObj = new Date(date);
+      const formattedDate = dateObj.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: 'hunting@m77ag.com',
+        subject: `Game Rest Move Request - ${property} - ${formattedDate}`,
+        html: `
+          <h2>Game Rest Period Move Request</h2>
+          <p><strong>Property:</strong> ${property}</p>
+          <p><strong>Date:</strong> ${formattedDate}</p>
+          <hr>
+          <h3>Customer Information</h3>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
+          <hr>
+          <p>Please contact this customer within 24 hours to discuss moving the game rest period.</p>
+        `
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      res.json({
+        success: true,
+        message: 'Game rest move request submitted successfully'
+      });
+    } catch (error) {
+      console.error('Error submitting game rest request:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to submit game rest request'
+      });
+    }
   }
 };
 
