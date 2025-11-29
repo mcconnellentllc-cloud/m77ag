@@ -185,6 +185,28 @@
         .print-btn:hover {
             background: #6d5410;
         }
+
+        .map-container {
+            width: 100%;
+            height: 600px;
+            border: 3px solid #8b6914;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media print {
+            .map-container {
+                height: 500px;
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
@@ -204,6 +226,21 @@
             <p><strong>Location:</strong> Logan County, South of Haxtun, Colorado</p>
             <p><strong>Hunting Unit:</strong> Colorado DOW Unit 98</p>
             <p><strong>Property Type:</strong> Intimate multi-species hunting property perfect for 3-4 hunters</p>
+        </div>
+
+        <!-- Visual Property Map -->
+        <div class="section">
+            <h2 class="section-title">Property Map - Satellite View</h2>
+            <p style="margin-bottom: 15px;">Visual overview of Prairie Peace property showing all 1,550 acres. Use this map to familiarize yourself with parcel locations before your hunt.</p>
+            <div class="map-container">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24781.5!2d-102.68!3d40.53!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDMxJzQ4LjAiTiAxMDLCsDQwJzQ4LjAiVw!5e1!3m2!1sen!2sus!4v1234567890!5m2!1sen!2sus"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            <p style="margin-top: 10px; color: #666; font-size: 14px;"><strong>Tip:</strong> Download the KML file below and open in Google Earth or OnX Hunt for exact property boundaries with your GPS location in real-time.</p>
         </div>
 
         <!-- Download Maps Section -->
