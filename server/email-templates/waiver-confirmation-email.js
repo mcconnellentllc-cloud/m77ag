@@ -164,11 +164,19 @@ function getWaiverConfirmationEmail(booking) {
   </div>
   
   <div class="page-break"></div>
-  
+
+  <!-- IMPORTANT NOTICE FOR DOG HUNTERS -->
+  <div style="background: #fff3cd; border: 3px solid #f57c00; padding: 20px; margin-bottom: 25px; border-radius: 8px;">
+    <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 18px; font-weight: bold; text-align: center;">⚠️ IMPORTANT NOTICE FOR DOG HUNTERS ⚠️</h3>
+    <p style="margin: 0; color: #856404; line-height: 1.8; font-size: 14px;">
+      <strong style="color: #f57c00;">Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, <strong>it is strongly advised to stay in the native grass areas.</strong> Native grass sections are sticker-free and provide excellent hunting opportunities. Please plan accordingly to protect your dogs' paws.
+    </p>
+  </div>
+
   <!-- PAGE 2: PROPERTY BOUNDARIES & MAPS -->
   <div class="property-section">
     <h2 style="color: #2c5530; margin-top: 0;">Property Boundaries & Hunting Areas</h2>
-    
+
     <p><strong>Download Maps:</strong></p>
     <ul class="no-print">
       ${booking.parcel === 'Both Properties' ? `
