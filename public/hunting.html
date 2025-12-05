@@ -512,7 +512,15 @@
         <!-- Booking Form -->
         <div class="booking-form-section">
             <h2 class="section-title">Reserve Your Hunt</h2>
-            
+
+            <!-- Important Notice for Dog Hunters -->
+            <div style="background: #fff3cd; border-left: 5px solid #f57c00; padding: 20px; margin-bottom: 30px; border-radius: 5px;">
+                <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">IMPORTANT NOTICE FOR DOG HUNTERS</h3>
+                <p style="margin: 0; color: #856404; line-height: 1.6;">
+                    <strong>Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, it is strongly advised to stay in the native grass areas. Native grass sections are sticker-free and provide excellent hunting opportunities.
+                </p>
+            </div>
+
             <form id="bookingForm">
                 <div class="form-group">
                     <label>Select Property</label>
@@ -829,10 +837,23 @@
                         Object.keys(bookedDates).forEach(key => delete bookedDates[key]);
                         
                         data.bookings.forEach(booking => {
+                            // Use UTC to avoid timezone issues
                             const start = new Date(booking.checkinDate);
                             const end = new Date(booking.checkoutDate);
-                            
-                            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+
+                            // Create date strings using UTC date components to avoid timezone shifts
+                            const startYear = start.getUTCFullYear();
+                            const startMonth = start.getUTCMonth();
+                            const startDay = start.getUTCDate();
+
+                            const endYear = end.getUTCFullYear();
+                            const endMonth = end.getUTCMonth();
+                            const endDay = end.getUTCDate();
+
+                            const startUTC = new Date(Date.UTC(startYear, startMonth, startDay));
+                            const endUTC = new Date(Date.UTC(endYear, endMonth, endDay));
+
+                            for (let d = new Date(startUTC); d <= endUTC; d.setUTCDate(d.getUTCDate() + 1)) {
                                 const dateStr = d.toISOString().split('T')[0];
                                 if (!bookedDates[dateStr]) {
                                     bookedDates[dateStr] = {};
