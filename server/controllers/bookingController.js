@@ -31,6 +31,13 @@ const bookingController = {
         originalPrice
       } = req.body;
 
+      // Create dates at noon local time to avoid timezone issues
+      const checkinDateTime = new Date(checkinDate);
+      checkinDateTime.setHours(12, 0, 0, 0);
+
+      const checkoutDateTime = new Date(checkoutDate);
+      checkoutDateTime.setHours(12, 0, 0, 0);
+
       // Check if dates are already booked
       let existingBooking;
 
@@ -43,8 +50,8 @@ const bookingController = {
             { parcel: 'Both Properties' }
           ],
           status: { $in: ['pending', 'confirmed'] },
-          checkinDate: { $lte: new Date(checkoutDate) },
-          checkoutDate: { $gte: new Date(checkinDate) }
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
         });
 
         if (existingBooking) {
@@ -61,8 +68,8 @@ const bookingController = {
             { parcel: 'Both Properties' }
           ],
           status: { $in: ['pending', 'confirmed'] },
-          checkinDate: { $lte: new Date(checkoutDate) },
-          checkoutDate: { $gte: new Date(checkinDate) }
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
         });
 
         if (existingBooking) {
@@ -81,8 +88,8 @@ const bookingController = {
         email,
         phone,
         parcel,
-        checkinDate: new Date(checkinDate),
-        checkoutDate: new Date(checkoutDate),
+        checkinDate: checkinDateTime,
+        checkoutDate: checkoutDateTime,
         numHunters,
         gameSpecies,
         vehicleMake,

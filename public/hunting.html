@@ -829,10 +829,23 @@
                         Object.keys(bookedDates).forEach(key => delete bookedDates[key]);
                         
                         data.bookings.forEach(booking => {
+                            // Use UTC to avoid timezone issues
                             const start = new Date(booking.checkinDate);
                             const end = new Date(booking.checkoutDate);
-                            
-                            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+
+                            // Create date strings using UTC date components to avoid timezone shifts
+                            const startYear = start.getUTCFullYear();
+                            const startMonth = start.getUTCMonth();
+                            const startDay = start.getUTCDate();
+
+                            const endYear = end.getUTCFullYear();
+                            const endMonth = end.getUTCMonth();
+                            const endDay = end.getUTCDate();
+
+                            const startUTC = new Date(Date.UTC(startYear, startMonth, startDay));
+                            const endUTC = new Date(Date.UTC(endYear, endMonth, endDay));
+
+                            for (let d = new Date(startUTC); d <= endUTC; d.setUTCDate(d.getUTCDate() + 1)) {
                                 const dateStr = d.toISOString().split('T')[0];
                                 if (!bookedDates[dateStr]) {
                                     bookedDates[dateStr] = {};

@@ -689,6 +689,15 @@
         let allBookings = [];
         let currentBooking = null;
 
+        // Format date correctly using UTC to avoid timezone shift issues
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const month = date.getUTCMonth() + 1;
+            const day = date.getUTCDate();
+            const year = date.getUTCFullYear();
+            return `${month}/${day}/${year}`;
+        }
+
         // Load bookings on page load
         window.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('adminToken');
@@ -761,8 +770,8 @@
             }
 
             tbody.innerHTML = bookings.map(booking => {
-                const checkinDate = new Date(booking.checkinDate).toLocaleDateString();
-                const checkoutDate = new Date(booking.checkoutDate).toLocaleDateString();
+                const checkinDate = formatDate(booking.checkinDate);
+                const checkoutDate = formatDate(booking.checkoutDate);
 
                 return `
                     <tr>
@@ -791,8 +800,8 @@
             currentBooking = allBookings.find(b => b._id === bookingId);
             if (!currentBooking) return;
 
-            const checkinDate = new Date(currentBooking.checkinDate).toLocaleDateString();
-            const checkoutDate = new Date(currentBooking.checkoutDate).toLocaleDateString();
+            const checkinDate = formatDate(currentBooking.checkinDate);
+            const checkoutDate = formatDate(currentBooking.checkoutDate);
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="detail-grid">
