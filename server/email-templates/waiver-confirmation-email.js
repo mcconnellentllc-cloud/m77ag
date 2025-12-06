@@ -177,6 +177,18 @@ function getWaiverConfirmationEmail(booking) {
   <div class="property-section">
     <h2 style="color: #2c5530; margin-top: 0;">Property Boundaries & Hunting Areas</h2>
 
+    <!-- INTERACTIVE GOOGLE MAP -->
+    <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 18px;">INTERACTIVE GOOGLE MAP - EASIEST TO USE</h3>
+      <p style="margin: 0 0 15px 0; color: #1b5e20; font-size: 14px;">View all property boundaries, parcels, and GPS coordinates in your browser</p>
+      <a href="https://www.google.com/maps/d/u/0/edit?mid=12vvrka6B2VTO7AakW14s2P0Zexs7MRM&usp=sharing"
+         target="_blank"
+         style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+        OPEN INTERACTIVE MAP IN GOOGLE MAPS
+      </a>
+      <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">Works on any device - phone, tablet, or computer. No download required!</p>
+    </div>
+
     <p><strong>Download Maps:</strong></p>
     <ul class="no-print">
       ${booking.parcel === 'Both Properties' ? `
