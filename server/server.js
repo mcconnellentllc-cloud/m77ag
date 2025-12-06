@@ -119,6 +119,10 @@ app.get('/services', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/services.html'));
 });
 
+app.get('/custom-farming', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/custom-farming.html'));
+});
+
 app.get('/heritage-farm', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/heritage-farm.html'));
 });
