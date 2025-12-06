@@ -167,7 +167,7 @@ function getWaiverConfirmationEmail(booking) {
 
   <!-- IMPORTANT NOTICE FOR DOG HUNTERS -->
   <div style="background: #fff3cd; border: 3px solid #f57c00; padding: 20px; margin-bottom: 25px; border-radius: 8px;">
-    <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 18px; font-weight: bold; text-align: center;">⚠️ IMPORTANT NOTICE FOR DOG HUNTERS ⚠️</h3>
+    <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 18px; font-weight: bold; text-align: center;">IMPORTANT NOTICE FOR DOG HUNTERS</h3>
     <p style="margin: 0; color: #856404; line-height: 1.8; font-size: 14px;">
       <strong style="color: #f57c00;">Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, <strong>it is strongly advised to stay in the native grass areas.</strong> Native grass sections are sticker-free and provide excellent hunting opportunities. Please plan accordingly to protect your dogs' paws.
     </p>
@@ -177,16 +177,28 @@ function getWaiverConfirmationEmail(booking) {
   <div class="property-section">
     <h2 style="color: #2c5530; margin-top: 0;">Property Boundaries & Hunting Areas</h2>
 
+    <!-- INTERACTIVE GOOGLE MAP -->
+    <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 18px;">INTERACTIVE GOOGLE MAP - EASIEST TO USE</h3>
+      <p style="margin: 0 0 15px 0; color: #1b5e20; font-size: 14px;">View all property boundaries, parcels, and GPS coordinates in your browser</p>
+      <a href="https://www.google.com/maps/d/u/0/edit?mid=12vvrka6B2VTO7AakW14s2P0Zexs7MRM&usp=sharing"
+         target="_blank"
+         style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+        OPEN INTERACTIVE MAP IN GOOGLE MAPS
+      </a>
+      <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">Works on any device - phone, tablet, or computer. No download required!</p>
+    </div>
+
     <p><strong>Download Maps:</strong></p>
     <ul class="no-print">
       ${booking.parcel === 'Both Properties' ? `
         <li><a href="https://m77ag.com/maps/Heritage-Farm-Boundaries.kml">Download Heritage Farm KML File (Google Earth)</a></li>
         <li><a href="https://m77ag.com/maps/Prairie-Peace-Boundaries.kml">Download Prairie Peace KML File (Google Earth)</a></li>
-        <li><a href="https://m77ag.com/heritage-farm-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: Heritage Farm Property Guide</a></li>
-        <li><a href="https://m77ag.com/prairie-peace-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: Prairie Peace Property Guide</a></li>
+        <li><a href="https://m77ag.com/heritage-farm-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">VIEW/PRINT: Heritage Farm Property Guide</a></li>
+        <li><a href="https://m77ag.com/prairie-peace-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">VIEW/PRINT: Prairie Peace Property Guide</a></li>
       ` : `
         <li><a href="https://m77ag.com/maps/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
-        <li><a href="https://m77ag.com/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'heritage-farm-map-printable.html' : 'prairie-peace-map-printable.html'}" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">📄 VIEW/PRINT: ${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage Farm' : 'Prairie Peace'} Property Guide (Easy Print)</a></li>
+        <li><a href="https://m77ag.com/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'heritage-farm-map-printable.html' : 'prairie-peace-map-printable.html'}" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">VIEW/PRINT: ${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage Farm' : 'Prairie Peace'} Property Guide (Easy Print)</a></li>
       `}
     </ul>
 
