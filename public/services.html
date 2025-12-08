@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="M77 AG Custom Farming Services - Planting, spraying, harvesting in Northeast Colorado. Volume discounts available. Get instant pricing.">
-    <meta name="keywords" content="custom farming, agricultural services, planting, harvesting, spraying, Colorado farming, M77 AG">
+    <meta name="description" content="M77 AG Custom Farming Services - Complete field operations, chemical programs, and custom cow care in Northeast Colorado. Volume discounts available.">
+    <meta name="keywords" content="custom farming, agricultural services, chemical programs, cow care, cattle boarding, Colorado farming, M77 AG">
     <title>Custom Farming Services - M77 AG</title>
     
     <!-- Fonts -->
@@ -66,7 +66,21 @@
             list-style: none;
             gap: 40px;
         }
-        
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #4a4a4a;
+            transition: 0.3s;
+        }
+
         .nav-link {
             color: #4a4a4a;
             text-decoration: none;
@@ -202,172 +216,27 @@
             border-bottom: 1px solid rgba(0,0,0,0.1);
             color: #666;
         }
-        
-        /* Calculator Section */
-        #calculator {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #2d5016 0%, #1a2f0d 100%);
-        }
-        
-        .calculator-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px;
-            background: #fff;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        }
-        
-        .calculator-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .calculator-header h2 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 42px;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-        }
-        
-        .form-group {
-            margin-bottom: 30px;
-        }
-        
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 14px;
-        }
-        
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: #d4af37;
-        }
-        
-        .btn-calculate {
-            width: 100%;
-            padding: 20px;
+
+        .service-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
             background: #d4af37;
             color: #1a1a1a;
-            border: none;
-            font-size: 18px;
-            font-weight: 700;
+            text-decoration: none;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
+            letter-spacing: 1px;
             transition: all 0.3s;
+            border: 2px solid #d4af37;
         }
-        
-        .btn-calculate:hover {
+
+        .service-btn:hover {
             background: #1a1a1a;
             color: #d4af37;
+            border-color: #1a1a1a;
         }
-        
-        .result-box {
-            margin-top: 40px;
-            padding: 30px;
-            background: #f8f7f5;
-            border-left: 4px solid #d4af37;
-            display: none;
-        }
-        
-        .result-box.show {
-            display: block;
-        }
-        
-        .result-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-        }
-        
-        .result-details {
-            list-style: none;
-        }
-        
-        .result-details li {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .result-total {
-            font-size: 32px;
-            font-weight: 700;
-            color: #d4af37;
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .discount-notice {
-            background: #e8f5e8;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-            text-align: center;
-            color: #2d5016;
-        }
-        
-        /* Pricing Info */
-        .pricing-section {
-            padding: 100px 0;
-            background: #f5f3f0;
-        }
-        
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-top: 60px;
-        }
-        
-        .pricing-card {
-            background: #fff;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .discount-percentage {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 48px;
-            color: #d4af37;
-            margin-bottom: 10px;
-        }
-        
-        .discount-acres {
-            font-family: 'Oswald', sans-serif;
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-        }
-        
-        .discount-description {
-            color: #666;
-            line-height: 1.6;
-        }
-        
+
         /* Footer */
         .footer {
             background: #0a0a0a;
@@ -377,19 +246,31 @@
         }
         
         @media (max-width: 1024px) {
-            .services-grid,
-            .pricing-grid {
+            .services-grid {
                 grid-template-columns: 1fr;
             }
         }
         
         @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
             .nav-menu {
                 display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #fff;
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             }
-            
-            .calculator-container {
-                padding: 30px;
+
+            .nav-menu.active {
+                display: flex;
             }
         }
     </style>
@@ -399,15 +280,20 @@
     <div class="nav-wrapper">
         <nav class="navbar">
             <div class="navbar-container">
-                <a href="index.html" class="logo">M77 AG</a>
-                
-                <ul class="nav-menu">
-                    <li><a href="index.html" class="nav-link">Home</a></li>
-                    <li><a href="services.html" class="nav-link active">Services</a></li>
-                    <li><a href="hunting.html" class="nav-link">Hunting</a></li>
-                    <li><a href="about.html" class="nav-link">About</a></li>
-                    <li><a href="portal/login.html" class="nav-link">Portal</a></li>
-                    <li><a href="portal/employee/login.html" class="nav-link">Team</a></li>
+                <a href="/" class="logo">M77 AG</a>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/services" class="nav-link active">Services</a></li>
+                    <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                    <li><a href="/admin" class="nav-link">Admin</a></li>
                 </ul>
             </div>
         </nav>
@@ -421,9 +307,9 @@
                 SERVICES
             </h1>
             <p class="hero-subtitle">
-                Professional agricultural services from planting to harvest. 
-                State-of-the-art equipment, experienced operators, and competitive pricing 
-                with volume discounts.
+                Comprehensive agricultural services including custom farming operations,
+                chemical programs with automated invoicing, and professional cow care services.
+                State-of-the-art equipment and competitive pricing with volume discounts.
             </p>
         </div>
     </section>
@@ -433,166 +319,71 @@
         <div class="section-container">
             <div class="section-header">
                 <h2>Our Services</h2>
-                <p>Complete agricultural solutions for Northeast Colorado farmers</p>
+                <p>Three comprehensive service offerings for Northeast Colorado agricultural operations</p>
             </div>
             
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="assets/images/planting-service.jpg" alt="Planting Services">
+                        <img src="assets/images/planting-service.jpg" alt="Custom Farming Services">
                     </div>
                     <div class="service-content">
-                        <h3 class="service-title">Planting Services</h3>
+                        <h3 class="service-title">Custom Farming</h3>
                         <p class="service-description">
-                            Precision planting with GPS-guided equipment ensuring optimal seed placement and spacing.
+                            Comprehensive field operations with state-of-the-art equipment and experienced operators for all your farming needs.
                         </p>
                         <ul class="service-features">
-                            <li>24-row planter capacity</li>
-                            <li>Variable rate seeding</li>
-                            <li>GPS precision guidance</li>
-                            <li>Corn and soybean capable</li>
+                            <li>Planting - Precision seed placement</li>
+                            <li>Disking & Ripping - Soil preparation</li>
+                            <li>Deep Ripping - Subsoil management</li>
+                            <li>Harvesting - Corn, Wheat, Milo</li>
+                            <li>Drilling - Accurate seeding</li>
+                            <li>Field Cultivation - Seedbed prep</li>
                         </ul>
+                        <a href="/custom-farming" class="service-btn">Get Quote & Pricing</a>
                     </div>
                 </div>
-                
+
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="assets/images/hero-farm.jpg" alt="Spraying Services">
+                        <img src="assets/images/hero-farm.jpg" alt="Chemical Programs">
                     </div>
                     <div class="service-content">
-                        <h3 class="service-title">Chemical Application</h3>
+                        <h3 class="service-title">Chemical Programs</h3>
                         <p class="service-description">
-                            Professional spraying services with precision application for maximum effectiveness.
+                            Customized chemical programs with instant pricing. Enter your acres, select your program, and receive an invoice for payment 10 days prior to delivery.
                         </p>
                         <ul class="service-features">
-                            <li>Pre-emerge herbicides</li>
+                            <li>Pre-emerge herbicide programs</li>
                             <li>Post-emerge applications</li>
                             <li>Fungicide treatments</li>
-                            <li>Custom tank mixes</li>
+                            <li>Custom program pricing</li>
+                            <li>Automated invoicing system</li>
+                            <li>Convenient payment terms</li>
                         </ul>
+                        <a href="/chemical-programs" class="service-btn">View Programs & Pricing</a>
                     </div>
                 </div>
-                
+
                 <div class="service-card">
                     <div class="service-image">
-                        <img src="assets/images/claas-760-harvest.jpg" alt="Harvesting Services">
+                        <img src="assets/images/claas-760-harvest.jpg" alt="Custom Cow Care Service">
                     </div>
                     <div class="service-content">
-                        <h3 class="service-title">Harvesting</h3>
+                        <h3 class="service-title">Custom Cow Care Service</h3>
                         <p class="service-description">
-                            Efficient harvesting with our Claas 760 TT combine, minimizing grain loss and maximizing quality.
+                            Professional cattle management services with extra ground and space available on our farm for your livestock needs.
                         </p>
                         <ul class="service-features">
-                            <li>Corn and wheat harvest</li>
-                            <li>Yield monitoring</li>
-                            <li>Grain cart service</li>
-                            <li>Field to elevator hauling</li>
+                            <li>Pasture space available</li>
+                            <li>Professional animal care</li>
+                            <li>Feed and nutrition management</li>
+                            <li>Health monitoring</li>
+                            <li>Secure fencing and facilities</li>
+                            <li>Flexible boarding options</li>
                         </ul>
+                        <a href="/custom-cow-care" class="service-btn">Request Information</a>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Calculator Section -->
-    <section id="calculator">
-        <div class="section-container">
-            <div class="calculator-container">
-                <div class="calculator-header">
-                    <h2>Service Price Calculator</h2>
-                    <p>Get instant pricing with automatic volume discounts</p>
-                </div>
-                
-                <form id="price-calculator">
-                    <div class="form-group">
-                        <label class="form-label">Service Type</label>
-                        <select class="form-select" id="service-type" required>
-                            <option value="">Select a service</option>
-                            <option value="planting">Planting - $35/acre</option>
-                            <option value="spraying">Spraying - $12/acre</option>
-                            <option value="harvesting">Harvesting - $45/acre</option>
-                            <option value="complete">Complete Package - $85/acre</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Number of Acres</label>
-                        <input type="number" class="form-input" id="acres" placeholder="Enter acres" min="1" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Your Name</label>
-                        <input type="text" class="form-input" id="name" placeholder="Enter your name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-input" id="phone" placeholder="Enter phone number" required>
-                    </div>
-                    
-                    <button type="submit" class="btn-calculate">Calculate Price</button>
-                </form>
-                
-                <div id="result" class="result-box">
-                    <h3 class="result-title">Your Quote</h3>
-                    <ul class="result-details">
-                        <li>
-                            <span>Service:</span>
-                            <span id="result-service"></span>
-                        </li>
-                        <li>
-                            <span>Acres:</span>
-                            <span id="result-acres"></span>
-                        </li>
-                        <li>
-                            <span>Base Price:</span>
-                            <span id="result-base"></span>
-                        </li>
-                        <li>
-                            <span>Discount:</span>
-                            <span id="result-discount"></span>
-                        </li>
-                    </ul>
-                    <div class="result-total">
-                        Total: <span id="result-total"></span>
-                    </div>
-                    <div class="discount-notice" id="discount-notice"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Info -->
-    <section class="pricing-section">
-        <div class="section-container">
-            <div class="section-header">
-                <h2>Volume Discounts</h2>
-                <p>Save more with larger acreage</p>
-            </div>
-            
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="discount-percentage">7%</div>
-                    <div class="discount-acres">100+ Acres</div>
-                    <p class="discount-description">
-                        Automatic discount applied for operations over 100 acres
-                    </p>
-                </div>
-                
-                <div class="pricing-card">
-                    <div class="discount-percentage">10%</div>
-                    <div class="discount-acres">200+ Acres</div>
-                    <p class="discount-description">
-                        Increased savings for mid-size operations
-                    </p>
-                </div>
-                
-                <div class="pricing-card">
-                    <div class="discount-percentage">14%</div>
-                    <div class="discount-acres">300+ Acres</div>
-                    <p class="discount-description">
-                        Maximum discount for large-scale farming operations
-                    </p>
                 </div>
             </div>
         </div>
@@ -604,58 +395,20 @@
     </footer>
 
     <script>
-        // Price Calculator
-        document.getElementById('price-calculator').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const service = document.getElementById('service-type').value;
-            const acres = parseInt(document.getElementById('acres').value);
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            
-            // Base prices
-            const prices = {
-                planting: 35,
-                spraying: 12,
-                harvesting: 45,
-                complete: 85
-            };
-            
-            // Calculate discount
-            let discount = 0;
-            if (acres >= 300) {
-                discount = 0.14;
-            } else if (acres >= 200) {
-                discount = 0.10;
-            } else if (acres >= 100) {
-                discount = 0.07;
-            }
-            
-            // Calculate totals
-            const basePrice = prices[service] * acres;
-            const discountAmount = basePrice * discount;
-            const totalPrice = basePrice - discountAmount;
-            
-            // Display results
-            document.getElementById('result-service').textContent = service.charAt(0).toUpperCase() + service.slice(1);
-            document.getElementById('result-acres').textContent = acres;
-            document.getElementById('result-base').textContent = '$' + basePrice.toFixed(2);
-            document.getElementById('result-discount').textContent = discount > 0 ? 
-                discount * 100 + '% (-$' + discountAmount.toFixed(2) + ')' : 'None';
-            document.getElementById('result-total').textContent = '$' + totalPrice.toFixed(2);
-            
-            // Show discount notice
-            const notice = document.getElementById('discount-notice');
-            if (discount > 0) {
-                notice.textContent = 'Volume discount applied! You saved $' + discountAmount.toFixed(2);
-            } else if (acres < 100) {
-                const needed = 100 - acres;
-                notice.textContent = 'Add ' + needed + ' more acres to qualify for 7% discount';
-            }
-            
-            // Show result box
-            document.getElementById('result').classList.add('show');
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
         });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
     </script>
 </body>
 </html>

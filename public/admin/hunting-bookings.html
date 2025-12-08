@@ -584,7 +584,6 @@
                     <tbody id="bookingsTableBody">
                         <tr>
                             <td colspan="9" class="empty-state">
-                                <div class="empty-state-icon">🦌</div>
                                 <div>Loading bookings...</div>
                             </td>
                         </tr>
@@ -611,9 +610,92 @@
         </div>
     </div>
 
+    <!-- Edit Booking Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Booking</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editBookingForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Customer Name</label>
+                            <input type="text" id="editCustomerName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+                            <input type="email" id="editEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone</label>
+                            <input type="text" id="editPhone" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Property</label>
+                            <select id="editParcel" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="Heritage Farm">Heritage Farm</option>
+                                <option value="Prairie Peace">Prairie Peace</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Check-in Date</label>
+                            <input type="date" id="editCheckinDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Check-out Date</label>
+                            <input type="date" id="editCheckoutDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Number of Hunters</label>
+                            <input type="number" id="editNumHunters" min="1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Total Price ($)</label>
+                            <input type="number" id="editTotalPrice" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Payment Status</label>
+                            <select id="editPaymentStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Booking Status</label>
+                            <select id="editStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="confirmed">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Notes</label>
+                        <textarea id="editNotes" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="modal-btn btn-primary" onclick="saveBookingChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allBookings = [];
         let currentBooking = null;
+
+        // Format date correctly using UTC to avoid timezone shift issues
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const month = date.getUTCMonth() + 1;
+            const day = date.getUTCDate();
+            const year = date.getUTCFullYear();
+            return `${month}/${day}/${year}`;
+        }
 
         // Load bookings on page load
         window.addEventListener('DOMContentLoaded', () => {
@@ -678,7 +760,6 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="9" class="empty-state">
-                            <div class="empty-state-icon">🦌</div>
                             <div>No bookings found</div>
                         </td>
                     </tr>
@@ -687,8 +768,8 @@
             }
 
             tbody.innerHTML = bookings.map(booking => {
-                const checkinDate = new Date(booking.checkinDate).toLocaleDateString();
-                const checkoutDate = new Date(booking.checkoutDate).toLocaleDateString();
+                const checkinDate = formatDate(booking.checkinDate);
+                const checkoutDate = formatDate(booking.checkoutDate);
 
                 return `
                     <tr>
@@ -717,8 +798,8 @@
             currentBooking = allBookings.find(b => b._id === bookingId);
             if (!currentBooking) return;
 
-            const checkinDate = new Date(currentBooking.checkinDate).toLocaleDateString();
-            const checkoutDate = new Date(currentBooking.checkoutDate).toLocaleDateString();
+            const checkinDate = formatDate(currentBooking.checkinDate);
+            const checkoutDate = formatDate(currentBooking.checkoutDate);
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="detail-grid">
@@ -796,7 +877,71 @@
 
         // Edit booking
         function editBooking(bookingId) {
-            alert('Edit functionality will be implemented next');
+            currentBooking = allBookings.find(b => b._id === bookingId);
+            if (!currentBooking) return;
+
+            // Populate form fields
+            document.getElementById('editCustomerName').value = currentBooking.customerName || '';
+            document.getElementById('editEmail').value = currentBooking.email || '';
+            document.getElementById('editPhone').value = currentBooking.phone || '';
+            document.getElementById('editParcel').value = currentBooking.parcel || 'Heritage Farm';
+            document.getElementById('editCheckinDate').value = currentBooking.checkinDate ? new Date(currentBooking.checkinDate).toISOString().split('T')[0] : '';
+            document.getElementById('editCheckoutDate').value = currentBooking.checkoutDate ? new Date(currentBooking.checkoutDate).toISOString().split('T')[0] : '';
+            document.getElementById('editNumHunters').value = currentBooking.numHunters || 1;
+            document.getElementById('editTotalPrice').value = currentBooking.totalPrice || 0;
+            document.getElementById('editPaymentStatus').value = currentBooking.paymentStatus || 'pending';
+            document.getElementById('editStatus').value = currentBooking.status || 'confirmed';
+            document.getElementById('editNotes').value = currentBooking.notes || '';
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // Save booking changes
+        async function saveBookingChanges() {
+            if (!currentBooking) return;
+
+            const updatedData = {
+                customerName: document.getElementById('editCustomerName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                parcel: document.getElementById('editParcel').value,
+                checkinDate: document.getElementById('editCheckinDate').value,
+                checkoutDate: document.getElementById('editCheckoutDate').value,
+                numHunters: parseInt(document.getElementById('editNumHunters').value),
+                totalPrice: parseFloat(document.getElementById('editTotalPrice').value),
+                paymentStatus: document.getElementById('editPaymentStatus').value,
+                status: document.getElementById('editStatus').value,
+                notes: document.getElementById('editNotes').value
+            };
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/api/hunting/bookings/${currentBooking._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Booking updated successfully');
+                    closeEditModal();
+                    loadBookings();
+                } else {
+                    alert('Failed to update booking: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error updating booking:', error);
+                alert('Error updating booking');
+            }
         }
 
         // Delete booking

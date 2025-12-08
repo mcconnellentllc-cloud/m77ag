@@ -16,7 +16,48 @@
             font-family: Arial, sans-serif;
             background: #f5f3f0;
             padding: 20px;
+            padding-top: 80px;
             line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Oswald', Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .back-link {
+            color: #2d5016;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: #d4af37;
         }
         
         .container {
@@ -328,6 +369,14 @@
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <a href="/" class="logo">M77 AG</a>
+            <a href="/hunting" class="back-link">Back to Hunting</a>
+        </nav>
+    </div>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -426,7 +475,7 @@
             <p>I understand that if wounded or downed game crosses property lines, I MUST:</p>
             <ul>
                 <li>Immediately cease pursuit</li>
-                <li>Contact hunting@m77ag.com before proceeding (emergency contact in booking confirmation)</li>
+                <li>Contact M77 AG at hunting@m77ag.com before proceeding (emergency contact in booking confirmation)</li>
                 <li>Wait for authorization before entering neighboring property</li>
                 <li>Follow all directions provided by property management</li>
             </ul>
@@ -476,7 +525,27 @@
                 <label for="participantPhone">Phone Number *</label>
                 <input type="tel" id="participantPhone" required placeholder="(970) 555-1234">
             </div>
-            
+
+            <h3 style="margin: 30px 0 20px; color: #2d5016;">Vehicle Information (for property identification)</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107;">
+                <strong>Why we need this:</strong> Vehicle information allows us to identify authorized hunters from a distance so we do not disrupt your hunt. If a vehicle does not match our records and there is no authorization card displayed in the dashboard, we will pursue trespassing charges.
+            </p>
+
+            <div class="form-group">
+                <label for="vehicleMake">Vehicle Make *</label>
+                <input type="text" id="vehicleMake" required placeholder="e.g., Ford, Chevrolet, Toyota">
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleModel">Vehicle Model *</label>
+                <input type="text" id="vehicleModel" required placeholder="e.g., F-150, Silverado, Tacoma">
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleColor">Vehicle Color *</label>
+                <input type="text" id="vehicleColor" required placeholder="e.g., White, Black, Red">
+            </div>
+
             <div class="form-group">
                 <label>Electronic Signature *</label>
                 <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Sign using your mouse or finger on touchscreen</p>
@@ -525,7 +594,7 @@
                 
                 <div class="checkbox-item">
                     <input type="checkbox" id="check6" required>
-                    <label for="check6">I understand the downed game protocol and will contact hunting@m77ag.com if game crosses property lines</label>
+                    <label for="check6">I understand the downed game protocol and will contact M77 AG (hunting@m77ag.com) if downed game goes outside of property controlled by M77 AG</label>
                 </div>
                 
                 <div class="checkbox-item">
@@ -536,6 +605,11 @@
                 <div class="checkbox-item">
                     <input type="checkbox" id="check8" required>
                     <label for="check8">I agree to indemnify and hold harmless all Released Parties as described above</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check9" required>
+                    <label for="check9">I accept full monetary responsibility for any property damage, intentional or accidental, including fires caused during my hunt</label>
                 </div>
             </div>
         </div>
@@ -667,10 +741,13 @@
             const name = document.getElementById('participantName').value.trim();
             const email = document.getElementById('participantEmail').value.trim();
             const phone = document.getElementById('participantPhone').value.trim();
+            const vehicleMake = document.getElementById('vehicleMake').value.trim();
+            const vehicleModel = document.getElementById('vehicleModel').value.trim();
+            const vehicleColor = document.getElementById('vehicleColor').value.trim();
             const date = document.getElementById('signatureDate').value;
 
-            if (!name || !email || !phone || !date) {
-                errorDiv.textContent = 'Please fill in all required fields.';
+            if (!name || !email || !phone || !vehicleMake || !vehicleModel || !vehicleColor || !date) {
+                errorDiv.textContent = 'Please fill in all required fields including vehicle information.';
                 errorDiv.style.display = 'block';
                 errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
@@ -684,7 +761,7 @@
             }
 
             // Check all checkboxes
-            const checkboxes = ['check1', 'check2', 'check3', 'check4', 'check5', 'check6', 'check7', 'check8'];
+            const checkboxes = ['check1', 'check2', 'check3', 'check4', 'check5', 'check6', 'check7', 'check8', 'check9'];
             for (const id of checkboxes) {
                 if (!document.getElementById(id).checked) {
                     errorDiv.textContent = 'Please check all required acknowledgment boxes.';
@@ -707,6 +784,9 @@
                 participantName: name,
                 participantEmail: email,
                 participantPhone: phone,
+                vehicleMake: vehicleMake,
+                vehicleModel: vehicleModel,
+                vehicleColor: vehicleColor,
                 signatureDate: date,
                 signature: signatureData,
                 timestamp: new Date().toISOString()

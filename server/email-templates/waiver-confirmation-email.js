@@ -3,10 +3,16 @@
 // Contains printable vehicle dash card and property boundary maps
 
 function getWaiverConfirmationEmail(booking) {
-  const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  const propertyLocation = booking.parcel === 'heritage-farm' ? 'Sedgwick County, Colorado' : 'Logan County, Colorado (South of Haxtun)';
+  const propertyName = booking.parcel === 'Both Properties' ? 'Both Properties (Heritage Farm & Prairie Peace)'
+    : booking.parcel === 'Heritage Farm' ? 'M77 AG Heritage Farm'
+    : booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm'
+    : booking.parcel === 'Prairie Peace' ? 'Prairie Peace'
+    : 'Prairie Peace';
+  const propertyLocation = booking.parcel === 'Both Properties' ? 'Sedgwick & Logan Counties, Colorado'
+    : (booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick County, Colorado'
+    : 'Logan County, Colorado (South of Haxtun)';
   
-  const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
+  const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -136,7 +142,27 @@ function getWaiverConfirmationEmail(booking) {
       <span class="info-label">NUMBER OF HUNTERS:</span>
       <span>${booking.numHunters}</span>
     </div>
-    
+
+    ${booking.vehicleMake || booking.vehicleModel || booking.vehicleColor ? `
+    <div class="info-row">
+      <span class="info-label">VEHICLE:</span>
+      <span style="font-size: 16px; font-weight: bold;">${booking.vehicleColor || ''} ${booking.vehicleMake || ''} ${booking.vehicleModel || ''}</span>
+    </div>
+    ` : ''}
+
+    ${booking.coyoteHuntingType === 'Night Calling' ? `
+    <div style="background: #1a472a; border: 3px solid #d4af37; padding: 20px; margin: 20px 0;">
+      <p style="margin: 0 0 10px 0; font-size: 20px; font-weight: bold; color: #d4af37; text-align: center;">NIGHT HUNTING AUTHORIZED</p>
+      <p style="margin: 0 0 10px 0; color: #ffffff; font-size: 14px; line-height: 1.6;">
+        This hunter is <strong style="color: #d4af37;">AUTHORIZED FOR NIGHT HUNTING OF COYOTES</strong> on M77 AG Hunting properties
+        with artificial light, night vision, thermal optics, and electronic calls as permitted under Colorado law on private land.
+      </p>
+      <p style="margin: 0; color: #ffffff; font-size: 13px; font-style: italic;">
+        Property maps provided below show all authorized hunting areas. See Colorado Parks & Wildlife regulations for coyote hunting on private property.
+      </p>
+    </div>
+    ` : ''}
+
     <div class="emergency">
       <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - EMAIL IMMEDIATELY:</p>
       <p style="margin: 0; font-size: 20px; font-weight: bold;">hunting@m77ag.com</p>
@@ -151,18 +177,45 @@ function getWaiverConfirmationEmail(booking) {
   </div>
   
   <div class="page-break"></div>
-  
+
+  <!-- IMPORTANT NOTICE FOR DOG HUNTERS -->
+  <div style="background: #fff3cd; border: 3px solid #f57c00; padding: 20px; margin-bottom: 25px; border-radius: 8px;">
+    <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 18px; font-weight: bold; text-align: center;">IMPORTANT NOTICE FOR DOG HUNTERS</h3>
+    <p style="margin: 0; color: #856404; line-height: 1.8; font-size: 14px;">
+      <strong style="color: #f57c00;">Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, <strong>it is strongly advised to stay in the native grass areas.</strong> Native grass sections are sticker-free and provide excellent hunting opportunities. Please plan accordingly to protect your dogs' paws.
+    </p>
+  </div>
+
   <!-- PAGE 2: PROPERTY BOUNDARIES & MAPS -->
   <div class="property-section">
     <h2 style="color: #2c5530; margin-top: 0;">Property Boundaries & Hunting Areas</h2>
-    
+
+    <!-- INTERACTIVE GOOGLE MAP -->
+    <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+      <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 18px;">INTERACTIVE GOOGLE MAP - EASIEST TO USE</h3>
+      <p style="margin: 0 0 15px 0; color: #1b5e20; font-size: 14px;">View all property boundaries, parcels, and GPS coordinates in your browser</p>
+      <a href="https://www.google.com/maps/d/u/0/edit?mid=12vvrka6B2VTO7AakW14s2P0Zexs7MRM&usp=sharing"
+         target="_blank"
+         style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+        OPEN INTERACTIVE MAP IN GOOGLE MAPS
+      </a>
+      <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">Works on any device - phone, tablet, or computer. No download required!</p>
+    </div>
+
     <p><strong>Download Maps:</strong></p>
     <ul class="no-print">
-      <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
-      <li><a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Map.pdf">Download PDF Map</a></li>
+      ${booking.parcel === 'Both Properties' ? `
+        <li><a href="https://m77ag.com/maps/Heritage-Farm-Boundaries.kml">Download Heritage Farm KML File (Google Earth)</a></li>
+        <li><a href="https://m77ag.com/maps/Prairie-Peace-Boundaries.kml">Download Prairie Peace KML File (Google Earth)</a></li>
+        <li><a href="https://m77ag.com/heritage-farm-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">VIEW/PRINT: Heritage Farm Property Guide</a></li>
+        <li><a href="https://m77ag.com/prairie-peace-map-printable.html" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">VIEW/PRINT: Prairie Peace Property Guide</a></li>
+      ` : `
+        <li><a href="https://m77ag.com/maps/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml">Download KML File (Google Earth)</a></li>
+        <li><a href="https://m77ag.com/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'heritage-farm-map-printable.html' : 'prairie-peace-map-printable.html'}" target="_blank" style="font-weight: bold; color: #2c5530; font-size: 15px;">VIEW/PRINT: ${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage Farm' : 'Prairie Peace'} Property Guide (Easy Print)</a></li>
+      `}
     </ul>
 
-    ${booking.parcel === 'heritage-farm' ? `
+    ${(booking.parcel === 'Both Properties' || booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? `
     <!-- HERITAGE FARM PARCELS -->
     <h3 style="color: #2c5530;">M77 AG Heritage Farm - 1,160 Acres</h3>
     <p><strong>Sedgwick County, Colorado | 5 Hunting Parcels</strong></p>
@@ -220,7 +273,9 @@ function getWaiverConfirmationEmail(booking) {
       </ul>
       <p style="margin: 10px 0 0 0; font-size: 13px; color: #856404;">Rest periods allow game recovery. Check calendar before hunting each parcel.</p>
     </div>
-    ` : `
+    ` : ''}
+
+    ${(booking.parcel === 'Both Properties' || booking.parcel === 'Prairie Peace' || booking.parcel === 'prairie-peace' || (booking.parcel !== 'Heritage Farm' && booking.parcel !== 'heritage-farm')) ? `
     <!-- PRAIRIE PEACE PARCELS -->
     <h3 style="color: #2c5530;">Prairie Peace - 1,550 Acres</h3>
     <p><strong>Logan County, Colorado (South of Haxtun) | 7 Hunting Parcels</strong></p>
@@ -243,7 +298,7 @@ function getWaiverConfirmationEmail(booking) {
           <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4875,-102.6359" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
-          <td><strong>Madsen Pasture</strong></td>
+          <td><strong>Prairie Peace Campsite Acreage</strong></td>
           <td>155</td>
           <td>Deer, Prairie Dogs</td>
           <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4861,-102.6502" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
@@ -290,8 +345,8 @@ function getWaiverConfirmationEmail(booking) {
         <li><strong>Best for:</strong> Small groups (3-4 hunters recommended)</li>
       </ul>
     </div>
-    `}
-    
+    ` : ''}
+
     <!-- COMMON HUNTING RULES -->
     <div style="border-top: 3px solid #2c5530; margin-top: 30px; padding-top: 20px;">
       <h3 style="color: #2c5530;">Critical Hunting Rules & Protocols</h3>
@@ -327,18 +382,40 @@ function getWaiverConfirmationEmail(booking) {
       <div style="background: #f0f8ff; border-left: 5px solid #4caf50; padding: 20px; margin: 20px 0;">
         <h3 style="color: #2e7d32; margin-top: 0;">VIEW YOUR PROPERTY BOUNDARIES:</h3>
         <div style="margin: 15px 0;">
-          <a href="https://m77ag.com/${booking.parcel === 'heritage-farm' ? 'heritage-farm' : 'prairie-peace'}-map.html" 
-             style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
-            VIEW INTERACTIVE MAP
-          </a>
-          <a href="https://earth.google.com/web/search/${booking.parcel === 'heritage-farm' ? 'Sedgwick+County,+CO' : 'Logan+County,+CO'}/@${booking.parcel === 'heritage-farm' ? '40.77,102.54' : '40.53,102.68'},1500d" 
+          ${booking.parcel === 'Both Properties' ? `
+            <a href="https://m77ag.com/heritage-farm-map.html"
+               style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+              VIEW HERITAGE FARM MAP
+            </a>
+            <a href="https://m77ag.com/prairie-peace-map.html"
+               style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+              VIEW PRAIRIE PEACE MAP
+            </a>
+          ` : `
+            <a href="https://m77ag.com/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'heritage-farm' : 'prairie-peace'}-map.html"
+               style="display: inline-block; background: #4caf50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
+              VIEW INTERACTIVE MAP
+            </a>
+          `}
+          <a href="https://earth.google.com/web/search/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick+County,+CO' : booking.parcel === 'Both Properties' ? 'Sedgwick+County,+CO' : 'Logan+County,+CO'}/@${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? '40.77,-102.54' : booking.parcel === 'Both Properties' ? '40.53,-102.68' : '40.53,-102.68'},1500d"
              style="display: inline-block; background: #1976d2; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;">
             OPEN IN GOOGLE EARTH
           </a>
-          <a href="https://m77ag.com/maps/${booking.parcel === 'heritage-farm' ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml" 
-             style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
-            DOWNLOAD KML FILE
-          </a>
+          ${booking.parcel === 'Both Properties' ? `
+            <a href="https://m77ag.com/maps/Heritage-Farm-Boundaries.kml"
+               style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+              DOWNLOAD HERITAGE FARM KML
+            </a>
+            <a href="https://m77ag.com/maps/Prairie-Peace-Boundaries.kml"
+               style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+              DOWNLOAD PRAIRIE PEACE KML
+            </a>
+          ` : `
+            <a href="https://m77ag.com/maps/${(booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Heritage-Farm' : 'Prairie-Peace'}-Boundaries.kml"
+               style="display: inline-block; background: #d4a54a; color: #2c3e50; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 5px;" download>
+              DOWNLOAD KML FILE
+            </a>
+          `}
         </div>
         <p style="margin: 10px 0 0 0; color: #555; font-size: 14px;">
           Click "VIEW INTERACTIVE MAP" to see boundaries on satellite imagery, or "DOWNLOAD KML FILE" to use on your GPS device.
@@ -357,20 +434,54 @@ function getWaiverConfirmationEmail(booking) {
         <li>Report any issues to hunting@m77ag.com immediately</li>
       </ul>
       
-      <h4 style="color: #2c5530; margin-top: 25px;">How to See Property Boundaries While Hunting:</h4>
-      <ol style="line-height: 1.8;">
-        <li><strong>Download the KML file</strong> from the link above (before you arrive)</li>
-        <li><strong>Import into OnX Hunt app:</strong> Open OnX > Waypoints > Import > Select the KML file</li>
-        <li>Property boundaries will display on your OnX maps with your real-time GPS location</li>
-        <li><strong>Alternative:</strong> Open KML file in Google Earth app on your phone to see boundaries</li>
-        <li>Walk property boundaries when you arrive to familiarize yourself with the area</li>
-        <li><strong>GPS Accuracy Warning:</strong> Cell phone GPS can have 30-50 foot errors - stay well inside boundaries</li>
-      </ol>
-      
-      <p style="margin-top: 15px; padding: 15px; background: #fff8dc; border-left: 4px solid #ffc107;">
-        <strong>Don't have OnX Hunt?</strong> Most hunters use OnX for property boundaries and navigation. 
-        Download at <a href="https://www.onxmaps.com" style="color: #1976d2;">onxmaps.com</a>
-      </p>
+      <h4 style="color: #2c5530; margin-top: 25px;">How to View Property Boundaries - DETAILED INSTRUCTIONS:</h4>
+
+      <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 20px; margin: 15px 0; border-radius: 8px;">
+        <h5 style="color: #2e7d32; margin: 0 0 15px 0;">OPTION 1: Google Earth (Desktop)</h5>
+        <ol style="line-height: 2; margin: 0; padding-left: 20px;">
+          <li>Click the "DOWNLOAD KML FILE" button above to save the file to your computer</li>
+          <li>Open Google Earth Pro on your computer (free download at earth.google.com)</li>
+          <li>Go to <strong>File > Open</strong> and select the downloaded KML file</li>
+          <li>Look in the left sidebar under <strong>"Places"</strong> - you will see "${booking.parcel === 'heritage-farm' ? 'Heritage Farm' : 'Prairie Peace'}"</li>
+          <li>Click the <strong>arrow/triangle</strong> next to the property name to expand and see all parcels</li>
+          <li>Double-click any parcel name to zoom to that location</li>
+          <li>Boundaries will appear as <strong>colored polygons</strong> on the satellite imagery</li>
+        </ol>
+      </div>
+
+      <div style="background: #e3f2fd; border: 2px solid #1976d2; padding: 20px; margin: 15px 0; border-radius: 8px;">
+        <h5 style="color: #1565c0; margin: 0 0 15px 0;">OPTION 2: OnX Hunt App (Recommended for Field Use)</h5>
+        <ol style="line-height: 2; margin: 0; padding-left: 20px;">
+          <li>Download OnX Hunt app from App Store or Google Play</li>
+          <li>Download the KML file to your phone</li>
+          <li>Open the OnX Hunt app</li>
+          <li>Tap <strong>Menu (☰) > Waypoints > Import</strong></li>
+          <li>Select the KML file from your downloads</li>
+          <li>Property boundaries will now display on your OnX map</li>
+          <li>Your GPS location will show in real-time relative to boundaries</li>
+        </ol>
+        <p style="margin: 10px 0 0 0; font-size: 13px; color: #1565c0;">
+          <strong>Note:</strong> OnX requires a subscription but is the best tool for hunters. Download at <a href="https://www.onxmaps.com" style="color: #1976d2;">onxmaps.com</a>
+        </p>
+      </div>
+
+      <div style="background: #fff3e0; border: 2px solid #ff9800; padding: 20px; margin: 15px 0; border-radius: 8px;">
+        <h5 style="color: #e65100; margin: 0 0 15px 0;">OPTION 3: Google Earth Mobile App</h5>
+        <ol style="line-height: 2; margin: 0; padding-left: 20px;">
+          <li>Download Google Earth app from App Store or Google Play</li>
+          <li>Download the KML file to your phone</li>
+          <li>Open your file manager and tap the KML file</li>
+          <li>Select "Open with Google Earth"</li>
+          <li>The app will zoom to the property location</li>
+          <li>Tap the <strong>menu icon</strong> and look under <strong>"Projects"</strong> to see parcel list</li>
+        </ol>
+      </div>
+
+      <div style="background: #ffebee; border-left: 5px solid #c62828; padding: 15px; margin: 15px 0;">
+        <p style="margin: 0; color: #c62828;">
+          <strong>GPS ACCURACY WARNING:</strong> Cell phone GPS can have 30-50 foot errors. Always stay well inside the boundary lines shown. When in doubt, move toward the CENTER of the property. Walk the boundaries when you first arrive to familiarize yourself with the terrain.
+        </p>
+      </div>
     </div>
   </div>
   
@@ -387,6 +498,20 @@ function getWaiverConfirmationEmail(booking) {
     </p>
   </div>
   
+  <div class="no-print" style="background: #e8f5e9; border: 2px solid #4caf50; padding: 25px; margin-top: 30px; text-align: center; border-radius: 8px;">
+    <h3 style="color: #2e7d32; margin: 0 0 15px 0;">Share Your Hunting Experience!</h3>
+    <p style="margin: 0 0 20px 0; color: #2e7d32; font-size: 16px;">
+      After your hunt, we'd love to hear about your experience.<br>
+      Your review helps other hunters discover our property!
+    </p>
+    <a href="https://m77ag.com/hunting.html#reviews" style="display: inline-block; background: #4caf50; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin: 10px 0;">
+      LEAVE A REVIEW
+    </a>
+    <p style="margin: 15px 0 0 0; color: #666; font-size: 14px;">
+      Or email your review to: hunting@m77ag.com
+    </p>
+  </div>
+
   <div class="no-print" style="background: #f5f5f5; padding: 20px; margin-top: 30px; text-align: center; border-radius: 5px;">
     <p style="margin: 0; font-weight: bold;">PRINT INSTRUCTIONS</p>
     <p style="margin: 10px 0 0 0;">Use your browser's print function (Ctrl+P or Cmd+P):</p>
@@ -404,7 +529,7 @@ function getWaiverConfirmationEmail(booking) {
 // Admin notification
 function getAdminWaiverNotification(booking) {
   const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  const huntDate = new Date(booking.huntDate).toLocaleDateString('en-US', {
+  const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

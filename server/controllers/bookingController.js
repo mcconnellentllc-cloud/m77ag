@@ -1,5 +1,69 @@
 const Booking = require('../models/booking');
+const GameRest = require('../models/gameRest');
 const { sendBookingConfirmation, sendWaiverConfirmation } = require('../utils/emailservice');
+
+// Helper function to create automatic game rest periods after booking
+async function createGameRestPeriods(booking) {
+  try {
+    const checkoutDate = new Date(booking.checkoutDate);
+    const dayOfWeek = checkoutDate.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Determine rest days based on checkout day
+    let restDays = [];
+
+    // Check if booking includes a full weekend (checkout is Sunday or Monday)
+    const checkinDate = new Date(booking.checkinDate);
+    const checkinDay = checkinDate.getDay();
+    const isWeekendBooking = (checkinDay === 6 || checkinDay === 5) && (dayOfWeek === 0 || dayOfWeek === 1);
+
+    if (isWeekendBooking || dayOfWeek === 0) {
+      // Weekend booking or checkout on Sunday - rest Monday and Tuesday
+      const monday = new Date(checkoutDate);
+      monday.setDate(checkoutDate.getDate() + (dayOfWeek === 0 ? 1 : (8 - dayOfWeek)));
+      monday.setHours(12, 0, 0, 0);
+
+      const tuesday = new Date(monday);
+      tuesday.setDate(monday.getDate() + 1);
+      tuesday.setHours(12, 0, 0, 0);
+
+      restDays = [monday, tuesday];
+    } else if (dayOfWeek === 6) {
+      // Checkout on Saturday - rest on Monday (skip Sunday)
+      const monday = new Date(checkoutDate);
+      monday.setDate(checkoutDate.getDate() + 2);
+      monday.setHours(12, 0, 0, 0);
+
+      restDays = [monday];
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+      // Weekday checkout (Mon-Fri) - rest the next day
+      const nextDay = new Date(checkoutDate);
+      nextDay.setDate(checkoutDate.getDate() + 1);
+      nextDay.setHours(12, 0, 0, 0);
+
+      restDays = [nextDay];
+    }
+
+    // Create game rest entries for each rest day
+    for (const restDay of restDays) {
+      const restEnd = new Date(restDay);
+      restEnd.setHours(23, 59, 59, 999);
+
+      const gameRest = new GameRest({
+        parcel: booking.parcel,
+        startDate: restDay,
+        endDate: restEnd,
+        reason: 'Automatic rest period after booking',
+        bookingId: booking._id
+      });
+
+      await gameRest.save();
+      console.log(`Created game rest period for ${booking.parcel} on ${restDay.toDateString()}`);
+    }
+  } catch (error) {
+    console.error('Error creating game rest periods:', error);
+    // Don't fail the booking if rest periods fail
+  }
+}
 
 const bookingController = {
   // Create a new booking
@@ -13,6 +77,8 @@ const bookingController = {
         checkinDate,
         checkoutDate,
         numHunters,
+        gameSpecies,
+        coyoteHuntingType,
         vehicleMake,
         vehicleModel,
         vehicleColor,
@@ -23,26 +89,62 @@ const bookingController = {
         totalPrice,
         paymentMethod,
         paymentStatus,
-        notes
+        paypalTransactionId,
+        notes,
+        discountCode,
+        discountPercent,
+        originalPrice
       } = req.body;
 
-      // Check if dates are already booked for this parcel
-      const existingBooking = await Booking.findOne({
-        parcel,
-        status: { $in: ['pending', 'confirmed'] },
-        $or: [
-          {
-            checkinDate: { $lte: new Date(checkoutDate) },
-            checkoutDate: { $gte: new Date(checkinDate) }
-          }
-        ]
-      });
+      // Create dates at noon local time to avoid timezone issues
+      const checkinDateTime = new Date(checkinDate);
+      checkinDateTime.setHours(12, 0, 0, 0);
 
-      if (existingBooking) {
-        return res.status(400).json({
-          success: false,
-          message: 'These dates are already booked for this parcel'
+      const checkoutDateTime = new Date(checkoutDate);
+      checkoutDateTime.setHours(12, 0, 0, 0);
+
+      // Check if dates are already booked
+      let existingBooking;
+
+      if (parcel === 'Both Properties') {
+        // If booking both properties, check if either property is already booked
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: 'Heritage Farm' },
+            { parcel: 'Prairie Peace' },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
         });
+
+        if (existingBooking) {
+          return res.status(400).json({
+            success: false,
+            message: `Cannot book both properties - ${existingBooking.parcel} is already booked for these dates`
+          });
+        }
+      } else {
+        // Check if this specific parcel is booked OR if both properties are booked
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: parcel },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
+        });
+
+        if (existingBooking) {
+          return res.status(400).json({
+            success: false,
+            message: existingBooking.parcel === 'Both Properties'
+              ? 'These dates are booked - both properties are reserved'
+              : 'These dates are already booked for this parcel'
+          });
+        }
       }
 
       // Create new booking
@@ -51,9 +153,11 @@ const bookingController = {
         email,
         phone,
         parcel,
-        checkinDate: new Date(checkinDate),
-        checkoutDate: new Date(checkoutDate),
+        checkinDate: checkinDateTime,
+        checkoutDate: checkoutDateTime,
         numHunters,
+        gameSpecies,
+        coyoteHuntingType,
         vehicleMake,
         vehicleModel,
         vehicleColor,
@@ -64,12 +168,19 @@ const bookingController = {
         totalPrice,
         paymentMethod: paymentMethod || 'paypal',
         paymentStatus: paymentStatus || 'pending',
+        paypalTransactionId,
         notes,
+        discountCode,
+        discountPercent,
+        originalPrice,
         status: 'confirmed',
         waiverSigned: false
       });
 
       await booking.save();
+
+      // Create automatic game rest periods
+      await createGameRestPeriods(booking);
 
       // Send booking confirmation email
       try {
@@ -101,6 +212,9 @@ const bookingController = {
         participantName,
         participantEmail,
         participantPhone,
+        vehicleMake,
+        vehicleModel,
+        vehicleColor,
         signatureDate,
         signature,
         timestamp
@@ -128,6 +242,9 @@ const bookingController = {
         participantName,
         participantEmail,
         participantPhone,
+        vehicleMake,
+        vehicleModel,
+        vehicleColor,
         signatureDate: new Date(signatureDate),
         signatureImage: signature,
         ipAddress: req.ip || req.connection.remoteAddress,
@@ -164,7 +281,7 @@ const bookingController = {
     }
   },
 
-  // Get all bookings
+  // Get all bookings (admin only)
   getAllBookings: async (req, res) => {
     try {
       const bookings = await Booking.find().sort({ createdAt: -1 });
@@ -177,6 +294,29 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to fetch bookings'
+      });
+    }
+  },
+
+  // Get user's own bookings (customer)
+  getMyBookings: async (req, res) => {
+    try {
+      const userEmail = req.user.email;
+
+      // Find all bookings with this user's email
+      const bookings = await Booking.find({
+        email: userEmail
+      }).sort({ createdAt: -1 });
+
+      res.json({
+        success: true,
+        bookings
+      });
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch your bookings'
       });
     }
   },
@@ -201,11 +341,66 @@ const bookingController = {
     }
   },
 
+  // Get game rest dates for calendar
+  getGameRestDates: async (req, res) => {
+    try {
+      const gameRestPeriods = await GameRest.find({}).select('startDate endDate parcel');
+
+      res.json({
+        success: true,
+        gameRestPeriods
+      });
+    } catch (error) {
+      console.error('Error fetching game rest dates:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch game rest dates'
+      });
+    }
+  },
+
   // Get single booking by ID
+  // Public endpoint for dash card - returns limited booking info
+  getBookingInfo: async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      // Return only data needed for dash card (no sensitive info)
+      res.json({
+        success: true,
+        booking: {
+          _id: booking._id,
+          customerName: booking.customerName,
+          parcel: booking.parcel,
+          checkinDate: booking.checkinDate,
+          checkoutDate: booking.checkoutDate,
+          waiverData: booking.waiverData ? {
+            vehicleMake: booking.waiverData.vehicleMake,
+            vehicleModel: booking.waiverData.vehicleModel,
+            vehicleColor: booking.waiverData.vehicleColor
+          } : null
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching booking info:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch booking info'
+      });
+    }
+  },
+
   getBookingById: async (req, res) => {
     try {
       const booking = await Booking.findById(req.params.id);
-      
+
       if (!booking) {
         return res.status(404).json({
           success: false,
@@ -397,6 +592,70 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to resend confirmation email'
+      });
+    }
+  },
+
+  // Submit game rest request
+  submitGameRestRequest: async (req, res) => {
+    try {
+      const { name, email, phone, notes, date, property } = req.body;
+
+      if (!name || !email || !phone || !date || !property) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields'
+        });
+      }
+
+      // Send email notification to admin
+      const nodemailer = require('nodemailer');
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+
+      const dateObj = new Date(date);
+      const formattedDate = dateObj.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: 'hunting@m77ag.com',
+        subject: `Game Rest Move Request - ${property} - ${formattedDate}`,
+        html: `
+          <h2>Game Rest Period Move Request</h2>
+          <p><strong>Property:</strong> ${property}</p>
+          <p><strong>Date:</strong> ${formattedDate}</p>
+          <hr>
+          <h3>Customer Information</h3>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
+          <hr>
+          <p>Please contact this customer within 24 hours to discuss moving the game rest period.</p>
+        `
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      res.json({
+        success: true,
+        message: 'Game rest move request submitted successfully'
+      });
+    } catch (error) {
+      console.error('Error submitting game rest request:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to submit game rest request'
       });
     }
   }

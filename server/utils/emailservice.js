@@ -40,7 +40,7 @@ const sendBookingConfirmation = async (booking) => {
     // Email to customer
     await transporter.sendMail({
       from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'office@m77ag.com',
+      replyTo: 'hunting@m77ag.com',
       to: booking.email,
       subject: `Hunting Reservation Confirmed - ${booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace'}`,
       html: customerEmailHTML
@@ -49,7 +49,7 @@ const sendBookingConfirmation = async (booking) => {
     // Email to admin/Kyle at hunting@m77ag.com
     await transporter.sendMail({
       from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'office@m77ag.com',
+      replyTo: 'hunting@m77ag.com',
       to: 'hunting@m77ag.com',
       subject: `New Booking: ${booking.customerName} - ${booking.parcel === 'heritage-farm' ? 'Heritage Farm' : 'Prairie Peace'}`,
       html: adminEmailHTML
@@ -75,7 +75,7 @@ const sendWaiverConfirmation = async (booking) => {
     // Email to customer with printable vehicle card and property maps
     await transporter.sendMail({
       from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'office@m77ag.com',
+      replyTo: 'hunting@m77ag.com',
       to: booking.email,
       subject: `Waiver Confirmed - Your Hunt Documents & Maps - ${booking.parcel === 'heritage-farm' ? 'Heritage Farm' : 'Prairie Peace'}`,
       html: customerEmailHTML
@@ -84,7 +84,7 @@ const sendWaiverConfirmation = async (booking) => {
     // Email to admin/Kyle at hunting@m77ag.com
     await transporter.sendMail({
       from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'office@m77ag.com',
+      replyTo: 'hunting@m77ag.com',
       to: 'hunting@m77ag.com',
       subject: `Waiver Signed: ${booking.customerName} - ${booking.parcel === 'heritage-farm' ? 'Heritage Farm' : 'Prairie Peace'}`,
       html: adminEmailHTML

@@ -33,7 +33,13 @@ const bookingSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
-  
+
+  // Game Species
+  gameSpecies: String,
+
+  // Coyote Hunting Type (Day Calling or Night Calling)
+  coyoteHuntingType: String,
+
   // Vehicle Information
   vehicleMake: String,
   vehicleModel: String,
@@ -65,16 +71,21 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  
+
+  // Discount Information
+  discountCode: String,
+  discountPercent: Number,
+  originalPrice: Number,
+
   // Payment Information
   paymentMethod: {
     type: String,
-    enum: ['cash', 'check', 'venmo', 'paypal'],
+    enum: ['cash', 'check', 'venmo', 'paypal', 'complimentary'],
     default: 'cash'
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'deposit_paid', 'paid_in_full'],
+    enum: ['pending', 'deposit_paid', 'paid_in_full', 'paid', 'complimentary'],
     default: 'pending'
   },
   paypalTransactionId: String,
@@ -85,7 +96,14 @@ const bookingSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'cancelled', 'completed'],
     default: 'pending'
   },
-  
+
+  // Waiver Status
+  waiverSigned: {
+    type: Boolean,
+    default: false
+  },
+  waiverSignedDate: Date,
+
   // Additional Notes
   notes: String,
   adminNotes: String,

@@ -118,11 +118,11 @@ function getHuntingConfirmationEmail(booking) {
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkIn).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkinDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkOut).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkoutDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
@@ -136,10 +136,24 @@ function getHuntingConfirmationEmail(booking) {
       <div class="price">
         Total Price: $${booking.totalPrice}
       </div>
-      
+
       <div class="detail-row">
         <span class="detail-label">Payment Status:</span> ${booking.paymentStatus === 'paid' ? 'Paid' : 'Pay on Arrival'}
       </div>
+
+      ${booking.discountCode ? `
+      <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; margin-top: 15px; border-radius: 8px; text-align: center;">
+        <h3 style="color: #2e7d32; margin: 0 0 10px 0;">KYLE CARES PROGRAM</h3>
+        <p style="margin: 0; color: #2e7d32; font-size: 16px;">
+          Thank you for being a valued member of the Kyle Cares Program!<br>
+          <strong>${booking.discountPercent}% discount applied</strong><br>
+          ${booking.originalPrice ? `<span style="text-decoration: line-through;">Original: $${booking.originalPrice}</span>` : ''}
+        </p>
+        <p style="margin: 10px 0 0 0; color: #2e7d32; font-style: italic;">
+          We truly appreciate you and are honored to have you hunt with us.
+        </p>
+      </div>
+      ` : ''}
     </div>
 
     <div class="warning-box">
@@ -214,12 +228,18 @@ function getAdminNotificationEmail(booking) {
       
       <h3>Booking Details:</h3>
       <div class="detail"><span class="label">Property:</span> ${propertyName}</div>
-      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkIn).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkOut).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkinDate).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkoutDate).toLocaleDateString()}</div>
       <div class="detail"><span class="label">Hunters:</span> ${booking.numberOfHunters}</div>
       <div class="detail"><span class="label">Nights:</span> ${booking.numberOfNights}</div>
       <div class="detail"><span class="label">Total Price:</span> $${booking.totalPrice}</div>
       <div class="detail"><span class="label">Payment Status:</span> ${booking.paymentStatus}</div>
+      ${booking.discountCode ? `
+      <div class="detail" style="margin-top: 15px; padding: 10px; background: #e8f5e9; border-left: 3px solid #4caf50;">
+        <span class="label" style="color: #2e7d32;">Kyle Cares Program:</span> ${booking.discountCode} (${booking.discountPercent}% off)
+        ${booking.originalPrice ? `<br><span style="color: #666;">Original Price: $${booking.originalPrice}</span>` : ''}
+      </div>
+      ` : ''}
       
       <p style="margin-top: 20px;">
         <a href="https://m77ag.com/admin/hunting-bookings.html" style="background-color: #2c5530; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">View in Admin Dashboard</a>
