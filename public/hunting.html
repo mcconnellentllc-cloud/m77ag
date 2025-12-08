@@ -491,7 +491,7 @@
                         <li>Valid Colorado hunting license & tags</li>
                         <li>Know and follow all CPW regulations</li>
                         <li>Stay within property boundaries at all times</li>
-                        <li>Call the landowner <strong>IMMEDIATELY</strong> for downed game (970-571-1015)</li>
+                        <li>Email hunting@m77ag.com <strong>IMMEDIATELY</strong> for downed game issues</li>
                     </ul>
                     <ul style="margin: 0; padding-left: 20px; line-height: 2;">
                         <li>Pack out ALL trash and spent shells</li>
@@ -505,15 +505,15 @@
             <div style="background: rgba(255,69,0,0.15); border-left: 4px solid #ff4500; padding: 20px; border-radius: 8px;">
                 <h4 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 18px;">Landowner's Role & Availability:</h4>
                 <p style="margin: 0 0 10px 0; font-size: 15px; line-height: 1.8;">
-                    <strong style="color: #d4af37;">The landowner</strong> operates a working agricultural business and is NOT on-site during your hunt. The landowner is available by phone for <strong>EMERGENCIES ONLY</strong>:
+                    <strong style="color: #d4af37;">The landowner</strong> operates a working agricultural business and is NOT on-site during your hunt. After booking, you will receive emergency contact information for:
                 </p>
                 <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 2;">
-                    <li><strong style="color: #ffcc00;">Downed game on neighboring property</strong> - Call immediately before pursuing</li>
+                    <li><strong style="color: #ffcc00;">Downed game on neighboring property</strong> - Contact required before pursuing</li>
                     <li><strong style="color: #ffcc00;">Safety emergencies</strong> - Accidents, injuries, or urgent situations</li>
                     <li><strong style="color: #ffcc00;">Property damage</strong> - Report any damage to fences, gates, or equipment</li>
                 </ul>
                 <p style="margin: 15px 0 0 0; font-size: 14px; line-height: 1.6; font-style: italic;">
-                    <strong>Note:</strong> The landowner will NOT be available for hunting advice, game locations, field assistance, or non-emergency questions during your hunt. All non-emergency questions should be asked before your reservation via email: hunting@m77ag.com
+                    <strong>Note:</strong> The landowner will NOT be available for hunting advice, game locations, field assistance, or non-emergency questions during your hunt. All questions should be asked before your reservation via email: hunting@m77ag.com
                 </p>
             </div>
         </div>
@@ -951,9 +951,7 @@
             
             return restDates;
         }
-        
-        const gameRestDates = generateGameRestDates();
-        
+
         // Load booked dates
         function loadBookedDates() {
             return fetch('/api/hunting/booked-dates')
@@ -1243,7 +1241,7 @@
                 },
                 onError: function(err) {
                     console.error('PayPal error:', err);
-                    alert('Payment error. Please try Venmo or call 970-571-1015.');
+                    alert('Payment error. Please try Venmo or email hunting@m77ag.com for assistance.');
                 },
                 style: {
                     layout: 'vertical',
