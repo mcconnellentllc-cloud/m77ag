@@ -471,7 +471,55 @@
                 <a href="/prairie-peace" class="property-link">View Property Details</a>
             </div>
         </div>
-        
+
+        <!-- Coyote Calling Special Section -->
+        <div style="background: linear-gradient(135deg, #2d5016 0%, #3d6016 100%); color: white; padding: 40px; border-radius: 15px; margin-bottom: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            <h2 style="color: #d4af37; margin: 0 0 15px 0; font-size: 32px;">NIGHT COYOTE CALLING - YEAR ROUND</h2>
+            <p style="font-size: 18px; margin-bottom: 25px; line-height: 1.6;">
+                Reserve either property for predator calling! Hunt coyotes any time of year with <strong style="color: #d4af37;">NIGHT HUNTING PERMITTED</strong> on our private land.
+            </p>
+
+            <div style="background: rgba(255,255,255,0.1); border-left: 4px solid #d4af37; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #d4af37; margin: 0 0 15px 0; font-size: 20px;">Colorado Regulations for Coyote Calling on Private Property:</h3>
+                <ul style="margin: 0; padding-left: 20px; line-height: 2;">
+                    <li><strong>Season:</strong> Year-round - No closed season for coyotes</li>
+                    <li><strong>Night Hunting:</strong> Artificial light is LEGAL on private land with landowner permission (you have it!)</li>
+                    <li><strong>Electronic Calls:</strong> Electronic call devices are PERMITTED</li>
+                    <li><strong>Night Vision/Thermal:</strong> Legal on private property with permission</li>
+                    <li><strong>Weapons:</strong> Any rifle, handgun, shotgun, or air gun (.25 cal+)</li>
+                    <li><strong>License:</strong> Furbearer license required (<a href="https://cpw.state.co.us/hunting/furbearers/in-the-field" target="_blank" style="color: #d4af37; text-decoration: underline;">CPW Furbearer Info</a>)</li>
+                </ul>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                    <h4 style="color: #d4af37; margin: 0 0 10px 0;">Equipment You Can Use:</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 15px;">
+                        <li>Electronic callers</li>
+                        <li>Night vision scopes</li>
+                        <li>Thermal imaging</li>
+                        <li>Artificial lights</li>
+                        <li>Decoys</li>
+                    </ul>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                    <h4 style="color: #d4af37; margin: 0 0 10px 0;">What We Provide:</h4>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 15px;">
+                        <li>Exclusive property access</li>
+                        <li>2,710 acres across both properties</li>
+                        <li>Multiple habitat types</li>
+                        <li>GPS coordinates & maps</li>
+                        <li>Written landowner permission</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p style="margin-top: 25px; font-size: 14px; font-style: italic; color: #d4af37;">
+                <strong>IMPORTANT:</strong> Always verify current Colorado Parks & Wildlife regulations before your hunt.
+                <a href="https://cpw.state.co.us" target="_blank" style="color: white; text-decoration: underline;">Visit CPW.state.co.us</a>
+            </p>
+        </div>
+
         <!-- Calendar -->
         <div class="calendar-section">
             <h2 class="section-title">Check Availability</h2>
@@ -1319,6 +1367,7 @@
                     <button class="chatbot-question" onclick="showAnswer('facilities')">Are there bathrooms/facilities?</button>
                     <button class="chatbot-question" onclick="showAnswer('scouting')">Can I scout before my hunt?</button>
                     <button class="chatbot-question" onclick="showAnswer('cancellation')">What's your cancellation policy?</button>
+                    <button class="chatbot-question" onclick="showAnswer('coyote-calling')">Can I hunt coyotes at night?</button>
                 </div>
                 <div id="chatbot-messages"></div>
             </div>
@@ -1567,6 +1616,10 @@
             'cancellation': {
                 question: 'What\'s your cancellation policy?',
                 answer: `Please contact us at <strong>hunting@m77ag.com</strong> or <strong>(970) 520-5167</strong> if you need to cancel or reschedule. We understand weather and life happen! We work with you on a case-by-case basis and do our best to accommodate changes when possible.`
+            },
+            'coyote-calling': {
+                question: 'Can I hunt coyotes at night?',
+                answer: `<strong>YES! Night coyote calling is LEGAL on our private property year-round!</strong> Colorado allows night hunting for coyotes on private land with landowner permission (which you have). You can use: <strong>electronic callers, night vision, thermal imaging, and artificial lights</strong>. No closed season - hunt coyotes any time! You'll need a Colorado furbearer license. Perfect for predator hunters! Same <strong>$200/day</strong> rate applies.`
             }
         };
 
