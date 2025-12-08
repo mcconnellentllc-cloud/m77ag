@@ -956,12 +956,12 @@
         
         // Load booked dates
         function loadBookedDates() {
-            fetch('/api/hunting/booked-dates')
+            return fetch('/api/hunting/booked-dates')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.bookings) {
                         Object.keys(bookedDates).forEach(key => delete bookedDates[key]);
-                        
+
                         data.bookings.forEach(booking => {
                             // Use UTC to avoid timezone issues
                             const start = new Date(booking.checkinDate);
@@ -987,19 +987,16 @@
                                 bookedDates[dateStr][booking.parcel] = true;
                             }
                         });
-                        
-                        generateCalendar();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading bookings:', error);
-                    generateCalendar();
                 });
         }
 
         // Load game rest dates
         function loadGameRestDates() {
-            fetch('/api/hunting/game-rest-dates')
+            return fetch('/api/hunting/game-rest-dates')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.gameRestPeriods) {
@@ -1028,12 +1025,21 @@
                                 gameRestDates[dateStr][period.parcel] = true;
                             }
                         });
-
-                        generateCalendar();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading game rest dates:', error);
+                });
+        }
+
+        // Load all calendar data and generate
+        function loadCalendarData() {
+            Promise.all([loadBookedDates(), loadGameRestDates()])
+                .then(() => {
+                    generateCalendar();
+                })
+                .catch(error => {
+                    console.error('Error loading calendar data:', error);
                     generateCalendar();
                 });
         }
@@ -1347,8 +1353,7 @@
                     document.body.style.overflow = 'hidden';
                     document.getElementById('bookingForm').reset();
                     calculateTotal();
-                    loadBookedDates();
-                    loadGameRestDates();
+                    loadCalendarData();
                 } else {
                     alert('Error: ' + (data.message || 'Unable to complete booking. Please contact hunting@m77ag.com'));
                     console.error('Booking error:', data);
@@ -1394,8 +1399,7 @@
         
         // Initialize
         document.getElementById('paypal-button-container').innerHTML = '<div style="padding: 40px; text-align: center; background: #f0f0f0; border-radius: 5px; color: #666;">Fill out form to see payment options</div>';
-        loadBookedDates();
-        loadGameRestDates();
+        loadCalendarData();
 
         // Game Rest Request Functions
         let currentRestRequest = { date: '', property: '' };
