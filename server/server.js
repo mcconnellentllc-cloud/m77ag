@@ -91,8 +91,21 @@ app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
+app.get('/admin/testimonials', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/testimonials.html'));
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+// User routes
+app.get('/user/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/dashboard.html'));
+});
+
+app.get('/user/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/login.html'));
 });
 
 // Farmer routes

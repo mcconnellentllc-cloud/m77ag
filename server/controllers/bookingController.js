@@ -281,7 +281,7 @@ const bookingController = {
     }
   },
 
-  // Get all bookings
+  // Get all bookings (admin only)
   getAllBookings: async (req, res) => {
     try {
       const bookings = await Booking.find().sort({ createdAt: -1 });
@@ -294,6 +294,29 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to fetch bookings'
+      });
+    }
+  },
+
+  // Get user's own bookings (customer)
+  getMyBookings: async (req, res) => {
+    try {
+      const userEmail = req.user.email;
+
+      // Find all bookings with this user's email
+      const bookings = await Booking.find({
+        email: userEmail
+      }).sort({ createdAt: -1 });
+
+      res.json({
+        success: true,
+        bookings
+      });
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch your bookings'
       });
     }
   },
