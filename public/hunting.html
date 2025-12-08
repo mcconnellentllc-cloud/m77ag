@@ -641,7 +641,37 @@
                         </label>
                     </div>
                 </div>
-                
+
+                <!-- Coyote Hunting Type (shown when coyote is selected) -->
+                <div class="form-group" id="coyoteHuntingTypeGroup" style="display: none;">
+                    <label style="color: #2c5530; font-weight: bold;">Coyote Hunting Type</label>
+                    <div style="background: #f8f6f3; border: 2px solid #2c5530; padding: 20px; border-radius: 8px; margin-top: 10px;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; padding: 10px; background: white; border-radius: 5px;">
+                                <input type="radio" name="coyoteHuntingType" value="Day Calling" style="width: auto; margin-right: 12px;" checked>
+                                <div>
+                                    <div style="font-weight: bold; color: #2c5530;">Day Calling Only</div>
+                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">Hunt during daylight hours</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; padding: 10px; background: white; border-radius: 5px;">
+                                <input type="radio" name="coyoteHuntingType" value="Night Calling" style="width: auto; margin-right: 12px;">
+                                <div>
+                                    <div style="font-weight: bold; color: #2c5530;">Night Calling (Authorized)</div>
+                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">Includes authorization for night hunting with artificial light, night vision, thermal optics, and electronic calls</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div style="background: #fff3cd; border-left: 4px solid #d4af37; padding: 12px; margin-top: 15px; border-radius: 4px;">
+                            <p style="margin: 0; font-size: 13px; color: #856404; line-height: 1.5;">
+                                <strong>Note:</strong> If you select Night Calling, your vehicle dash card will include explicit night hunting authorization to show game wardens, along with property maps showing your authorized hunting areas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" id="campingAddon" style="width: auto; margin-right: 10px;">
@@ -708,19 +738,29 @@
             <div style="padding: 30px; text-align: center;">
                 <div style="background: #fff3cd; border: 3px solid #ffc107; border-radius: 8px; padding: 25px; margin-bottom: 20px;">
                     <h3 style="color: #856404; margin: 0 0 15px 0; font-size: 24px;">IMPORTANT: Check Your Email</h3>
-                    <p style="color: #856404; margin: 0; font-size: 16px; line-height: 1.6;">
-                        You must <strong>sign the liability waiver</strong> to confirm your hunt.<br>
-                        A link has been sent to your email address.
+                    <p style="color: #856404; margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;">
+                        Check your email at <strong>the address you submitted</strong>.<br>
+                        The confirmation email will come from <strong>hunting@m77ag.com</strong>
                     </p>
+                    <p style="color: #856404; margin: 0; font-size: 15px; font-weight: bold;">
+                        If the email is not in your inbox, CHECK YOUR SPAM FOLDER
+                    </p>
+                </div>
+                <div style="background: #e3f2fd; border-left: 5px solid #1976d2; padding: 15px; text-align: left; margin-bottom: 20px;">
+                    <p style="margin: 0 0 10px 0; color: #1565c0; font-weight: bold; font-size: 16px;">
+                        Next Steps:
+                    </p>
+                    <ol style="margin: 0; padding-left: 20px; color: #1565c0; line-height: 1.8;">
+                        <li>Open the email from hunting@m77ag.com</li>
+                        <li>Click the waiver link and sign the liability waiver</li>
+                        <li>You'll then receive property maps and your dash card</li>
+                    </ol>
                 </div>
                 <div style="background: #ffebee; border-left: 5px solid #c62828; padding: 15px; text-align: left; margin-bottom: 20px;">
                     <p style="margin: 0; color: #c62828; font-weight: bold;">
                         You will NOT be allowed to hunt without a signed waiver.
                     </p>
                 </div>
-                <p style="color: #666; margin-bottom: 20px;">
-                    After signing the waiver, you'll receive property maps and your vehicle dash card.
-                </p>
                 <button onclick="document.getElementById('bookingSuccessModal').style.display='none'; document.body.style.overflow='auto';" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
                     GOT IT
                 </button>
@@ -1182,9 +1222,23 @@
         // Submit booking
         function submitBooking(paymentStatus, transactionId = null) {
             const gameSpecies = [];
-            if (document.getElementById('deer').checked) gameSpecies.push('Deer');
+            if (document.getElementById('muleDeerBuck').checked) gameSpecies.push('Mule Deer Buck');
+            if (document.getElementById('muleDeerDoe').checked) gameSpecies.push('Mule Deer Doe');
+            if (document.getElementById('whitetailBuck').checked) gameSpecies.push('Whitetail Deer Buck');
+            if (document.getElementById('whitetailDoe').checked) gameSpecies.push('Whitetail Deer Doe');
             if (document.getElementById('pheasant').checked) gameSpecies.push('Pheasant');
             if (document.getElementById('turkey').checked) gameSpecies.push('Turkey');
+            if (document.getElementById('dove').checked) gameSpecies.push('Dove');
+            if (document.getElementById('coyote').checked) gameSpecies.push('Coyote');
+            if (document.getElementById('prairieDogs').checked) gameSpecies.push('Prairie Dogs');
+            if (document.getElementById('rattlesnake').checked) gameSpecies.push('Rattlesnake');
+
+            // Get coyote hunting type if coyote is selected
+            let coyoteHuntingType = null;
+            if (document.getElementById('coyote').checked) {
+                const selectedType = document.querySelector('input[name="coyoteHuntingType"]:checked');
+                coyoteHuntingType = selectedType ? selectedType.value : 'Day Calling';
+            }
 
             const property = document.getElementById('propertySelect').value;
             const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
@@ -1198,6 +1252,7 @@
                 checkoutDate: document.getElementById('endDate').value,
                 numHunters: parseInt(document.getElementById('numHunters').value),
                 gameSpecies: gameSpecies.join(', '),
+                coyoteHuntingType: coyoteHuntingType,
                 campingFee: document.getElementById('campingAddon').checked ? CAMPING_RATE : 0,
                 totalPrice: totalCost,
                 paymentStatus: paymentStatus,
@@ -1246,6 +1301,16 @@
         document.getElementById('endDate').addEventListener('change', calculateTotal);
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
         document.getElementById('discountCode').addEventListener('input', calculateTotal);
+
+        // Show/hide coyote hunting type field when coyote checkbox is checked
+        document.getElementById('coyote').addEventListener('change', function() {
+            const coyoteTypeGroup = document.getElementById('coyoteHuntingTypeGroup');
+            if (this.checked) {
+                coyoteTypeGroup.style.display = 'block';
+            } else {
+                coyoteTypeGroup.style.display = 'none';
+            }
+        });
 
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
@@ -1372,7 +1437,7 @@
                 <div id="chatbot-messages"></div>
             </div>
             <div id="chatbot-footer">
-                <p>Still have questions? <a href="mailto:hunting@m77ag.com">Email us</a> or call <a href="tel:9705205167">(970) 520-5167</a></p>
+                <p>Still have questions? <a href="mailto:hunting@m77ag.com">Email us at hunting@m77ag.com</a> - We will respond as soon as we are able</p>
             </div>
         </div>
     </div>
