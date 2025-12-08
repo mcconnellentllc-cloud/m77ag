@@ -298,7 +298,7 @@ function getWaiverConfirmationEmail(booking) {
           <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4875,-102.6359" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
         </tr>
         <tr>
-          <td><strong>Madsen Pasture</strong></td>
+          <td><strong>Prairie Peace Campsite Acreage</strong></td>
           <td>155</td>
           <td>Deer, Prairie Dogs</td>
           <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4861,-102.6502" style="background: #4caf50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">Navigate</a></td>
