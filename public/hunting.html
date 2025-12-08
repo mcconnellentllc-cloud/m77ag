@@ -857,6 +857,7 @@
         let discountPercent = 0;
         let appliedDiscountCode = '';
         const bookedDates = {};
+        const gameRestDates = {};
         const DAILY_RATE = 200;
         const CAMPING_RATE = 50;
 
@@ -995,7 +996,48 @@
                     generateCalendar();
                 });
         }
-        
+
+        // Load game rest dates
+        function loadGameRestDates() {
+            fetch('/api/hunting/game-rest-dates')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.gameRestPeriods) {
+                        Object.keys(gameRestDates).forEach(key => delete gameRestDates[key]);
+
+                        data.gameRestPeriods.forEach(period => {
+                            const start = new Date(period.startDate);
+                            const end = new Date(period.endDate);
+
+                            const startYear = start.getUTCFullYear();
+                            const startMonth = start.getUTCMonth();
+                            const startDay = start.getUTCDate();
+
+                            const endYear = end.getUTCFullYear();
+                            const endMonth = end.getUTCMonth();
+                            const endDay = end.getUTCDate();
+
+                            const startUTC = new Date(Date.UTC(startYear, startMonth, startDay));
+                            const endUTC = new Date(Date.UTC(endYear, endMonth, endDay));
+
+                            for (let d = new Date(startUTC); d <= endUTC; d.setUTCDate(d.getUTCDate() + 1)) {
+                                const dateStr = d.toISOString().split('T')[0];
+                                if (!gameRestDates[dateStr]) {
+                                    gameRestDates[dateStr] = {};
+                                }
+                                gameRestDates[dateStr][period.parcel] = true;
+                            }
+                        });
+
+                        generateCalendar();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading game rest dates:', error);
+                    generateCalendar();
+                });
+        }
+
         // Generate calendar
         function generateCalendar() {
             const grid = document.getElementById('calendarGrid');
@@ -1033,18 +1075,18 @@
                 cellDate.setHours(0, 0, 0, 0);
                 const dateStr = cellDate.toISOString().split('T')[0];
                 const isPast = cellDate < today;
-                const isGameRest = gameRestDates.has(dateStr);
                 const isHighDemand = isHighDemandDate(cellDate);
                 const bookings = bookedDates[dateStr] || {};
-                
+                const restPeriods = gameRestDates[dateStr] || {};
+
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
                 dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
-                
+
                 // Left = Heritage Farm, Right = Prairie Peace
                 const properties = ['Heritage Farm', 'Prairie Peace'];
                 const labels = ['HF', 'PP'];
-                
+
                 properties.forEach((property, idx) => {
                     const half = document.createElement('div');
                     half.className = 'property-half';
@@ -1052,15 +1094,11 @@
 
                     if (isPast) {
                         half.classList.add('past');
-                    } else if (isGameRest) {
+                    } else if (restPeriods[property] || restPeriods['Both Properties']) {
                         half.classList.add('game-rest');
                         half.innerHTML = '<small style="font-size: 10px;">Rest</small>';
                         half.style.cursor = 'pointer';
-                        half.title = 'Click to request moving game rest period';
-                        half.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            showGameRestRequest(dateStr, property);
-                        });
+                        half.title = 'Game rest period';
                     } else if (bookings[property]) {
                         half.classList.add('booked');
                     } else if (isHighDemand) {
@@ -1072,8 +1110,9 @@
                     dayDiv.appendChild(half);
                 });
 
-                // Click to select date (only if not game rest)
-                if (!isPast && !isGameRest) {
+                // Click to select date (allow clicking even on partial rest days)
+                const hasAnyRest = Object.keys(restPeriods).length > 0;
+                if (!isPast) {
                     dayDiv.addEventListener('click', () => {
                         document.getElementById('startDate').value = dateStr;
                         const endDate = new Date(cellDate);
@@ -1309,6 +1348,7 @@
                     document.getElementById('bookingForm').reset();
                     calculateTotal();
                     loadBookedDates();
+                    loadGameRestDates();
                 } else {
                     alert('Error: ' + (data.message || 'Unable to complete booking. Please contact hunting@m77ag.com'));
                     console.error('Booking error:', data);
@@ -1355,6 +1395,7 @@
         // Initialize
         document.getElementById('paypal-button-container').innerHTML = '<div style="padding: 40px; text-align: center; background: #f0f0f0; border-radius: 5px; color: #666;">Fill out form to see payment options</div>';
         loadBookedDates();
+        loadGameRestDates();
 
         // Game Rest Request Functions
         let currentRestRequest = { date: '', property: '' };

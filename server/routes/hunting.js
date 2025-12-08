@@ -7,6 +7,7 @@ const { authenticate, isAdmin } = require('../middleware/auth');
 router.post('/bookings', bookingController.createBooking);
 router.post('/submit-waiver', bookingController.submitWaiver);
 router.get('/booked-dates', bookingController.getBookedDates);
+router.get('/game-rest-dates', bookingController.getGameRestDates);
 router.get('/booking-info/:id', bookingController.getBookingInfo);
 router.post('/game-rest-request', bookingController.submitGameRestRequest);
 
