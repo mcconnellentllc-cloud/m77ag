@@ -41,6 +41,7 @@ const ledgerRoutes = require('./routes/ledger');
 const harvestDataRoutes = require('./routes/harvestData');
 const serviceRoutes = require('./routes/services');
 const chemicalRoutes = require('./routes/chemicals');
+const testimonialRoutes = require('./routes/testimonials');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -53,6 +54,7 @@ app.use('/api/ledger', ledgerRoutes);
 app.use('/api/harvest', harvestDataRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/chemicals', chemicalRoutes);
+app.use('/api/testimonials', testimonialRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
