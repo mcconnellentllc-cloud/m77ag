@@ -1,5 +1,69 @@
 const Booking = require('../models/booking');
+const GameRest = require('../models/gameRest');
 const { sendBookingConfirmation, sendWaiverConfirmation } = require('../utils/emailservice');
+
+// Helper function to create automatic game rest periods after booking
+async function createGameRestPeriods(booking) {
+  try {
+    const checkoutDate = new Date(booking.checkoutDate);
+    const dayOfWeek = checkoutDate.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Determine rest days based on checkout day
+    let restDays = [];
+
+    // Check if booking includes a full weekend (checkout is Sunday or Monday)
+    const checkinDate = new Date(booking.checkinDate);
+    const checkinDay = checkinDate.getDay();
+    const isWeekendBooking = (checkinDay === 6 || checkinDay === 5) && (dayOfWeek === 0 || dayOfWeek === 1);
+
+    if (isWeekendBooking || dayOfWeek === 0) {
+      // Weekend booking or checkout on Sunday - rest Monday and Tuesday
+      const monday = new Date(checkoutDate);
+      monday.setDate(checkoutDate.getDate() + (dayOfWeek === 0 ? 1 : (8 - dayOfWeek)));
+      monday.setHours(12, 0, 0, 0);
+
+      const tuesday = new Date(monday);
+      tuesday.setDate(monday.getDate() + 1);
+      tuesday.setHours(12, 0, 0, 0);
+
+      restDays = [monday, tuesday];
+    } else if (dayOfWeek === 6) {
+      // Checkout on Saturday - rest on Monday (skip Sunday)
+      const monday = new Date(checkoutDate);
+      monday.setDate(checkoutDate.getDate() + 2);
+      monday.setHours(12, 0, 0, 0);
+
+      restDays = [monday];
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+      // Weekday checkout (Mon-Fri) - rest the next day
+      const nextDay = new Date(checkoutDate);
+      nextDay.setDate(checkoutDate.getDate() + 1);
+      nextDay.setHours(12, 0, 0, 0);
+
+      restDays = [nextDay];
+    }
+
+    // Create game rest entries for each rest day
+    for (const restDay of restDays) {
+      const restEnd = new Date(restDay);
+      restEnd.setHours(23, 59, 59, 999);
+
+      const gameRest = new GameRest({
+        parcel: booking.parcel,
+        startDate: restDay,
+        endDate: restEnd,
+        reason: 'Automatic rest period after booking',
+        bookingId: booking._id
+      });
+
+      await gameRest.save();
+      console.log(`Created game rest period for ${booking.parcel} on ${restDay.toDateString()}`);
+    }
+  } catch (error) {
+    console.error('Error creating game rest periods:', error);
+    // Don't fail the booking if rest periods fail
+  }
+}
 
 const bookingController = {
   // Create a new booking
@@ -114,6 +178,9 @@ const bookingController = {
       });
 
       await booking.save();
+
+      // Create automatic game rest periods
+      await createGameRestPeriods(booking);
 
       // Send booking confirmation email
       try {
@@ -247,6 +314,24 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to fetch booked dates'
+      });
+    }
+  },
+
+  // Get game rest dates for calendar
+  getGameRestDates: async (req, res) => {
+    try {
+      const gameRestPeriods = await GameRest.find({}).select('startDate endDate parcel');
+
+      res.json({
+        success: true,
+        gameRestPeriods
+      });
+    } catch (error) {
+      console.error('Error fetching game rest dates:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch game rest dates'
       });
     }
   },
