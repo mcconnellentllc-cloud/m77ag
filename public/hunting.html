@@ -547,13 +547,25 @@
                     <label>Number of Hunters</label>
                     <input type="number" id="numHunters" min="1" value="1" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Game Species (check all that apply)</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 15px 25px; margin-top: 10px;">
                         <label style="display: flex; align-items: center; font-weight: normal;">
-                            <input type="checkbox" id="deer" value="Deer" style="width: auto; margin-right: 8px;">
-                            Deer
+                            <input type="checkbox" id="muleDeerBuck" value="Mule Deer Buck" style="width: auto; margin-right: 8px;">
+                            Mule Deer Buck
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="muleDeerDoe" value="Mule Deer Doe" style="width: auto; margin-right: 8px;">
+                            Mule Deer Doe
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="whitetailBuck" value="Whitetail Deer Buck" style="width: auto; margin-right: 8px;">
+                            Whitetail Deer Buck
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="whitetailDoe" value="Whitetail Deer Doe" style="width: auto; margin-right: 8px;">
+                            Whitetail Deer Doe
                         </label>
                         <label style="display: flex; align-items: center; font-weight: normal;">
                             <input type="checkbox" id="pheasant" value="Pheasant" style="width: auto; margin-right: 8px;">
@@ -1526,7 +1538,7 @@
             },
             'game-species': {
                 question: 'What game species are available?',
-                answer: `We have excellent populations of: <strong>Mule Deer (both properties), Pheasant (especially Heritage Farm), Turkey (Prairie Peace is fantastic), Coyote, Prairie Dogs, Dove, and occasional Antelope</strong>. Heritage Farm is in Big Game Unit 93, Prairie Peace is in Unit 98.`
+                answer: `We have excellent populations of: <strong>Mule Deer Bucks & Does (both properties), Whitetail Deer Bucks & Does (both properties), Pheasant (especially Heritage Farm), Turkey (Prairie Peace is fantastic), Coyote, Prairie Dogs, Dove, and occasional Antelope</strong>. Heritage Farm is in Big Game Unit 93, Prairie Peace is in Unit 98. Note: When booking, please select which deer species and sex you're targeting.`
             },
             'hunting-license': {
                 question: 'Do I need a Colorado hunting license?',
