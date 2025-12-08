@@ -11,13 +11,15 @@ function getWaiverConfirmationEmail(booking) {
   const propertyLocation = booking.parcel === 'Both Properties' ? 'Sedgwick & Logan Counties, Colorado'
     : (booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick County, Colorado'
     : 'Logan County, Colorado (South of Haxtun)';
-  
+
   const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
+
+  const emergencyContact = '970-571-1015';
 
   return `
 <!DOCTYPE html>

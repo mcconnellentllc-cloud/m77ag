@@ -167,7 +167,7 @@ function getHuntingConfirmationEmail(booking) {
       <h3>Important Information:</h3>
       <ul>
         <li><strong>All hunters must have valid Colorado hunting licenses</strong></li>
-        <li><strong>Email hunting@m77ag.com for downed game protocol (emergency contact in waiver confirmation)</strong></li>
+        <li><strong>Call Kyle for downed game protocol: 970-571-1015</strong></li>
         <li>Respect property boundaries and game rest periods</li>
         <li>Pack out what you pack in</li>
         <li>You have reserved the entire property for the day(s) selected</li>
@@ -176,7 +176,8 @@ function getHuntingConfirmationEmail(booking) {
 
     <p>If you have any questions or need to make changes to your reservation, please contact us:</p>
     <p>
-      <strong>M77 AG Hunting</strong><br>
+      <strong>Kyle McConnell</strong><br>
+      Phone: 970-571-1015<br>
       Email: hunting@m77ag.com
     </p>
     
