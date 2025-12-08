@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heritage Farm Property Map & Information - M77 AG</title>
+
+    <style>
+        @media print {
+            @page {
+                margin: 0.5in;
+                size: letter;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+        }
+
+        .container {
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5530 0%, #3d7c47 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #2c5530;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #3d7c47;
+            padding-bottom: 10px;
+        }
+
+        .parcel-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .parcel-table th {
+            background: #2c5530;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .parcel-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        .parcel-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .success-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: #ffebee;
+            border-left: 5px solid #c62828;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .warning-box strong {
+            color: #c62828;
+        }
+
+        .download-section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #c49d2a;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            color: #666;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2c5530;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            background: #1e3d21;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 600px;
+            border: 3px solid #2c5530;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media print {
+            .map-container {
+                height: 500px;
+                page-break-inside: avoid;
+            }
+        }
+
+        .game-rest-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .game-rest-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ PRINT THIS PAGE</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>M77 AG HERITAGE FARM</h1>
+            <p>1,160 Acres | Sedgwick County, Colorado</p>
+            <p>Colorado DOW Big Game Unit: 9</p>
+        </div>
+
+        <!-- Property Overview -->
+        <div class="section">
+            <h2 class="section-title">Property Information</h2>
+            <p><strong>Total Acreage:</strong> 1,160 acres across 5 diverse hunting parcels</p>
+            <p><strong>Location:</strong> Sedgwick County, Colorado</p>
+            <p><strong>Hunting Unit:</strong> Colorado DOW Unit 9</p>
+            <p><strong>Property Type:</strong> Premier hunting destination featuring Mule Deer, tall grass pheasant habitat, and exceptional dove hunting at the historic homestead</p>
+            <p><strong>Special Features:</strong> Camping available at Sedgwick County Homestead parcel</p>
+        </div>
+
+        <!-- Visual Property Map -->
+        <div class="section">
+            <h2 class="section-title">Property Map - Visual Guide</h2>
+            <p style="margin-bottom: 20px;">M77 AG Heritage Farm consists of 5 hunting parcels totaling 1,160 acres. Each parcel is numbered and color-coded below for easy reference.</p>
+
+            <div style="background: white; border: 3px solid #2c5530; border-radius: 10px; padding: 30px; margin: 20px 0;">
+                <!-- Parcel Map Visual -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;">
+
+                    <!-- Parcel 1: Rolling Dunes -->
+                    <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: 3px solid #4caf50; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #4caf50; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">1</div>
+                        <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 18px;">Rolling Dunes</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>320 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Mule Deer, Pheasant</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.7466, -102.5400</p>
+                        <p style="margin: 5px 0 0 0; font-size: 11px; color: #f57c00; font-weight: bold;">Game Rest: Nov 15-21, Dec 1-7, Dec 20-26</p>
+                    </div>
+
+                    <!-- Parcel 2: Prairie Parcel -->
+                    <div style="background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); border: 3px solid #fbc02d; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #fbc02d; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">2</div>
+                        <h3 style="color: #f57f17; margin: 0 0 10px 0; font-size: 18px;">Prairie Parcel</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>280 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Pheasant, Dove</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.7717, -102.5265</p>
+                    </div>
+
+                    <!-- Parcel 3: Sedgwick County Homestead -->
+                    <div style="background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); border: 3px solid #0288d1; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #0288d1; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">3</div>
+                        <h3 style="color: #01579b; margin: 0 0 10px 0; font-size: 18px;">Sedgwick County Homestead</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>240 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Turkey, Pheasant</p>
+                        <p style="margin: 5px 0; color: #d32f2f; font-weight: bold;">⛺ CAMPING AVAILABLE</p>
+                        <p style="margin: 5px 0; color: #1976d2; font-weight: bold;">Best Dove Hunting Spot</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.7690, -102.5161</p>
+                        <p style="margin: 5px 0 0 0; font-size: 11px; color: #f57c00; font-weight: bold;">Game Rest: Nov 22-28, Dec 8-14</p>
+                    </div>
+
+                    <!-- Parcel 4: North Side -->
+                    <div style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border: 3px solid #8e24aa; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #8e24aa; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">4</div>
+                        <h3 style="color: #6a1b9a; margin: 0 0 10px 0; font-size: 18px;">North Side</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>160 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Mule Deer, Coyote</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.7678, -102.6153</p>
+                        <p style="margin: 5px 0 0 0; font-size: 11px; color: #f57c00; font-weight: bold;">Game Rest: Nov 8-14, Nov 29-Dec 5</p>
+                    </div>
+
+                    <!-- Parcel 5: South Side -->
+                    <div style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border: 3px solid #c2185b; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #c2185b; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">5</div>
+                        <h3 style="color: #880e4f; margin: 0 0 10px 0; font-size: 18px;">South Side</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>160 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Pheasant, Dove</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.7605, -102.6202</p>
+                    </div>
+                </div>
+
+                <!-- Map Legend -->
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 5px solid #2c5530;">
+                    <h4 style="margin: 0 0 10px 0; color: #2c5530;">Map Legend & Instructions</h4>
+                    <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                        <li><strong>Numbered Circles:</strong> Each parcel is numbered 1-5 for easy reference</li>
+                        <li><strong>GPS Coordinates:</strong> Use these exact coordinates for navigation</li>
+                        <li><strong>Game Rest Periods:</strong> Do NOT hunt marked parcels during rest dates</li>
+                        <li><strong>Camping:</strong> Only available at Parcel #3 (Sedgwick County Homestead)</li>
+                        <li><strong>Total Property:</strong> 1,160 acres across all 5 parcels</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p style="margin-top: 15px; color: #666; font-size: 14px;"><strong>For Exact Boundaries:</strong> Download the KML file below and open in Google Earth or OnX Hunt to see precise property lines with your GPS location in real-time.</p>
+        </div>
+
+        <!-- Download Maps Section -->
+        <div class="download-section no-print">
+            <h3 style="margin-bottom: 15px;">📥 Download Property Maps</h3>
+            <a href="/maps/Heritage-Farm-Boundaries.kml" class="btn" download>Download KML File (Google Earth / OnX)</a>
+            <a href="/maps/Heritage-Farm-Map.pdf" class="btn" download>Download PDF Map</a>
+        </div>
+
+        <!-- Parcel Table -->
+        <div class="section">
+            <h2 class="section-title">Five Hunting Parcels - GPS Coordinates</h2>
+            <p style="margin-bottom: 15px;">Use these coordinates to navigate to each parcel. Click coordinates to open in Google Maps.</p>
+
+            <table class="parcel-table">
+                <thead>
+                    <tr>
+                        <th>Parcel Name</th>
+                        <th>Acres</th>
+                        <th>Primary Game</th>
+                        <th>GPS Coordinates</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Rolling Dunes</strong></td>
+                        <td>320</td>
+                        <td>Mule Deer, Pheasant</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7466,-102.5400" target="_blank">40.7466, -102.5400</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prairie Parcel</strong></td>
+                        <td>280</td>
+                        <td>Pheasant, Dove</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7717,-102.5265" target="_blank">40.7717, -102.5265</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sedgwick County Homestead</strong></td>
+                        <td>240</td>
+                        <td>Deer, Turkey, Pheasant<br><strong>CAMPING AVAILABLE</strong><br><em>Best dove hunting spot</em></td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7690,-102.5161" target="_blank">40.7690, -102.5161</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>North Side</strong></td>
+                        <td>160</td>
+                        <td>Mule Deer, Coyote</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7678,-102.6153" target="_blank">40.7678, -102.6153</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>South Side</strong></td>
+                        <td>160</td>
+                        <td>Deer, Pheasant, Dove</td>
+                        <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.7605,-102.6202" target="_blank">40.7605, -102.6202</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Game Rest Periods -->
+        <div class="section">
+            <div class="game-rest-box">
+                <h3>⏸️ GAME REST PERIODS (Do Not Hunt These Areas During Rest Dates)</h3>
+                <p style="margin-bottom: 10px;">Certain parcels have scheduled rest periods to allow game recovery and maintain healthy populations. <strong>DO NOT HUNT</strong> these parcels during their rest periods:</p>
+                <ul>
+                    <li><strong>Rolling Dunes:</strong> Closed November 15-21, December 1-7, December 20-26</li>
+                    <li><strong>Sedgwick County Homestead:</strong> Closed November 22-28, December 8-14</li>
+                    <li><strong>North Side:</strong> Closed November 8-14, November 29-December 5</li>
+                </ul>
+                <p style="margin-top: 10px; font-size: 13px; color: #856404;"><strong>Note:</strong> These rest periods are marked on the online calendar. You may hunt other parcels during these times. Rest periods help maintain excellent hunting quality year-round.</p>
+            </div>
+        </div>
+
+        <!-- Hunting Highlights -->
+        <div class="section">
+            <div class="success-box">
+                <h3>🎯 HERITAGE FARM HUNTING HIGHLIGHTS</h3>
+                <ul>
+                    <li><strong>Mule Deer:</strong> Rolling Dunes and North Side offer excellent mule deer habitat with natural terrain features</li>
+                    <li><strong>Tall Grass Pheasant:</strong> Abundant pheasant populations throughout the property, especially in tall grass areas</li>
+                    <li><strong>Premier Dove Hunting:</strong> The old homestead is one of the area's best dove hunting spots</li>
+                    <li><strong>Camping:</strong> Set up at Sedgwick County Homestead parcel for multi-day hunts</li>
+                    <li><strong>Best for:</strong> Groups of 4-6 hunters with diverse parcels to spread out</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Critical Rules -->
+        <div class="section">
+            <h2 class="section-title">Critical Hunting Rules & Safety</h2>
+
+            <div class="warning-box">
+                <p><strong>DOWNED GAME PROTOCOL:</strong> If you down game and it runs onto neighboring property (outside of property controlled by M77 AG), you MUST email hunting@m77ag.com immediately before pursuing. Emergency contact provided in booking confirmation. Do NOT enter neighboring property without authorization.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>⚠️ IMPORTANT REMINDERS</h3>
+                <ul>
+                    <li>All hunters must have valid Colorado hunting licenses and appropriate tags</li>
+                    <li>Email hunting@m77ag.com for any downed game issues</li>
+                    <li>Respect property boundaries at all times - GPS can have 30-50 foot errors</li>
+                    <li>Check game rest periods before hunting each parcel</li>
+                    <li>Pack out what you pack in - leave no trace</li>
+                    <li>Close all gates behind you</li>
+                    <li>You have exclusive access to the property for your booked dates</li>
+                    <li>Vehicle dash card must be visible in windshield while hunting</li>
+                    <li>No shooting within 50 yards of buildings, roads, or property boundaries</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>GPS ACCURACY WARNING:</strong> Cell phone GPS can have 30-50 foot errors. Always stay well inside the boundary lines. When in doubt, move toward the CENTER of the property. Walk the boundaries when you first arrive to familiarize yourself with the terrain and landmarks.</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>PROPERTY BOUNDARIES - CRIMINAL TRESPASSING WARNING:</strong> Stay INSIDE property boundaries at all times. Trespassing on adjacent land will result in immediate loss of hunting privileges and criminal prosecution. Use the downloaded KML file with OnX Hunt app or Google Earth for real-time GPS boundary tracking.</p>
+            </div>
+        </div>
+
+        <!-- How to Use Maps -->
+        <div class="section">
+            <h2 class="section-title">How to View Property Boundaries</h2>
+
+            <div class="success-box">
+                <h3>OPTION 1: OnX Hunt App (Recommended for Field Use)</h3>
+                <ol style="line-height: 2; margin-left: 20px;">
+                    <li>Download OnX Hunt app from App Store or Google Play</li>
+                    <li>Download the Heritage-Farm-Boundaries.kml file to your phone</li>
+                    <li>Open OnX Hunt app and tap <strong>Menu (☰) > Waypoints > Import</strong></li>
+                    <li>Select the KML file from your downloads</li>
+                    <li>Property boundaries will display on your map with real-time GPS tracking</li>
+                </ol>
+                <p style="margin-top: 10px; font-size: 13px;"><strong>Note:</strong> OnX requires a subscription but is the best tool for hunters. Download at onxmaps.com</p>
+            </div>
+
+            <div class="info-box">
+                <h3>OPTION 2: Google Earth (Desktop)</h3>
+                <ol style="line-height: 2; margin-left: 20px;">
+                    <li>Download the Heritage-Farm-Boundaries.kml file</li>
+                    <li>Open Google Earth Pro (free at earth.google.com)</li>
+                    <li>Go to <strong>File > Open</strong> and select the KML file</li>
+                    <li>Expand "Heritage Farm" in the left sidebar to see all parcels</li>
+                    <li>Double-click any parcel name to zoom to that location</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <h3>OPTION 3: Google Earth Mobile App</h3>
+                <ol style="line-height: 2; margin-left: 20px;">
+                    <li>Download Google Earth app from App Store or Google Play</li>
+                    <li>Download the KML file to your phone</li>
+                    <li>Open file manager and tap the KML file</li>
+                    <li>Select "Open with Google Earth"</li>
+                    <li>View parcels under "Projects" menu</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="section">
+            <h2 class="section-title">Contact & Questions</h2>
+            <p><strong>M77 AG Hunting</strong></p>
+            <p>Email: <strong>hunting@m77ag.com</strong></p>
+            <p>Emergency contact provided in booking confirmation</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>M77 AG | McConnell Enterprises LLC</strong></p>
+            <p>Four Generations of Agricultural Excellence</p>
+            <p>Northeast Colorado</p>
+            <p style="margin-top: 10px; font-size: 12px;">Print this page using your browser's print function (Ctrl+P or Cmd+P)</p>
+        </div>
+    </div>
+</body>
+</html>

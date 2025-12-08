@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Testimonials - M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5530 0%, #1a3d1f 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-header {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn-header:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #2c5530;
+            color: white;
+            border-color: #2c5530;
+        }
+
+        .filter-btn:hover {
+            border-color: #2c5530;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .testimonial-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .testimonial-rating {
+            color: #d4af37;
+            font-size: 20px;
+        }
+
+        .testimonial-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .testimonial-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .testimonial-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .testimonial-photos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .photo-thumbnail {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .photo-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .testimonial-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .btn-featured {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-featured:hover {
+            background: #e0a800;
+        }
+
+        .btn-featured.active {
+            background: #d4af37;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #5a6268;
+        }
+
+        .rejection-form {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .rejection-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .photo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        .photo-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .testimonial-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-tabs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Manage Testimonials</h1>
+            <div class="header-right">
+                <a href="/admin/dashboard" class="btn-header">Dashboard</a>
+                <button class="btn-header" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="messageContainer"></div>
+
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterTestimonials('all')">All</button>
+            <button class="filter-btn" onclick="filterTestimonials('pending')">Pending Review</button>
+            <button class="filter-btn" onclick="filterTestimonials('approved')">Approved</button>
+            <button class="filter-btn" onclick="filterTestimonials('rejected')">Rejected</button>
+        </div>
+
+        <div id="testimonialsList" class="loading">Loading testimonials...</div>
+    </div>
+
+    <div id="photoModal" class="photo-modal" onclick="closePhotoModal()">
+        <span class="photo-modal-close">&times;</span>
+        <img id="photoModalImage" src="" alt="Full size photo">
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let allTestimonials = [];
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+
+            if (!token || !userStr) {
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            if (user.role !== 'admin') {
+                alert('Admin access required');
+                window.location.href = '/';
+                return;
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        // Load testimonials
+        async function loadTestimonials() {
+            const token = localStorage.getItem('token');
+            const testimonialsList = document.getElementById('testimonialsList');
+
+            try {
+                const response = await fetch('/api/testimonials/all', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.testimonials) {
+                    allTestimonials = data.testimonials;
+                    renderTestimonials();
+                } else {
+                    testimonialsList.innerHTML = `<div class="alert alert-error">Failed to load testimonials</div>`;
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                testimonialsList.innerHTML = `<div class="alert alert-error">Error loading testimonials. Please try again.</div>`;
+            }
+        }
+
+        // Filter testimonials
+        function filterTestimonials(status) {
+            currentFilter = status;
+
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            renderTestimonials();
+        }
+
+        // Render testimonials
+        function renderTestimonials() {
+            const testimonialsList = document.getElementById('testimonialsList');
+
+            let filtered = allTestimonials;
+            if (currentFilter !== 'all') {
+                filtered = allTestimonials.filter(t => t.status === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                testimonialsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <div style="font-size: 18px; margin-bottom: 10px;">No ${currentFilter !== 'all' ? currentFilter : ''} testimonials found</div>
+                    </div>
+                `;
+                return;
+            }
+
+            testimonialsList.innerHTML = filtered.map(testimonial => `
+                <div class="testimonial-card" data-id="${testimonial._id}">
+                    <div class="testimonial-header">
+                        <div>
+                            <div class="testimonial-title">${testimonial.title}</div>
+                            <div class="testimonial-rating">${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}</div>
+                        </div>
+                        <span class="testimonial-status status-${testimonial.status}">${testimonial.status}</span>
+                    </div>
+
+                    <div class="testimonial-meta">
+                        <span class="meta-item">👤 ${testimonial.user ? testimonial.user.name : 'Unknown'}</span>
+                        <span class="meta-item">📧 ${testimonial.user ? testimonial.user.email : 'N/A'}</span>
+                        <span class="meta-item">📍 ${testimonial.property}</span>
+                        ${testimonial.huntType ? `<span class="meta-item">🦌 ${testimonial.huntType}</span>` : ''}
+                        ${testimonial.huntDate ? `<span class="meta-item">📅 ${formatDate(testimonial.huntDate)}</span>` : ''}
+                        ${testimonial.isFeatured ? '<span class="meta-item" style="color: #d4af37; font-weight: 600;">⭐ FEATURED</span>' : ''}
+                    </div>
+
+                    <div class="testimonial-text">${testimonial.text}</div>
+
+                    ${testimonial.photos && testimonial.photos.length > 0 ? `
+                        <div class="testimonial-photos">
+                            ${testimonial.photos.map(photo => `
+                                <div class="photo-thumbnail" onclick="openPhotoModal('${photo.path}')">
+                                    <img src="${photo.path}" alt="Hunt photo">
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${testimonial.status === 'rejected' && testimonial.rejectionReason ? `
+                        <div class="alert alert-error">
+                            <strong>Rejection reason:</strong> ${testimonial.rejectionReason}
+                        </div>
+                    ` : ''}
+
+                    <div class="testimonial-actions">
+                        ${testimonial.status === 'pending' ? `
+                            <button class="btn-action btn-approve" onclick="approveTestimonial('${testimonial._id}')">
+                                ✓ Approve
+                            </button>
+                            <button class="btn-action btn-reject" onclick="toggleRejectForm('${testimonial._id}')">
+                                ✗ Reject
+                            </button>
+                        ` : ''}
+
+                        ${testimonial.status === 'approved' ? `
+                            <button class="btn-action btn-featured ${testimonial.isFeatured ? 'active' : ''}" onclick="toggleFeatured('${testimonial._id}', ${!testimonial.isFeatured})">
+                                ${testimonial.isFeatured ? '⭐ Unfeature' : '⭐ Mark as Featured'}
+                            </button>
+                        ` : ''}
+
+                        <button class="btn-action btn-delete" onclick="deleteTestimonial('${testimonial._id}')">
+                            🗑 Delete
+                        </button>
+                    </div>
+
+                    <div class="rejection-form" id="rejectForm-${testimonial._id}">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Reason for rejection:</label>
+                        <textarea id="rejectReason-${testimonial._id}" rows="3" placeholder="Explain why this testimonial is being rejected..."></textarea>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-action btn-reject" onclick="submitRejection('${testimonial._id}')">Submit Rejection</button>
+                            <button class="btn-action btn-delete" onclick="toggleRejectForm('${testimonial._id}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Approve testimonial
+        async function approveTestimonial(id) {
+            const token = localStorage.getItem('token');
+            const messageContainer = document.getElementById('messageContainer');
+
+            try {
+                const response = await fetch(`/api/testimonials/${id}/approve`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageContainer.innerHTML = '<div class="alert alert-success">Testimonial approved successfully!</div>';
+                    setTimeout(() => { messageContainer.innerHTML = ''; }, 3000);
+                    loadTestimonials();
+                } else {
+                    messageContainer.innerHTML = `<div class="alert alert-error">${data.message || 'Failed to approve testimonial'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error approving testimonial:', error);
+                messageContainer.innerHTML = '<div class="alert alert-error">Error approving testimonial. Please try again.</div>';
+            }
+        }
+
+        // Toggle reject form
+        function toggleRejectForm(id) {
+            const form = document.getElementById(`rejectForm-${id}`);
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Submit rejection
+        async function submitRejection(id) {
+            const token = localStorage.getItem('token');
+            const messageContainer = document.getElementById('messageContainer');
+            const reason = document.getElementById(`rejectReason-${id}`).value;
+
+            if (!reason || reason.trim().length === 0) {
+                alert('Please provide a reason for rejection');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/testimonials/${id}/reject`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason: reason.trim() })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageContainer.innerHTML = '<div class="alert alert-success">Testimonial rejected.</div>';
+                    setTimeout(() => { messageContainer.innerHTML = ''; }, 3000);
+                    loadTestimonials();
+                } else {
+                    messageContainer.innerHTML = `<div class="alert alert-error">${data.message || 'Failed to reject testimonial'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error rejecting testimonial:', error);
+                messageContainer.innerHTML = '<div class="alert alert-error">Error rejecting testimonial. Please try again.</div>';
+            }
+        }
+
+        // Toggle featured
+        async function toggleFeatured(id, isFeatured) {
+            const token = localStorage.getItem('token');
+            const messageContainer = document.getElementById('messageContainer');
+
+            try {
+                const response = await fetch(`/api/testimonials/${id}/approve`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isFeatured })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageContainer.innerHTML = `<div class="alert alert-success">Testimonial ${isFeatured ? 'featured' : 'unfeatured'} successfully!</div>`;
+                    setTimeout(() => { messageContainer.innerHTML = ''; }, 3000);
+                    loadTestimonials();
+                } else {
+                    messageContainer.innerHTML = `<div class="alert alert-error">${data.message || 'Failed to update testimonial'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error updating testimonial:', error);
+                messageContainer.innerHTML = '<div class="alert alert-error">Error updating testimonial. Please try again.</div>';
+            }
+        }
+
+        // Delete testimonial
+        async function deleteTestimonial(id) {
+            if (!confirm('Are you sure you want to delete this testimonial? This action cannot be undone.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const messageContainer = document.getElementById('messageContainer');
+
+            try {
+                const response = await fetch(`/api/testimonials/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageContainer.innerHTML = '<div class="alert alert-success">Testimonial deleted successfully!</div>';
+                    setTimeout(() => { messageContainer.innerHTML = ''; }, 3000);
+                    loadTestimonials();
+                } else {
+                    messageContainer.innerHTML = `<div class="alert alert-error">${data.message || 'Failed to delete testimonial'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error deleting testimonial:', error);
+                messageContainer.innerHTML = '<div class="alert alert-error">Error deleting testimonial. Please try again.</div>';
+            }
+        }
+
+        // Photo modal
+        function openPhotoModal(photoPath) {
+            const modal = document.getElementById('photoModal');
+            const modalImage = document.getElementById('photoModalImage');
+            modalImage.src = photoPath;
+            modal.style.display = 'flex';
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+
+        // Helper function
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Initialize
+        checkAuth();
+        loadTestimonials();
+    </script>
+</body>
+</html>
