@@ -9,6 +9,9 @@ router.get('/booked-dates', bookingController.getBookedDates);
 router.post('/submit-waiver', bookingController.submitWaiver);
 router.post('/game-rest-request', bookingController.submitGameRestRequest);
 
+// Customer routes (authenticated users)
+router.get('/my-bookings', authenticate, bookingController.getMyBookings);
+
 // Admin routes (require authentication)
 router.get('/', authenticate, isAdmin, bookingController.getAllBookings);
 router.get('/upcoming', authenticate, isAdmin, bookingController.getUpcomingBookings);
