@@ -641,7 +641,37 @@
                         </label>
                     </div>
                 </div>
-                
+
+                <!-- Coyote Hunting Type (shown when coyote is selected) -->
+                <div class="form-group" id="coyoteHuntingTypeGroup" style="display: none;">
+                    <label style="color: #2c5530; font-weight: bold;">Coyote Hunting Type</label>
+                    <div style="background: #f8f6f3; border: 2px solid #2c5530; padding: 20px; border-radius: 8px; margin-top: 10px;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; padding: 10px; background: white; border-radius: 5px;">
+                                <input type="radio" name="coyoteHuntingType" value="Day Calling" style="width: auto; margin-right: 12px;" checked>
+                                <div>
+                                    <div style="font-weight: bold; color: #2c5530;">Day Calling Only</div>
+                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">Hunt during daylight hours</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; padding: 10px; background: white; border-radius: 5px;">
+                                <input type="radio" name="coyoteHuntingType" value="Night Calling" style="width: auto; margin-right: 12px;">
+                                <div>
+                                    <div style="font-weight: bold; color: #2c5530;">Night Calling (Authorized)</div>
+                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">Includes authorization for night hunting with artificial light, night vision, thermal optics, and electronic calls</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div style="background: #fff3cd; border-left: 4px solid #d4af37; padding: 12px; margin-top: 15px; border-radius: 4px;">
+                            <p style="margin: 0; font-size: 13px; color: #856404; line-height: 1.5;">
+                                <strong>Note:</strong> If you select Night Calling, your vehicle dash card will include explicit night hunting authorization to show game wardens, along with property maps showing your authorized hunting areas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" id="campingAddon" style="width: auto; margin-right: 10px;">
@@ -1192,9 +1222,23 @@
         // Submit booking
         function submitBooking(paymentStatus, transactionId = null) {
             const gameSpecies = [];
-            if (document.getElementById('deer').checked) gameSpecies.push('Deer');
+            if (document.getElementById('muleDeerBuck').checked) gameSpecies.push('Mule Deer Buck');
+            if (document.getElementById('muleDeerDoe').checked) gameSpecies.push('Mule Deer Doe');
+            if (document.getElementById('whitetailBuck').checked) gameSpecies.push('Whitetail Deer Buck');
+            if (document.getElementById('whitetailDoe').checked) gameSpecies.push('Whitetail Deer Doe');
             if (document.getElementById('pheasant').checked) gameSpecies.push('Pheasant');
             if (document.getElementById('turkey').checked) gameSpecies.push('Turkey');
+            if (document.getElementById('dove').checked) gameSpecies.push('Dove');
+            if (document.getElementById('coyote').checked) gameSpecies.push('Coyote');
+            if (document.getElementById('prairieDogs').checked) gameSpecies.push('Prairie Dogs');
+            if (document.getElementById('rattlesnake').checked) gameSpecies.push('Rattlesnake');
+
+            // Get coyote hunting type if coyote is selected
+            let coyoteHuntingType = null;
+            if (document.getElementById('coyote').checked) {
+                const selectedType = document.querySelector('input[name="coyoteHuntingType"]:checked');
+                coyoteHuntingType = selectedType ? selectedType.value : 'Day Calling';
+            }
 
             const property = document.getElementById('propertySelect').value;
             const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
@@ -1208,6 +1252,7 @@
                 checkoutDate: document.getElementById('endDate').value,
                 numHunters: parseInt(document.getElementById('numHunters').value),
                 gameSpecies: gameSpecies.join(', '),
+                coyoteHuntingType: coyoteHuntingType,
                 campingFee: document.getElementById('campingAddon').checked ? CAMPING_RATE : 0,
                 totalPrice: totalCost,
                 paymentStatus: paymentStatus,
@@ -1256,6 +1301,16 @@
         document.getElementById('endDate').addEventListener('change', calculateTotal);
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
         document.getElementById('discountCode').addEventListener('input', calculateTotal);
+
+        // Show/hide coyote hunting type field when coyote checkbox is checked
+        document.getElementById('coyote').addEventListener('change', function() {
+            const coyoteTypeGroup = document.getElementById('coyoteHuntingTypeGroup');
+            if (this.checked) {
+                coyoteTypeGroup.style.display = 'block';
+            } else {
+                coyoteTypeGroup.style.display = 'none';
+            }
+        });
 
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);

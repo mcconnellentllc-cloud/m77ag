@@ -150,6 +150,19 @@ function getWaiverConfirmationEmail(booking) {
     </div>
     ` : ''}
 
+    ${booking.coyoteHuntingType === 'Night Calling' ? `
+    <div style="background: #1a472a; border: 3px solid #d4af37; padding: 20px; margin: 20px 0;">
+      <p style="margin: 0 0 10px 0; font-size: 20px; font-weight: bold; color: #d4af37; text-align: center;">NIGHT HUNTING AUTHORIZED</p>
+      <p style="margin: 0 0 10px 0; color: #ffffff; font-size: 14px; line-height: 1.6;">
+        This hunter is <strong style="color: #d4af37;">AUTHORIZED FOR NIGHT HUNTING OF COYOTES</strong> on M77 AG Hunting properties
+        with artificial light, night vision, thermal optics, and electronic calls as permitted under Colorado law on private land.
+      </p>
+      <p style="margin: 0; color: #ffffff; font-size: 13px; font-style: italic;">
+        Property maps provided below show all authorized hunting areas. See Colorado Parks & Wildlife regulations for coyote hunting on private property.
+      </p>
+    </div>
+    ` : ''}
+
     <div class="emergency">
       <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - CALL IMMEDIATELY:</p>
       <p style="margin: 0; font-size: 24px; font-weight: bold;">Kyle McConnell: 970-571-1015</p>
