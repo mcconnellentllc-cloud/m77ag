@@ -547,13 +547,25 @@
                     <label>Number of Hunters</label>
                     <input type="number" id="numHunters" min="1" value="1" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Game Species (check all that apply)</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 15px 25px; margin-top: 10px;">
                         <label style="display: flex; align-items: center; font-weight: normal;">
-                            <input type="checkbox" id="deer" value="Deer" style="width: auto; margin-right: 8px;">
-                            Deer
+                            <input type="checkbox" id="muleDeerBuck" value="Mule Deer Buck" style="width: auto; margin-right: 8px;">
+                            Mule Deer Buck
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="muleDeerDoe" value="Mule Deer Doe" style="width: auto; margin-right: 8px;">
+                            Mule Deer Doe
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="whitetailBuck" value="Whitetail Deer Buck" style="width: auto; margin-right: 8px;">
+                            Whitetail Deer Buck
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="whitetailDoe" value="Whitetail Deer Doe" style="width: auto; margin-right: 8px;">
+                            Whitetail Deer Doe
                         </label>
                         <label style="display: flex; align-items: center; font-weight: normal;">
                             <input type="checkbox" id="pheasant" value="Pheasant" style="width: auto; margin-right: 8px;">
@@ -1267,6 +1279,346 @@
                 console.error('Error:', error);
                 alert('Error submitting request. Please call us at (970) 520-5167 or email hunting@m77ag.com');
             });
+        }
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-container">
+        <button id="chatbot-toggle" onclick="toggleChatbot()" aria-label="Chat with us">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span id="chatbot-badge">?</span>
+        </button>
+
+        <div id="chatbot-window" style="display: none;">
+            <div id="chatbot-header">
+                <h3>M77 AG Hunting Assistant</h3>
+                <button onclick="toggleChatbot()" aria-label="Close chat">&times;</button>
+            </div>
+            <div id="chatbot-body">
+                <div class="chatbot-message bot-message">
+                    <p>Hi! I'm here to answer common questions about hunting at M77 AG. Click any question below:</p>
+                </div>
+                <div id="chatbot-questions">
+                    <button class="chatbot-question" onclick="showAnswer('property-info')">Tell me more about the properties</button>
+                    <button class="chatbot-question" onclick="showAnswer('best-for-birds')">Which property is best for birds?</button>
+                    <button class="chatbot-question" onclick="showAnswer('stickers')">How many stickers/burrs are out there?</button>
+                    <button class="chatbot-question" onclick="showAnswer('pricing')">Is the price per day or per gun?</button>
+                    <button class="chatbot-question" onclick="showAnswer('dog-running')">Will my dog be able to run?</button>
+                    <button class="chatbot-question" onclick="showAnswer('group-hunt')">I have a group - where's the best place?</button>
+                    <button class="chatbot-question" onclick="showAnswer('parking')">Where can I park?</button>
+                    <button class="chatbot-question" onclick="showAnswer('campsites')">Can I see the camp sites?</button>
+                    <button class="chatbot-question" onclick="showAnswer('whats-included')">What's included in the price?</button>
+                    <button class="chatbot-question" onclick="showAnswer('bring-dog')">Can I bring my dog?</button>
+                    <button class="chatbot-question" onclick="showAnswer('game-species')">What game species are available?</button>
+                    <button class="chatbot-question" onclick="showAnswer('hunting-license')">Do I need a Colorado hunting license?</button>
+                    <button class="chatbot-question" onclick="showAnswer('camping')">Can I camp on the property?</button>
+                    <button class="chatbot-question" onclick="showAnswer('property-difference')">What's the difference between the two properties?</button>
+                    <button class="chatbot-question" onclick="showAnswer('directions')">How do I get to the property?</button>
+                    <button class="chatbot-question" onclick="showAnswer('facilities')">Are there bathrooms/facilities?</button>
+                    <button class="chatbot-question" onclick="showAnswer('scouting')">Can I scout before my hunt?</button>
+                    <button class="chatbot-question" onclick="showAnswer('cancellation')">What's your cancellation policy?</button>
+                </div>
+                <div id="chatbot-messages"></div>
+            </div>
+            <div id="chatbot-footer">
+                <p>Still have questions? <a href="mailto:hunting@m77ag.com">Email us</a> or call <a href="tel:9705205167">(970) 520-5167</a></p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        #chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #2d5016;
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        #chatbot-toggle:hover {
+            transform: scale(1.05);
+            background: #3d6016;
+        }
+
+        #chatbot-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #d4af37;
+            color: #2d5016;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            height: 600px;
+            max-height: calc(100vh - 120px);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chatbot-header {
+            background: #2d5016;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chatbot-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        #chatbot-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chatbot-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .chatbot-message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            max-width: 85%;
+        }
+
+        .bot-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .user-message {
+            background: #2d5016;
+            color: white;
+            margin-left: auto;
+        }
+
+        #chatbot-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .chatbot-question {
+            background: white;
+            border: 2px solid #2d5016;
+            color: #2d5016;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .chatbot-question:hover {
+            background: #2d5016;
+            color: white;
+        }
+
+        #chatbot-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 13px;
+            background: #f8f8f8;
+        }
+
+        #chatbot-footer a {
+            color: #2d5016;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        #chatbot-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            #chatbot-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 120px);
+                bottom: 80px;
+                right: 0;
+            }
+        }
+    </style>
+
+    <script>
+        const chatbotAnswers = {
+            'property-info': {
+                question: 'Tell me more about the properties',
+                answer: `We have two properties: <strong>Heritage Farm (1,160 acres)</strong> in Sedgwick County with rolling dunes, CRP fields, and shelterbelts - perfect for all-around hunting. <strong>Prairie Peace (1,550 acres)</strong> in Logan County is ideal for small groups of 3-4 hunters with diverse terrain including creek beds and turkey woods. Both properties offer excellent hunting for mule deer, pheasant, turkey, coyote, and prairie dogs.`
+            },
+            'best-for-birds': {
+                question: 'Which property is best for birds?',
+                answer: `<strong>Heritage Farm</strong> is better for birds, especially pheasants. It has more CRP grass, crop fields, and shelterbelt cover that birds love. Prairie Peace also has good bird hunting, particularly in the Creek Bed and Pheasant Run parcels, but Heritage Farm's 1,160 acres of diverse habitat give you more bird hunting opportunities.`
+            },
+            'stickers': {
+                question: 'How many stickers/burrs are out there?',
+                answer: `Due to abundant rain this season, <strong>crop ground areas have heavy sandburs and goat heads</strong>. However, our <strong>native grass areas are completely sticker-free</strong>! We strongly recommend staying in the native grass sections if your dogs aren't used to stickers. The native grass provides excellent hunting and your dogs will be safe and comfortable.`
+            },
+            'pricing': {
+                question: 'Is the price per day or per gun?',
+                answer: `<strong>$200/day PER PROPERTY</strong> - not per person! You can bring multiple hunters. Heritage Farm is $200/day, Prairie Peace is $200/day, or hunt BOTH properties for $300/day. You're paying for exclusive access to the entire property for the day, so bring your whole group!`
+            },
+            'dog-running': {
+                question: 'Will my dog be able to run?',
+                answer: `<strong>Yes, absolutely!</strong> Stick to the native grass areas which are sticker-free and your dog will love it. The native grass sections offer excellent cover and hunting. If your dog isn't used to running through stickers, avoid the crop ground areas this season. Most of our property is native grass, so you'll have plenty of room for your dogs to work.`
+            },
+            'group-hunt': {
+                question: 'I have a group - where\'s the best place?',
+                answer: `For larger groups (5+ hunters), <strong>Heritage Farm</strong> is your best bet with 1,160 acres and 5 distinct parcels. For smaller groups (3-4 hunters), <strong>Prairie Peace</strong> offers an intimate experience perfect for your size. Want the ultimate group experience? Book <strong>BOTH properties for $300/day</strong> and hunt all 2,710 acres!`
+            },
+            'parking': {
+                question: 'Where can I park?',
+                answer: `You can park at designated entrances on each parcel. After booking, you'll receive detailed maps showing GPS coordinates for each parcel entrance. Park along field edges - we have plenty of space. Your confirmation email includes turn-by-turn directions and exact parking locations.`
+            },
+            'campsites': {
+                question: 'Can I see the camp sites?',
+                answer: `<strong>Prairie Peace</strong> has a designated camping area (Parcel #3) with water and electric hookups! It's perfect for RVs or tent camping. Heritage Farm doesn't have formal camping facilities but you can camp on the property. Photos and GPS coordinates for the Prairie Peace campsite are included in your booking confirmation email.`
+            },
+            'whats-included': {
+                question: 'What\'s included in the price?',
+                answer: `Your daily rate includes: <strong>exclusive access to the entire property, all game species (deer, pheasant, turkey, coyote, prairie dogs), detailed maps with GPS coordinates, boundary markers, and email support</strong>. Optional camping at Prairie Peace adds $25/night for hookups. You provide your own hunting license, gear, and ammo.`
+            },
+            'bring-dog': {
+                question: 'Can I bring my dog?',
+                answer: `<strong>Yes, dogs are welcome!</strong> In fact, we encourage bird hunters to bring dogs. Just remember to stick to native grass areas this season to protect their paws from stickers. The native grass provides excellent cover for bird dogs to work.`
+            },
+            'game-species': {
+                question: 'What game species are available?',
+                answer: `We have excellent populations of: <strong>Mule Deer Bucks & Does (both properties), Whitetail Deer Bucks & Does (both properties), Pheasant (especially Heritage Farm), Turkey (Prairie Peace is fantastic), Coyote, Prairie Dogs, Dove, and occasional Antelope</strong>. Heritage Farm is in Big Game Unit 93, Prairie Peace is in Unit 98. Note: When booking, please select which deer species and sex you're targeting.`
+            },
+            'hunting-license': {
+                question: 'Do I need a Colorado hunting license?',
+                answer: `<strong>Yes, you must have a valid Colorado hunting license and any required tags</strong> for the species you're hunting. Purchase licenses at <a href="https://cpw.state.co.us" target="_blank">cpw.state.co.us</a>. We only provide the hunting land - you're responsible for all licenses and following Colorado hunting regulations.`
+            },
+            'camping': {
+                question: 'Can I camp on the property?',
+                answer: `<strong>Yes!</strong> Prairie Peace has a designated campsite (Parcel #3) with water and electric hookups for $25/night. Heritage Farm allows camping but doesn't have hookups. Most hunters camp at Prairie Peace and hunt both properties when they book the $300/day "Both Properties" option.`
+            },
+            'property-difference': {
+                question: 'What\'s the difference between the two properties?',
+                answer: `<strong>Heritage Farm (1,160 acres)</strong>: Best for larger groups, more birds, rolling dunes, CRP fields, 5 parcels, Sedgwick County, Unit 93. <strong>Prairie Peace (1,550 acres)</strong>: Best for 3-4 hunters, creek beds, turkey woods, camping with hookups, 7 parcels, Logan County, Unit 98. Both have deer, coyote, and prairie dogs!`
+            },
+            'directions': {
+                question: 'How do I get to the property?',
+                answer: `After booking, you'll receive a confirmation email with: <strong>turn-by-turn directions, GPS coordinates for each parcel, Google Maps links you can click for navigation, and downloadable KML files for Google Earth</strong>. We make it super easy to find! Generally, Heritage Farm is near Sedgwick, CO and Prairie Peace is south of Haxtun, CO.`
+            },
+            'facilities': {
+                question: 'Are there bathrooms/facilities?',
+                answer: `<strong>No permanent bathrooms</strong> - this is raw hunting land! Most hunters bring a portable toilet or use the great outdoors. Prairie Peace campsite has no bathroom but you can bring your RV with facilities. Plan accordingly and bring what you need!`
+            },
+            'scouting': {
+                question: 'Can I scout before my hunt?',
+                answer: `<strong>Contact us to arrange scouting</strong> at hunting@m77ag.com or (970) 520-5167. We can often accommodate scouting visits, especially if you're booking multiple days. We want you to be successful, so we're happy to work with you on pre-hunt scouting when possible.`
+            },
+            'cancellation': {
+                question: 'What\'s your cancellation policy?',
+                answer: `Please contact us at <strong>hunting@m77ag.com</strong> or <strong>(970) 520-5167</strong> if you need to cancel or reschedule. We understand weather and life happen! We work with you on a case-by-case basis and do our best to accommodate changes when possible.`
+            }
+        };
+
+        function toggleChatbot() {
+            const window = document.getElementById('chatbot-window');
+            const badge = document.getElementById('chatbot-badge');
+            if (window.style.display === 'none') {
+                window.style.display = 'flex';
+                badge.style.display = 'none';
+            } else {
+                window.style.display = 'none';
+                badge.style.display = 'flex';
+            }
+        }
+
+        function showAnswer(key) {
+            const answer = chatbotAnswers[key];
+            const messagesDiv = document.getElementById('chatbot-messages');
+            const questionsDiv = document.getElementById('chatbot-questions');
+
+            // Hide questions
+            questionsDiv.style.display = 'none';
+
+            // Show user question
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chatbot-message user-message';
+            userMsg.innerHTML = `<p>${answer.question}</p>`;
+            messagesDiv.appendChild(userMsg);
+
+            // Show bot answer
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chatbot-message bot-message';
+                botMsg.innerHTML = `<p>${answer.answer}</p>`;
+                messagesDiv.appendChild(botMsg);
+
+                // Scroll to bottom
+                document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
+
+                // Show back button
+                setTimeout(() => {
+                    const backBtn = document.createElement('button');
+                    backBtn.className = 'chatbot-question';
+                    backBtn.textContent = '← Back to questions';
+                    backBtn.onclick = () => {
+                        messagesDiv.innerHTML = '';
+                        questionsDiv.style.display = 'flex';
+                    };
+                    messagesDiv.appendChild(backBtn);
+                    document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
+                }, 500);
+            }, 300);
         }
     </script>
 </body>
