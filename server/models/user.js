@@ -110,8 +110,8 @@ async function createDefaultAdmin() {
       });
 
       await defaultAdmin.save();
-      console.log('✅ Default admin user created: admin@m77ag.com');
-      console.log('⚠️  Default password: M77ag2024!Admin (CHANGE THIS!)');
+      console.log('Default admin user created: admin@m77ag.com');
+      console.log('WARNING: Default password is M77ag2024!Admin - Change this immediately!');
     }
   } catch (error) {
     console.error('Error creating default admin:', error.message);

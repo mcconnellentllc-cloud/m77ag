@@ -157,7 +157,7 @@ function getHuntingConfirmationEmail(booking) {
     </div>
 
     <div class="warning-box">
-      <h3>⚠️ REQUIRED: All Hunters Must Sign Waiver</h3>
+      <h3>REQUIRED: All Hunters Must Sign Waiver</h3>
       <p><strong>EVERY hunter in your party MUST sign the liability waiver before hunting.</strong></p>
       <p><strong>You have ${booking.numberOfHunters || booking.numHunters} hunters booked.</strong> Each person needs to sign individually.</p>
       <p style="margin-top: 15px;"><strong>Share this link with your entire hunting party:</strong></p>
@@ -167,7 +167,7 @@ function getHuntingConfirmationEmail(booking) {
         Or they can sign manually and we'll match it to your booking by date.
       </p>
       <p style="margin-top: 15px; color: #721c24; font-weight: bold;">
-        ⚠️ No one will be allowed to hunt without a signed waiver.
+        WARNING: No one will be allowed to hunt without a signed waiver.
       </p>
     </div>
     
