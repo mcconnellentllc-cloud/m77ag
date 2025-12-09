@@ -207,70 +207,83 @@ const bookingController = {
   // Submit waiver for booking
   submitWaiver: async (req, res) => {
     try {
+      const Waiver = require('../models/waiver');
       const {
         bookingId,
-        participantName,
-        participantEmail,
-        participantPhone,
+        hunterName,
+        email,
+        phone,
+        huntDate,
+        property,
         vehicleMake,
         vehicleModel,
         vehicleColor,
-        signatureDate,
+        vehicleLicense,
         signature,
-        timestamp
+        signedAt,
+        userAgent
       } = req.body;
 
-      if (!bookingId) {
-        return res.status(400).json({
-          success: false,
-          message: 'Booking ID is required'
-        });
-      }
-
-      const booking = await Booking.findById(bookingId);
-      
-      if (!booking) {
-        return res.status(404).json({
-          success: false,
-          message: 'Booking not found'
-        });
-      }
-
-      booking.waiverSigned = true;
-      booking.waiverSignedDate = new Date(timestamp);
-      booking.waiverData = {
-        participantName,
-        participantEmail,
-        participantPhone,
+      // Create waiver document
+      const waiverData = {
+        bookingId: bookingId || null,
+        hunterName: hunterName || req.body.participantName,
+        email: email || req.body.participantEmail,
+        phone: phone || req.body.participantPhone,
+        huntDate: huntDate ? new Date(huntDate) : new Date(),
+        property: property || 'Prairie Peace',
         vehicleMake,
         vehicleModel,
         vehicleColor,
-        signatureDate: new Date(signatureDate),
-        signatureImage: signature,
+        vehicleLicense,
+        signature,
+        signedAt: signedAt ? new Date(signedAt) : new Date(),
         ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.headers['user-agent'],
-        timestamp: new Date(timestamp)
+        userAgent: userAgent || req.headers['user-agent']
       };
 
-      await booking.save();
+      const waiver = new Waiver(waiverData);
+      await waiver.save();
 
-      try {
-        await sendWaiverConfirmation(booking);
-        console.log('Waiver confirmation emails sent successfully');
-      } catch (emailError) {
-        console.error('Failed to send waiver confirmation email:', emailError);
+      // If bookingId provided, update the booking
+      let booking = null;
+      if (bookingId) {
+        booking = await Booking.findById(bookingId);
+
+        if (booking) {
+          booking.waiverSigned = true;
+          booking.waiverSignedDate = waiver.signedAt;
+          booking.vehicleMake = vehicleMake || booking.vehicleMake;
+          booking.vehicleModel = vehicleModel || booking.vehicleModel;
+          booking.vehicleColor = vehicleColor || booking.vehicleColor;
+          booking.vehicleLicense = vehicleLicense || booking.vehicleLicense;
+          await booking.save();
+
+          // Send waiver confirmation email if booking exists
+          try {
+            await sendWaiverConfirmation(booking);
+            console.log('Waiver confirmation emails sent successfully');
+          } catch (emailError) {
+            console.error('Failed to send waiver confirmation email:', emailError);
+          }
+        }
       }
 
       res.json({
         success: true,
         message: 'Waiver submitted successfully',
-        booking: {
+        waiver: {
+          _id: waiver._id,
+          hunterName: waiver.hunterName,
+          huntDate: waiver.huntDate,
+          property: waiver.property,
+          status: waiver.status
+        },
+        booking: booking ? {
           _id: booking._id,
           parcel: booking.parcel,
-          waiverSigned: booking.waiverSigned,
-          customerName: booking.customerName,
-          email: booking.email
-        }
+          waiverSigned: booking.waiverSigned
+        } : null
       });
     } catch (error) {
       console.error('Error submitting waiver:', error);

@@ -11,13 +11,15 @@ function getWaiverConfirmationEmail(booking) {
   const propertyLocation = booking.parcel === 'Both Properties' ? 'Sedgwick & Logan Counties, Colorado'
     : (booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick County, Colorado'
     : 'Logan County, Colorado (South of Haxtun)';
-  
+
   const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
+
+  const emergencyContact = '970-571-1015';
 
   return `
 <!DOCTYPE html>
@@ -164,9 +166,9 @@ function getWaiverConfirmationEmail(booking) {
     ` : ''}
 
     <div class="emergency">
-      <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - CALL IMMEDIATELY:</p>
-      <p style="margin: 0; font-size: 24px; font-weight: bold;">Kyle McConnell: 970-571-1015</p>
-      <p style="margin: 10px 0 0 0; font-size: 14px;">Do not retrieve downed game without calling. No answer does NOT mean permission to proceed.</p>
+      <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - EMAIL IMMEDIATELY:</p>
+      <p style="margin: 0; font-size: 20px; font-weight: bold;">hunting@m77ag.com</p>
+      <p style="margin: 10px 0 0 0; font-size: 14px;">Emergency contact: ${emergencyContact} (provided below)</p>
     </div>
     
     <div style="border-top: 2px solid #ddd; margin-top: 25px; padding-top: 20px; text-align: center;">
@@ -362,10 +364,10 @@ function getWaiverConfirmationEmail(booking) {
       
       <div style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 15px 0;">
         <p style="margin: 0 0 10px 0; font-weight: bold; color: #856404; font-size: 16px;">DOWNED GAME PROTOCOL - MANDATORY</p>
-        <p style="margin: 0 0 5px 0; color: #856404; font-size: 18px;"><strong>Kyle McConnell: 970-571-1015</strong></p>
+        <p style="margin: 0 0 5px 0; color: #856404; font-size: 18px;"><strong>Email: hunting@m77ag.com</strong></p>
         <p style="margin: 0; color: #856404;">
-          Call IMMEDIATELY when game is down. Do not pursue onto neighboring properties without 
-          explicit permission coordinated through Kyle. NO ANSWER DOES NOT MEAN PERMISSION.
+          Email IMMEDIATELY when game is down. Do not pursue onto neighboring properties without
+          explicit permission. Emergency contact: ${emergencyContact}.
           Unauthorized retrieval is criminal trespassing.
         </p>
       </div>
@@ -431,7 +433,7 @@ function getWaiverConfirmationEmail(booking) {
         <li>Respect livestock and farm equipment - do not disturb</li>
         <li>Obey all Colorado Parks & Wildlife regulations</li>
         <li>Hunt safely and ethically at all times</li>
-        <li>Report any issues to Kyle immediately: 970-571-1015</li>
+        <li>Report any issues to hunting@m77ag.com immediately</li>
       </ul>
       
       <h4 style="color: #2c5530; margin-top: 25px;">How to View Property Boundaries - DETAILED INSTRUCTIONS:</h4>
@@ -487,11 +489,10 @@ function getWaiverConfirmationEmail(booking) {
   
   <!-- CONTACT & FOOTER -->
   <div class="no-print" style="border-top: 3px solid #2c5530; margin-top: 40px; padding-top: 20px; text-align: center;">
-    <h3 style="color: #2c5530;">Questions or Emergency Contact</h3>
-    <p><strong>Kyle McConnell</strong></p>
-    <p>Cell: <strong>970-571-1015</strong> (Downed game & emergencies)</p>
-    <p>Office: 970-774-3276</p>
-    <p>Email: hunting@m77ag.com</p>
+    <h3 style="color: #2c5530;">Questions or Contact</h3>
+    <p><strong>M77 AG Hunting</strong></p>
+    <p>Email: <strong>hunting@m77ag.com</strong></p>
+    <p>Emergency Contact: ${emergencyContact}</p>
     <p style="margin-top: 20px; font-size: 14px; color: #666;">
       M77 AG | McConnell Enterprises LLC<br>
       Four Generations of Agricultural Excellence<br>

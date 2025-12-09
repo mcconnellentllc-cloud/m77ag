@@ -93,4 +93,30 @@ userSchema.methods.toJSON = function() {
 
 const User = mongoose.model('User', userSchema);
 
+// Create default admin user if none exists
+async function createDefaultAdmin() {
+  try {
+    const adminExists = await User.findOne({ role: 'admin' });
+
+    if (!adminExists) {
+      const defaultAdmin = new User({
+        name: 'M77 AG Admin',
+        email: 'admin@m77ag.com',
+        phone: '970-571-1015',
+        password: 'M77ag2024!Admin', // Change this after first login!
+        role: 'admin',
+        emailVerified: true,
+        isActive: true
+      });
+
+      await defaultAdmin.save();
+      console.log('✅ Default admin user created: admin@m77ag.com');
+      console.log('⚠️  Default password: M77ag2024!Admin (CHANGE THIS!)');
+    }
+  } catch (error) {
+    console.error('Error creating default admin:', error.message);
+  }
+}
+
 module.exports = User;
+module.exports.createDefaultAdmin = createDefaultAdmin;
