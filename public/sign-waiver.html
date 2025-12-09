@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Hunting Waiver - M77 AG</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f3f0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2d5016;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2d5016;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .lookup-section {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .lookup-section h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-id-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .booking-id-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #4caf50;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-lookup {
+            padding: 12px 30px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-lookup:hover {
+            background: #45a049;
+        }
+
+        .manual-entry {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .manual-entry h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .waiver-content {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+        }
+
+        .waiver-content h3 {
+            color: #2d5016;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group {
+            margin: 20px 0;
+        }
+
+        .checkbox-item {
+            margin: 15px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .signature-section {
+            background: #f8f6f3;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background: #3d6520;
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2d5016;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦌 M77 AG Hunting Liability Waiver</h1>
+            <p>Required for all hunters before accessing the property</p>
+        </div>
+
+        <!-- Booking ID Lookup Section -->
+        <div class="lookup-section">
+            <h3>✅ Have a Booking ID? Auto-fill your information:</h3>
+            <div class="booking-id-input">
+                <input
+                    type="text"
+                    id="bookingIdInput"
+                    placeholder="Enter your Booking ID (e.g., ABC12345)"
+                    style="text-transform: uppercase;">
+                <button class="btn-lookup" onclick="lookupBooking()">Load My Info</button>
+            </div>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                Your Booking ID was sent in your confirmation email. It's an 8-character code.
+            </p>
+        </div>
+
+        <!-- Manual Entry Section -->
+        <div class="manual-entry">
+            <h3>📝 Don't have a Booking ID?</h3>
+            <p>No problem! Fill out the form below manually. Your waiver will be matched to your booking by date.</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error" id="errorDiv"></div>
+
+        <!-- Loading Spinner -->
+        <div class="loading" id="loadingDiv">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Waiver Form -->
+        <form id="waiverForm" onsubmit="submitWaiver(event)">
+            <input type="hidden" id="bookingId" name="bookingId" value="">
+
+            <div class="form-group">
+                <label for="hunterName">Full Legal Name *</label>
+                <input type="text" id="hunterName" name="hunterName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="huntDate">Hunt Date *</label>
+                <input type="date" id="huntDate" name="huntDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="property">Property *</label>
+                <select id="property" name="property" required>
+                    <option value="">Select Property</option>
+                    <option value="Heritage Farm">Heritage Farm</option>
+                    <option value="Prairie Peace">Prairie Peace</option>
+                    <option value="Both Properties">Both Properties</option>
+                </select>
+            </div>
+
+            <div class="info-box" id="bookingInfo" style="display: none;">
+                <strong>✓ Booking Information Loaded</strong>
+                <p id="bookingDetails"></p>
+            </div>
+
+            <!-- Waiver Content -->
+            <div class="waiver-content">
+                <h3>LIABILITY WAIVER AND RELEASE AGREEMENT</h3>
+
+                <p><strong>READ CAREFULLY BEFORE SIGNING</strong></p>
+
+                <p>This is a binding legal agreement. By signing this waiver, I acknowledge and agree to the following terms:</p>
+
+                <h3>1. ASSUMPTION OF RISK</h3>
+                <p>I understand that hunting and outdoor activities involve inherent and significant risks of serious injury or death, including but not limited to:</p>
+                <ul>
+                    <li>Firearm accidents and discharge</li>
+                    <li>Tree stand falls and equipment failure</li>
+                    <li>Severe weather exposure (heat, cold, lightning)</li>
+                    <li>Wildlife encounters and attacks</li>
+                    <li>Vehicle accidents on rural roads</li>
+                    <li>Agricultural hazards (machinery, chemicals, livestock)</li>
+                    <li>Terrain hazards (holes, ditches, fences, water)</li>
+                    <li>Medical emergencies in remote areas</li>
+                </ul>
+
+                <h3>2. RELEASE OF LIABILITY</h3>
+                <p>I hereby RELEASE, WAIVE, DISCHARGE, and COVENANT NOT TO SUE M77 AG, McConnell Enterprises LLC, Kyle McConnell, their officers, employees, agents, and landowners (collectively "Released Parties") from any and all liability, claims, demands, actions, and causes of action whatsoever arising out of or related to any loss, damage, or injury, including death, that may be sustained by me while participating in hunting activities on the property.</p>
+
+                <h3>3. INDEMNIFICATION</h3>
+                <p>I agree to INDEMNIFY and HOLD HARMLESS the Released Parties from any loss, liability, damage, or costs, including court costs and attorney's fees, that may occur as a result of my participation in hunting activities on the property, whether caused by negligence of the Released Parties or otherwise.</p>
+
+                <h3>4. PROPERTY RULES & COMPLIANCE</h3>
+                <p>I agree to:</p>
+                <ul>
+                    <li>Obey all Colorado hunting laws and regulations</li>
+                    <li>Possess valid Colorado hunting licenses and appropriate tags</li>
+                    <li>Stay within designated property boundaries at all times</li>
+                    <li>Follow all safety rules and property guidelines</li>
+                    <li>Respect neighboring properties and landowner relationships</li>
+                    <li>Pack out all trash, spent shells, and equipment</li>
+                </ul>
+
+                <h3>5. FIREARMS SAFETY</h3>
+                <p>I certify that I am:</p>
+                <ul>
+                    <li>Legally permitted to possess firearms</li>
+                    <li>Trained and experienced in safe firearm handling</li>
+                    <li>Mentally and physically capable of safely hunting</li>
+                    <li>Not under the influence of alcohol or drugs</li>
+                    <li>Aware of my shooting lanes and backstops</li>
+                </ul>
+
+                <h3>6. DOWNED GAME RETRIEVAL</h3>
+                <p>I understand that if wounded or downed game crosses property lines, I MUST:</p>
+                <ul>
+                    <li>Immediately cease pursuit</li>
+                    <li>Contact M77 AG at hunting@m77ag.com before proceeding (emergency contact in booking confirmation)</li>
+                    <li>Wait for authorization before entering neighboring property</li>
+                    <li>Follow all directions provided by property management</li>
+                </ul>
+                <p>I understand that unauthorized pursuit onto neighboring property will result in immediate termination of my hunting privileges with no refund and may result in criminal trespassing charges.</p>
+
+                <h3>7. MEDICAL & EMERGENCY</h3>
+                <p>I understand that:</p>
+                <ul>
+                    <li>Cell phone service may be limited or unavailable</li>
+                    <li>Emergency medical services may be delayed</li>
+                    <li>I am responsible for my own first aid and emergency supplies</li>
+                    <li>I have disclosed all relevant medical conditions to my hunting party</li>
+                </ul>
+
+                <h3>8. WORKING FARM HAZARDS</h3>
+                <p>I acknowledge this is an active agricultural operation with inherent hazards including farm equipment, livestock, irrigation systems, chemicals, and other agricultural activities. I assume all risks associated with entering a working farm environment.</p>
+
+                <h3>9. SEVERABILITY</h3>
+                <p>If any portion of this agreement is found to be void or unenforceable, the remaining portions shall remain in full force and effect.</p>
+
+                <h3>10. GOVERNING LAW</h3>
+                <p>This agreement shall be governed by the laws of the State of Colorado, and any disputes shall be resolved in the courts of Logan or Sedgwick County, Colorado.</p>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="warning-box">
+                <h3>🦌 DOWNED GAME PROTOCOL</h3>
+                <p><strong>IF GAME CROSSES PROPERTY LINES:</strong></p>
+                <p>You MUST immediately email hunting@m77ag.com before pursuing or retrieving any downed game that has crossed onto neighboring property. Emergency contact information will be provided in your booking confirmation.</p>
+                <p>Failure to follow this protocol may result in trespassing charges and termination of hunting privileges.</p>
+            </div>
+
+            <!-- Acknowledgment Checkboxes -->
+            <div class="checkbox-group">
+                <h3>Required Acknowledgments:</h3>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check1" required>
+                    <label for="check1">I have read and understand this entire waiver and release agreement</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check2" required>
+                    <label for="check2">I understand I am giving up substantial legal rights by signing this waiver</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check3" required>
+                    <label for="check3">I am signing this waiver voluntarily and of my own free will</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check4" required>
+                    <label for="check4">I am at least 18 years of age and legally competent to sign this agreement</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check5" required>
+                    <label for="check5">I agree to follow all property rules, safety guidelines, and Colorado hunting regulations</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check6" required>
+                    <label for="check6">I understand the downed game protocol and will contact M77 AG (hunting@m77ag.com) if downed game goes outside of property controlled by M77 AG</label>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" id="check7" required>
+                    <label for="check7">I understand this is an active working farm with machinery, livestock, and agricultural hazards</label>
+                </div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section">
+                <div class="form-group">
+                    <label for="signature">Electronic Signature (Type your full name) *</label>
+                    <input type="text" id="signature" name="signature" required
+                           placeholder="Type your full legal name as your signature">
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Signature: <strong id="currentDate"></strong></label>
+                </div>
+
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    By typing your name above, you are creating a legally binding electronic signature
+                    equivalent to a handwritten signature.
+                </p>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitButton">
+                SUBMIT WAIVER & AGREE TO TERMS
+            </button>
+        </form>
+
+        <!-- Success Message -->
+        <div class="success" id="successDiv">
+            <h2>✅ Waiver Signed Successfully!</h2>
+            <p id="successMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        // Display current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Check for bookingId in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlBookingId = urlParams.get('bookingId');
+        if (urlBookingId) {
+            document.getElementById('bookingIdInput').value = urlBookingId;
+            lookupBooking();
+        }
+
+        // Lookup booking by ID
+        async function lookupBooking() {
+            const bookingId = document.getElementById('bookingIdInput').value.trim();
+
+            if (!bookingId) {
+                showError('Please enter a Booking ID');
+                return;
+            }
+
+            const loadingDiv = document.getElementById('loadingDiv');
+            const errorDiv = document.getElementById('errorDiv');
+
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/hunting/booking-info/${bookingId}`);
+                const data = await response.json();
+
+                if (data.success && data.booking) {
+                    // Auto-fill form with booking data
+                    document.getElementById('bookingId').value = data.booking._id;
+                    document.getElementById('hunterName').value = data.booking.customerName || '';
+                    document.getElementById('email').value = data.booking.email || '';
+                    document.getElementById('phone').value = data.booking.phone || '';
+
+                    if (data.booking.checkinDate) {
+                        const date = new Date(data.booking.checkinDate);
+                        document.getElementById('huntDate').value = date.toISOString().split('T')[0];
+                    }
+
+                    const property = data.booking.property || data.booking.parcel;
+                    if (property) {
+                        const propertySelect = document.getElementById('property');
+                        const formattedProperty = property === 'heritage-farm' ? 'Heritage Farm' :
+                                                 property === 'prairie-peace' ? 'Prairie Peace' : property;
+                        propertySelect.value = formattedProperty;
+                    }
+
+                    // Show booking info
+                    document.getElementById('bookingInfo').style.display = 'block';
+                    document.getElementById('bookingDetails').innerHTML = `
+                        Booking ID: <strong>${bookingId.slice(-8).toUpperCase()}</strong><br>
+                        Hunter: <strong>${data.booking.customerName}</strong><br>
+                        Property: <strong>${property}</strong><br>
+                        Date: <strong>${new Date(data.booking.checkinDate).toLocaleDateString()}</strong>
+                    `;
+
+                    // Scroll to form
+                    document.getElementById('hunterName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    showError('Booking ID not found. Please check your confirmation email or fill out the form manually.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error loading booking information. Please fill out the form manually.');
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Submit waiver
+        async function submitWaiver(event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submitButton');
+            const errorDiv = document.getElementById('errorDiv');
+            const loadingDiv = document.getElementById('loadingDiv');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'SUBMITTING...';
+            errorDiv.style.display = 'none';
+
+            const formData = {
+                bookingId: document.getElementById('bookingId').value || null,
+                hunterName: document.getElementById('hunterName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                huntDate: document.getElementById('huntDate').value,
+                property: document.getElementById('property').value,
+                signature: document.getElementById('signature').value,
+                signedAt: new Date().toISOString(),
+                ipAddress: null, // Could add IP tracking if needed
+                userAgent: navigator.userAgent
+            };
+
+            try {
+                const response = await fetch('/api/hunting/submit-waiver', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Hide form, show success
+                    document.getElementById('waiverForm').style.display = 'none';
+                    document.querySelector('.lookup-section').style.display = 'none';
+                    document.querySelector('.manual-entry').style.display = 'none';
+
+                    const successDiv = document.getElementById('successDiv');
+                    successDiv.style.display = 'block';
+                    document.getElementById('successMessage').innerHTML = `
+                        <p style="font-size: 18px; margin: 15px 0;">Thank you, <strong>${formData.hunterName}</strong>!</p>
+                        <p>Your waiver has been recorded and will be matched to your booking.</p>
+                        <p style="margin-top: 20px;">You will receive a confirmation email shortly with:</p>
+                        <ul style="text-align: left; display: inline-block; margin: 15px auto;">
+                            <li>Property maps and boundaries</li>
+                            <li>Vehicle dash card (print and display)</li>
+                            <li>Emergency contact information</li>
+                            <li>Important hunting rules</li>
+                        </ul>
+                        <p style="margin-top: 20px;"><strong>Safe hunting!</strong></p>
+                    `;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    showError(result.message || 'Failed to submit waiver. Please try again.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'SUBMIT WAIVER & AGREE TO TERMS';
+                }
+            } catch (error) {
+                console.error('Waiver submission error:', error);
+                showError('An error occurred while submitting the waiver. Please try again or contact us at hunting@m77ag.com.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'SUBMIT WAIVER & AGREE TO TERMS';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorDiv');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>
