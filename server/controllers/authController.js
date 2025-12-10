@@ -125,11 +125,44 @@ const authController = {
     }
   },
 
+  // Verify token
+  verifyToken: async (req, res) => {
+    try {
+      // Token is already verified by authenticate middleware
+      // Just return success with user info
+      const user = await User.findById(req.user.id).select('-password');
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Token is valid',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } catch (error) {
+      console.error('Verify token error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to verify token'
+      });
+    }
+  },
+
   // Get current user
   getCurrentUser: async (req, res) => {
     try {
       const user = await User.findById(req.user.id).select('-password');
-      
+
       if (!user) {
         return res.status(404).json({
           success: false,

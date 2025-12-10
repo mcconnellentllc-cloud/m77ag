@@ -17,5 +17,6 @@ router.get('/bookings/:id', authenticate, isAdmin, bookingController.getBookingB
 router.put('/bookings/:id', authenticate, isAdmin, bookingController.updateBooking);
 router.delete('/bookings/:id', authenticate, isAdmin, bookingController.cancelBooking);
 router.post('/bookings/:id/resend-confirmation', authenticate, isAdmin, bookingController.resendConfirmation);
+router.post('/bookings/:id/send-waiver-reminder', authenticate, isAdmin, bookingController.sendWaiverReminder);
 
 module.exports = router;

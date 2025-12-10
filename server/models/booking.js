@@ -104,6 +104,12 @@ const bookingSchema = new mongoose.Schema({
   },
   waiverSignedDate: Date,
 
+  // Paw App Signup
+  pawAppSignup: {
+    type: Boolean,
+    default: false
+  },
+
   // Additional Notes
   notes: String,
   adminNotes: String,

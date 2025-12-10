@@ -609,6 +609,58 @@ const bookingController = {
     }
   },
 
+  // Send waiver reminder email
+  sendWaiverReminder: async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: 'Booking not found'
+        });
+      }
+
+      // Import waiver reminder email template
+      const { getWaiverReminderEmail } = require('../email-templates/waiver-reminder-email');
+      const nodemailer = require('nodemailer');
+
+      // Create transporter
+      const transporter = nodemailer.createTransporter({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER || 'hunting@m77ag.com',
+          pass: process.env.EMAIL_PASS
+        }
+      });
+
+      // Generate email HTML from template
+      const emailHTML = getWaiverReminderEmail(booking);
+
+      // Send email to customer
+      await transporter.sendMail({
+        from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
+        replyTo: 'hunting@m77ag.com',
+        to: booking.email,
+        subject: '⚠️ WAIVER REMINDER - Action Required for Your M77 AG Hunting Reservation',
+        html: emailHTML
+      });
+
+      console.log('Waiver reminder email sent to:', booking.email);
+
+      res.json({
+        success: true,
+        message: 'Waiver reminder email sent successfully'
+      });
+    } catch (error) {
+      console.error('Error sending waiver reminder:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send waiver reminder email'
+      });
+    }
+  },
+
   // Submit game rest request
   submitGameRestRequest: async (req, res) => {
     try {
