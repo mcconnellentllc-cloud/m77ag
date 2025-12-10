@@ -8,10 +8,10 @@ const JWT_EXPIRES_IN = '7d';
 // Generate JWT token
 function generateToken(user) {
   return jwt.sign(
-    { 
-      id: user._id, 
-      email: user.email, 
-      role: user.role 
+    {
+      userId: user._id,
+      email: user.email,
+      role: user.role
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
@@ -130,7 +130,7 @@ const authController = {
     try {
       // Token is already verified by authenticate middleware
       // Just return success with user info
-      const user = await User.findById(req.user.id).select('-password');
+      const user = await User.findById(req.userId).select('-password');
 
       if (!user) {
         return res.status(404).json({
@@ -161,7 +161,7 @@ const authController = {
   // Get current user
   getCurrentUser: async (req, res) => {
     try {
-      const user = await User.findById(req.user.id).select('-password');
+      const user = await User.findById(req.userId).select('-password');
 
       if (!user) {
         return res.status(404).json({
@@ -188,7 +188,7 @@ const authController = {
     try {
       const { name, phone, address, huntingLicense, emergencyContact } = req.body;
 
-      const user = await User.findById(req.user.id);
+      const user = await User.findById(req.userId);
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -224,7 +224,7 @@ const authController = {
     try {
       const { currentPassword, newPassword } = req.body;
 
-      const user = await User.findById(req.user.id);
+      const user = await User.findById(req.userId);
       if (!user) {
         return res.status(404).json({
           success: false,
