@@ -98,9 +98,11 @@ const authController = {
         });
       }
 
-      // Update last login
-      user.lastLogin = new Date();
-      await user.save();
+      // Update last login (bypass validation to avoid issues with incomplete profiles)
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { lastLogin: new Date() } }
+      );
 
       // Generate token
       const token = generateToken(user);
