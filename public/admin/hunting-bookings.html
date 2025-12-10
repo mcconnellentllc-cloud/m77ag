@@ -711,27 +711,41 @@
         async function loadBookings() {
             try {
                 const token = localStorage.getItem('adminToken');
+                console.log('Loading bookings with token:', token ? 'Token exists' : 'No token');
+
                 const response = await fetch('/api/hunting/bookings', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
+                console.log('Response status:', response.status);
+
                 if (!response.ok) {
-                    throw new Error('Failed to load bookings');
+                    const errorData = await response.json();
+                    console.error('API Error:', errorData);
+                    throw new Error(errorData.message || 'Failed to load bookings');
                 }
 
                 const data = await response.json();
+                console.log('Bookings data:', data);
+
                 if (data.success) {
-                    allBookings = data.bookings;
+                    allBookings = data.bookings || [];
+                    console.log('Loaded bookings count:', allBookings.length);
                     updateStats();
                     renderBookings(allBookings);
                 } else {
-                    showError('Failed to load bookings');
+                    showError('Failed to load bookings: ' + (data.message || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error loading bookings:', error);
-                showError('Error loading bookings');
+                showError('Error loading bookings: ' + error.message);
+
+                // Still render empty table to show "No bookings found" instead of "Loading..."
+                allBookings = [];
+                updateStats();
+                renderBookings(allBookings);
             }
         }
 
