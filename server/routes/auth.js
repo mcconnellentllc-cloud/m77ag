@@ -16,7 +16,9 @@ router.get('/setup-admin', async (req, res) => {
     let admin = await User.findOne({ email: 'admin@m77ag.com' });
 
     if (admin) {
-      // Reset the password
+      // Reset the password and required fields
+      admin.name = 'M77 AG Admin';
+      admin.phone = '970-571-1015';
       admin.password = 'M77ag2024!Admin';
       admin.role = 'admin';
       admin.isActive = true;
