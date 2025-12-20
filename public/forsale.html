@@ -1251,35 +1251,178 @@
         }
 
         function acceptOffer(amount) {
-            const priceBox = document.querySelector('.price-box');
-            priceBox.classList.add('offer-accepted');
-            document.getElementById('itemPrice').textContent = '$' + amount.toLocaleString();
-            document.querySelector('.price-label').textContent = 'ACCEPTED PRICE';
-
-            // Disable further offers
-            document.getElementById('offerBtn').disabled = true;
-            document.getElementById('offerInput').disabled = true;
-            document.getElementById('buyNowBtn').textContent = 'SOLD!';
-            document.getElementById('buyNowBtn').disabled = true;
-
-            // Save to localStorage for admin
-            saveOfferToStorage(amount);
-
-            // Confetti!
-            createConfetti();
+            // Show buyer info form before finalizing
+            showBuyerInfoForm(amount);
         }
 
-        function saveOfferToStorage(amount) {
-            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
-            offers.push({
-                itemId: currentItem.id,
-                itemTitle: currentItem.title,
-                originalPrice: currentItem.buyNowPrice,
-                acceptedPrice: amount,
-                timestamp: new Date().toISOString(),
-                status: 'pending'
+        function showBuyerInfoForm(amount) {
+            const formHtml = `
+                <div class="buyer-form-overlay" id="buyerFormOverlay">
+                    <div class="buyer-form-modal">
+                        <h3>Complete Your Purchase</h3>
+                        <p>Offer accepted at <strong>$${amount.toLocaleString()}</strong>! Please provide your contact info:</p>
+                        <form id="buyerInfoForm">
+                            <input type="text" id="buyerName" placeholder="Your Name *" required>
+                            <input type="email" id="buyerEmail" placeholder="Email Address *" required>
+                            <input type="tel" id="buyerPhone" placeholder="Phone Number">
+                            <button type="submit" class="submit-buyer-btn">COMPLETE PURCHASE</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            // Add form styles if not already present
+            if (!document.getElementById('buyerFormStyles')) {
+                const styles = document.createElement('style');
+                styles.id = 'buyerFormStyles';
+                styles.textContent = `
+                    .buyer-form-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0,0,0,0.8);
+                        z-index: 3000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .buyer-form-modal {
+                        background: #fff;
+                        padding: 40px;
+                        border-radius: 12px;
+                        max-width: 400px;
+                        width: 90%;
+                        text-align: center;
+                    }
+                    .buyer-form-modal h3 {
+                        font-family: 'Oswald', sans-serif;
+                        font-size: 28px;
+                        color: #2d5016;
+                        margin-bottom: 15px;
+                    }
+                    .buyer-form-modal p {
+                        color: #666;
+                        margin-bottom: 25px;
+                    }
+                    .buyer-form-modal input {
+                        width: 100%;
+                        padding: 15px;
+                        margin-bottom: 15px;
+                        border: 2px solid #ddd;
+                        border-radius: 6px;
+                        font-size: 16px;
+                    }
+                    .buyer-form-modal input:focus {
+                        outline: none;
+                        border-color: #d4af37;
+                    }
+                    .submit-buyer-btn {
+                        width: 100%;
+                        padding: 18px;
+                        background: #2d5016;
+                        color: #fff;
+                        border: none;
+                        border-radius: 6px;
+                        font-family: 'Oswald', sans-serif;
+                        font-size: 18px;
+                        cursor: pointer;
+                        transition: background 0.3s;
+                    }
+                    .submit-buyer-btn:hover {
+                        background: #3d6520;
+                    }
+                `;
+                document.head.appendChild(styles);
+            }
+
+            document.body.insertAdjacentHTML('beforeend', formHtml);
+
+            document.getElementById('buyerInfoForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const buyerInfo = {
+                    name: document.getElementById('buyerName').value,
+                    email: document.getElementById('buyerEmail').value,
+                    phone: document.getElementById('buyerPhone').value
+                };
+
+                // Remove form
+                document.getElementById('buyerFormOverlay').remove();
+
+                // Save to database
+                await saveOfferToDatabase(amount, buyerInfo);
+
+                // Update UI
+                const priceBox = document.querySelector('.price-box');
+                priceBox.classList.add('offer-accepted');
+                document.getElementById('itemPrice').textContent = '$' + amount.toLocaleString();
+                document.querySelector('.price-label').textContent = 'ACCEPTED PRICE';
+
+                // Disable further offers
+                document.getElementById('offerBtn').disabled = true;
+                document.getElementById('offerInput').disabled = true;
+                document.getElementById('buyNowBtn').textContent = 'SOLD!';
+                document.getElementById('buyNowBtn').disabled = true;
+
+                // Add confirmation message
+                addChatMessage('bot', `Thank you ${buyerInfo.name}! Your purchase is confirmed. We'll contact you at ${buyerInfo.email} with pickup details.`);
+
+                // Confetti!
+                createConfetti();
             });
-            localStorage.setItem('m77ag_offers', JSON.stringify(offers));
+        }
+
+        async function saveOfferToDatabase(amount, buyerInfo) {
+            try {
+                // Get UTM source from URL if present
+                const params = new URLSearchParams(window.location.search);
+                const utmSource = params.get('utm_source') || '';
+
+                const response = await fetch('/api/equipment/offers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        equipmentId: currentItem.id,
+                        equipmentTitle: currentItem.title,
+                        buyerName: buyerInfo.name,
+                        buyerEmail: buyerInfo.email,
+                        buyerPhone: buyerInfo.phone,
+                        listPrice: currentItem.buyNowPrice,
+                        offerAmount: amount,
+                        utmSource: utmSource
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Offer saved:', data.offerId);
+                    // Accept the offer in the database
+                    await fetch(`/api/equipment/offers/${data.offerId}/accept`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ finalPrice: amount })
+                    });
+                }
+                return data;
+            } catch (error) {
+                console.error('Error saving offer:', error);
+                // Fallback to localStorage if API fails
+                const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
+                offers.push({
+                    itemId: currentItem.id,
+                    itemTitle: currentItem.title,
+                    originalPrice: currentItem.buyNowPrice,
+                    acceptedPrice: amount,
+                    buyerInfo: buyerInfo,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                });
+                localStorage.setItem('m77ag_offers', JSON.stringify(offers));
+            }
         }
 
         function createConfetti() {
