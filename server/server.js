@@ -156,6 +156,10 @@ app.get('/hunting-liability-waiver', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting-liability-waiver.html'));
 });
 
+app.get('/forsale', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/forsale.html'));
+});
+
 // Main route - must come last among GET routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
