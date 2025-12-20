@@ -1367,7 +1367,10 @@
                 document.getElementById('buyNowBtn').disabled = true;
 
                 // Add confirmation message
-                addChatMessage('bot', `Thank you ${buyerInfo.name}! Your purchase is confirmed. We'll contact you at ${buyerInfo.email} with pickup details.`);
+                addChatMessage('bot', `Thank you ${buyerInfo.name}! Your offer has been accepted! Check below for payment details.`);
+
+                // Show payment confirmation banner
+                showPaymentConfirmationBanner(amount, buyerInfo);
 
                 // Confetti!
                 createConfetti();
@@ -1456,12 +1459,149 @@
             }
         }
 
+        function showPaymentConfirmationBanner(amount, buyerInfo) {
+            const bannerHtml = `
+                <div id="paymentConfirmationOverlay" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.85);
+                    z-index: 4000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                ">
+                    <div style="
+                        background: white;
+                        border-radius: 15px;
+                        max-width: 600px;
+                        width: 100%;
+                        overflow: hidden;
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+                    ">
+                        <div style="
+                            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+                            color: white;
+                            padding: 30px;
+                            text-align: center;
+                        ">
+                            <div style="font-size: 48px; margin-bottom: 10px;">&#10003;</div>
+                            <h2 style="margin: 0; font-size: 28px; font-weight: 700;">Offer Accepted!</h2>
+                            <p style="margin: 10px 0 0; font-size: 18px; opacity: 0.9;">Your offer of $${amount.toLocaleString()} has been accepted</p>
+                        </div>
+
+                        <div style="padding: 30px;">
+                            <div style="
+                                background: #fff8e1;
+                                border: 2px solid #d4af37;
+                                border-radius: 10px;
+                                padding: 20px;
+                                margin-bottom: 25px;
+                                text-align: center;
+                            ">
+                                <p style="margin: 0; font-size: 16px; color: #1a1a1a;">
+                                    <strong>Check your email for payment information</strong><br>
+                                    <span style="color: #666; font-size: 14px;">Confirmation sent to: ${buyerInfo.email}</span>
+                                </p>
+                            </div>
+
+                            <h3 style="margin: 0 0 15px; font-size: 18px; color: #1a1a1a;">Payment Options:</h3>
+
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                    <span style="
+                                        background: #d4af37;
+                                        color: #1a1a1a;
+                                        width: 28px;
+                                        height: 28px;
+                                        border-radius: 50%;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-weight: bold;
+                                        font-size: 14px;
+                                        flex-shrink: 0;
+                                        margin-right: 12px;
+                                    ">1</span>
+                                    <div>
+                                        <strong style="color: #1a1a1a;">ACH Bank Transfer</strong>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Contact us for bank routing details</p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                    <span style="
+                                        background: #d4af37;
+                                        color: #1a1a1a;
+                                        width: 28px;
+                                        height: 28px;
+                                        border-radius: 50%;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-weight: bold;
+                                        font-size: 14px;
+                                        flex-shrink: 0;
+                                        margin-right: 12px;
+                                    ">2</span>
+                                    <div>
+                                        <strong style="color: #1a1a1a;">Mail a Check</strong>
+                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">
+                                            Make payable to: <strong>M77 Ag</strong><br>
+                                            34549 HWY 59<br>
+                                            Haxtun, CO 80731
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="
+                                background: #f5f3f0;
+                                border-radius: 10px;
+                                padding: 20px;
+                                text-align: center;
+                            ">
+                                <p style="margin: 0 0 10px; font-size: 16px; color: #1a1a1a;">
+                                    <strong>Arrange Pickup</strong>
+                                </p>
+                                <p style="margin: 0; color: #666; font-size: 14px;">
+                                    Contact Kyle McConnell<br>
+                                    <a href="tel:970-571-1015" style="color: #2d5016; font-weight: 600; font-size: 18px; text-decoration: none;">970-571-1015</a>
+                                </p>
+                            </div>
+
+                            <button onclick="document.getElementById('paymentConfirmationOverlay').remove()" style="
+                                width: 100%;
+                                background: #d4af37;
+                                color: #1a1a1a;
+                                border: none;
+                                padding: 15px 30px;
+                                font-size: 16px;
+                                font-weight: 600;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                margin-top: 25px;
+                                transition: background 0.3s;
+                            " onmouseover="this.style.background='#c49d2e'" onmouseout="this.style.background='#d4af37'">
+                                Got It - Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', bannerHtml);
+        }
+
         // Buy Now button
         document.getElementById('buyNowBtn').addEventListener('click', () => {
             if (confirm(`Buy Now for $${currentItem.buyNowPrice.toLocaleString()}?`)) {
-                acceptOffer(currentItem.buyNowPrice);
-                addChatMessage('bot', `Thank you for your purchase! You've secured this ${currentItem.title} for $${currentItem.buyNowPrice.toLocaleString()}. We'll be in touch shortly with pickup details.`);
+                addChatMessage('bot', `Excellent choice! Let's get your information to complete this purchase at $${currentItem.buyNowPrice.toLocaleString()}.`);
                 document.getElementById('chatBox').classList.add('active');
+                showBuyerInfoForm(currentItem.buyNowPrice);
             }
         });
 
