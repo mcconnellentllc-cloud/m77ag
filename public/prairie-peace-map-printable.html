@@ -185,6 +185,28 @@
         .print-btn:hover {
             background: #6d5410;
         }
+
+        .map-container {
+            width: 100%;
+            height: 600px;
+            border: 3px solid #8b6914;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media print {
+            .map-container {
+                height: 500px;
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
@@ -204,6 +226,99 @@
             <p><strong>Location:</strong> Logan County, South of Haxtun, Colorado</p>
             <p><strong>Hunting Unit:</strong> Colorado DOW Unit 98</p>
             <p><strong>Property Type:</strong> Intimate multi-species hunting property perfect for 3-4 hunters</p>
+        </div>
+
+        <!-- Visual Property Map -->
+        <div class="section">
+            <h2 class="section-title">Property Map - Visual Guide</h2>
+            <p style="margin-bottom: 20px;">Prairie Peace consists of 7 hunting parcels totaling 1,550 acres. Each parcel is numbered and color-coded below for easy reference.</p>
+
+            <div style="background: white; border: 3px solid #8b6914; border-radius: 10px; padding: 30px; margin: 20px 0;">
+                <!-- Parcel Map Visual -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;">
+
+                    <!-- Parcel 1: The South Section -->
+                    <div style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: 3px solid #4caf50; border-radius: 8px; padding: 20px; position: relative; grid-column: span 2;">
+                        <div style="background: #4caf50; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">1</div>
+                        <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 18px;">The South Section</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>598 Acres - LARGEST PARCEL</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Pheasant, Prairie Dogs</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.4875, -102.6359</p>
+                    </div>
+
+                    <!-- Parcel 2: Prairie Peace Campsite Acreage -->
+                    <div style="background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); border: 3px solid #fbc02d; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #fbc02d; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">2</div>
+                        <h3 style="color: #f57f17; margin: 0 0 10px 0; font-size: 18px;">Prairie Peace Campsite Acreage</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>155 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Prairie Dogs</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.4861, -102.6502</p>
+                    </div>
+
+                    <!-- Parcel 3: Prairie Peace Camping -->
+                    <div style="background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); border: 3px solid #0288d1; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #0288d1; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">3</div>
+                        <h3 style="color: #01579b; margin: 0 0 10px 0; font-size: 18px;">Prairie Peace Camping</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>Camp Site</strong></p>
+                        <p style="margin: 5px 0; color: #d32f2f; font-weight: bold;">⛺ Water & 110V Electric</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.4859, -102.6460</p>
+                    </div>
+
+                    <!-- Parcel 4: Creek Bed on 14 -->
+                    <div style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border: 3px solid #8e24aa; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #8e24aa; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">4</div>
+                        <h3 style="color: #6a1b9a; margin: 0 0 10px 0; font-size: 18px;">Creek Bed on 14</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>169 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Dove, Pheasant (Creek)</p>
+                        <p style="margin: 5px 0; color: #1976d2; font-weight: bold;">Best for Dawn Hunts</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.5296, -102.6600</p>
+                    </div>
+
+                    <!-- Parcel 5: Grass and Fenceline -->
+                    <div style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border: 3px solid #c2185b; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #c2185b; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">5</div>
+                        <h3 style="color: #880e4f; margin: 0 0 10px 0; font-size: 18px;">Grass and Fenceline</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>316 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Coyote</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.5731, -102.6938</p>
+                    </div>
+
+                    <!-- Parcel 6: Fencelines -->
+                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border: 3px solid #ff6f00; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #ff6f00; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">6</div>
+                        <h3 style="color: #e65100; margin: 0 0 10px 0; font-size: 18px;">Fencelines</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>162 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Turkey</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.5802, -102.7082</p>
+                    </div>
+
+                    <!-- Parcel 7: Logan County Trees -->
+                    <div style="background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); border: 3px solid #00695c; border-radius: 8px; padding: 20px; position: relative;">
+                        <div style="background: #00695c; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; position: absolute; top: -15px; left: -15px;">7</div>
+                        <h3 style="color: #004d40; margin: 0 0 10px 0; font-size: 18px;">Logan County Trees</h3>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>151 Acres</strong></p>
+                        <p style="margin: 5px 0; color: #555;">Deer, Turkey Roosting</p>
+                        <p style="margin: 5px 0; color: #1976d2; font-weight: bold;">Best for Evening Hunts</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">GPS: 40.5795, -102.7555</p>
+                    </div>
+                </div>
+
+                <!-- Map Legend -->
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 5px solid #8b6914;">
+                    <h4 style="margin: 0 0 10px 0; color: #8b6914;">Map Legend & Hunting Strategy</h4>
+                    <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                        <li><strong>Numbered Circles:</strong> Each parcel is numbered 1-7 for easy reference</li>
+                        <li><strong>GPS Coordinates:</strong> Use these exact coordinates for navigation</li>
+                        <li><strong>Dawn Strategy:</strong> Start at Creek Bed (#4) and The South Section (#1) for birds</li>
+                        <li><strong>Mid-Day:</strong> Prairie dogs abundant throughout all parcels</li>
+                        <li><strong>Evening:</strong> Return to Logan County Trees (#7) for turkey roosting and deer</li>
+                        <li><strong>Camping:</strong> Available at Parcel #3 with water and electric hookup</li>
+                        <li><strong>Total Property:</strong> 1,550 acres across all 7 parcels</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p style="margin-top: 15px; color: #666; font-size: 14px;"><strong>For Exact Boundaries:</strong> Download the KML file below and open in Google Earth or OnX Hunt to see precise property lines with your GPS location in real-time.</p>
         </div>
 
         <!-- Download Maps Section -->
@@ -235,7 +350,7 @@
                         <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4875,-102.6359" target="_blank">40.4875, -102.6359</a></td>
                     </tr>
                     <tr>
-                        <td><strong>Madsen Pasture</strong></td>
+                        <td><strong>Prairie Peace Campsite Acreage</strong></td>
                         <td>155</td>
                         <td>Deer, Prairie Dogs</td>
                         <td><a href="https://www.google.com/maps/dir/?api=1&destination=40.4861,-102.6502" target="_blank">40.4861, -102.6502</a></td>
@@ -292,14 +407,14 @@
             <h2 class="section-title">Critical Hunting Rules & Safety</h2>
 
             <div class="warning-box">
-                <p><strong>DOWNED GAME PROTOCOL:</strong> If you down game and it runs onto neighboring property (outside of property controlled by M77 AG), you MUST call Kyle immediately at <strong>970-571-1015</strong> before pursuing. Do NOT enter neighboring property without authorization.</p>
+                <p><strong>DOWNED GAME PROTOCOL:</strong> If you down game and it runs onto neighboring property (outside of property controlled by M77 AG), you MUST email hunting@m77ag.com immediately before pursuing. Emergency contact provided in booking confirmation. Do NOT enter neighboring property without authorization.</p>
             </div>
 
             <div class="info-box">
-                <h3>⚠️ IMPORTANT REMINDERS</h3>
+                <h3>IMPORTANT REMINDERS</h3>
                 <ul>
                     <li>All hunters must have valid Colorado hunting licenses</li>
-                    <li>Call Kyle for any downed game issues: <strong>970-571-1015</strong></li>
+                    <li>Email hunting@m77ag.com for any downed game issues (emergency contact in booking confirmation)</li>
                     <li>Respect property boundaries at all times</li>
                     <li>Pack out what you pack in - leave no trace</li>
                     <li>You have exclusive access to the property for your booked dates</li>
@@ -315,10 +430,9 @@
         <!-- Contact Information -->
         <div class="section">
             <h2 class="section-title">Emergency Contact & Questions</h2>
-            <p><strong>Kyle McConnell</strong></p>
-            <p>Cell: <strong>970-571-1015</strong> (Downed game & emergencies)</p>
-            <p>Office: 970-774-3276</p>
+            <p><strong>M77 AG Hunting</strong></p>
             <p>Email: hunting@m77ag.com</p>
+            <p style="font-size: 12px; color: #666; margin-top: 10px;">Emergency contact provided in your booking confirmation email.</p>
         </div>
 
         <div class="footer">

@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M77 AG Equipment For Sale - Quality farm equipment at fair prices. Browse our inventory of tractors, implements, and machinery.">
+    <meta name="keywords" content="farm equipment, tractors, implements, used equipment, Colorado, M77 AG, Big Iron">
+    <title>Equipment For Sale | M77 AG</title>
+
+    <!-- Open Graph for Facebook sharing -->
+    <meta property="og:title" content="Equipment For Sale | M77 AG">
+    <meta property="og:description" content="Quality farm equipment at fair prices">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://m77ag.com/forsale">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar {
+            padding: 20px 0;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #d4af37;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 140px 40px 60px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 64px;
+            color: #fff;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Equipment Grid */
+        .equipment-section {
+            padding: 60px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .equipment-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-image {
+            height: 220px;
+            background: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-badge.sold {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .card-details {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .card-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-amount {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d5016;
+        }
+
+        .view-btn {
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .view-btn:hover {
+            background: #c4a030;
+        }
+
+        /* Equipment Detail Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal-content {
+            width: 95%;
+            max-width: 1100px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #fff;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2001;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #fff;
+            color: #1a1a1a;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 55% 45%;
+        }
+
+        /* Gallery */
+        .gallery-section {
+            background: #1a1a1a;
+            padding: 20px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 400px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .main-image img, .main-image video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .thumbnail-strip {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail.active, .thumbnail:hover {
+            opacity: 1;
+            border-color: #d4af37;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail.video-thumb {
+            position: relative;
+        }
+
+        .thumbnail.video-thumb::after {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Details Section */
+        .details-section {
+            padding: 30px;
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        .item-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .item-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Price Box */
+        .price-box {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .price-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .price-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            letter-spacing: 2px;
+        }
+
+        .price-note {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+
+        .buy-now-btn {
+            display: block;
+            width: 100%;
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            padding: 18px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .buy-now-btn:hover {
+            background: #e5c048;
+            transform: scale(1.02);
+        }
+
+        /* Make Offer Section */
+        .offer-section {
+            background: #f8f8f8;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .offer-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .offer-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .offer-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 18px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .offer-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .offer-btn {
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            padding: 15px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .offer-btn:hover {
+            background: #333;
+        }
+
+        /* Chat Box */
+        .chat-box {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .chat-box.active {
+            display: block;
+        }
+
+        .chat-header {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-message.bot {
+            flex-direction: row;
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .chat-message.user .message-avatar {
+            background: #2d5016;
+            color: #fff;
+        }
+
+        .message-bubble {
+            background: #f0f0f0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.user .message-bubble {
+            background: #2d5016;
+            color: #fff;
+        }
+
+        /* Market Research */
+        .market-research {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .research-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .research-title::before {
+            content: '📊';
+        }
+
+        .research-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .research-item:last-child {
+            border-bottom: none;
+        }
+
+        .research-label {
+            color: #666;
+        }
+
+        .research-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .research-value.highlight {
+            color: #2d5016;
+        }
+
+        /* Specs Table */
+        .specs-section {
+            margin-top: 25px;
+        }
+
+        .specs-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .specs-table td {
+            padding: 12px 0;
+            font-size: 14px;
+        }
+
+        .specs-table td:first-child {
+            color: #666;
+            width: 40%;
+        }
+
+        .specs-table td:last-child {
+            font-weight: 500;
+        }
+
+        /* Share Section */
+        .share-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .share-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .share-btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-btn:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        .share-btn.facebook {
+            background: #1877f2;
+            color: #fff;
+            border-color: #1877f2;
+        }
+
+        .share-btn.facebook:hover {
+            background: #166fe5;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            padding: 60px 40px;
+            color: #fff;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .footer-brand {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d4af37;
+        }
+
+        .footer-copyright {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .modal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-section {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(26, 26, 26, 0.98);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .page-header h1 {
+                font-size: 42px;
+            }
+
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .details-section {
+                padding: 25px;
+            }
+
+            .item-title {
+                font-size: 28px;
+            }
+
+            .price-value {
+                font-size: 36px;
+            }
+        }
+
+        /* Accept Offer Animation */
+        .offer-accepted {
+            background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%) !important;
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 3000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="index.html" class="logo">M77 AG</a>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="services.html" class="nav-link">Services</a></li>
+                    <li><a href="forsale.html" class="nav-link active">Equipment</a></li>
+                    <li><a href="hunting.html" class="nav-link">Hunting</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="/admin" class="nav-link">Admin</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>EQUIPMENT FOR SALE</h1>
+        <p>Quality farm equipment at fair prices. Each piece inspected and priced to move.</p>
+    </div>
+
+    <!-- Equipment Grid -->
+    <section class="equipment-section">
+        <div class="equipment-grid" id="equipmentGrid">
+            <!-- Equipment cards will be dynamically generated -->
+        </div>
+    </section>
+
+    <!-- Equipment Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <button class="modal-close" id="modalClose">&times;</button>
+        <div class="modal-content">
+            <div class="modal-grid">
+                <!-- Gallery -->
+                <div class="gallery-section">
+                    <div class="main-image" id="mainImage">
+                        <!-- Main image/video will be inserted here -->
+                    </div>
+                    <div class="thumbnail-strip" id="thumbnailStrip">
+                        <!-- Thumbnails will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="details-section">
+                    <div class="item-header">
+                        <h2 class="item-title" id="itemTitle"></h2>
+                        <p class="item-subtitle" id="itemSubtitle"></p>
+                    </div>
+
+                    <!-- Price Box -->
+                    <div class="price-box">
+                        <div class="price-label">Buy Now Price</div>
+                        <div class="price-value" id="itemPrice"></div>
+                        <div class="price-note">Includes all taxes. Ready for pickup in Sedgwick County, CO</div>
+                        <button class="buy-now-btn" id="buyNowBtn">BUY NOW</button>
+                    </div>
+
+                    <!-- Make Offer -->
+                    <div class="offer-section">
+                        <div class="offer-title">Or Make an Offer</div>
+                        <div class="offer-input-group">
+                            <input type="text" class="offer-input" id="offerInput" placeholder="$0.00">
+                            <button class="offer-btn" id="offerBtn">Submit Offer</button>
+                        </div>
+
+                        <!-- Chat Box -->
+                        <div class="chat-box" id="chatBox">
+                            <div class="chat-header">Negotiation Chat</div>
+                            <div class="chat-messages" id="chatMessages">
+                                <!-- Messages will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Research -->
+                    <div class="market-research" id="marketResearch">
+                        <div class="research-title">Market Research</div>
+                        <!-- Research data will be inserted here -->
+                    </div>
+
+                    <!-- Specs -->
+                    <div class="specs-section">
+                        <div class="specs-title">Specifications</div>
+                        <table class="specs-table" id="specsTable">
+                            <!-- Specs will be inserted here -->
+                        </table>
+                    </div>
+
+                    <!-- Share -->
+                    <div class="share-section">
+                        <div class="share-title">Share This Listing</div>
+                        <div class="share-buttons">
+                            <button class="share-btn facebook" id="shareFacebook">
+                                <span>f</span> Share on Facebook
+                            </button>
+                            <button class="share-btn" id="copyLink">
+                                Copy Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-brand">M77 AG</div>
+        <div class="footer-contact">
+            970-774-3276 | office@m77ag.com
+        </div>
+        <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="hunting.html">Hunting</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+        <div class="footer-copyright">
+            &copy; 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.
+        </div>
+    </footer>
+
+    <script>
+        // Equipment inventory data
+        const equipment = [
+            {
+                id: 'fk-2450',
+                title: 'Farm King 2450 Round Bale Carrier',
+                subtitle: 'Excellent condition, field ready',
+                category: 'Hay Equipment',
+                year: 2018,
+                buyNowPrice: 34500,
+                floorPrice: 32700,
+                images: [
+                    'assets/equipment/fk-2450/IMG_1644.JPEG',
+                    'assets/equipment/fk-2450/IMG_1645.JPEG',
+                    'assets/equipment/fk-2450/IMG_1646.JPEG',
+                    'assets/equipment/fk-2450/IMG_1647.JPEG',
+                    'assets/equipment/fk-2450/IMG_1648.JPEG',
+                    'assets/equipment/fk-2450/IMG_1649.JPEG',
+                    'assets/equipment/fk-2450/IMG_1650.JPEG',
+                    'assets/equipment/fk-2450/IMG_1651.JPEG',
+                    'assets/equipment/fk-2450/IMG_1652.JPEG'
+                ],
+                videos: [
+                    'assets/equipment/fk-2450/IMG_1653.MP4'
+                ],
+                specs: {
+                    'Make': 'Farm King',
+                    'Model': '2450',
+                    'Year': '2018',
+                    'Capacity': '10 Round Bales',
+                    'Bale Size': 'Up to 6ft diameter',
+                    'Transport Width': '12 ft',
+                    'Condition': 'Excellent',
+                    'Location': 'Sedgwick County, CO'
+                },
+                marketResearch: {
+                    'Average Listing Price': '$36,800',
+                    'Price Range': '$31,000 - $42,000',
+                    'Similar Units Sold (90 days)': '14',
+                    'Our Price vs Market': '-6% Below Average',
+                    'Fair Value Assessment': 'GREAT DEAL'
+                },
+                description: 'This Farm King 2450 is in excellent working condition. Hydraulics are tight, tires are good, and it\'s ready to go to work. We\'ve used this carrier for 3 seasons and it has been reliable. Selling because we upgraded to a larger capacity unit.',
+                status: 'available'
+            }
+            // Add more equipment items here
+        ];
+
+        // DOM elements
+        const equipmentGrid = document.getElementById('equipmentGrid');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        let currentItem = null;
+        let offerHistory = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEquipmentGrid();
+            checkUrlParams();
+        });
+
+        // Render equipment cards
+        function renderEquipmentGrid() {
+            equipmentGrid.innerHTML = equipment.map(item => `
+                <div class="equipment-card" onclick="openModal('${item.id}')">
+                    <div class="card-image">
+                        <img src="${item.images[0]}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22220%22/><text fill=%22%23999%22 x=%22200%22 y=%22110%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>Image Coming Soon</text></svg>'">
+                        <div class="card-badge ${item.status === 'sold' ? 'sold' : ''}">${item.status === 'sold' ? 'SOLD' : item.category}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <p class="card-details">${item.year} | ${item.subtitle}</p>
+                        <div class="card-price">
+                            <span class="price-amount">$${item.buyNowPrice.toLocaleString()}</span>
+                            <button class="view-btn">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Check URL params for direct linking
+        function checkUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const itemId = params.get('item');
+            if (itemId) {
+                openModal(itemId);
+            }
+        }
+
+        // Open modal
+        function openModal(itemId) {
+            currentItem = equipment.find(e => e.id === itemId);
+            if (!currentItem) return;
+
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('item', itemId);
+            window.history.pushState({}, '', url);
+
+            // Populate modal
+            document.getElementById('itemTitle').textContent = currentItem.title;
+            document.getElementById('itemSubtitle').textContent = `${currentItem.year} | ${currentItem.subtitle}`;
+            document.getElementById('itemPrice').textContent = '$' + currentItem.buyNowPrice.toLocaleString();
+
+            // Gallery
+            renderGallery();
+
+            // Specs
+            renderSpecs();
+
+            // Market Research
+            renderMarketResearch();
+
+            // Reset chat
+            document.getElementById('chatBox').classList.remove('active');
+            document.getElementById('chatMessages').innerHTML = '';
+            document.getElementById('offerInput').value = '';
+            offerHistory = [];
+
+            // Show modal
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Render gallery
+        function renderGallery() {
+            const allMedia = [...currentItem.images, ...currentItem.videos];
+            const thumbnailStrip = document.getElementById('thumbnailStrip');
+
+            thumbnailStrip.innerHTML = allMedia.map((src, idx) => {
+                const isVideo = src.toLowerCase().endsWith('.mp4');
+                return `
+                    <div class="thumbnail ${idx === 0 ? 'active' : ''} ${isVideo ? 'video-thumb' : ''}"
+                         onclick="showMedia(${idx})" data-index="${idx}">
+                        ${isVideo
+                            ? `<img src="${currentItem.images[0]}" alt="Video thumbnail">`
+                            : `<img src="${src}" alt="Thumbnail ${idx + 1}">`
+                        }
+                    </div>
+                `;
+            }).join('');
+
+            showMedia(0);
+        }
+
+        // Show media in main viewer
+        function showMedia(index) {
+            const allMedia = [...currentItem.images, ...currentItem.videos];
+            const src = allMedia[index];
+            const isVideo = src.toLowerCase().endsWith('.mp4');
+            const mainImage = document.getElementById('mainImage');
+
+            if (isVideo) {
+                mainImage.innerHTML = `
+                    <video controls autoplay>
+                        <source src="${src}" type="video/mp4">
+                        Your browser does not support video.
+                    </video>
+                `;
+            } else {
+                mainImage.innerHTML = `<img src="${src}" alt="${currentItem.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 400%22><rect fill=%22%232a2a2a%22 width=%22600%22 height=%22400%22/><text fill=%22%23666%22 x=%22300%22 y=%22200%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>Image Loading...</text></svg>'">`;
+            }
+
+            // Update thumbnail active state
+            document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
+                thumb.classList.toggle('active', idx === index);
+            });
+        }
+
+        // Render specs table
+        function renderSpecs() {
+            const specsTable = document.getElementById('specsTable');
+            specsTable.innerHTML = Object.entries(currentItem.specs).map(([key, value]) => `
+                <tr>
+                    <td>${key}</td>
+                    <td>${value}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Render market research
+        function renderMarketResearch() {
+            const research = document.getElementById('marketResearch');
+            research.innerHTML = `
+                <div class="research-title">Market Research</div>
+                ${Object.entries(currentItem.marketResearch).map(([key, value]) => `
+                    <div class="research-item">
+                        <span class="research-label">${key}</span>
+                        <span class="research-value ${key.includes('Assessment') ? 'highlight' : ''}">${value}</span>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Close modal
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+
+            // Remove item from URL
+            const url = new URL(window.location);
+            url.searchParams.delete('item');
+            window.history.pushState({}, '', url);
+        }
+
+        // Mobile menu
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Offer input formatting
+        const offerInput = document.getElementById('offerInput');
+        offerInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString();
+                e.target.value = '$' + value;
+            } else {
+                e.target.value = '';
+            }
+        });
+
+        // Submit offer
+        document.getElementById('offerBtn').addEventListener('click', submitOffer);
+        offerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitOffer();
+        });
+
+        function submitOffer() {
+            const input = document.getElementById('offerInput');
+            const offerValue = parseInt(input.value.replace(/[^0-9]/g, ''));
+
+            if (!offerValue || offerValue < 1000) {
+                addChatMessage('bot', 'Please enter a valid offer amount.');
+                return;
+            }
+
+            const chatBox = document.getElementById('chatBox');
+            chatBox.classList.add('active');
+
+            // Add user message
+            addChatMessage('user', `I'd like to offer $${offerValue.toLocaleString()}`);
+
+            // Store offer
+            offerHistory.push(offerValue);
+
+            // Process offer with negotiation bot
+            setTimeout(() => {
+                processOffer(offerValue);
+            }, 1000);
+
+            input.value = '';
+        }
+
+        function processOffer(offer) {
+            const buyNow = currentItem.buyNowPrice;
+            const floor = currentItem.floorPrice;
+            const percentOfBuyNow = (offer / buyNow) * 100;
+            const percentOfFloor = (offer / floor) * 100;
+
+            let response;
+
+            if (offer >= buyNow) {
+                // At or above buy now - accept immediately
+                response = `Excellent! Your offer of $${offer.toLocaleString()} has been ACCEPTED! I'll send you the purchase details right away. Thank you for your business!`;
+                acceptOffer(offer);
+            } else if (offer >= floor) {
+                // Between floor and buy now - accept with enthusiasm
+                response = `You've got yourself a deal! I can accept $${offer.toLocaleString()}. That's a fair price for this quality equipment. Let me get the paperwork started!`;
+                acceptOffer(offer);
+            } else if (percentOfFloor >= 95) {
+                // Very close to floor - strong encouragement
+                response = `You're very close! I might be able to work with you at $${floor.toLocaleString()}. Can you come up just a bit?`;
+            } else if (percentOfFloor >= 90) {
+                // Close to floor - encourage higher
+                const suggested = Math.round(floor * 1.02 / 100) * 100;
+                response = `I appreciate the offer, but we're a bit apart. The lowest I could consider is around $${suggested.toLocaleString()}. This unit is priced well below market already.`;
+            } else if (percentOfFloor >= 80) {
+                // Getting warmer
+                const suggested = Math.round(floor * 1.05 / 100) * 100;
+                response = `Thanks for your interest! That's a bit low considering the condition and market value. Could you come up to $${suggested.toLocaleString()}? Check out the market research - we're already below average.`;
+            } else if (percentOfFloor >= 70) {
+                // Too low but engaging
+                response = `I understand you're looking for a good deal - who isn't? But at $${offer.toLocaleString()}, we're pretty far apart. This is a solid piece of equipment. What's the best you can do?`;
+            } else {
+                // Way too low
+                response = `I appreciate the offer, but $${offer.toLocaleString()} is significantly below what we can accept for this equipment. Take another look at the specs and condition - this is a quality unit priced to sell. What can you realistically offer?`;
+            }
+
+            addChatMessage('bot', response);
+        }
+
+        function addChatMessage(type, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const avatar = type === 'bot' ? 'M77' : 'You';
+
+            chatMessages.innerHTML += `
+                <div class="chat-message ${type}">
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-bubble">${message}</div>
+                </div>
+            `;
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function acceptOffer(amount) {
+            const priceBox = document.querySelector('.price-box');
+            priceBox.classList.add('offer-accepted');
+            document.getElementById('itemPrice').textContent = '$' + amount.toLocaleString();
+            document.querySelector('.price-label').textContent = 'ACCEPTED PRICE';
+
+            // Disable further offers
+            document.getElementById('offerBtn').disabled = true;
+            document.getElementById('offerInput').disabled = true;
+            document.getElementById('buyNowBtn').textContent = 'SOLD!';
+            document.getElementById('buyNowBtn').disabled = true;
+
+            // Save to localStorage for admin
+            saveOfferToStorage(amount);
+
+            // Confetti!
+            createConfetti();
+        }
+
+        function saveOfferToStorage(amount) {
+            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
+            offers.push({
+                itemId: currentItem.id,
+                itemTitle: currentItem.title,
+                originalPrice: currentItem.buyNowPrice,
+                acceptedPrice: amount,
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            });
+            localStorage.setItem('m77ag_offers', JSON.stringify(offers));
+        }
+
+        function createConfetti() {
+            const colors = ['#d4af37', '#2d5016', '#fff', '#1a1a1a'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.cssText = `
+                    position: fixed;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    left: ${Math.random() * 100}%;
+                    top: -10px;
+                    opacity: ${Math.random() * 0.5 + 0.5};
+                    transform: rotate(${Math.random() * 360}deg);
+                    z-index: 3000;
+                `;
+                document.body.appendChild(confetti);
+
+                // Animate falling
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: Math.random() * 2000 + 1500,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        // Buy Now button
+        document.getElementById('buyNowBtn').addEventListener('click', () => {
+            if (confirm(`Buy Now for $${currentItem.buyNowPrice.toLocaleString()}?`)) {
+                acceptOffer(currentItem.buyNowPrice);
+                addChatMessage('bot', `Thank you for your purchase! You've secured this ${currentItem.title} for $${currentItem.buyNowPrice.toLocaleString()}. We'll be in touch shortly with pickup details.`);
+                document.getElementById('chatBox').classList.add('active');
+            }
+        });
+
+        // Share functionality
+        document.getElementById('shareFacebook').addEventListener('click', () => {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`Check out this ${currentItem.title} for sale at M77 AG!`);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank', 'width=600,height=400');
+        });
+
+        document.getElementById('copyLink').addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = document.getElementById('copyLink');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Copied!';
+                setTimeout(() => btn.innerHTML = originalText, 2000);
+            });
+        });
+
+        // Handle browser back button
+        window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            const itemId = params.get('item');
+            if (itemId) {
+                openModal(itemId);
+            } else {
+                closeModal();
+            }
+        });
+
+        // Escape key closes modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
