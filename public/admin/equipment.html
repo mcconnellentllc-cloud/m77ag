@@ -614,67 +614,115 @@
             });
         }
 
-        // Load offers from localStorage
-        function loadOffers() {
-            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
+        // Store offers globally for actions
+        let offersData = [];
 
+        // Load offers from database API
+        async function loadOffers() {
+            try {
+                const response = await fetch('/api/equipment/offers');
+                const data = await response.json();
+
+                if (!data.success || data.offers.length === 0) {
+                    offersTableBody.innerHTML = '';
+                    noOffers.style.display = 'block';
+                    offersData = [];
+                    return;
+                }
+
+                offersData = data.offers;
+                noOffers.style.display = 'none';
+
+                offersTableBody.innerHTML = data.offers.map((offer, idx) => {
+                    const diff = offer.listPrice - (offer.finalPrice || offer.offerAmount);
+                    const diffPercent = ((diff / offer.listPrice) * 100).toFixed(1);
+                    const date = new Date(offer.createdAt).toLocaleDateString();
+                    const finalAmount = offer.finalPrice || offer.offerAmount;
+
+                    return `
+                        <tr>
+                            <td>${date}</td>
+                            <td>
+                                <strong>${offer.equipmentTitle}</strong><br>
+                                <small style="color:#666">${offer.buyerName} - ${offer.buyerEmail}</small>
+                            </td>
+                            <td>$${offer.listPrice.toLocaleString()}</td>
+                            <td><strong>$${finalAmount.toLocaleString()}</strong></td>
+                            <td style="color: ${diff > 0 ? '#c0392b' : '#27ae60'}">
+                                -$${diff.toLocaleString()} (${diffPercent}%)
+                            </td>
+                            <td><span class="status-badge ${offer.status}">${offer.status}</span></td>
+                            <td>
+                                <button class="action-btn contact" onclick="contactBuyer('${offer._id}')">Contact</button>
+                                <button class="action-btn decline" onclick="removeOffer('${offer._id}')">Remove</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading offers:', error);
+                // Fallback to localStorage
+                loadOffersFromLocalStorage();
+            }
+        }
+
+        // Fallback to localStorage if API fails
+        function loadOffersFromLocalStorage() {
+            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
             if (offers.length === 0) {
                 offersTableBody.innerHTML = '';
                 noOffers.style.display = 'block';
                 return;
             }
-
             noOffers.style.display = 'none';
-            offersTableBody.innerHTML = offers.map((offer, idx) => {
-                const diff = offer.originalPrice - offer.acceptedPrice;
-                const diffPercent = ((diff / offer.originalPrice) * 100).toFixed(1);
-                const date = new Date(offer.timestamp).toLocaleDateString();
-
-                return `
-                    <tr>
-                        <td>${date}</td>
-                        <td><strong>${offer.itemTitle}</strong></td>
-                        <td>$${offer.originalPrice.toLocaleString()}</td>
-                        <td><strong>$${offer.acceptedPrice.toLocaleString()}</strong></td>
-                        <td style="color: ${diff > 0 ? '#c0392b' : '#27ae60'}">
-                            -$${diff.toLocaleString()} (${diffPercent}%)
-                        </td>
-                        <td><span class="status-badge ${offer.status}">${offer.status}</span></td>
-                        <td>
-                            <button class="action-btn contact" onclick="contactBuyer(${idx})">Contact</button>
-                            <button class="action-btn decline" onclick="removeOffer(${idx})">Remove</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            offersTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999">Using local data - API unavailable</td></tr>';
         }
 
-        // Update stats
-        function updateStats() {
-            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
-            const pending = offers.filter(o => o.status === 'pending').length;
-            const accepted = offers.filter(o => o.status === 'accepted').length;
-            const totalValue = offers.reduce((sum, o) => sum + o.acceptedPrice, 0);
+        // Update stats from API
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/equipment/stats');
+                const data = await response.json();
 
-            document.getElementById('activeListings').textContent = equipment.filter(e => e.status === 'active').length;
-            document.getElementById('pendingOffers').textContent = pending;
-            document.getElementById('totalOfferValue').textContent = '$' + totalValue.toLocaleString();
-            document.getElementById('acceptedSales').textContent = accepted;
+                if (data.success) {
+                    document.getElementById('activeListings').textContent = equipment.filter(e => e.status === 'active').length;
+                    document.getElementById('pendingOffers').textContent = data.stats.pendingOffers;
+                    document.getElementById('totalOfferValue').textContent = '$' + data.stats.totalSalesValue.toLocaleString();
+                    document.getElementById('acceptedSales').textContent = data.stats.acceptedOffers;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
         }
 
-        // Contact buyer
-        function contactBuyer(idx) {
-            alert('Contact functionality would connect to your CRM or email system');
+        // Contact buyer - opens email
+        function contactBuyer(offerId) {
+            const offer = offersData.find(o => o._id === offerId);
+            if (offer && offer.buyerEmail) {
+                const subject = encodeURIComponent(`M77 AG - ${offer.equipmentTitle} Purchase`);
+                const body = encodeURIComponent(`Hi ${offer.buyerName},\n\nThank you for your interest in the ${offer.equipmentTitle}.\n\nYour offer of $${(offer.finalPrice || offer.offerAmount).toLocaleString()} has been received.\n\nPlease let us know when you'd like to arrange pickup.\n\nBest regards,\nM77 AG\n970-774-3276`);
+                window.open(`mailto:${offer.buyerEmail}?subject=${subject}&body=${body}`);
+            } else {
+                alert('No email address available for this buyer');
+            }
         }
 
-        // Remove offer
-        function removeOffer(idx) {
+        // Remove offer via API
+        async function removeOffer(offerId) {
             if (confirm('Remove this offer from the list?')) {
-                const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
-                offers.splice(idx, 1);
-                localStorage.setItem('m77ag_offers', JSON.stringify(offers));
-                loadOffers();
-                updateStats();
+                try {
+                    const response = await fetch(`/api/equipment/offers/${offerId}`, {
+                        method: 'DELETE'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        loadOffers();
+                        updateStats();
+                    }
+                } catch (error) {
+                    console.error('Error removing offer:', error);
+                    alert('Failed to remove offer');
+                }
             }
         }
 
