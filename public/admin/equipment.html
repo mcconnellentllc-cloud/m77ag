@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Admin | M77 AG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: #1a1a1a;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .admin-nav a:hover, .admin-nav a.active {
+            color: #d4af37;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+
+        .stat-value.green { color: #27ae60; }
+        .stat-value.gold { color: #d4af37; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #1a1a1a;
+        }
+
+        .tab.active {
+            color: #d4af37;
+            border-bottom-color: #d4af37;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Offers Table */
+        .offers-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .offers-table th,
+        .offers-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offers-table th {
+            background: #f8f8f8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .offers-table tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.accepted {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.declined {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .action-btn.contact {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+
+        .action-btn.decline {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        /* Equipment Cards */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .equipment-admin-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .card-price {
+            text-align: right;
+        }
+
+        .price-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .price-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #27ae60;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        /* Marketplace Suggestions */
+        .marketplace-list {
+            list-style: none;
+        }
+
+        .marketplace-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .marketplace-item:last-child {
+            border-bottom: none;
+        }
+
+        .marketplace-rank {
+            width: 28px;
+            height: 28px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .marketplace-rank.secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .marketplace-info {
+            flex: 1;
+        }
+
+        .marketplace-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .marketplace-reason {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .marketplace-action {
+            padding: 6px 14px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .marketplace-action:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+
+        /* Links Section */
+        .share-links {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .link-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .link-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .link-label {
+            font-size: 12px;
+            color: #666;
+            width: 80px;
+        }
+
+        .link-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: monospace;
+            background: #fff;
+        }
+
+        .copy-btn {
+            padding: 8px 12px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #333;
+        }
+
+        /* Market Research Panel */
+        .research-panel {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 20px;
+            border-radius: 6px;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        .research-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .research-stat {
+            text-align: center;
+        }
+
+        .research-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .research-stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/hunting-bookings.html">Hunting</a>
+            <a href="/admin/equipment.html" class="active">Equipment</a>
+            <a href="/admin/testimonials.html">Testimonials</a>
+            <a href="/forsale.html">View Listings</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Equipment Sales Manager</h1>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Active Listings</div>
+                <div class="stat-value" id="activeListings">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pending Offers</div>
+                <div class="stat-value gold" id="pendingOffers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Offer Value</div>
+                <div class="stat-value" id="totalOfferValue">$0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Accepted Sales</div>
+                <div class="stat-value green" id="acceptedSales">0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="offers">Offers Received</button>
+            <button class="tab" data-tab="listings">Listings & Advertising</button>
+        </div>
+
+        <!-- Offers Tab -->
+        <div class="tab-content active" id="offers-tab">
+            <table class="offers-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Equipment</th>
+                        <th>List Price</th>
+                        <th>Offer</th>
+                        <th>Difference</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                    <!-- Offers will be populated here -->
+                </tbody>
+            </table>
+            <div class="empty-state" id="noOffers" style="display: none;">
+                <h3>No Offers Yet</h3>
+                <p>When buyers submit offers on your equipment, they'll appear here.</p>
+            </div>
+        </div>
+
+        <!-- Listings Tab -->
+        <div class="tab-content" id="listings-tab">
+            <div class="equipment-grid" id="equipmentGrid">
+                <!-- Equipment cards will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Equipment data with marketplace research
+        const equipment = [
+            {
+                id: 'fk-2450',
+                title: 'Farm King 2450 Round Bale Carrier',
+                subtitle: '2018 | Excellent Condition',
+                category: 'Hay Equipment',
+                buyNowPrice: 34500,
+                floorPrice: 32700,
+                status: 'active',
+                marketplaces: [
+                    {
+                        name: 'Big Iron Auctions',
+                        reason: 'Highest hay equipment traffic in Great Plains region',
+                        url: 'https://www.bigiron.com',
+                        rank: 1
+                    },
+                    {
+                        name: 'Purple Wave',
+                        reason: 'Strong bale carrier sales, Kansas-based buyers',
+                        url: 'https://www.purplewave.com',
+                        rank: 2
+                    },
+                    {
+                        name: 'Facebook Marketplace',
+                        reason: 'Local ranchers actively searching, no fees',
+                        url: 'https://www.facebook.com/marketplace',
+                        rank: 3
+                    },
+                    {
+                        name: 'Machinery Pete',
+                        reason: 'Good price discovery, auction data reference',
+                        url: 'https://www.machinerypete.com',
+                        rank: 4
+                    },
+                    {
+                        name: 'Tractor House',
+                        reason: 'Wide dealer network, Farm King brand presence',
+                        url: 'https://www.tractorhouse.com',
+                        rank: 5
+                    }
+                ],
+                research: {
+                    avgSalePrice: '$36,800',
+                    priceRange: '$31,000 - $42,000',
+                    avgDaysToSell: '23 days',
+                    recentSales: '14 (90 days)'
+                },
+                listingUrl: '/forsale.html?item=fk-2450'
+            }
+            // Add more equipment here
+        ];
+
+        // DOM elements
+        const offersTableBody = document.getElementById('offersTableBody');
+        const noOffers = document.getElementById('noOffers');
+        const equipmentGrid = document.getElementById('equipmentGrid');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOffers();
+            renderEquipmentCards();
+            setupTabs();
+            updateStats();
+        });
+
+        // Tab switching
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+                });
+            });
+        }
+
+        // Load offers from localStorage
+        function loadOffers() {
+            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
+
+            if (offers.length === 0) {
+                offersTableBody.innerHTML = '';
+                noOffers.style.display = 'block';
+                return;
+            }
+
+            noOffers.style.display = 'none';
+            offersTableBody.innerHTML = offers.map((offer, idx) => {
+                const diff = offer.originalPrice - offer.acceptedPrice;
+                const diffPercent = ((diff / offer.originalPrice) * 100).toFixed(1);
+                const date = new Date(offer.timestamp).toLocaleDateString();
+
+                return `
+                    <tr>
+                        <td>${date}</td>
+                        <td><strong>${offer.itemTitle}</strong></td>
+                        <td>$${offer.originalPrice.toLocaleString()}</td>
+                        <td><strong>$${offer.acceptedPrice.toLocaleString()}</strong></td>
+                        <td style="color: ${diff > 0 ? '#c0392b' : '#27ae60'}">
+                            -$${diff.toLocaleString()} (${diffPercent}%)
+                        </td>
+                        <td><span class="status-badge ${offer.status}">${offer.status}</span></td>
+                        <td>
+                            <button class="action-btn contact" onclick="contactBuyer(${idx})">Contact</button>
+                            <button class="action-btn decline" onclick="removeOffer(${idx})">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Update stats
+        function updateStats() {
+            const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
+            const pending = offers.filter(o => o.status === 'pending').length;
+            const accepted = offers.filter(o => o.status === 'accepted').length;
+            const totalValue = offers.reduce((sum, o) => sum + o.acceptedPrice, 0);
+
+            document.getElementById('activeListings').textContent = equipment.filter(e => e.status === 'active').length;
+            document.getElementById('pendingOffers').textContent = pending;
+            document.getElementById('totalOfferValue').textContent = '$' + totalValue.toLocaleString();
+            document.getElementById('acceptedSales').textContent = accepted;
+        }
+
+        // Contact buyer
+        function contactBuyer(idx) {
+            alert('Contact functionality would connect to your CRM or email system');
+        }
+
+        // Remove offer
+        function removeOffer(idx) {
+            if (confirm('Remove this offer from the list?')) {
+                const offers = JSON.parse(localStorage.getItem('m77ag_offers') || '[]');
+                offers.splice(idx, 1);
+                localStorage.setItem('m77ag_offers', JSON.stringify(offers));
+                loadOffers();
+                updateStats();
+            }
+        }
+
+        // Render equipment cards with advertising suggestions
+        function renderEquipmentCards() {
+            equipmentGrid.innerHTML = equipment.map(item => `
+                <div class="equipment-admin-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">${item.title}</h3>
+                            <p class="card-subtitle">${item.subtitle}</p>
+                        </div>
+                        <div class="card-price">
+                            <div class="price-label">Buy Now</div>
+                            <div class="price-value">$${item.buyNowPrice.toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="section-title">Where to Advertise</div>
+                        <ul class="marketplace-list">
+                            ${item.marketplaces.map(mp => `
+                                <li class="marketplace-item">
+                                    <span class="marketplace-rank ${mp.rank > 1 ? 'secondary' : ''}">${mp.rank}</span>
+                                    <div class="marketplace-info">
+                                        <div class="marketplace-name">${mp.name}</div>
+                                        <div class="marketplace-reason">${mp.reason}</div>
+                                    </div>
+                                    <a href="${mp.url}" target="_blank" class="marketplace-action">Visit</a>
+                                </li>
+                            `).join('')}
+                        </ul>
+
+                        <div class="share-links">
+                            <div class="link-row">
+                                <span class="link-label">Direct Link</span>
+                                <input type="text" class="link-input" value="https://m77ag.com${item.listingUrl}" readonly>
+                                <button class="copy-btn" onclick="copyLink(this)">Copy</button>
+                            </div>
+                            <div class="link-row">
+                                <span class="link-label">Facebook</span>
+                                <input type="text" class="link-input" value="https://m77ag.com${item.listingUrl}&utm_source=facebook" readonly>
+                                <button class="copy-btn" onclick="copyLink(this)">Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="research-panel">
+                            <div class="research-title">Market Research</div>
+                            <div class="research-grid">
+                                <div class="research-stat">
+                                    <div class="research-stat-value">${item.research.avgSalePrice}</div>
+                                    <div class="research-stat-label">Avg Sale Price</div>
+                                </div>
+                                <div class="research-stat">
+                                    <div class="research-stat-value">${item.research.avgDaysToSell}</div>
+                                    <div class="research-stat-label">Avg Days to Sell</div>
+                                </div>
+                                <div class="research-stat">
+                                    <div class="research-stat-value">${item.research.priceRange}</div>
+                                    <div class="research-stat-label">Price Range</div>
+                                </div>
+                                <div class="research-stat">
+                                    <div class="research-stat-value">${item.research.recentSales}</div>
+                                    <div class="research-stat-label">Recent Sales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Copy link
+        function copyLink(btn) {
+            const input = btn.previousElementSibling;
+            input.select();
+            document.execCommand('copy');
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        }
+    </script>
+</body>
+</html>
