@@ -737,6 +737,11 @@
         }
 
         @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+                max-width: 100vw;
+            }
+
             .hamburger {
                 display: flex;
             }
@@ -778,8 +783,13 @@
                 gap: 20px;
             }
 
+            .modal-overlay {
+                padding: 0;
+            }
+
             .modal-content {
                 width: 100%;
+                max-width: 100vw;
                 margin: 0;
                 border-radius: 0;
                 min-height: 100vh;
@@ -794,12 +804,11 @@
             }
 
             .modal-grid {
-                grid-template-columns: 1fr;
+                display: block;
             }
 
             .gallery-section {
                 padding: 15px;
-                order: -1;
             }
 
             .main-image {
@@ -818,6 +827,8 @@
 
             .details-section {
                 padding: 20px 15px;
+                max-width: 100%;
+                overflow-x: hidden;
             }
 
             .item-header {
@@ -863,30 +874,35 @@
 
             .offer-title {
                 font-size: 16px;
+                margin-bottom: 15px;
             }
 
             .offer-input-group {
+                display: flex;
                 flex-direction: column;
-                gap: 10px;
+                gap: 12px;
             }
 
             .offer-input {
-                padding: 12px;
+                padding: 15px;
                 font-size: 16px;
                 width: 100%;
+                box-sizing: border-box;
             }
 
             .offer-btn {
                 width: 100%;
                 padding: 15px;
-                font-size: 14px;
+                font-size: 16px;
+                display: block;
             }
 
             .market-research {
                 padding: 20px 15px;
             }
 
-            .market-research h3 {
+            .market-research h3,
+            .research-title {
                 font-size: 16px;
             }
 
@@ -920,17 +936,17 @@
             }
 
             .chat-box {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                max-height: 60vh;
-                border-radius: 15px 15px 0 0;
-                margin: 0;
+                position: relative;
+                margin-top: 15px;
+                border-radius: 8px;
+            }
+
+            .chat-box.active {
+                display: block;
             }
 
             .chat-messages {
-                max-height: 35vh;
+                max-height: 200px;
             }
 
             .share-buttons {
