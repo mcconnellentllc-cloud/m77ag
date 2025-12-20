@@ -93,6 +93,10 @@ app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
+app.get('/admin/equipment', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/equipment.html'));
+});
+
 app.get('/admin/testimonials', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/testimonials.html'));
 });
