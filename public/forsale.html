@@ -757,30 +757,213 @@
                 display: flex;
             }
 
+            .page-header {
+                padding: 120px 20px 40px;
+            }
+
             .page-header h1 {
-                font-size: 42px;
+                font-size: 32px;
+            }
+
+            .page-header p {
+                font-size: 14px;
+            }
+
+            .equipment-section {
+                padding: 30px 15px;
             }
 
             .equipment-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
 
             .modal-content {
+                width: 100%;
                 margin: 0;
                 border-radius: 0;
                 min-height: 100vh;
             }
 
+            .modal-close {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .modal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-section {
+                padding: 15px;
+                order: -1;
+            }
+
+            .main-image {
+                height: 250px;
+                margin-bottom: 10px;
+            }
+
+            .thumbnail-strip {
+                gap: 8px;
+            }
+
+            .thumbnail {
+                width: 60px;
+                height: 45px;
+            }
+
             .details-section {
-                padding: 25px;
+                padding: 20px 15px;
+            }
+
+            .item-header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
             }
 
             .item-title {
-                font-size: 28px;
+                font-size: 24px;
+            }
+
+            .item-subtitle {
+                font-size: 14px;
+            }
+
+            .price-box {
+                padding: 20px 15px;
+                margin-bottom: 15px;
+            }
+
+            .price-label {
+                font-size: 12px;
             }
 
             .price-value {
-                font-size: 36px;
+                font-size: 32px;
+            }
+
+            .price-note {
+                font-size: 12px;
+            }
+
+            .buy-now-btn {
+                padding: 15px;
+                font-size: 16px;
+                margin-top: 15px;
+            }
+
+            .offer-section {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+
+            .offer-title {
+                font-size: 16px;
+            }
+
+            .offer-input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .offer-input {
+                padding: 12px;
+                font-size: 16px;
+                width: 100%;
+            }
+
+            .offer-btn {
+                width: 100%;
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            .market-research {
+                padding: 20px 15px;
+            }
+
+            .market-research h3 {
+                font-size: 16px;
+            }
+
+            .market-item {
+                padding: 12px;
+            }
+
+            .specs-section {
+                margin-bottom: 20px;
+            }
+
+            .specs-section h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+
+            .spec-grid {
+                gap: 10px;
+            }
+
+            .spec-item {
+                padding: 10px 12px;
+            }
+
+            .spec-item .label {
+                font-size: 10px;
+            }
+
+            .spec-item .value {
+                font-size: 13px;
+            }
+
+            .chat-box {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                max-height: 60vh;
+                border-radius: 15px 15px 0 0;
+                margin: 0;
+            }
+
+            .chat-messages {
+                max-height: 35vh;
+            }
+
+            .share-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .share-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .navbar-container {
+                padding: 0 15px;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 400px) {
+            .page-header h1 {
+                font-size: 26px;
+            }
+
+            .price-value {
+                font-size: 28px;
+            }
+
+            .item-title {
+                font-size: 20px;
+            }
+
+            .main-image {
+                height: 200px;
             }
         }
 
@@ -1287,23 +1470,26 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        padding: 15px;
+                        overflow-y: auto;
                     }
                     .buyer-form-modal {
                         background: #fff;
-                        padding: 40px;
+                        padding: 30px 25px;
                         border-radius: 12px;
                         max-width: 400px;
-                        width: 90%;
+                        width: 100%;
                         text-align: center;
                     }
                     .buyer-form-modal h3 {
                         font-family: 'Oswald', sans-serif;
-                        font-size: 28px;
+                        font-size: 24px;
                         color: #2d5016;
-                        margin-bottom: 15px;
+                        margin-bottom: 12px;
                     }
                     .buyer-form-modal p {
                         color: #666;
+                        font-size: 14px;
                         margin-bottom: 25px;
                     }
                     .buyer-form-modal input {
@@ -1460,6 +1646,7 @@
         }
 
         function showPaymentConfirmationBanner(amount, buyerInfo) {
+            const isMobile = window.innerWidth <= 768;
             const bannerHtml = `
                 <div id="paymentConfirmationOverlay" style="
                     position: fixed;
@@ -1470,86 +1657,88 @@
                     background: rgba(0,0,0,0.85);
                     z-index: 4000;
                     display: flex;
-                    align-items: center;
+                    align-items: ${isMobile ? 'flex-start' : 'center'};
                     justify-content: center;
-                    padding: 20px;
+                    padding: ${isMobile ? '10px' : '20px'};
+                    overflow-y: auto;
                 ">
                     <div style="
                         background: white;
-                        border-radius: 15px;
+                        border-radius: ${isMobile ? '10px' : '15px'};
                         max-width: 600px;
                         width: 100%;
                         overflow: hidden;
                         box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+                        margin: ${isMobile ? '10px 0' : '0'};
                     ">
                         <div style="
                             background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
                             color: white;
-                            padding: 30px;
+                            padding: ${isMobile ? '20px 15px' : '30px'};
                             text-align: center;
                         ">
-                            <div style="font-size: 48px; margin-bottom: 10px;">&#10003;</div>
-                            <h2 style="margin: 0; font-size: 28px; font-weight: 700;">Offer Accepted!</h2>
-                            <p style="margin: 10px 0 0; font-size: 18px; opacity: 0.9;">Your offer of $${amount.toLocaleString()} has been accepted</p>
+                            <div style="font-size: ${isMobile ? '36px' : '48px'}; margin-bottom: 8px;">&#10003;</div>
+                            <h2 style="margin: 0; font-size: ${isMobile ? '22px' : '28px'}; font-weight: 700;">Offer Accepted!</h2>
+                            <p style="margin: 8px 0 0; font-size: ${isMobile ? '14px' : '18px'}; opacity: 0.9;">Your offer of $${amount.toLocaleString()} has been accepted</p>
                         </div>
 
-                        <div style="padding: 30px;">
+                        <div style="padding: ${isMobile ? '20px 15px' : '30px'};">
                             <div style="
                                 background: #fff8e1;
                                 border: 2px solid #d4af37;
-                                border-radius: 10px;
-                                padding: 20px;
-                                margin-bottom: 25px;
+                                border-radius: 8px;
+                                padding: ${isMobile ? '15px' : '20px'};
+                                margin-bottom: ${isMobile ? '20px' : '25px'};
                                 text-align: center;
                             ">
-                                <p style="margin: 0; font-size: 16px; color: #1a1a1a;">
+                                <p style="margin: 0; font-size: ${isMobile ? '14px' : '16px'}; color: #1a1a1a;">
                                     <strong>Check your email for payment information</strong><br>
-                                    <span style="color: #666; font-size: 14px;">Confirmation sent to: ${buyerInfo.email}</span>
+                                    <span style="color: #666; font-size: ${isMobile ? '12px' : '14px'};">Confirmation sent to: ${buyerInfo.email}</span>
                                 </p>
                             </div>
 
-                            <h3 style="margin: 0 0 15px; font-size: 18px; color: #1a1a1a;">Payment Options:</h3>
+                            <h3 style="margin: 0 0 12px; font-size: ${isMobile ? '16px' : '18px'}; color: #1a1a1a;">Payment Options:</h3>
 
-                            <div style="margin-bottom: 20px;">
-                                <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                            <div style="margin-bottom: ${isMobile ? '15px' : '20px'};">
+                                <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
                                     <span style="
                                         background: #d4af37;
                                         color: #1a1a1a;
-                                        width: 28px;
-                                        height: 28px;
+                                        width: ${isMobile ? '24px' : '28px'};
+                                        height: ${isMobile ? '24px' : '28px'};
                                         border-radius: 50%;
                                         display: flex;
                                         align-items: center;
                                         justify-content: center;
                                         font-weight: bold;
-                                        font-size: 14px;
+                                        font-size: ${isMobile ? '12px' : '14px'};
                                         flex-shrink: 0;
-                                        margin-right: 12px;
+                                        margin-right: 10px;
                                     ">1</span>
                                     <div>
-                                        <strong style="color: #1a1a1a;">ACH Bank Transfer</strong>
-                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Contact us for bank routing details</p>
+                                        <strong style="color: #1a1a1a; font-size: ${isMobile ? '14px' : '16px'};">ACH Bank Transfer</strong>
+                                        <p style="margin: 4px 0 0; color: #666; font-size: ${isMobile ? '12px' : '14px'};">Contact us for bank routing details</p>
                                     </div>
                                 </div>
 
-                                <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
+                                <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
                                     <span style="
                                         background: #d4af37;
                                         color: #1a1a1a;
-                                        width: 28px;
-                                        height: 28px;
+                                        width: ${isMobile ? '24px' : '28px'};
+                                        height: ${isMobile ? '24px' : '28px'};
                                         border-radius: 50%;
                                         display: flex;
                                         align-items: center;
                                         justify-content: center;
                                         font-weight: bold;
-                                        font-size: 14px;
+                                        font-size: ${isMobile ? '12px' : '14px'};
                                         flex-shrink: 0;
-                                        margin-right: 12px;
+                                        margin-right: 10px;
                                     ">2</span>
                                     <div>
-                                        <strong style="color: #1a1a1a;">Mail a Check</strong>
-                                        <p style="margin: 5px 0 0; color: #666; font-size: 14px;">
+                                        <strong style="color: #1a1a1a; font-size: ${isMobile ? '14px' : '16px'};">Mail a Check</strong>
+                                        <p style="margin: 4px 0 0; color: #666; font-size: ${isMobile ? '12px' : '14px'};">
                                             Make payable to: <strong>M77 Ag</strong><br>
                                             34549 HWY 59<br>
                                             Haxtun, CO 80731
@@ -1560,16 +1749,16 @@
 
                             <div style="
                                 background: #f5f3f0;
-                                border-radius: 10px;
-                                padding: 20px;
+                                border-radius: 8px;
+                                padding: ${isMobile ? '15px' : '20px'};
                                 text-align: center;
                             ">
-                                <p style="margin: 0 0 10px; font-size: 16px; color: #1a1a1a;">
+                                <p style="margin: 0 0 8px; font-size: ${isMobile ? '14px' : '16px'}; color: #1a1a1a;">
                                     <strong>Arrange Pickup</strong>
                                 </p>
-                                <p style="margin: 0; color: #666; font-size: 14px;">
+                                <p style="margin: 0; color: #666; font-size: ${isMobile ? '12px' : '14px'};">
                                     Contact Kyle McConnell<br>
-                                    <a href="tel:970-571-1015" style="color: #2d5016; font-weight: 600; font-size: 18px; text-decoration: none;">970-571-1015</a>
+                                    <a href="tel:970-571-1015" style="color: #2d5016; font-weight: 600; font-size: ${isMobile ? '16px' : '18px'}; text-decoration: none;">970-571-1015</a>
                                 </p>
                             </div>
 
@@ -1578,12 +1767,12 @@
                                 background: #d4af37;
                                 color: #1a1a1a;
                                 border: none;
-                                padding: 15px 30px;
-                                font-size: 16px;
+                                padding: ${isMobile ? '12px 20px' : '15px 30px'};
+                                font-size: ${isMobile ? '14px' : '16px'};
                                 font-weight: 600;
                                 border-radius: 8px;
                                 cursor: pointer;
-                                margin-top: 25px;
+                                margin-top: ${isMobile ? '20px' : '25px'};
                                 transition: background 0.3s;
                             " onmouseover="this.style.background='#c49d2e'" onmouseout="this.style.background='#d4af37'">
                                 Got It - Close
