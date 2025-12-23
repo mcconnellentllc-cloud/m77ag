@@ -110,6 +110,21 @@ const bookingSchema = new mongoose.Schema({
     default: false
   },
 
+  // Season Pass Redemption
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  seasonPassRedemption: {
+    type: Boolean,
+    default: false
+  },
+  creditsUsed: {
+    type: Number,
+    default: 0
+  },
+
   // Additional Notes
   notes: String,
   adminNotes: String,
