@@ -723,6 +723,43 @@ const bookingController = {
         message: 'Failed to submit game rest request'
       });
     }
+  },
+
+  // Get current user's bookings
+  getMyBookings: async (req, res) => {
+    try {
+      const Booking = require('../models/booking');
+      const User = require('../models/user');
+
+      const user = await User.findById(req.userId);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      // Find bookings by email or userId
+      const bookings = await Booking.find({
+        $or: [
+          { email: user.email },
+          { userId: user._id }
+        ]
+      }).sort({ checkinDate: -1 });
+
+      res.json({
+        success: true,
+        bookings
+      });
+
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch bookings'
+      });
+    }
   }
 };
 
