@@ -11,6 +11,9 @@ router.get('/game-rest-dates', bookingController.getGameRestDates);
 router.get('/booking-info/:id', bookingController.getBookingInfo);
 router.post('/game-rest-request', bookingController.submitGameRestRequest);
 
+// User routes (protected)
+router.get('/my-bookings', authenticate, bookingController.getMyBookings);
+
 // Admin routes (protected) - these match what the frontend expects
 router.get('/bookings', authenticate, isAdmin, bookingController.getAllBookings);
 router.get('/bookings/:id', authenticate, isAdmin, bookingController.getBookingById);
