@@ -220,6 +220,93 @@
             color: #666;
         }
 
+        .payment-accounts-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .payment-account-card {
+            background: linear-gradient(135deg, #f8f7f5 0%, #fff 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .payment-account-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            border-color: #d4af37;
+        }
+
+        .payment-logo {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .paypal-logo {
+            background: #0070ba;
+            color: white;
+        }
+
+        .venmo-logo {
+            background: #3d95ce;
+            color: white;
+        }
+
+        .payment-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .payment-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .access-btn {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 12px 35px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .payment-account-card:hover .access-btn {
+            background: #c49d2e;
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -265,6 +352,25 @@
             </div>
         </div>
 
+        <div class="payment-accounts-section">
+            <h2 class="section-title">Payment Accounts</h2>
+            <div class="payment-grid">
+                <a href="https://www.paypal.com/businessmanage/account/revenue" target="_blank" class="payment-account-card">
+                    <div class="payment-logo paypal-logo">PayPal</div>
+                    <div class="payment-title">PayPal Business</div>
+                    <div class="payment-description">View payments, manage transactions, and access your PayPal business account revenue</div>
+                    <button class="access-btn">Access PayPal Account</button>
+                </a>
+
+                <a href="https://venmo.com/" target="_blank" class="payment-account-card">
+                    <div class="payment-logo venmo-logo">Venmo</div>
+                    <div class="payment-title">Venmo Business</div>
+                    <div class="payment-description">Check Venmo payments, view transaction history, and manage your Venmo business account</div>
+                    <button class="access-btn">Access Venmo Account</button>
+                </a>
+            </div>
+        </div>
+
         <div class="business-grid">
             <a href="/admin/hunting-bookings" class="business-card">
                 <div class="card-header">
@@ -293,17 +399,32 @@
                 </div>
             </a>
 
-            <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
-                <div class="card-header" style="background: linear-gradient(135deg, #d4af37 0%, #c49d2e 100%);">
-                    <div class="card-icon">Farming</div>
-                    <div class="card-title">Custom Farming</div>
+            <a href="/admin/equipment" class="business-card">
+                <div class="card-header" style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);">
+                    <div class="card-icon">Sales</div>
+                    <div class="card-title">Equipment Sales</div>
                 </div>
                 <div class="card-body">
                     <p class="card-description">
-                        Coming soon - Manage service proposals, track equipment usage, and handle customer contracts.
+                        Manage equipment listings, view buyer offers, track negotiations, and see marketplace advertising suggestions.
                     </p>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="equipmentListings">1</div>
+                            <div class="stat-label">Listings</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="equipmentOffers">0</div>
+                            <div class="stat-label">Offers</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="equipmentValue">$34.5K</div>
+                            <div class="stat-label">Value</div>
+                        </div>
+                    </div>
+                    <div class="view-dashboard-btn">View Dashboard</div>
                 </div>
-            </div>
+            </a>
 
             <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
                 <div class="card-header" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">

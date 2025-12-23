@@ -41,6 +41,9 @@ const ledgerRoutes = require('./routes/ledger');
 const harvestDataRoutes = require('./routes/harvestData');
 const serviceRoutes = require('./routes/services');
 const chemicalRoutes = require('./routes/chemicals');
+const testimonialRoutes = require('./routes/testimonials');
+const equipmentRoutes = require('./routes/equipment');
+const seasonPassRoutes = require('./routes/seasonPass');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -53,6 +56,9 @@ app.use('/api/ledger', ledgerRoutes);
 app.use('/api/harvest', harvestDataRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/chemicals', chemicalRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/equipment', equipmentRoutes);
+app.use('/api/season-pass', seasonPassRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -89,8 +95,25 @@ app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
+app.get('/admin/equipment', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/equipment.html'));
+});
+
+app.get('/admin/testimonials', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/testimonials.html'));
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+// User routes
+app.get('/user/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/dashboard.html'));
+});
+
+app.get('/user/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/login.html'));
 });
 
 // Farmer routes
@@ -119,6 +142,10 @@ app.get('/services', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/services.html'));
 });
 
+app.get('/custom-farming', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/custom-farming.html'));
+});
+
 app.get('/heritage-farm', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/heritage-farm.html'));
 });
@@ -129,6 +156,10 @@ app.get('/prairie-peace', (req, res) => {
 
 app.get('/hunting-liability-waiver', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting-liability-waiver.html'));
+});
+
+app.get('/forsale', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/forsale.html'));
 });
 
 // Main route - must come last among GET routes

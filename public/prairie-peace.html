@@ -912,6 +912,7 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/" class="nav-link">Home</a></li>
                     <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
                     <li><a href="/hunting" class="nav-link">Hunting</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
                     <li><a href="/admin" class="nav-link">Admin</a></li>
@@ -1020,6 +1021,14 @@
             <br><br>
             <strong style="color: #d4af37;">Colorado DOW Big Game Unit: 98</strong>
         </p>
+
+        <!-- Important Notice for Dog Hunters -->
+        <div style="background: #fff3cd; border-left: 5px solid #f57c00; padding: 20px; margin: 30px 0; border-radius: 5px;">
+            <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 20px; font-weight: bold;">IMPORTANT NOTICE FOR DOG HUNTERS</h3>
+            <p style="margin: 0; color: #856404; line-height: 1.6; font-size: 16px;">
+                <strong>Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, it is strongly advised to stay in the native grass areas. Native grass sections are sticker-free and provide excellent hunting opportunities.
+            </p>
+        </div>
 
         <!-- Features -->
         <div class="features-grid">
@@ -1177,12 +1186,12 @@
 
                 <div class="parcel-card">
                     <div class="parcel-header">
-                        <h3 class="parcel-name">Madsen Pasture</h3>
+                        <h3 class="parcel-name">Prairie Peace Campsite Acreage</h3>
                         <div class="parcel-acreage">155 acres</div>
                     </div>
                     <div class="parcel-content">
                         <p class="parcel-features">
-                            Mixed terrain with good cover for deer and turkey. The varied landscape creates natural funnels 
+                            Mixed terrain with good cover for deer and turkey. The varied landscape creates natural funnels
                             and provides excellent ambush points for multiple species.
                         </p>
                     </div>
@@ -1286,39 +1295,8 @@
                 Hear from hunters who have experienced Prairie Peace firsthand
             </p>
 
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">
-                        "Prairie Peace is the perfect name - it's exactly that. Just me and my son, seven parcels to explore,
-                        and no pressure. We prairie dog shot in the morning, hunted doves at Creek Bed on 14 at midday, and
-                        set up for deer in the evening. Three species in one day! This is my new favorite hunting property."
-                    </p>
-                    <div class="testimonial-author">David M.</div>
-                    <div class="testimonial-details">Sterling, CO • Multi-species Hunt • September 2024</div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">
-                        "Brought my two buddies for a long weekend. The variety here is incredible - we hunted different parcels
-                        each day and never felt crowded. The South Section alone kept us busy for a full day. Prairie dog towns
-                        everywhere, great fencelines for deer. Best decision was choosing a property sized for our small group."
-                    </p>
-                    <div class="testimonial-author">Tom R.</div>
-                    <div class="testimonial-details">Fort Morgan, CO • Prairie Dog & Deer Hunt • October 2024</div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">
-                        "Solo hunter here - Prairie Peace is perfect when you don't want to coordinate with a big group.
-                        I spent three days exploring different areas, following the game. The camping spot is quiet and well-equipped.
-                        Kyle's recommendations on where to hunt what species were spot-on. Will definitely return."
-                    </p>
-                    <div class="testimonial-author">Carl B.</div>
-                    <div class="testimonial-details">Brush, CO • Solo Hunt • November 2024</div>
-                </div>
+            <div class="testimonials-grid" id="testimonialsContainer">
+                <div style="text-align: center; padding: 40px; color: #666;">Loading testimonials...</div>
             </div>
         </div>
     </section>
@@ -1520,11 +1498,53 @@
             }
         }
 
+        // Load testimonials from database
+        async function loadTestimonials() {
+            const container = document.getElementById('testimonialsContainer');
+
+            try {
+                const response = await fetch('/api/testimonials/approved?property=Prairie Peace');
+                const data = await response.json();
+
+                if (data.success && data.testimonials && data.testimonials.length > 0) {
+                    container.innerHTML = data.testimonials.map(testimonial => `
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}</div>
+                            <p class="testimonial-text">"${testimonial.text}"</p>
+                            <div class="testimonial-author">${testimonial.user ? testimonial.user.name : 'Anonymous Hunter'}</div>
+                            <div class="testimonial-details">
+                                ${testimonial.huntType ? testimonial.huntType + ' • ' : ''}
+                                ${testimonial.huntDate ? new Date(testimonial.huntDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Show default message if no testimonials
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                            <p>Be the first to share your hunting experience at Prairie Peace!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                // Show fallback message
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                        <p>Experience the peace and variety of Prairie Peace yourself!</p>
+                    </div>
+                `;
+            }
+        }
+
         // Initialize carousels when page loads
         window.addEventListener('DOMContentLoaded', () => {
             new Carousel('bigGameCarousel', galleryImages.bigGame, 'assets/images/prairie-peace/big-game/');
             new Carousel('smallGameCarousel', galleryImages.smallGame, 'assets/images/prairie-peace/small-game/');
             new Carousel('propertyCarousel', galleryImages.propertyPictures, 'assets/images/prairie-peace/property-pictures/');
+
+            // Load testimonials
+            loadTestimonials();
         });
     </script>
 </body>

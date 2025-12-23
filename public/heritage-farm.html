@@ -820,6 +820,7 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/" class="nav-link">Home</a></li>
                     <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
                     <li><a href="/hunting" class="nav-link">Hunting</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
                     <li><a href="/admin" class="nav-link">Admin</a></li>
@@ -926,6 +927,14 @@
             <br><br>
             <strong style="color: #d4af37;">Colorado DOW Big Game Unit: 93</strong>
         </p>
+
+        <!-- Important Notice for Dog Hunters -->
+        <div style="background: #fff3cd; border-left: 5px solid #f57c00; padding: 20px; margin: 30px 0; border-radius: 5px;">
+            <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 20px; font-weight: bold;">IMPORTANT NOTICE FOR DOG HUNTERS</h3>
+            <p style="margin: 0; color: #856404; line-height: 1.6; font-size: 16px;">
+                <strong>Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, it is strongly advised to stay in the native grass areas. Native grass sections are sticker-free and provide excellent hunting opportunities.
+            </p>
+        </div>
 
         <!-- Features -->
         <div class="features-grid">
@@ -1132,39 +1141,8 @@
                 Hear from hunters who have experienced the Heritage Farm firsthand
             </p>
 
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">
-                        "The diversity of habitat on Heritage Farm is incredible. We hunted all five parcels over a long weekend
-                        and saw deer on every single one. The rolling dunes parcel gave us multiple shot opportunities, and the
-                        homestead camping setup was perfect for our group. This is what hunting Colorado prairie should be."
-                    </p>
-                    <div class="testimonial-author">Mike S.</div>
-                    <div class="testimonial-details">Denver, CO • Deer & Pheasant Hunt • November 2024</div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">
-                        "Brought our family group of 8 hunters and everyone had room to spread out. The pheasant numbers in the
-                        CRP fields were outstanding - we limited out two days in a row. Kyle's knowledge of the property and
-                        where to find game made all the difference. Already booked for next year!"
-                    </p>
-                    <div class="testimonial-author">Robert T.</div>
-                    <div class="testimonial-details">Cheyenne, WY • Pheasant Hunt • October 2024</div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">
-                        "The historic aspect of hunting on homestead land that's been in the same family for four generations
-                        adds something special to the experience. Great deer habitat, well-maintained property, and the camping
-                        at the original homestead site with hookups was a nice touch. Highly recommend Heritage Farm."
-                    </p>
-                    <div class="testimonial-author">James K.</div>
-                    <div class="testimonial-details">Fort Collins, CO • Deer Hunt • December 2024</div>
-                </div>
+            <div class="testimonials-grid" id="testimonialsContainer">
+                <div style="text-align: center; padding: 40px; color: #666;">Loading testimonials...</div>
             </div>
         </div>
     </section>
@@ -1366,11 +1344,53 @@
             }
         }
 
+        // Load testimonials from database
+        async function loadTestimonials() {
+            const container = document.getElementById('testimonialsContainer');
+
+            try {
+                const response = await fetch('/api/testimonials/approved?property=Heritage Farm');
+                const data = await response.json();
+
+                if (data.success && data.testimonials && data.testimonials.length > 0) {
+                    container.innerHTML = data.testimonials.map(testimonial => `
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}</div>
+                            <p class="testimonial-text">"${testimonial.text}"</p>
+                            <div class="testimonial-author">${testimonial.user ? testimonial.user.name : 'Anonymous Hunter'}</div>
+                            <div class="testimonial-details">
+                                ${testimonial.huntType ? testimonial.huntType + ' • ' : ''}
+                                ${testimonial.huntDate ? new Date(testimonial.huntDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Show default message if no testimonials
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                            <p>Be the first to share your hunting experience at Heritage Farm!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                // Show fallback message
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                        <p>Experience the diversity of Heritage Farm yourself!</p>
+                    </div>
+                `;
+            }
+        }
+
         // Initialize carousels when page loads
         window.addEventListener('DOMContentLoaded', () => {
             new Carousel('bigGameCarousel', galleryImages.bigGame, 'assets/images/heritage-farm/big-game/');
             new Carousel('smallGameCarousel', galleryImages.smallGame, 'assets/images/heritage-farm/small-game/');
             new Carousel('propertyCarousel', galleryImages.propertyPictures, 'assets/images/heritage-farm/property-pictures/');
+
+            // Load testimonials
+            loadTestimonials();
         });
     </script>
 </body>

@@ -433,6 +433,7 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/" class="nav-link">Home</a></li>
                     <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
                     <li><a href="/hunting" class="nav-link active">Hunting</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
                     <li><a href="/admin" class="nav-link">Admin</a></li>
@@ -444,7 +445,7 @@
     <div class="container">
         <h1 class="page-title">Hunting Reservations</h1>
         <p class="page-subtitle">Book your hunt on our historic Northeast Colorado properties</p>
-        
+
         <!-- Property Cards -->
         <div class="property-cards">
             <div class="property-card">
@@ -471,7 +472,7 @@
                 <a href="/prairie-peace" class="property-link">View Property Details</a>
             </div>
         </div>
-        
+
         <!-- Calendar -->
         <div class="calendar-section">
             <h2 class="section-title">Check Availability</h2>
@@ -512,7 +513,15 @@
         <!-- Booking Form -->
         <div class="booking-form-section">
             <h2 class="section-title">Reserve Your Hunt</h2>
-            
+
+            <!-- Important Notice for Hunters with Dogs -->
+            <div style="background: #fff3cd; border-left: 5px solid #f57c00; padding: 20px; margin-bottom: 30px; border-radius: 5px;">
+                <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">IMPORTANT NOTICE FOR HUNTERS WITH DOGS</h3>
+                <p style="margin: 0; color: #856404; line-height: 1.6;">
+                    <strong>Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, it is strongly advised to stay in the native grass areas. Native grass sections are sticker-free and provide excellent hunting opportunities.
+                </p>
+            </div>
+
             <form id="bookingForm">
                 <div class="form-group">
                     <label>Select Property</label>
@@ -520,6 +529,7 @@
                         <option value="">Choose a property...</option>
                         <option value="Heritage Farm">M77 AG Heritage Farm - Sedgwick County ($200/day)</option>
                         <option value="Prairie Peace">Prairie Peace - Logan County ($200/day)</option>
+                        <option value="Both Properties">BOTH PROPERTIES - All 2,710 Acres ($300/day)</option>
                     </select>
                 </div>
                 
@@ -538,13 +548,25 @@
                     <label>Number of Hunters</label>
                     <input type="number" id="numHunters" min="1" value="1" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Game Species (check all that apply)</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 15px 25px; margin-top: 10px;">
                         <label style="display: flex; align-items: center; font-weight: normal;">
-                            <input type="checkbox" id="deer" value="Deer" style="width: auto; margin-right: 8px;">
-                            Deer
+                            <input type="checkbox" id="muleDeerBuck" value="Mule Deer Buck" style="width: auto; margin-right: 8px;">
+                            Mule Deer Buck
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="muleDeerDoe" value="Mule Deer Doe" style="width: auto; margin-right: 8px;">
+                            Mule Deer Doe
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="whitetailBuck" value="Whitetail Deer Buck" style="width: auto; margin-right: 8px;">
+                            Whitetail Deer Buck
+                        </label>
+                        <label style="display: flex; align-items: center; font-weight: normal;">
+                            <input type="checkbox" id="whitetailDoe" value="Whitetail Deer Doe" style="width: auto; margin-right: 8px;">
+                            Whitetail Deer Doe
                         </label>
                         <label style="display: flex; align-items: center; font-weight: normal;">
                             <input type="checkbox" id="pheasant" value="Pheasant" style="width: auto; margin-right: 8px;">
@@ -572,14 +594,54 @@
                         </label>
                     </div>
                 </div>
-                
+
+                <!-- Coyote Hunting Type (shown when coyote is selected) -->
+                <div class="form-group" id="coyoteHuntingTypeGroup" style="display: none;">
+                    <label style="color: #2c5530; font-weight: bold;">Coyote Hunting Type</label>
+                    <div style="background: #f8f6f3; border: 2px solid #2c5530; padding: 20px; border-radius: 8px; margin-top: 10px;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; padding: 10px; background: white; border-radius: 5px;">
+                                <input type="radio" name="coyoteHuntingType" value="Day Calling" style="width: auto; margin-right: 12px;" checked>
+                                <div>
+                                    <div style="font-weight: bold; color: #2c5530;">Day Calling Only</div>
+                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">Hunt during daylight hours</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; padding: 10px; background: white; border-radius: 5px;">
+                                <input type="radio" name="coyoteHuntingType" value="Night Calling" style="width: auto; margin-right: 12px;">
+                                <div>
+                                    <div style="font-weight: bold; color: #2c5530;">Night Calling (Authorized)</div>
+                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">Includes authorization for night hunting with artificial light, night vision, thermal optics, and electronic calls</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div style="background: #fff3cd; border-left: 4px solid #d4af37; padding: 12px; margin-top: 15px; border-radius: 4px;">
+                            <p style="margin: 0; font-size: 13px; color: #856404; line-height: 1.5;">
+                                <strong>Note:</strong> If you select Night Calling, your vehicle dash card will include explicit night hunting authorization to show game wardens, along with property maps showing your authorized hunting areas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" id="campingAddon" style="width: auto; margin-right: 10px;">
                         Add Camping ($50/night)
                     </label>
                 </div>
-                
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="pawAppSignup" style="width: auto; margin-right: 10px;">
+                        Create an account to manage my bookings and reservations
+                    </label>
+                    <p style="font-size: 13px; color: #666; margin-top: 8px; margin-left: 24px;">
+                        Get access to view your booking details, track your reservations, and receive updates about your hunting trips.
+                    </p>
+                </div>
+
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Your Name</label>
@@ -596,10 +658,102 @@
                     <input type="email" id="hunterEmail" required>
                 </div>
 
+                <div class="form-group" style="background: #f0f7f0; padding: 20px; border-radius: 8px; border: 2px solid #2c5530;">
+                    <label style="display: flex; align-items: flex-start; cursor: pointer; margin-bottom: 0;">
+                        <input type="checkbox" id="createAccountCheckbox" style="width: auto; margin-right: 10px; margin-top: 3px;">
+                        <div>
+                            <span style="font-weight: 600; color: #2c5530;">Create an account to access your bookings and submit testimonials (optional)</span>
+                            <div style="font-size: 13px; color: #666; margin-top: 5px; line-height: 1.4;">
+                                With an account, you can view all your bookings, track waiver status, and submit hunting testimonials with photos.
+                            </div>
+                        </div>
+                    </label>
+                    <div id="passwordField" style="display: none; margin-top: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c5530;">Create Password</label>
+                        <input type="password" id="accountPassword" minlength="6" placeholder="Minimum 6 characters" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px;">
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                            Choose a password you'll remember - you'll use it to log in later
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Discount Code (optional)</label>
                     <input type="text" id="discountCode" placeholder="Enter code if you have one" style="text-transform: uppercase;">
                     <div id="discountMessage" style="margin-top: 8px; font-size: 14px; display: none;"></div>
+                </div>
+
+                <!-- IMPORTANT: Land Lease Information -->
+                <div style="background: linear-gradient(135deg, #2c5530 0%, #1a3d1f 100%); color: white; padding: 40px; border-radius: 12px; margin: 30px 0 30px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                    <h2 style="color: #d4af37; margin: 0 0 20px 0; font-size: 28px; text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 15px;">LAND LEASE AGREEMENT - WHAT YOU'RE BOOKING</h2>
+
+                    <div style="background: rgba(255,255,255,0.1); border-left: 4px solid #d4af37; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+                        <h3 style="color: #d4af37; margin: 0 0 15px 0; font-size: 22px;">You Are Leasing Private Land Access</h3>
+                        <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.8;">
+                            When you book with M77 AG, you are <strong style="color: #d4af37;">LEASING ACCESS to private hunting land</strong> - you are NOT purchasing a guided hunt or outfitter service. This is a <strong>land lease arrangement</strong> where you gain exclusive rights to hunt specific properties on designated dates.
+                        </p>
+                        <p style="margin: 0; font-size: 15px; line-height: 1.8; font-style: italic;">
+                            <strong style="color: #d4af37;">Colorado Law:</strong> We are legally prohibited from providing guiding services without proper outfitter licensing. This arrangement complies with all Colorado Parks & Wildlife regulations for private land access leasing.
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #d4af37; margin: 0 0 15px 0; font-size: 18px;">What You WILL Receive:</h4>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 2;">
+                                <li><strong>Exclusive property access</strong> on your reserved dates</li>
+                                <li><strong>Detailed property maps</strong> with GPS coordinates</li>
+                                <li><strong>Written landowner permission</strong> (dash card)</li>
+                                <li><strong>Property boundary files</strong> (KML for GPS devices)</li>
+                                <li><strong>Camping facilities</strong> (if reserved)</li>
+                                <li><strong>Emergency contact information</strong></li>
+                            </ul>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #d4af37; margin: 0 0 15px 0; font-size: 18px;">What You Will NOT Receive:</h4>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 2;">
+                                <li><strong>NO guiding services</strong> (prohibited by law)</li>
+                                <li><strong>NO scouting reports</strong> or game locations</li>
+                                <li><strong>NO field assistance</strong> or hunting advice</li>
+                                <li><strong>NO transportation</strong> on the property</li>
+                                <li><strong>NO game processing</strong> or retrieval help</li>
+                                <li><strong>NO lodging</strong> (camping only if reserved)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(212, 175, 55, 0.2); border: 2px solid #d4af37; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                        <h4 style="color: #d4af37; margin: 0 0 15px 0; font-size: 18px;">Your Responsibilities as a Hunter:</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 15px;">
+                            <ul style="margin: 0; padding-left: 20px; line-height: 2;">
+                                <li>Valid Colorado hunting license & tags</li>
+                                <li>Know and follow all CPW regulations</li>
+                                <li>Stay within property boundaries at all times</li>
+                                <li>Email hunting@m77ag.com <strong>IMMEDIATELY</strong> for downed game issues</li>
+                            </ul>
+                            <ul style="margin: 0; padding-left: 20px; line-height: 2;">
+                                <li>Pack out ALL trash and spent shells</li>
+                                <li>Close all gates behind you</li>
+                                <li>Respect livestock and farm equipment</li>
+                                <li>Hunt safely, ethically, and legally</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,69,0,0.15); border-left: 4px solid #ff4500; padding: 20px; border-radius: 8px;">
+                        <h4 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 18px;">Landowner's Role & Availability:</h4>
+                        <p style="margin: 0 0 10px 0; font-size: 15px; line-height: 1.8;">
+                            <strong style="color: #d4af37;">The landowner</strong> operates a working agricultural business and is NOT on-site during your hunt. After booking, you will receive emergency contact information for:
+                        </p>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 2;">
+                            <li><strong style="color: #ffcc00;">Downed game on neighboring property</strong> - Contact required before pursuing</li>
+                            <li><strong style="color: #ffcc00;">Safety emergencies</strong> - Accidents, injuries, or urgent situations</li>
+                            <li><strong style="color: #ffcc00;">Property damage</strong> - Report any damage to fences, gates, or equipment</li>
+                        </ul>
+                        <p style="margin: 15px 0 0 0; font-size: 14px; line-height: 1.6; font-style: italic;">
+                            <strong>Note:</strong> The landowner will NOT be available for hunting advice, game locations, field assistance, or non-emergency questions during your hunt. All questions should be asked before your reservation via email: hunting@m77ag.com
+                        </p>
+                    </div>
                 </div>
 
                 <div class="price-display">
@@ -639,19 +793,40 @@
             <div style="padding: 30px; text-align: center;">
                 <div style="background: #fff3cd; border: 3px solid #ffc107; border-radius: 8px; padding: 25px; margin-bottom: 20px;">
                     <h3 style="color: #856404; margin: 0 0 15px 0; font-size: 24px;">IMPORTANT: Check Your Email</h3>
-                    <p style="color: #856404; margin: 0; font-size: 16px; line-height: 1.6;">
-                        You must <strong>sign the liability waiver</strong> to confirm your hunt.<br>
-                        A link has been sent to your email address.
+                    <p style="color: #856404; margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;">
+                        Check your email at <strong>the address you submitted</strong>.<br>
+                        The confirmation email will come from <strong>hunting@m77ag.com</strong>
                     </p>
+                    <p style="color: #856404; margin: 0; font-size: 15px; font-weight: bold;">
+                        If the email is not in your inbox, CHECK YOUR SPAM FOLDER
+                    </p>
+                </div>
+                <div style="background: #e3f2fd; border-left: 5px solid #1976d2; padding: 15px; text-align: left; margin-bottom: 20px;">
+                    <p style="margin: 0 0 10px 0; color: #1565c0; font-weight: bold; font-size: 16px;">
+                        Next Steps:
+                    </p>
+                    <ol style="margin: 0; padding-left: 20px; color: #1565c0; line-height: 1.8;">
+                        <li>Open the email from hunting@m77ag.com</li>
+                        <li>Click the waiver link and sign the liability waiver</li>
+                        <li>You'll then receive property maps and your dash card</li>
+                    </ol>
                 </div>
                 <div style="background: #ffebee; border-left: 5px solid #c62828; padding: 15px; text-align: left; margin-bottom: 20px;">
                     <p style="margin: 0; color: #c62828; font-weight: bold;">
                         You will NOT be allowed to hunt without a signed waiver.
                     </p>
                 </div>
-                <p style="color: #666; margin-bottom: 20px;">
-                    After signing the waiver, you'll receive property maps and your vehicle dash card.
-                </p>
+                <div id="accountCreatedMessage" style="display: none; background: #e7f5e7; border-left: 5px solid #2d7a2d; padding: 15px; text-align: left; margin-bottom: 20px;">
+                    <p style="margin: 0 0 10px 0; color: #2d7a2d; font-weight: bold; font-size: 16px;">
+                        Account Created Successfully!
+                    </p>
+                    <p style="margin: 0 0 10px 0; color: #2d7a2d; line-height: 1.6;">
+                        You can now log in to view your bookings and submit hunting testimonials.
+                    </p>
+                    <a href="/user/dashboard" style="display: inline-block; background: #2c5530; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 5px;">
+                        Go to My Dashboard
+                    </a>
+                </div>
                 <button onclick="document.getElementById('bookingSuccessModal').style.display='none'; document.body.style.overflow='auto';" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
                     GOT IT
                 </button>
@@ -723,6 +898,7 @@
         let discountPercent = 0;
         let appliedDiscountCode = '';
         const bookedDates = {};
+        const gameRestDates = {};
         const DAILY_RATE = 200;
         const CAMPING_RATE = 50;
 
@@ -730,7 +906,10 @@
         const DISCOUNT_CODES = {
             'KCP100': 100,
             'KCP50': 50,
-            'KCP25': 25
+            'KCP25': 25,
+            'BEEF100': 100,
+            'BEEF50': 50,
+            'HUNTAGAIN': 25
         };
         
         // PHEASANT SEASON: Sept 1 - Jan 31
@@ -816,22 +995,33 @@
             
             return restDates;
         }
-        
-        const gameRestDates = generateGameRestDates();
-        
+
         // Load booked dates
         function loadBookedDates() {
-            fetch('/api/hunting/booked-dates')
+            return fetch('/api/hunting/booked-dates')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.bookings) {
                         Object.keys(bookedDates).forEach(key => delete bookedDates[key]);
-                        
+
                         data.bookings.forEach(booking => {
+                            // Use UTC to avoid timezone issues
                             const start = new Date(booking.checkinDate);
                             const end = new Date(booking.checkoutDate);
-                            
-                            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+
+                            // Create date strings using UTC date components to avoid timezone shifts
+                            const startYear = start.getUTCFullYear();
+                            const startMonth = start.getUTCMonth();
+                            const startDay = start.getUTCDate();
+
+                            const endYear = end.getUTCFullYear();
+                            const endMonth = end.getUTCMonth();
+                            const endDay = end.getUTCDate();
+
+                            const startUTC = new Date(Date.UTC(startYear, startMonth, startDay));
+                            const endUTC = new Date(Date.UTC(endYear, endMonth, endDay));
+
+                            for (let d = new Date(startUTC); d <= endUTC; d.setUTCDate(d.getUTCDate() + 1)) {
                                 const dateStr = d.toISOString().split('T')[0];
                                 if (!bookedDates[dateStr]) {
                                     bookedDates[dateStr] = {};
@@ -839,16 +1029,63 @@
                                 bookedDates[dateStr][booking.parcel] = true;
                             }
                         });
-                        
-                        generateCalendar();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading bookings:', error);
+                });
+        }
+
+        // Load game rest dates
+        function loadGameRestDates() {
+            return fetch('/api/hunting/game-rest-dates')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.gameRestPeriods) {
+                        Object.keys(gameRestDates).forEach(key => delete gameRestDates[key]);
+
+                        data.gameRestPeriods.forEach(period => {
+                            const start = new Date(period.startDate);
+                            const end = new Date(period.endDate);
+
+                            const startYear = start.getUTCFullYear();
+                            const startMonth = start.getUTCMonth();
+                            const startDay = start.getUTCDate();
+
+                            const endYear = end.getUTCFullYear();
+                            const endMonth = end.getUTCMonth();
+                            const endDay = end.getUTCDate();
+
+                            const startUTC = new Date(Date.UTC(startYear, startMonth, startDay));
+                            const endUTC = new Date(Date.UTC(endYear, endMonth, endDay));
+
+                            for (let d = new Date(startUTC); d <= endUTC; d.setUTCDate(d.getUTCDate() + 1)) {
+                                const dateStr = d.toISOString().split('T')[0];
+                                if (!gameRestDates[dateStr]) {
+                                    gameRestDates[dateStr] = {};
+                                }
+                                gameRestDates[dateStr][period.parcel] = true;
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading game rest dates:', error);
+                });
+        }
+
+        // Load all calendar data and generate
+        function loadCalendarData() {
+            Promise.all([loadBookedDates(), loadGameRestDates()])
+                .then(() => {
+                    generateCalendar();
+                })
+                .catch(error => {
+                    console.error('Error loading calendar data:', error);
                     generateCalendar();
                 });
         }
-        
+
         // Generate calendar
         function generateCalendar() {
             const grid = document.getElementById('calendarGrid');
@@ -886,18 +1123,18 @@
                 cellDate.setHours(0, 0, 0, 0);
                 const dateStr = cellDate.toISOString().split('T')[0];
                 const isPast = cellDate < today;
-                const isGameRest = gameRestDates.has(dateStr);
                 const isHighDemand = isHighDemandDate(cellDate);
                 const bookings = bookedDates[dateStr] || {};
-                
+                const restPeriods = gameRestDates[dateStr] || {};
+
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
                 dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
-                
+
                 // Left = Heritage Farm, Right = Prairie Peace
                 const properties = ['Heritage Farm', 'Prairie Peace'];
                 const labels = ['HF', 'PP'];
-                
+
                 properties.forEach((property, idx) => {
                     const half = document.createElement('div');
                     half.className = 'property-half';
@@ -905,15 +1142,11 @@
 
                     if (isPast) {
                         half.classList.add('past');
-                    } else if (isGameRest) {
+                    } else if (restPeriods[property] || restPeriods['Both Properties']) {
                         half.classList.add('game-rest');
                         half.innerHTML = '<small style="font-size: 10px;">Rest</small>';
                         half.style.cursor = 'pointer';
-                        half.title = 'Click to request moving game rest period';
-                        half.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            showGameRestRequest(dateStr, property);
-                        });
+                        half.title = 'Game rest period';
                     } else if (bookings[property]) {
                         half.classList.add('booked');
                     } else if (isHighDemand) {
@@ -925,8 +1158,9 @@
                     dayDiv.appendChild(half);
                 });
 
-                // Click to select date (only if not game rest)
-                if (!isPast && !isGameRest) {
+                // Click to select date (allow clicking even on partial rest days)
+                const hasAnyRest = Object.keys(restPeriods).length > 0;
+                if (!isPast) {
                     dayDiv.addEventListener('click', () => {
                         document.getElementById('startDate').value = dateStr;
                         const endDate = new Date(cellDate);
@@ -962,7 +1196,10 @@
                 return;
             }
 
-            originalCost = DAILY_RATE * days;
+            // Determine daily rate based on property selection
+            const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
+
+            originalCost = dailyRate * days;
             if (camping) originalCost += (CAMPING_RATE * days);
 
             // Apply discount code
@@ -1048,7 +1285,7 @@
                 },
                 onError: function(err) {
                     console.error('PayPal error:', err);
-                    alert('Payment error. Please try Venmo or call 970-571-1015.');
+                    alert('Payment error. Please try Venmo or email hunting@m77ag.com for assistance.');
                 },
                 style: {
                     layout: 'vertical',
@@ -1097,10 +1334,27 @@
         // Submit booking
         function submitBooking(paymentStatus, transactionId = null) {
             const gameSpecies = [];
-            if (document.getElementById('deer').checked) gameSpecies.push('Deer');
+            if (document.getElementById('muleDeerBuck').checked) gameSpecies.push('Mule Deer Buck');
+            if (document.getElementById('muleDeerDoe').checked) gameSpecies.push('Mule Deer Doe');
+            if (document.getElementById('whitetailBuck').checked) gameSpecies.push('Whitetail Deer Buck');
+            if (document.getElementById('whitetailDoe').checked) gameSpecies.push('Whitetail Deer Doe');
             if (document.getElementById('pheasant').checked) gameSpecies.push('Pheasant');
             if (document.getElementById('turkey').checked) gameSpecies.push('Turkey');
-            
+            if (document.getElementById('dove').checked) gameSpecies.push('Dove');
+            if (document.getElementById('coyote').checked) gameSpecies.push('Coyote');
+            if (document.getElementById('prairieDogs').checked) gameSpecies.push('Prairie Dogs');
+            if (document.getElementById('rattlesnake').checked) gameSpecies.push('Rattlesnake');
+
+            // Get coyote hunting type if coyote is selected
+            let coyoteHuntingType = null;
+            if (document.getElementById('coyote').checked) {
+                const selectedType = document.querySelector('input[name="coyoteHuntingType"]:checked');
+                coyoteHuntingType = selectedType ? selectedType.value : 'Day Calling';
+            }
+
+            const property = document.getElementById('propertySelect').value;
+            const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
+
             const bookingData = {
                 customerName: document.getElementById('hunterName').value,
                 email: document.getElementById('hunterEmail').value,
@@ -1110,12 +1364,14 @@
                 checkoutDate: document.getElementById('endDate').value,
                 numHunters: parseInt(document.getElementById('numHunters').value),
                 gameSpecies: gameSpecies.join(', '),
+                coyoteHuntingType: coyoteHuntingType,
                 campingFee: document.getElementById('campingAddon').checked ? CAMPING_RATE : 0,
+                pawAppSignup: document.getElementById('pawAppSignup').checked,
                 totalPrice: totalCost,
                 paymentStatus: paymentStatus,
                 paymentMethod: paymentStatus === 'paid' ? 'paypal' : (paymentStatus === 'complimentary' ? 'complimentary' : 'cash'),
                 paypalTransactionId: transactionId,
-                dailyRate: DAILY_RATE,
+                dailyRate: dailyRate,
                 numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000),
                 discountCode: appliedDiscountCode,
                 discountPercent: discountPercent,
@@ -1131,16 +1387,58 @@
                 console.log('Response status:', response.status);
                 return response.json();
             })
-            .then(data => {
+            .then(async data => {
                 console.log('Response data:', data);
                 if (data.success) {
+                    // Create account if checkbox is checked
+                    if (document.getElementById('createAccountCheckbox').checked) {
+                        const password = document.getElementById('accountPassword').value;
+                        if (password && password.length >= 6) {
+                            try {
+                                const accountResponse = await fetch('/api/auth/register', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        name: document.getElementById('hunterName').value,
+                                        email: document.getElementById('hunterEmail').value,
+                                        phone: document.getElementById('hunterPhone').value,
+                                        password: password
+                                    })
+                                });
+
+                                const accountData = await accountResponse.json();
+                                if (accountData.success) {
+                                    console.log('Account created successfully');
+                                    // Store token and user info
+                                    localStorage.setItem('token', accountData.token);
+                                    localStorage.setItem('user', JSON.stringify(accountData.user));
+                                } else {
+                                    console.log('Account creation failed:', accountData.message);
+                                    // Don't fail the booking if account creation fails
+                                }
+                            } catch (error) {
+                                console.error('Account creation error:', error);
+                                // Don't fail the booking if account creation fails
+                            }
+                        }
+                    }
+
                     console.log('Showing success modal');
                     const modal = document.getElementById('bookingSuccessModal');
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
+
+                    // Show account creation message if account was created
+                    const accountMessage = document.getElementById('accountCreatedMessage');
+                    if (document.getElementById('createAccountCheckbox').checked && localStorage.getItem('token')) {
+                        accountMessage.style.display = 'block';
+                    } else {
+                        accountMessage.style.display = 'none';
+                    }
+
                     document.getElementById('bookingForm').reset();
                     calculateTotal();
-                    loadBookedDates();
+                    loadCalendarData();
                 } else {
                     alert('Error: ' + (data.message || 'Unable to complete booking. Please contact hunting@m77ag.com'));
                     console.error('Booking error:', data);
@@ -1159,6 +1457,30 @@
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
         document.getElementById('discountCode').addEventListener('input', calculateTotal);
 
+        // Show/hide password field when create account checkbox is checked
+        document.getElementById('createAccountCheckbox').addEventListener('change', function() {
+            const passwordField = document.getElementById('passwordField');
+            const passwordInput = document.getElementById('accountPassword');
+            if (this.checked) {
+                passwordField.style.display = 'block';
+                passwordInput.required = true;
+            } else {
+                passwordField.style.display = 'none';
+                passwordInput.required = false;
+                passwordInput.value = '';
+            }
+        });
+
+        // Show/hide coyote hunting type field when coyote checkbox is checked
+        document.getElementById('coyote').addEventListener('change', function() {
+            const coyoteTypeGroup = document.getElementById('coyoteHuntingTypeGroup');
+            if (this.checked) {
+                coyoteTypeGroup.style.display = 'block';
+            } else {
+                coyoteTypeGroup.style.display = 'none';
+            }
+        });
+
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             generateCalendar();
@@ -1176,7 +1498,7 @@
         
         // Initialize
         document.getElementById('paypal-button-container').innerHTML = '<div style="padding: 40px; text-align: center; background: #f0f0f0; border-radius: 5px; color: #666;">Fill out form to see payment options</div>';
-        loadBookedDates();
+        loadCalendarData();
 
         // Game Rest Request Functions
         let currentRestRequest = { date: '', property: '' };
@@ -1232,13 +1554,358 @@
                     alert('Thank you! Your request has been submitted. We will contact you within 24 hours to discuss moving the game rest period.');
                     closeGameRestModal();
                 } else {
-                    alert('Error submitting request. Please call us at (970) 520-5167 or email hunting@m77ag.com');
+                    alert('Error submitting request. Please email hunting@m77ag.com for assistance.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error submitting request. Please call us at (970) 520-5167 or email hunting@m77ag.com');
+                alert('Error submitting request. Please email hunting@m77ag.com for assistance.');
             });
+        }
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-container">
+        <button id="chatbot-toggle" onclick="toggleChatbot()" aria-label="Chat with us">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span id="chatbot-badge">?</span>
+        </button>
+
+        <div id="chatbot-window" style="display: none;">
+            <div id="chatbot-header">
+                <h3>M77 AG Hunting Assistant</h3>
+                <button onclick="toggleChatbot()" aria-label="Close chat">&times;</button>
+            </div>
+            <div id="chatbot-body">
+                <div class="chatbot-message bot-message">
+                    <p>Hi! I'm here to answer common questions about hunting at M77 AG. Click any question below:</p>
+                </div>
+                <div id="chatbot-questions">
+                    <button class="chatbot-question" onclick="showAnswer('property-info')">Tell me more about the properties</button>
+                    <button class="chatbot-question" onclick="showAnswer('best-for-birds')">Which property is best for birds?</button>
+                    <button class="chatbot-question" onclick="showAnswer('stickers')">How many stickers/burrs are out there?</button>
+                    <button class="chatbot-question" onclick="showAnswer('pricing')">Is the price per day or per gun?</button>
+                    <button class="chatbot-question" onclick="showAnswer('dog-running')">Will my dog be able to run?</button>
+                    <button class="chatbot-question" onclick="showAnswer('group-hunt')">I have a group - where's the best place?</button>
+                    <button class="chatbot-question" onclick="showAnswer('parking')">Where can I park?</button>
+                    <button class="chatbot-question" onclick="showAnswer('campsites')">Can I see the camp sites?</button>
+                    <button class="chatbot-question" onclick="showAnswer('whats-included')">What's included in the price?</button>
+                    <button class="chatbot-question" onclick="showAnswer('bring-dog')">Can I bring my dog?</button>
+                    <button class="chatbot-question" onclick="showAnswer('game-species')">What game species are available?</button>
+                    <button class="chatbot-question" onclick="showAnswer('hunting-license')">Do I need a Colorado hunting license?</button>
+                    <button class="chatbot-question" onclick="showAnswer('camping')">Can I camp on the property?</button>
+                    <button class="chatbot-question" onclick="showAnswer('property-difference')">What's the difference between the two properties?</button>
+                    <button class="chatbot-question" onclick="showAnswer('directions')">How do I get to the property?</button>
+                    <button class="chatbot-question" onclick="showAnswer('facilities')">Are there bathrooms/facilities?</button>
+                    <button class="chatbot-question" onclick="showAnswer('scouting')">Can I scout before my hunt?</button>
+                    <button class="chatbot-question" onclick="showAnswer('cancellation')">What's your cancellation policy?</button>
+                    <button class="chatbot-question" onclick="showAnswer('coyote-calling')">Can I hunt coyotes at night?</button>
+                </div>
+                <div id="chatbot-messages"></div>
+            </div>
+            <div id="chatbot-footer">
+                <p>Still have questions? <a href="mailto:hunting@m77ag.com">Email us at hunting@m77ag.com</a> - We will respond as soon as we are able</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        #chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #2d5016;
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        #chatbot-toggle:hover {
+            transform: scale(1.05);
+            background: #3d6016;
+        }
+
+        #chatbot-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #d4af37;
+            color: #2d5016;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            height: 600px;
+            max-height: calc(100vh - 120px);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chatbot-header {
+            background: #2d5016;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chatbot-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        #chatbot-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chatbot-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .chatbot-message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            max-width: 85%;
+        }
+
+        .bot-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .user-message {
+            background: #2d5016;
+            color: white;
+            margin-left: auto;
+        }
+
+        #chatbot-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .chatbot-question {
+            background: white;
+            border: 2px solid #2d5016;
+            color: #2d5016;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .chatbot-question:hover {
+            background: #2d5016;
+            color: white;
+        }
+
+        #chatbot-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 13px;
+            background: #f8f8f8;
+        }
+
+        #chatbot-footer a {
+            color: #2d5016;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        #chatbot-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            #chatbot-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 120px);
+                bottom: 80px;
+                right: 0;
+            }
+        }
+    </style>
+
+    <script>
+        const chatbotAnswers = {
+            'property-info': {
+                question: 'Tell me more about the properties',
+                answer: `We have two properties: <strong>Heritage Farm (1,160 acres)</strong> in Sedgwick County with rolling dunes, CRP fields, and shelterbelts - perfect for all-around hunting. <strong>Prairie Peace (1,550 acres)</strong> in Logan County is ideal for small groups of 3-4 hunters with diverse terrain including creek beds and turkey woods. Both properties offer excellent hunting for mule deer, pheasant, turkey, coyote, and prairie dogs.`
+            },
+            'best-for-birds': {
+                question: 'Which property is best for birds?',
+                answer: `<strong>Heritage Farm</strong> is better for birds, especially pheasants. It has more CRP grass, crop fields, and shelterbelt cover that birds love. Prairie Peace also has good bird hunting, particularly in the Creek Bed and Pheasant Run parcels, but Heritage Farm's 1,160 acres of diverse habitat give you more bird hunting opportunities.`
+            },
+            'stickers': {
+                question: 'How many stickers/burrs are out there?',
+                answer: `Due to abundant rain this season, <strong>crop ground areas have heavy sandburs and goat heads</strong>. However, our <strong>native grass areas are completely sticker-free</strong>! We strongly recommend staying in the native grass sections if your dogs aren't used to stickers. The native grass provides excellent hunting and your dogs will be safe and comfortable.`
+            },
+            'pricing': {
+                question: 'Is the price per day or per gun?',
+                answer: `<strong>$200/day PER PROPERTY</strong> - not per person! You can bring multiple hunters. Heritage Farm is $200/day, Prairie Peace is $200/day, or hunt BOTH properties for $300/day. You're paying for exclusive access to the entire property for the day, so bring your whole group!`
+            },
+            'dog-running': {
+                question: 'Will my dog be able to run?',
+                answer: `<strong>Yes, absolutely!</strong> Stick to the native grass areas which are sticker-free and your dog will love it. The native grass sections offer excellent cover and hunting. If your dog isn't used to running through stickers, avoid the crop ground areas this season. Most of our property is native grass, so you'll have plenty of room for your dogs to work.`
+            },
+            'group-hunt': {
+                question: 'I have a group - where\'s the best place?',
+                answer: `For larger groups (5+ hunters), <strong>Heritage Farm</strong> is your best bet with 1,160 acres and 5 distinct parcels. For smaller groups (3-4 hunters), <strong>Prairie Peace</strong> offers an intimate experience perfect for your size. Want the ultimate group experience? Book <strong>BOTH properties for $300/day</strong> and hunt all 2,710 acres!`
+            },
+            'parking': {
+                question: 'Where can I park?',
+                answer: `You can park at designated entrances on each parcel. After booking, you'll receive detailed maps showing GPS coordinates for each parcel entrance. Park along field edges - we have plenty of space. Your confirmation email includes turn-by-turn directions and exact parking locations.`
+            },
+            'campsites': {
+                question: 'Can I see the camp sites?',
+                answer: `<strong>Prairie Peace</strong> has a designated camping area (Parcel #3) with water and electric hookups! It's perfect for RVs or tent camping. Heritage Farm doesn't have formal camping facilities but you can camp on the property. Photos and GPS coordinates for the Prairie Peace campsite are included in your booking confirmation email.`
+            },
+            'whats-included': {
+                question: 'What\'s included in the price?',
+                answer: `Your daily rate includes: <strong>exclusive access to the entire property, all game species (deer, pheasant, turkey, coyote, prairie dogs), detailed maps with GPS coordinates, boundary markers, and email support</strong>. Optional camping at Prairie Peace adds $25/night for hookups. You provide your own hunting license, gear, and ammo.`
+            },
+            'bring-dog': {
+                question: 'Can I bring my dog?',
+                answer: `<strong>Yes, dogs are welcome!</strong> In fact, we encourage bird hunters to bring dogs. Just remember to stick to native grass areas this season to protect their paws from stickers. The native grass provides excellent cover for bird dogs to work.`
+            },
+            'game-species': {
+                question: 'What game species are available?',
+                answer: `We have excellent populations of: <strong>Mule Deer Bucks & Does (both properties), Whitetail Deer Bucks & Does (both properties), Pheasant (especially Heritage Farm), Turkey (Prairie Peace is fantastic), Coyote, Prairie Dogs, Dove, and occasional Antelope</strong>. Heritage Farm is in Big Game Unit 93, Prairie Peace is in Unit 98. Note: When booking, please select which deer species and sex you're targeting.`
+            },
+            'hunting-license': {
+                question: 'Do I need a Colorado hunting license?',
+                answer: `<strong>Yes, you must have a valid Colorado hunting license and any required tags</strong> for the species you're hunting. Purchase licenses at <a href="https://cpw.state.co.us" target="_blank">cpw.state.co.us</a>. We only provide the hunting land - you're responsible for all licenses and following Colorado hunting regulations.`
+            },
+            'camping': {
+                question: 'Can I camp on the property?',
+                answer: `<strong>Yes!</strong> Prairie Peace has a designated campsite (Parcel #3) with water and electric hookups for $25/night. Heritage Farm allows camping but doesn't have hookups. Most hunters camp at Prairie Peace and hunt both properties when they book the $300/day "Both Properties" option.`
+            },
+            'property-difference': {
+                question: 'What\'s the difference between the two properties?',
+                answer: `<strong>Heritage Farm (1,160 acres)</strong>: Best for larger groups, more birds, rolling dunes, CRP fields, 5 parcels, Sedgwick County, Unit 93. <strong>Prairie Peace (1,550 acres)</strong>: Best for 3-4 hunters, creek beds, turkey woods, camping with hookups, 7 parcels, Logan County, Unit 98. Both have deer, coyote, and prairie dogs!`
+            },
+            'directions': {
+                question: 'How do I get to the property?',
+                answer: `After booking, you'll receive a confirmation email with: <strong>turn-by-turn directions, GPS coordinates for each parcel, Google Maps links you can click for navigation, and downloadable KML files for Google Earth</strong>. We make it super easy to find! Generally, Heritage Farm is near Sedgwick, CO and Prairie Peace is south of Haxtun, CO.`
+            },
+            'facilities': {
+                question: 'Are there bathrooms/facilities?',
+                answer: `<strong>No permanent bathrooms</strong> - this is raw hunting land! Most hunters bring a portable toilet or use the great outdoors. Prairie Peace campsite has no bathroom but you can bring your RV with facilities. Plan accordingly and bring what you need!`
+            },
+            'scouting': {
+                question: 'Can I scout before my hunt?',
+                answer: `<strong>Contact us to arrange scouting</strong> at hunting@m77ag.com. We can often accommodate scouting visits, especially if you're booking multiple days. We want you to be successful, so we're happy to work with you on pre-hunt scouting when possible.`
+            },
+            'cancellation': {
+                question: 'What\'s your cancellation policy?',
+                answer: `Please contact us at <strong>hunting@m77ag.com</strong> if you need to cancel or reschedule. We understand weather and life happen! We work with you on a case-by-case basis and do our best to accommodate changes when possible.`
+            },
+            'coyote-calling': {
+                question: 'Can I hunt coyotes at night?',
+                answer: `<strong>YES! Night coyote calling is LEGAL on our private property year-round!</strong> Colorado allows night hunting for coyotes on private land with landowner permission (which you have). You can use: <strong>electronic callers, night vision, thermal imaging, and artificial lights</strong>. No closed season - hunt coyotes any time! You'll need a Colorado furbearer license. Perfect for predator hunters! Same <strong>$200/day</strong> rate applies.`
+            }
+        };
+
+        function toggleChatbot() {
+            const window = document.getElementById('chatbot-window');
+            const badge = document.getElementById('chatbot-badge');
+            if (window.style.display === 'none') {
+                window.style.display = 'flex';
+                badge.style.display = 'none';
+            } else {
+                window.style.display = 'none';
+                badge.style.display = 'flex';
+            }
+        }
+
+        function showAnswer(key) {
+            const answer = chatbotAnswers[key];
+            const messagesDiv = document.getElementById('chatbot-messages');
+            const questionsDiv = document.getElementById('chatbot-questions');
+
+            // Hide questions
+            questionsDiv.style.display = 'none';
+
+            // Show user question
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chatbot-message user-message';
+            userMsg.innerHTML = `<p>${answer.question}</p>`;
+            messagesDiv.appendChild(userMsg);
+
+            // Show bot answer
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chatbot-message bot-message';
+                botMsg.innerHTML = `<p>${answer.answer}</p>`;
+                messagesDiv.appendChild(botMsg);
+
+                // Scroll to bottom
+                document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
+
+                // Show back button
+                setTimeout(() => {
+                    const backBtn = document.createElement('button');
+                    backBtn.className = 'chatbot-question';
+                    backBtn.textContent = '← Back to questions';
+                    backBtn.onclick = () => {
+                        messagesDiv.innerHTML = '';
+                        questionsDiv.style.display = 'flex';
+                    };
+                    messagesDiv.appendChild(backBtn);
+                    document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
+                }, 500);
+            }, 300);
         }
     </script>
 </body>

@@ -118,11 +118,11 @@ function getHuntingConfirmationEmail(booking) {
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkIn).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkinDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkOut).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkoutDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
@@ -157,10 +157,18 @@ function getHuntingConfirmationEmail(booking) {
     </div>
 
     <div class="warning-box">
-      <h3>REQUIRED: Sign Liability Waiver</h3>
-      <p><strong>Before your hunt, you MUST sign the liability waiver.</strong></p>
-      <p>You will not be allowed to hunt without a signed waiver.</p>
-      <a href="https://m77ag.com/hunting-liability-waiver.html?bookingId=${booking._id}" class="btn">SIGN WAIVER NOW</a>
+      <h3>REQUIRED: All Hunters Must Sign Waiver</h3>
+      <p><strong>EVERY hunter in your party MUST sign the liability waiver before hunting.</strong></p>
+      <p><strong>You have ${booking.numberOfHunters || booking.numHunters} hunters booked.</strong> Each person needs to sign individually.</p>
+      <p style="margin-top: 15px;"><strong>Share this link with your entire hunting party:</strong></p>
+      <a href="https://m77ag.com/sign-waiver.html?bookingId=${booking._id}" class="btn" style="margin-bottom: 15px;">SIGN WAIVER - ALL HUNTERS</a>
+      <p style="font-size: 14px; color: #666; margin-top: 10px;">
+        Each hunter can sign using your Booking ID: <strong>${booking._id.toString().slice(-8).toUpperCase()}</strong><br>
+        Or they can sign manually and we'll match it to your booking by date.
+      </p>
+      <p style="margin-top: 15px; color: #721c24; font-weight: bold;">
+        WARNING: No one will be allowed to hunt without a signed waiver.
+      </p>
     </div>
     
     <div class="important-info">
@@ -229,8 +237,8 @@ function getAdminNotificationEmail(booking) {
       
       <h3>Booking Details:</h3>
       <div class="detail"><span class="label">Property:</span> ${propertyName}</div>
-      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkIn).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkOut).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkinDate).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkoutDate).toLocaleDateString()}</div>
       <div class="detail"><span class="label">Hunters:</span> ${booking.numberOfHunters}</div>
       <div class="detail"><span class="label">Nights:</span> ${booking.numberOfNights}</div>
       <div class="detail"><span class="label">Total Price:</span> $${booking.totalPrice}</div>

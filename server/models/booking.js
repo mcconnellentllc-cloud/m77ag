@@ -37,6 +37,9 @@ const bookingSchema = new mongoose.Schema({
   // Game Species
   gameSpecies: String,
 
+  // Coyote Hunting Type (Day Calling or Night Calling)
+  coyoteHuntingType: String,
+
   // Vehicle Information
   vehicleMake: String,
   vehicleModel: String,
@@ -100,6 +103,27 @@ const bookingSchema = new mongoose.Schema({
     default: false
   },
   waiverSignedDate: Date,
+
+  // Paw App Signup
+  pawAppSignup: {
+    type: Boolean,
+    default: false
+  },
+
+  // Season Pass Redemption
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  seasonPassRedemption: {
+    type: Boolean,
+    default: false
+  },
+  creditsUsed: {
+    type: Number,
+    default: 0
+  },
 
   // Additional Notes
   notes: String,
