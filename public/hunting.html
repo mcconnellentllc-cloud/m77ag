@@ -1320,9 +1320,16 @@
             }
 
             // Validate at least one game species is selected
-            const gameChecked = document.getElementById('deer').checked ||
+            const gameChecked = document.getElementById('muleDeerBuck').checked ||
+                               document.getElementById('muleDeerDoe').checked ||
+                               document.getElementById('whitetailBuck').checked ||
+                               document.getElementById('whitetailDoe').checked ||
                                document.getElementById('pheasant').checked ||
-                               document.getElementById('turkey').checked;
+                               document.getElementById('turkey').checked ||
+                               document.getElementById('dove').checked ||
+                               document.getElementById('coyote').checked ||
+                               document.getElementById('prairieDogs').checked ||
+                               document.getElementById('rattlesnake').checked;
             if (!gameChecked) {
                 alert('Please select at least one game species');
                 return;

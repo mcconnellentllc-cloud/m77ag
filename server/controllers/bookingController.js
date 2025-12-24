@@ -179,6 +179,41 @@ const bookingController = {
 
       await booking.save();
 
+      // Update customer lifetime spend (for loyalty tracking)
+      try {
+        const User = require('../models/user');
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (user && totalPrice > 0) {
+          user.lifetimeSpend = (user.lifetimeSpend || 0) + totalPrice;
+
+          // Auto-update loyalty tier based on spend
+          if (user.lifetimeSpend >= 5000) {
+            user.loyaltyTier = 'platinum';
+          } else if (user.lifetimeSpend >= 3000) {
+            user.loyaltyTier = 'gold';
+          } else if (user.lifetimeSpend >= 2000) {
+            user.loyaltyTier = 'silver';
+          } else if (user.lifetimeSpend >= 1000) {
+            user.loyaltyTier = 'bronze';
+          }
+
+          await User.updateOne(
+            { _id: user._id },
+            {
+              $set: {
+                lifetimeSpend: user.lifetimeSpend,
+                loyaltyTier: user.loyaltyTier
+              }
+            }
+          );
+
+          console.log(`Updated ${email} lifetime spend: $${user.lifetimeSpend} (${user.loyaltyTier} tier)`);
+        }
+      } catch (spendError) {
+        console.error('Error updating customer spend:', spendError);
+        // Don't fail the booking if spend tracking fails
+      }
+
       // Create automatic game rest periods
       await createGameRestPeriods(booking);
 
@@ -758,6 +793,186 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to fetch bookings'
+      });
+    }
+  },
+
+  // Search for customer by name or email (for manual booking creation)
+  searchCustomer: async (req, res) => {
+    try {
+      const { query } = req.query;
+
+      if (!query || query.length < 3) {
+        return res.json({
+          success: true,
+          customers: []
+        });
+      }
+
+      const Booking = require('../models/booking');
+
+      // Search bookings by customer name or email
+      const bookings = await Booking.find({
+        $or: [
+          { customerName: new RegExp(query, 'i') },
+          { email: new RegExp(query, 'i') }
+        ]
+      }).sort({ createdAt: -1 }).limit(10);
+
+      // Get unique customers
+      const customersMap = new Map();
+      bookings.forEach(booking => {
+        const key = booking.email.toLowerCase();
+        if (!customersMap.has(key)) {
+          customersMap.set(key, {
+            name: booking.customerName,
+            email: booking.email,
+            phone: booking.phone,
+            lastBooking: booking.createdAt
+          });
+        }
+      });
+
+      const customers = Array.from(customersMap.values());
+
+      res.json({
+        success: true,
+        customers
+      });
+
+    } catch (error) {
+      console.error('Error searching customers:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to search customers'
+      });
+    }
+  },
+
+  // Admin: Create manual booking (for phone/offline bookings)
+  createManualBooking: async (req, res) => {
+    try {
+      const {
+        customerName,
+        email,
+        phone,
+        parcel,
+        checkinDate,
+        checkoutDate,
+        numHunters,
+        gameSpecies,
+        totalPrice,
+        paymentMethod,
+        paymentStatus,
+        notes
+      } = req.body;
+
+      // Create dates at noon local time
+      const checkinDateTime = new Date(checkinDate);
+      checkinDateTime.setHours(12, 0, 0, 0);
+
+      const checkoutDateTime = new Date(checkoutDate);
+      checkoutDateTime.setHours(12, 0, 0, 0);
+
+      // Calculate days
+      const numNights = Math.ceil((checkoutDateTime - checkinDateTime) / 86400000);
+      const dailyRate = parcel === 'Both Properties' ? 300 : 200;
+
+      // Check if dates are available
+      let existingBooking;
+      if (parcel === 'Both Properties') {
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: 'Heritage Farm' },
+            { parcel: 'Prairie Peace' },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
+        });
+      } else {
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: parcel },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
+        });
+      }
+
+      if (existingBooking) {
+        return res.status(400).json({
+          success: false,
+          message: `These dates are already booked (${existingBooking.parcel})`
+        });
+      }
+
+      // Create booking
+      const booking = new Booking({
+        customerName,
+        email: email.toLowerCase(),
+        phone,
+        parcel,
+        checkinDate: checkinDateTime,
+        checkoutDate: checkoutDateTime,
+        numHunters: numHunters || 1,
+        gameSpecies: gameSpecies || 'Pheasant',
+        dailyRate,
+        numNights,
+        campingFee: 0,
+        totalPrice: totalPrice || (dailyRate * numNights),
+        paymentMethod: paymentMethod || 'cash',
+        paymentStatus: paymentStatus || 'paid',
+        status: 'confirmed',
+        waiverSigned: false,
+        notes: notes || 'Manual booking created by admin'
+      });
+
+      await booking.save();
+
+      // Update customer spend
+      try {
+        const User = require('../models/user');
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (user && booking.totalPrice > 0) {
+          user.lifetimeSpend = (user.lifetimeSpend || 0) + booking.totalPrice;
+
+          if (user.lifetimeSpend >= 5000) user.loyaltyTier = 'platinum';
+          else if (user.lifetimeSpend >= 3000) user.loyaltyTier = 'gold';
+          else if (user.lifetimeSpend >= 2000) user.loyaltyTier = 'silver';
+          else if (user.lifetimeSpend >= 1000) user.loyaltyTier = 'bronze';
+
+          await User.updateOne(
+            { _id: user._id },
+            { $set: { lifetimeSpend: user.lifetimeSpend, loyaltyTier: user.loyaltyTier } }
+          );
+        }
+      } catch (spendError) {
+        console.error('Error updating spend:', spendError);
+      }
+
+      // Send confirmation email
+      try {
+        await sendBookingConfirmation(booking);
+        console.log('Confirmation email sent to:', email);
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'Manual booking created successfully',
+        booking
+      });
+
+    } catch (error) {
+      console.error('Error creating manual booking:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create manual booking: ' + error.message
       });
     }
   }
