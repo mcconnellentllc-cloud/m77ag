@@ -84,6 +84,21 @@ const userSchema = new mongoose.Schema({
     }]
   },
 
+  // Customer Loyalty / Spending Tracker
+  lifetimeSpend: {
+    type: Number,
+    default: 0
+  },
+  loyaltyTier: {
+    type: String,
+    enum: ['none', 'bronze', 'silver', 'gold', 'platinum'],
+    default: 'none'
+  },
+  loyaltyDiscountActive: {
+    type: Boolean,
+    default: false
+  },
+
   // Timestamps
   createdAt: {
     type: Date,

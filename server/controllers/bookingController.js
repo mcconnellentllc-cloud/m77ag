@@ -179,6 +179,41 @@ const bookingController = {
 
       await booking.save();
 
+      // Update customer lifetime spend (for loyalty tracking)
+      try {
+        const User = require('../models/user');
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (user && totalPrice > 0) {
+          user.lifetimeSpend = (user.lifetimeSpend || 0) + totalPrice;
+
+          // Auto-update loyalty tier based on spend
+          if (user.lifetimeSpend >= 5000) {
+            user.loyaltyTier = 'platinum';
+          } else if (user.lifetimeSpend >= 3000) {
+            user.loyaltyTier = 'gold';
+          } else if (user.lifetimeSpend >= 2000) {
+            user.loyaltyTier = 'silver';
+          } else if (user.lifetimeSpend >= 1000) {
+            user.loyaltyTier = 'bronze';
+          }
+
+          await User.updateOne(
+            { _id: user._id },
+            {
+              $set: {
+                lifetimeSpend: user.lifetimeSpend,
+                loyaltyTier: user.loyaltyTier
+              }
+            }
+          );
+
+          console.log(`Updated ${email} lifetime spend: $${user.lifetimeSpend} (${user.loyaltyTier} tier)`);
+        }
+      } catch (spendError) {
+        console.error('Error updating customer spend:', spendError);
+        // Don't fail the booking if spend tracking fails
+      }
+
       // Create automatic game rest periods
       await createGameRestPeriods(booking);
 
