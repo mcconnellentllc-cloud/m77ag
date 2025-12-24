@@ -162,6 +162,14 @@ app.get('/forsale', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/forsale.html'));
 });
 
+app.get('/season-pass', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/season-pass.html'));
+});
+
+app.get('/my-account', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/my-account.html'));
+});
+
 // Main route - must come last among GET routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
