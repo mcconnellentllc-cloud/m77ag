@@ -378,9 +378,45 @@
     </div>
 
     <div class="container">
-        <div id="successBanner" class="success-banner" style="display: none;">
-            <h2>🎉 Welcome to M77 AG Season Pass!</h2>
-            <p>Your purchase was successful. Start booking your hunt dates below!</p>
+        <div id="successBanner" class="success-banner" style="display: none; position: relative;">
+            <button onclick="document.getElementById('successBanner').style.display='none';" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold;">&times;</button>
+
+            <div style="margin-bottom: 25px;">
+                <h2 style="font-size: 32px; margin-bottom: 10px;">🎉 Welcome to M77 AG Season Pass!</h2>
+                <p style="font-size: 18px;">Your purchase was successful! Start booking your hunt dates below.</p>
+            </div>
+
+            <!-- PWA Installation Instructions -->
+            <div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 25px; text-align: left; margin-top: 20px;">
+                <p style="margin: 0 0 15px 0; font-weight: bold; font-size: 18px; text-align: center;">
+                    📱 Add M77 AG to Your Home Screen for Quick Access!
+                </p>
+                <p style="margin: 0 0 20px 0; text-align: center; font-size: 15px;">
+                    Access your bookings, season pass, and property maps instantly:
+                </p>
+
+                <!-- iPhone Instructions -->
+                <div style="background: rgba(255,255,255,0.95); color: #333; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                    <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 iPhone/iPad:</p>
+                    <ol style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 14px;">
+                        <li>Tap the <strong>Share button</strong> (square with arrow pointing up) at the bottom of Safari</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                        <li>Tap <strong>"Add"</strong> in the top right</li>
+                        <li>M77 AG will now appear on your home screen like an app!</li>
+                    </ol>
+                </div>
+
+                <!-- Android Instructions -->
+                <div style="background: rgba(255,255,255,0.95); color: #333; padding: 15px; border-radius: 6px;">
+                    <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 Android:</p>
+                    <ol style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 14px;">
+                        <li>Tap the <strong>menu button</strong> (three dots) in Chrome</li>
+                        <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                        <li>Tap <strong>"Add"</strong> or <strong>"Install"</strong></li>
+                        <li>M77 AG will now appear on your home screen!</li>
+                    </ol>
+                </div>
+            </div>
         </div>
 
         <div class="welcome-header">
@@ -457,9 +493,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('success') === 'true') {
             document.getElementById('successBanner').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('successBanner').style.display = 'none';
-            }, 10000);
+            // Banner stays visible until user closes it (has close button)
         }
 
         async function loadAccount() {
