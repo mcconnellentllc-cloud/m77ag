@@ -23,5 +23,6 @@ router.delete('/bookings/:id', authenticate, isAdmin, bookingController.cancelBo
 router.post('/bookings/:id/resend-confirmation', authenticate, isAdmin, bookingController.resendConfirmation);
 router.post('/bookings/:id/send-waiver-reminder', authenticate, isAdmin, bookingController.sendWaiverReminder);
 router.get('/search-customer', authenticate, isAdmin, bookingController.searchCustomer);
+router.post('/recalculate-spend', authenticate, isAdmin, bookingController.recalculateCustomerSpend);
 
 module.exports = router;

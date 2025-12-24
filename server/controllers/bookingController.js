@@ -975,6 +975,92 @@ const bookingController = {
         message: 'Failed to create manual booking: ' + error.message
       });
     }
+  },
+
+  // Admin: Recalculate customer lifetime spend
+  recalculateCustomerSpend: async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is required'
+        });
+      }
+
+      const User = require('../models/user');
+
+      // Find user
+      const user = await User.findOne({ email: email.toLowerCase() });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'No user account found for this email'
+        });
+      }
+
+      // Find all paid bookings for this email
+      const bookings = await Booking.find({
+        email: email.toLowerCase(),
+        paymentStatus: { $in: ['paid', 'paid_in_full', 'complimentary'] }
+      });
+
+      // Calculate total spend
+      let totalSpend = 0;
+      const bookingDetails = [];
+
+      bookings.forEach(booking => {
+        const amount = booking.totalPrice || 0;
+        totalSpend += amount;
+        bookingDetails.push({
+          date: booking.checkinDate,
+          amount: amount,
+          property: booking.parcel
+        });
+      });
+
+      // Determine loyalty tier
+      let tier = 'none';
+      if (totalSpend >= 5000) tier = 'platinum';
+      else if (totalSpend >= 3000) tier = 'gold';
+      else if (totalSpend >= 2000) tier = 'silver';
+      else if (totalSpend >= 1000) tier = 'bronze';
+
+      // Update user
+      await User.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            lifetimeSpend: totalSpend,
+            loyaltyTier: tier
+          }
+        }
+      );
+
+      console.log(`Updated ${email} - Lifetime Spend: $${totalSpend}, Tier: ${tier}`);
+
+      res.json({
+        success: true,
+        message: 'Customer lifetime spend recalculated successfully',
+        customer: {
+          name: user.name,
+          email: user.email,
+          lifetimeSpend: totalSpend,
+          loyaltyTier: tier,
+          bookingsCount: bookings.length,
+          bookings: bookingDetails
+        }
+      });
+
+    } catch (error) {
+      console.error('Error recalculating customer spend:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to recalculate customer spend: ' + error.message
+      });
+    }
   }
 };
 
