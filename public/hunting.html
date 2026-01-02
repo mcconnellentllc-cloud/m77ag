@@ -1194,7 +1194,8 @@
                         half.innerHTML = '<small style="font-size: 10px;">Rest</small>';
                         half.style.cursor = 'pointer';
                         half.title = 'Game rest period';
-                    } else if (bookings[property]) {
+                    } else if (bookings[property] || bookings['Both Properties']) {
+                        // Mark as booked if either the specific property OR "Both Properties" is booked
                         half.classList.add('booked');
                     } else if (isHighDemand) {
                         half.classList.add('high-demand');
