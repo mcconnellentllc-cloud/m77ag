@@ -953,6 +953,8 @@
             'KCP25': 25,
             'BEEF100': 100,
             'BEEF50': 50,
+            'BEEF': 100,
+            'REVIEW': 75,
             'HUNTAGAIN': 25
         };
         
@@ -1260,7 +1262,15 @@
                 discountMsg.style.display = 'block';
 
                 if (discountPercent === 100) {
-                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> FREE - Kyle Cares Program';
+                    let freeMessage = 'FREE';
+                    if (codeInput === 'BEEF') {
+                        freeMessage = 'FREE - BEEF Program';
+                    } else if (codeInput.startsWith('KCP') || codeInput === 'BEEF100') {
+                        freeMessage = 'FREE - Kyle Cares Program';
+                    }
+                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> ' + freeMessage;
+                } else if (discountPercent === 75) {
+                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> 75% off - Thank you for your review!';
                 } else {
                     discountApplied.innerHTML = '<s>$' + originalCost + '</s> ' + discountPercent + '% off';
                 }
