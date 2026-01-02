@@ -955,6 +955,7 @@
             'BEEF50': 50,
             'BEEF': 100,
             'REVIEW': 75,
+            'KIDS1ST': 100,
             'HUNTAGAIN': 25
         };
         
@@ -1265,6 +1266,8 @@
                     let freeMessage = 'FREE';
                     if (codeInput === 'BEEF') {
                         freeMessage = 'FREE - BEEF Program';
+                    } else if (codeInput === 'KIDS1ST') {
+                        freeMessage = 'FREE - Youth Hunter Program';
                     } else if (codeInput.startsWith('KCP') || codeInput === 'BEEF100') {
                         freeMessage = 'FREE - Kyle Cares Program';
                     }
