@@ -1081,11 +1081,12 @@
                     closeEditModal();
                     loadBookings();
                 } else {
-                    alert('Failed to update booking: ' + data.message);
+                    const errorMsg = data.error ? `${data.message}: ${data.error}` : data.message;
+                    alert('Failed to update booking: ' + errorMsg);
                 }
             } catch (error) {
                 console.error('Error updating booking:', error);
-                alert('Error updating booking');
+                alert('Error updating booking: ' + error.message);
             }
         }
 
