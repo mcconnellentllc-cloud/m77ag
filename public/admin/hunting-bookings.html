@@ -782,6 +782,14 @@
                             <input type="number" id="editTotalPrice" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
                         <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Daily Rate ($)</label>
+                            <input type="number" id="editDailyRate" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Number of Nights</label>
+                            <input type="number" id="editNumNights" min="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Payment Status</label>
                             <select id="editPaymentStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                                 <option value="pending">Pending</option>
@@ -1034,6 +1042,8 @@
             document.getElementById('editCheckoutDate').value = currentBooking.checkoutDate ? new Date(currentBooking.checkoutDate).toISOString().split('T')[0] : '';
             document.getElementById('editNumHunters').value = currentBooking.numHunters || 1;
             document.getElementById('editTotalPrice').value = currentBooking.totalPrice || 0;
+            document.getElementById('editDailyRate').value = currentBooking.dailyRate || 200;
+            document.getElementById('editNumNights').value = currentBooking.numNights || 0;
             document.getElementById('editPaymentStatus').value = currentBooking.paymentStatus || 'pending';
             document.getElementById('editStatus').value = currentBooking.status || 'confirmed';
             document.getElementById('editNotes').value = currentBooking.notes || '';
@@ -1059,6 +1069,8 @@
                 checkoutDate: document.getElementById('editCheckoutDate').value,
                 numHunters: parseInt(document.getElementById('editNumHunters').value),
                 totalPrice: parseFloat(document.getElementById('editTotalPrice').value),
+                dailyRate: parseFloat(document.getElementById('editDailyRate').value),
+                numNights: parseInt(document.getElementById('editNumNights').value),
                 paymentStatus: document.getElementById('editPaymentStatus').value,
                 status: document.getElementById('editStatus').value,
                 notes: document.getElementById('editNotes').value
@@ -1081,11 +1093,12 @@
                     closeEditModal();
                     loadBookings();
                 } else {
-                    alert('Failed to update booking: ' + data.message);
+                    const errorMsg = data.error ? `${data.message}: ${data.error}` : data.message;
+                    alert('Failed to update booking: ' + errorMsg);
                 }
             } catch (error) {
                 console.error('Error updating booking:', error);
-                alert('Error updating booking');
+                alert('Error updating booking: ' + error.message);
             }
         }
 

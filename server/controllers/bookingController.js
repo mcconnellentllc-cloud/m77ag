@@ -494,7 +494,8 @@ const bookingController = {
       console.error('Error updating booking:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update booking'
+        message: 'Failed to update booking',
+        error: error.message
       });
     }
   },
