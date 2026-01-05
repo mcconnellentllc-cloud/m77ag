@@ -39,17 +39,33 @@ mongoose.connect(MONGODB_URI)
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const huntingRoutes = require('./routes/hunting');
+const propertyRoutes = require('./routes/property');
+const fieldRoutes = require('./routes/field');
+const transactionRoutes = require('./routes/transaction');
+const ledgerRoutes = require('./routes/ledger');
+const harvestDataRoutes = require('./routes/harvestData');
 const serviceRoutes = require('./routes/services');
 const chemicalRoutes = require('./routes/chemicals');
 const landManagementRoutes = require('./routes/landManagement');
+const testimonialRoutes = require('./routes/testimonials');
+const equipmentRoutes = require('./routes/equipment');
+const seasonPassRoutes = require('./routes/seasonPass');
 
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/hunting', huntingRoutes);
+app.use('/api/properties', propertyRoutes);
+app.use('/api/fields', fieldRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/ledger', ledgerRoutes);
+app.use('/api/harvest', harvestDataRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/land-management', landManagementRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/equipment', equipmentRoutes);
+app.use('/api/season-pass', seasonPassRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -86,8 +102,38 @@ app.get('/admin/hunting-bookings', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/hunting-bookings.html'));
 });
 
+app.get('/admin/equipment', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/equipment.html'));
+});
+
+app.get('/admin/testimonials', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/testimonials.html'));
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+// User routes
+app.get('/user/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/dashboard.html'));
+});
+
+app.get('/user/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/login.html'));
+});
+
+// Farmer routes
+app.get('/farmer/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/dashboard.html'));
+});
+
+app.get('/farmer/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
+app.get('/farmer', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
 });
 
 // Public page routes
@@ -134,6 +180,18 @@ app.get('/prairie-peace', (req, res) => {
 
 app.get('/hunting-liability-waiver', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting-liability-waiver.html'));
+});
+
+app.get('/forsale', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/forsale.html'));
+});
+
+app.get('/season-pass', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/season-pass.html'));
+});
+
+app.get('/my-account', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/my-account.html'));
 });
 
 // Main route - must come last among GET routes

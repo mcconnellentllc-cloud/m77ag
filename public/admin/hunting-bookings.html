@@ -471,6 +471,110 @@
             background: #e0e0e0;
             color: #666;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .filters-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-buttons {
+                margin-left: 0;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .filter-btn {
+                flex: 1;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            /* Table improvements for mobile */
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+            }
+
+            .table-wrapper::after {
+                content: '← Scroll to see more →';
+                position: sticky;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #2d5016;
+                color: white;
+                text-align: center;
+                padding: 8px;
+                font-size: 12px;
+                font-weight: 600;
+                z-index: 10;
+            }
+
+            table {
+                min-width: 1200px;
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px 12px;
+                white-space: nowrap;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .page-title-header {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -560,6 +664,25 @@
             </div>
         </div>
 
+        <!-- Customer Tools -->
+        <div class="bookings-section" style="margin-bottom: 20px;">
+            <div class="section-header">
+                <h2 class="section-title">Customer Tools</h2>
+            </div>
+            <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Customer Email</label>
+                        <input type="email" id="customerEmailInput" placeholder="Enter email to update spend..." style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <button onclick="updateCustomerSpend()" style="padding: 10px 20px; background: #2c5530; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; min-width: 180px;">
+                        Update Lifetime Spend
+                    </button>
+                </div>
+                <div id="spendResult" style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; display: none;"></div>
+            </div>
+        </div>
+
         <!-- Bookings Table -->
         <div class="bookings-section">
             <div class="section-header">
@@ -577,14 +700,15 @@
                             <th>Hunters</th>
                             <th>Total Cost</th>
                             <th>Payment</th>
+                            <th>Waiver</th>
+                            <th>Paw App</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="bookingsTableBody">
                         <tr>
-                            <td colspan="9" class="empty-state">
-                                <div class="empty-state-icon">🦌</div>
+                            <td colspan="11" class="empty-state">
                                 <div>Loading bookings...</div>
                             </td>
                         </tr>
@@ -638,6 +762,7 @@
                             <select id="editParcel" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                                 <option value="Heritage Farm">Heritage Farm</option>
                                 <option value="Prairie Peace">Prairie Peace</option>
+                                <option value="Both Properties">Both Properties</option>
                             </select>
                         </div>
                         <div>
@@ -655,6 +780,14 @@
                         <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Total Price ($)</label>
                             <input type="number" id="editTotalPrice" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Daily Rate ($)</label>
+                            <input type="number" id="editDailyRate" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Number of Nights</label>
+                            <input type="number" id="editNumNights" min="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Payment Status</label>
@@ -689,6 +822,15 @@
         let allBookings = [];
         let currentBooking = null;
 
+        // Format date correctly using UTC to avoid timezone shift issues
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const month = date.getUTCMonth() + 1;
+            const day = date.getUTCDate();
+            const year = date.getUTCFullYear();
+            return `${month}/${day}/${year}`;
+        }
+
         // Load bookings on page load
         window.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('adminToken');
@@ -703,27 +845,41 @@
         async function loadBookings() {
             try {
                 const token = localStorage.getItem('adminToken');
+                console.log('Loading bookings with token:', token ? 'Token exists' : 'No token');
+
                 const response = await fetch('/api/hunting/bookings', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
 
+                console.log('Response status:', response.status);
+
                 if (!response.ok) {
-                    throw new Error('Failed to load bookings');
+                    const errorData = await response.json();
+                    console.error('API Error:', errorData);
+                    throw new Error(errorData.message || 'Failed to load bookings');
                 }
 
                 const data = await response.json();
+                console.log('Bookings data:', data);
+
                 if (data.success) {
-                    allBookings = data.bookings;
+                    allBookings = data.bookings || [];
+                    console.log('Loaded bookings count:', allBookings.length);
                     updateStats();
                     renderBookings(allBookings);
                 } else {
-                    showError('Failed to load bookings');
+                    showError('Failed to load bookings: ' + (data.message || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error loading bookings:', error);
-                showError('Error loading bookings');
+                showError('Error loading bookings: ' + error.message);
+
+                // Still render empty table to show "No bookings found" instead of "Loading..."
+                allBookings = [];
+                updateStats();
+                renderBookings(allBookings);
             }
         }
 
@@ -751,8 +907,7 @@
             if (bookings.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="9" class="empty-state">
-                            <div class="empty-state-icon">🦌</div>
+                        <td colspan="11" class="empty-state">
                             <div>No bookings found</div>
                         </td>
                     </tr>
@@ -761,8 +916,10 @@
             }
 
             tbody.innerHTML = bookings.map(booking => {
-                const checkinDate = new Date(booking.checkinDate).toLocaleDateString();
-                const checkoutDate = new Date(booking.checkoutDate).toLocaleDateString();
+                const checkinDate = formatDate(booking.checkinDate);
+                const checkoutDate = formatDate(booking.checkoutDate);
+                const waiverStatus = booking.waiverSigned ? 'signed' : 'pending';
+                const pawAppStatus = booking.pawAppSignup ? 'yes' : 'no';
 
                 return `
                     <tr>
@@ -773,11 +930,14 @@
                         <td>${booking.numHunters}</td>
                         <td><strong>$${booking.totalPrice}</strong></td>
                         <td><span class="payment-badge payment-${booking.paymentStatus}">${booking.paymentStatus}</span></td>
+                        <td><span class="status-badge ${booking.waiverSigned ? 'status-confirmed' : 'status-pending'}">${booking.waiverSigned ? 'Signed' : 'Pending'}</span></td>
+                        <td><span class="status-badge ${booking.pawAppSignup ? 'status-confirmed' : 'status-cancelled'}">${booking.pawAppSignup ? 'Yes' : 'No'}</span></td>
                         <td><span class="status-badge status-${booking.status || 'pending'}">${booking.status || 'pending'}</span></td>
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn btn-view" onclick="viewBooking('${booking._id}')">View</button>
                                 <button class="action-btn btn-edit" onclick="editBooking('${booking._id}')">Edit</button>
+                                ${!booking.waiverSigned ? `<button class="action-btn" style="background: #dc3545;" onclick="sendWaiverReminder('${booking._id}')">Send Waiver</button>` : ''}
                                 <button class="action-btn btn-delete" onclick="deleteBooking('${booking._id}')">Delete</button>
                             </div>
                         </td>
@@ -791,8 +951,8 @@
             currentBooking = allBookings.find(b => b._id === bookingId);
             if (!currentBooking) return;
 
-            const checkinDate = new Date(currentBooking.checkinDate).toLocaleDateString();
-            const checkoutDate = new Date(currentBooking.checkoutDate).toLocaleDateString();
+            const checkinDate = formatDate(currentBooking.checkinDate);
+            const checkoutDate = formatDate(currentBooking.checkoutDate);
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="detail-grid">
@@ -882,6 +1042,8 @@
             document.getElementById('editCheckoutDate').value = currentBooking.checkoutDate ? new Date(currentBooking.checkoutDate).toISOString().split('T')[0] : '';
             document.getElementById('editNumHunters').value = currentBooking.numHunters || 1;
             document.getElementById('editTotalPrice').value = currentBooking.totalPrice || 0;
+            document.getElementById('editDailyRate').value = currentBooking.dailyRate || 200;
+            document.getElementById('editNumNights').value = currentBooking.numNights || 0;
             document.getElementById('editPaymentStatus').value = currentBooking.paymentStatus || 'pending';
             document.getElementById('editStatus').value = currentBooking.status || 'confirmed';
             document.getElementById('editNotes').value = currentBooking.notes || '';
@@ -907,6 +1069,8 @@
                 checkoutDate: document.getElementById('editCheckoutDate').value,
                 numHunters: parseInt(document.getElementById('editNumHunters').value),
                 totalPrice: parseFloat(document.getElementById('editTotalPrice').value),
+                dailyRate: parseFloat(document.getElementById('editDailyRate').value),
+                numNights: parseInt(document.getElementById('editNumNights').value),
                 paymentStatus: document.getElementById('editPaymentStatus').value,
                 status: document.getElementById('editStatus').value,
                 notes: document.getElementById('editNotes').value
@@ -929,11 +1093,12 @@
                     closeEditModal();
                     loadBookings();
                 } else {
-                    alert('Failed to update booking: ' + data.message);
+                    const errorMsg = data.error ? `${data.message}: ${data.error}` : data.message;
+                    alert('Failed to update booking: ' + errorMsg);
                 }
             } catch (error) {
                 console.error('Error updating booking:', error);
-                alert('Error updating booking');
+                alert('Error updating booking: ' + error.message);
             }
         }
 
@@ -959,6 +1124,32 @@
             } catch (error) {
                 console.error('Error deleting booking:', error);
                 alert('Error deleting booking');
+            }
+        }
+
+        // Send waiver reminder
+        async function sendWaiverReminder(bookingId) {
+            if (!confirm('Send waiver reminder email to this hunter?')) return;
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/api/hunting/bookings/${bookingId}/send-waiver-reminder`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Waiver reminder email sent successfully');
+                } else {
+                    alert('Failed to send waiver reminder: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error sending waiver reminder:', error);
+                alert('Error sending waiver reminder');
             }
         }
 
@@ -1072,6 +1263,78 @@
             } catch (error) {
                 console.error('Error sending email:', error);
                 alert('Error sending confirmation email');
+            }
+        }
+
+        // Update Customer Lifetime Spend
+        async function updateCustomerSpend() {
+            const email = document.getElementById('customerEmailInput').value.trim();
+            const resultDiv = document.getElementById('spendResult');
+
+            if (!email) {
+                alert('Please enter a customer email address');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<div style="color: #666;">Calculating lifetime spend...</div>';
+
+                const response = await fetch('/api/hunting/recalculate-spend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const customer = data.customer;
+                    const tierColors = {
+                        'none': '#999',
+                        'bronze': '#cd7f32',
+                        'silver': '#c0c0c0',
+                        'gold': '#ffd700',
+                        'platinum': '#e5e4e2'
+                    };
+
+                    resultDiv.innerHTML = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Customer</div>
+                                <div style="font-weight: 600; color: #2c5530;">${customer.name}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Lifetime Spend</div>
+                                <div style="font-weight: 700; font-size: 18px; color: #2c5530;">$${customer.lifetimeSpend.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Loyalty Tier</div>
+                                <div style="font-weight: 600; font-size: 16px; color: ${tierColors[customer.loyaltyTier]}; text-transform: uppercase;">${customer.loyaltyTier}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Bookings</div>
+                                <div style="font-weight: 600;">${customer.bookingsCount}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; font-size: 13px; color: #2c5530;">
+                            ✅ Customer lifetime spend updated successfully!
+                        </div>
+                    `;
+
+                    // Clear input
+                    document.getElementById('customerEmailInput').value = '';
+                } else {
+                    resultDiv.innerHTML = `<div style="color: #c62828;">❌ ${data.message}</div>`;
+                }
+
+            } catch (error) {
+                console.error('Error updating customer spend:', error);
+                resultDiv.innerHTML = `<div style="color: #c62828;">❌ Error updating customer spend. Please try again.</div>`;
             }
         }
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema({
-  // Farm Association
+  // Farm Association (using Farm model for land management compatibility)
   farm: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Farm',
@@ -18,14 +18,17 @@ const fieldSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  description: {
+    type: String
+  },
 
-  // Field Details
+  // Field Size
   acres: {
     type: Number,
     required: true
   },
 
-  // Location
+  // Location Information
   location: {
     address: String,
     gpsCoordinates: {
@@ -38,7 +41,20 @@ const fieldSchema = new mongoose.Schema({
     range: String
   },
 
-  // Landlord/Owner
+  // GeoJSON Boundary Data
+  boundary: {
+    type: {
+      type: String,
+      enum: ['Polygon'],
+      default: 'Polygon'
+    },
+    coordinates: [[Number]]
+  },
+  kmlFile: {
+    type: String
+  },
+
+  // Landlord/Owner (using LandManagementUser for compatibility)
   landlord: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'LandManagementUser'
@@ -61,65 +77,122 @@ const fieldSchema = new mongoose.Schema({
     paymentLocation: String
   },
 
-  // Crop Information
+  // Soil Information
+  soilType: {
+    type: String
+  },
+  soilClass: {
+    type: String
+  },
+  irrigated: {
+    type: Boolean,
+    default: false
+  },
+  drainageTile: {
+    type: Boolean,
+    default: false
+  },
+  averageCornYield: Number,
+  averageWheatYield: Number,
+
+  // Current Crop Information
   currentCrop: {
+    year: Number,
     cropType: {
       type: String,
       enum: ['corn', 'wheat', 'milo', 'soybeans', 'sunflower', 'fallow', 'other']
     },
-    year: Number,
+    variety: String,
     plantingDate: Date,
     harvestDate: Date,
+    expectedHarvestDate: Date,
+    estimatedYield: Number,
     expectedYield: Number,
     actualYield: Number
   },
 
-  // Crop History
+  // Historical Crop Data
   cropHistory: [{
-    year: Number,
-    crop: String,
+    year: {
+      type: Number,
+      required: true
+    },
+    cropType: {
+      type: String,
+      required: true
+    },
+    variety: String,
+    plantingDate: Date,
+    harvestDate: Date,
     yield: Number,
+    pricePerBushel: Number,
+    totalRevenue: Number,
     revenue: Number,
     costs: Number,
-    netIncome: Number
+    netIncome: Number,
+    notes: String
   }],
 
-  // Soil Information
-  soilInfo: {
-    soilType: String,
-    irrigated: {
-      type: Boolean,
-      default: false
-    },
-    drainageTiling: {
-      type: Boolean,
-      default: false
-    },
-    averageCornYield: Number,
-    averageWheatYield: Number
+  // Field-specific Expenses
+  fieldExpenses: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Transaction'
+  }],
+
+  // Field Status
+  status: {
+    type: String,
+    enum: ['active', 'fallow', 'retired', 'CRP'],
+    default: 'active'
   },
-
-  // Notes
-  notes: String,
-
-  // Status
   active: {
     type: Boolean,
     default: true
+  },
+
+  // Notes
+  notes: {
+    type: String
   }
 }, {
   timestamps: true
 });
 
-// Indexes
+// Indexes for efficient queries
 fieldSchema.index({ farm: 1 });
 fieldSchema.index({ landlord: 1 });
 fieldSchema.index({ fieldName: 1, farm: 1 });
+fieldSchema.index({ 'currentCrop.year': 1 });
+fieldSchema.index({ status: 1 });
 
 // Virtual for full field name
 fieldSchema.virtual('fullName').get(function() {
   return this.fieldNumber ? `${this.fieldName} (#${this.fieldNumber})` : this.fieldName;
 });
+
+// Virtual for calculating average historical yield
+fieldSchema.virtual('averageYield').get(function() {
+  if (this.cropHistory.length === 0) return 0;
+
+  const totalYield = this.cropHistory.reduce((sum, crop) => sum + (crop.yield || 0), 0);
+  return totalYield / this.cropHistory.length;
+});
+
+// Method to get yield for a specific year
+fieldSchema.methods.getYieldByYear = function(year) {
+  return this.cropHistory.find(crop => crop.year === year);
+};
+
+// Method to add crop history entry
+fieldSchema.methods.addCropHistory = function(cropData) {
+  // Remove existing entry for this year if present
+  this.cropHistory = this.cropHistory.filter(crop => crop.year !== cropData.year);
+  // Add new entry
+  this.cropHistory.push(cropData);
+  // Sort by year descending
+  this.cropHistory.sort((a, b) => b.year - a.year);
+  return this.save();
+};
 
 const Field = mongoose.model('Field', fieldSchema);
 

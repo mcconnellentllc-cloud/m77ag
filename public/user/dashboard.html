@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - M77 AG Hunting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5530 0%, #1a3d1f 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-email {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #2c5530;
+            border-bottom-color: #2c5530;
+        }
+
+        .tab-btn:hover {
+            color: #2c5530;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-family: 'Oswald', sans-serif;
+            color: #2c5530;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .booking-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .booking-item:hover {
+            border-color: #2c5530;
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .booking-property {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c5530;
+        }
+
+        .booking-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: #e7f5e7;
+            color: #2d7a2d;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2c5530;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .rating-star {
+            font-size: 32px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .rating-star.active,
+        .rating-star:hover {
+            color: #d4af37;
+        }
+
+        .photo-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .photo-upload-area:hover {
+            border-color: #2c5530;
+        }
+
+        .photo-upload-area.dragover {
+            border-color: #2c5530;
+            background: #f0f7f0;
+        }
+
+        .photo-preview-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .photo-preview {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2c5530 0%, #1a3d1f 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .testimonial-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .testimonial-rating {
+            color: #d4af37;
+            font-size: 18px;
+        }
+
+        .testimonial-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .testimonial-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-photos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .testimonial-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .testimonial-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2c5530;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .dashboard-tabs {
+                overflow-x: auto;
+            }
+
+            .tab-btn {
+                white-space: nowrap;
+            }
+
+            .booking-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>M77 AG Dashboard</h1>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-email" id="userEmail"></div>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" onclick="switchTab('bookings')">My Bookings</button>
+            <button class="tab-btn" onclick="switchTab('testimonials')">My Testimonials</button>
+            <button class="tab-btn" onclick="switchTab('submit')">Submit Testimonial</button>
+        </div>
+
+        <div id="bookings-tab" class="tab-content active">
+            <div class="card">
+                <h2>My Hunting Bookings</h2>
+                <div id="bookingsList" class="loading">Loading your bookings...</div>
+            </div>
+        </div>
+
+        <div id="testimonials-tab" class="tab-content">
+            <div class="card">
+                <h2>My Testimonials</h2>
+                <div id="testimonialsList" class="loading">Loading your testimonials...</div>
+            </div>
+        </div>
+
+        <div id="submit-tab" class="tab-content">
+            <div class="card">
+                <h2>Submit a Testimonial</h2>
+                <div id="formMessage"></div>
+                <form id="testimonialForm">
+                    <div class="form-group">
+                        <label for="property">Property *</label>
+                        <select id="property" name="property" required>
+                            <option value="">Select a property</option>
+                            <option value="Heritage Farm">Heritage Farm</option>
+                            <option value="Prairie Peace">Prairie Peace Campsite Acreage</option>
+                            <option value="Both Properties">Both Properties</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rating *</label>
+                        <div class="rating-input">
+                            <span class="rating-star" data-rating="1">★</span>
+                            <span class="rating-star" data-rating="2">★</span>
+                            <span class="rating-star" data-rating="3">★</span>
+                            <span class="rating-star" data-rating="4">★</span>
+                            <span class="rating-star" data-rating="5">★</span>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">Title *</label>
+                        <input type="text" id="title" name="title" maxlength="100" placeholder="Brief summary of your experience" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="text">Your Experience * (max 1000 characters)</label>
+                        <textarea id="text" name="text" maxlength="1000" placeholder="Share your hunting experience at M77 AG..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="huntType">Hunt Type</label>
+                        <input type="text" id="huntType" name="huntType" placeholder="e.g., Deer, Waterfowl, Turkey">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="huntDate">Hunt Date</label>
+                        <input type="date" id="huntDate" name="huntDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Photos (Optional - Up to 5 photos, max 5MB each)</label>
+                        <div class="photo-upload-area" id="photoUploadArea">
+                            <p>Click to select photos or drag and drop</p>
+                            <p style="font-size: 13px; color: #999; margin-top: 5px;">JPEG, PNG, GIF, WebP accepted</p>
+                        </div>
+                        <input type="file" id="photoInput" name="photos" accept="image/*" multiple style="display: none;">
+                        <div class="photo-preview-container" id="photoPreviewContainer"></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">Submit Testimonial</button>
+                </form>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">← Back to Home</a>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let selectedRating = 0;
+        let selectedFiles = [];
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+
+            if (!token || !userStr) {
+                window.location.href = '/user/login.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Load bookings
+        async function loadBookings() {
+            const token = localStorage.getItem('token');
+            const bookingsList = document.getElementById('bookingsList');
+
+            try {
+                const response = await fetch('/api/bookings/my-bookings', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.bookings && data.bookings.length > 0) {
+                    bookingsList.innerHTML = data.bookings.map(booking => `
+                        <div class="booking-item">
+                            <div class="booking-header">
+                                <div class="booking-property">${booking.propertyName || booking.property || 'M77 AG Property'}</div>
+                                <span class="booking-status status-${booking.status || 'confirmed'}">${formatStatus(booking.status)}</span>
+                            </div>
+                            <div class="booking-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Check-in</span>
+                                    <span class="detail-value">${formatDate(booking.startDate)}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Check-out</span>
+                                    <span class="detail-value">${formatDate(booking.endDate)}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Hunters</span>
+                                    <span class="detail-value">${booking.numberOfHunters || 1}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Total</span>
+                                    <span class="detail-value">$${booking.totalAmount || booking.amount || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    bookingsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <div class="empty-state-text">No bookings yet</div>
+                            <div class="empty-state-subtext">Book your first hunt to get started!</div>
+                            <a href="/hunting" class="back-link" style="margin-top: 20px;">Book a Hunt →</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                bookingsList.innerHTML = `
+                    <div class="alert alert-error">
+                        Unable to load bookings. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        // Load testimonials
+        async function loadTestimonials() {
+            const token = localStorage.getItem('token');
+            const testimonialsList = document.getElementById('testimonialsList');
+
+            try {
+                const response = await fetch('/api/testimonials/my-testimonials', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.testimonials && data.testimonials.length > 0) {
+                    testimonialsList.innerHTML = data.testimonials.map(testimonial => `
+                        <div class="testimonial-item">
+                            <div class="testimonial-header">
+                                <div class="testimonial-title">${testimonial.title}</div>
+                                <div class="testimonial-rating">${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}</div>
+                            </div>
+                            <div class="testimonial-meta">
+                                <span>📍 ${testimonial.property}</span>
+                                <span class="booking-status status-${testimonial.status}">${formatStatus(testimonial.status)}</span>
+                                ${testimonial.huntType ? `<span>🦌 ${testimonial.huntType}</span>` : ''}
+                                ${testimonial.huntDate ? `<span>📅 ${formatDate(testimonial.huntDate)}</span>` : ''}
+                            </div>
+                            <div class="testimonial-text">${testimonial.text}</div>
+                            ${testimonial.photos && testimonial.photos.length > 0 ? `
+                                <div class="testimonial-photos">
+                                    ${testimonial.photos.map(photo => `
+                                        <div class="testimonial-photo">
+                                            <img src="${photo.path}" alt="Hunt photo">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            ${testimonial.status === 'rejected' && testimonial.rejectionReason ? `
+                                <div class="alert alert-error" style="margin-top: 15px;">
+                                    <strong>Rejection reason:</strong> ${testimonial.rejectionReason}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    testimonialsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <div class="empty-state-text">No testimonials yet</div>
+                            <div class="empty-state-subtext">Share your hunting experience with others!</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                testimonialsList.innerHTML = `
+                    <div class="alert alert-error">
+                        Unable to load testimonials. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        // Rating system
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                document.getElementById('rating').value = selectedRating;
+                updateRatingDisplay();
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.dataset.rating);
+                document.querySelectorAll('.rating-star').forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        document.querySelector('.rating-input').addEventListener('mouseleave', updateRatingDisplay);
+
+        function updateRatingDisplay() {
+            document.querySelectorAll('.rating-star').forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Photo upload
+        const photoUploadArea = document.getElementById('photoUploadArea');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreviewContainer = document.getElementById('photoPreviewContainer');
+
+        photoUploadArea.addEventListener('click', () => photoInput.click());
+
+        photoInput.addEventListener('change', function(e) {
+            handleFiles(Array.from(e.target.files));
+        });
+
+        photoUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            photoUploadArea.classList.add('dragover');
+        });
+
+        photoUploadArea.addEventListener('dragleave', () => {
+            photoUploadArea.classList.remove('dragover');
+        });
+
+        photoUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            photoUploadArea.classList.remove('dragover');
+            handleFiles(Array.from(e.dataTransfer.files));
+        });
+
+        function handleFiles(files) {
+            // Filter for images only
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+
+            // Limit to 5 total photos
+            const remainingSlots = 5 - selectedFiles.length;
+            const filesToAdd = imageFiles.slice(0, remainingSlots);
+
+            filesToAdd.forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`${file.name} is too large. Maximum file size is 5MB.`);
+                    return;
+                }
+
+                selectedFiles.push(file);
+
+                // Create preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'photo-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button type="button" class="photo-remove" onclick="removePhoto(${selectedFiles.length - 1})">×</button>
+                    `;
+                    photoPreviewContainer.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            updatePhotoUploadArea();
+        }
+
+        function removePhoto(index) {
+            selectedFiles.splice(index, 1);
+            photoPreviewContainer.innerHTML = '';
+
+            selectedFiles.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'photo-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button type="button" class="photo-remove" onclick="removePhoto(${idx})">×</button>
+                    `;
+                    photoPreviewContainer.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            updatePhotoUploadArea();
+        }
+
+        function updatePhotoUploadArea() {
+            if (selectedFiles.length >= 5) {
+                photoUploadArea.style.display = 'none';
+            } else {
+                photoUploadArea.style.display = 'block';
+            }
+        }
+
+        // Submit testimonial form
+        document.getElementById('testimonialForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            const submitBtn = document.getElementById('submitBtn');
+            const formMessage = document.getElementById('formMessage');
+
+            if (!selectedRating) {
+                formMessage.innerHTML = '<div class="alert alert-error">Please select a rating</div>';
+                return;
+            }
+
+            // Create FormData
+            const formData = new FormData();
+            formData.append('property', document.getElementById('property').value);
+            formData.append('rating', selectedRating);
+            formData.append('title', document.getElementById('title').value);
+            formData.append('text', document.getElementById('text').value);
+
+            const huntType = document.getElementById('huntType').value;
+            if (huntType) formData.append('huntType', huntType);
+
+            const huntDate = document.getElementById('huntDate').value;
+            if (huntDate) formData.append('huntDate', huntDate);
+
+            // Add photos
+            selectedFiles.forEach(file => {
+                formData.append('photos', file);
+            });
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            formMessage.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/testimonials', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    formMessage.innerHTML = '<div class="alert alert-success">Testimonial submitted successfully! It will be reviewed by our team.</div>';
+
+                    // Reset form
+                    document.getElementById('testimonialForm').reset();
+                    selectedRating = 0;
+                    selectedFiles = [];
+                    photoPreviewContainer.innerHTML = '';
+                    updateRatingDisplay();
+                    updatePhotoUploadArea();
+
+                    // Reload testimonials
+                    loadTestimonials();
+                } else {
+                    formMessage.innerHTML = `<div class="alert alert-error">${data.message || 'Failed to submit testimonial'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error submitting testimonial:', error);
+                formMessage.innerHTML = '<div class="alert alert-error">An error occurred. Please try again.</div>';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Testimonial';
+            }
+        });
+
+        // Helper functions
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatStatus(status) {
+            if (!status) return 'Confirmed';
+            return status.charAt(0).toUpperCase() + status.slice(1);
+        }
+
+        // Initialize
+        checkAuth();
+        loadBookings();
+        loadTestimonials();
+    </script>
+</body>
+</html>

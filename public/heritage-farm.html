@@ -471,6 +471,190 @@
             font-weight: bold;
         }
         
+        /* Gallery Section */
+        .gallery-section {
+            margin: 80px 0;
+        }
+
+        .gallery-tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .gallery-tile {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        }
+
+        .gallery-tile-header {
+            background: linear-gradient(135deg, #2d5016, #3d6526);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide.active {
+            display: block;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .carousel-prev {
+            left: 10px;
+        }
+
+        .carousel-next {
+            right: 10px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .gallery-tile-footer {
+            padding: 20px;
+            text-align: center;
+            background: #f8f6f3;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            background: white;
+            padding: 80px 20px;
+            margin: 80px 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto 0;
+        }
+
+        .testimonial-card {
+            background: #f8f6f3;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 5px solid #d4af37;
+            transition: transform 0.3s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #2d5016;
+            font-size: 16px;
+        }
+
+        .testimonial-details {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .testimonial-rating {
+            color: #d4af37;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
         /* Hunter Recommendations */
         .recommendations-section {
             background: #f8f6f3;
@@ -609,6 +793,14 @@
             .parcels-grid {
                 grid-template-columns: 1fr;
             }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -628,7 +820,9 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/" class="nav-link">Home</a></li>
                     <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
                     <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/season-pass" class="nav-link">Season Pass</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
                     <li><a href="/admin" class="nav-link">Admin</a></li>
                 </ul>
@@ -679,6 +873,52 @@
         </div>
     </section>
 
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <h2 class="section-title">Heritage Farm Gallery</h2>
+            <p class="section-subtitle">
+                Experience the beauty and diversity of our 1,160-acre property through these images showcasing
+                the wildlife, landscape, and historic homestead that make Heritage Farm special.
+            </p>
+
+            <div class="gallery-tiles">
+                <!-- Big Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">BIG GAME</div>
+                    <div class="carousel-container" id="bigGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+
+                <!-- Small Game Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">SMALL GAME</div>
+                    <div class="carousel-container" id="smallGameCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+
+                <!-- Property Pictures Gallery -->
+                <div class="gallery-tile">
+                    <div class="gallery-tile-header">PROPERTY VIEWS</div>
+                    <div class="carousel-container" id="propertyCarousel">
+                        <!-- Slides will be populated by JavaScript -->
+                    </div>
+                    <div class="gallery-tile-footer">
+                        Click images to enlarge
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content -->
     <div class="container">
         <h2 class="section-title">Your All-Access Hunting Experience</h2>
@@ -688,6 +928,14 @@
             <br><br>
             <strong style="color: #d4af37;">Colorado DOW Big Game Unit: 93</strong>
         </p>
+
+        <!-- Important Notice for Dog Hunters -->
+        <div style="background: #fff3cd; border-left: 5px solid #f57c00; padding: 20px; margin: 30px 0; border-radius: 5px;">
+            <h3 style="color: #f57c00; margin: 0 0 10px 0; font-size: 20px; font-weight: bold;">IMPORTANT NOTICE FOR DOG HUNTERS</h3>
+            <p style="margin: 0; color: #856404; line-height: 1.6; font-size: 16px;">
+                <strong>Crop Ground Conditions:</strong> Due to the abundance of rain this season, crop ground areas are heavily loaded with sandburs and goat heads (stickers). If your dogs are not accustomed to running in sticker patches, it is strongly advised to stay in the native grass areas. Native grass sections are sticker-free and provide excellent hunting opportunities.
+            </p>
+        </div>
 
         <!-- Features -->
         <div class="features-grid">
@@ -729,7 +977,7 @@
             <div class="feature-card">
                 <h3 class="feature-title">Trophy Potential</h3>
                 <p class="feature-description">
-                    Mature whitetail deer, ringneck pheasants, mourning doves, coyotes, and occasional elk migrations make this property a multi-species paradise.
+                    Mature mule deer, abundant pheasants in tall grass, mourning doves at one of the area's best hunting spots, coyotes, and occasional elk migrations make this property a multi-species paradise.
                 </p>
             </div>
         </div>
@@ -741,16 +989,16 @@
             <h2 class="section-title">Available Game Species</h2>
             <div class="game-grid">
                 <div class="game-card">
-                    <div class="game-name">Whitetail Deer</div>
+                    <div class="game-name">Mule Deer</div>
                     <p class="game-note">Primary species</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Ring-Neck Pheasant</div>
-                    <p class="game-note">Excellent habitat</p>
+                    <p class="game-note">Tall grass - abundant population</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Mourning Dove</div>
-                    <p class="game-note">September flights</p>
+                    <p class="game-note">Area's best dove hunting</p>
                 </div>
                 <div class="game-card">
                     <div class="game-name">Coyote</div>
@@ -804,9 +1052,9 @@
                     </div>
                     <div class="parcel-content">
                         <p class="parcel-features">
-                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass, 
-                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds. 
-                            The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
+                            The heart of our Swedish heritage - the original homestead site from the late 1800s. This parcel combines native grass,
+                            tree shelterbelts, and year-round water sources. Mature trees provide roosting areas while open fields offer feeding grounds.
+                            <strong>Known as one of the area's best dove hunting spots.</strong> The camping area is located here with water and 110V electric hookups. Hunt where four generations hunted before you.
                         </p>
                     </div>
                 </div>
@@ -886,12 +1134,35 @@
         </div>
     </section>
 
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title">What Hunters Are Saying</h2>
+            <p class="section-subtitle">
+                Hear from hunters who have experienced the Heritage Farm firsthand
+            </p>
+
+            <div class="testimonials-grid" id="testimonialsContainer">
+                <div style="text-align: center; padding: 40px; color: #666;">Loading testimonials...</div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA -->
     <section class="cta-section">
         <h2 class="cta-title">Experience Heritage Farm</h2>
         <p class="cta-subtitle">1,160 acres of historic hunting grounds • $200 per day all-access</p>
         <a href="hunting.html" class="btn-cta">Reserve Your Dates</a>
     </section>
+
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; cursor: pointer;" onclick="closeLightbox()">
+        <div style="position: relative; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+            <img id="lightboxImage" src="" alt="" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <p id="lightboxCaption" style="color: white; font-size: 20px; margin-top: 20px; text-align: center; font-weight: 600;"></p>
+            <button onclick="closeLightbox()" style="position: absolute; top: -50px; right: -50px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">&times;</button>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -912,6 +1183,215 @@
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
+        });
+
+        // Lightbox functions
+        function openLightbox(imageSrc, caption) {
+            document.getElementById('lightboxImage').src = imageSrc;
+            document.getElementById('lightboxCaption').textContent = caption;
+            document.getElementById('lightbox').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Gallery Carousel System
+        // TO ADD MORE PHOTOS: Simply add the filename to the appropriate array below
+        // Place your images in: /assets/images/heritage-farm/big-game/, /small-game/, or /property-pictures/
+
+        const galleryImages = {
+            bigGame: [
+                'deer1-hf.jpg',
+                'deer2-hf.jpg',
+                'deer3-hf.jpg',
+                'deer4-hf.jpg',
+                'deer5-hf.jpeg',
+                'deer7-pp.jpeg'
+            ],
+            smallGame: [
+                'coyote2-hf.jpg',
+                'coyote3-hf.jpg',
+                'pheasant-hf1.jpg'
+            ],
+            propertyPictures: [
+                'heritage1.png',
+                'heritage2.png',
+                'heritage3.png',
+                'heritage4.png',
+                'heritage5.png',
+                'heritage6.png',
+                'heritage7.png',
+                'heritage8.png'
+            ]
+        };
+
+        class Carousel {
+            constructor(containerId, images, basePath) {
+                this.container = document.getElementById(containerId);
+                this.images = images;
+                this.basePath = basePath;
+                this.currentIndex = 0;
+                this.autoPlayInterval = null;
+                this.init();
+            }
+
+            init() {
+                if (!this.container || this.images.length === 0) return;
+
+                this.renderSlides();
+                this.renderControls();
+                this.showSlide(0);
+                this.startAutoPlay();
+            }
+
+            renderSlides() {
+                this.images.forEach((img, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    slide.innerHTML = `<img src="${this.basePath}${img}" alt="Image ${index + 1}" onclick="openLightbox('${this.basePath}${img}', 'Heritage Farm')">`;
+                    this.container.appendChild(slide);
+                });
+            }
+
+            renderControls() {
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-nav carousel-prev';
+                prevBtn.innerHTML = '&#10094;';
+                prevBtn.onclick = () => this.navigate(-1);
+                this.container.appendChild(prevBtn);
+
+                // Next button
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-nav carousel-next';
+                nextBtn.innerHTML = '&#10095;';
+                nextBtn.onclick = () => this.navigate(1);
+                this.container.appendChild(nextBtn);
+
+                // Counter
+                const counter = document.createElement('div');
+                counter.className = 'carousel-counter';
+                counter.id = `${this.container.id}-counter`;
+                this.container.appendChild(counter);
+
+                // Indicators
+                if (this.images.length > 1) {
+                    const indicators = document.createElement('div');
+                    indicators.className = 'carousel-indicators';
+                    indicators.id = `${this.container.id}-indicators`;
+
+                    this.images.forEach((_, index) => {
+                        const dot = document.createElement('span');
+                        dot.className = 'carousel-dot';
+                        dot.onclick = () => this.showSlide(index);
+                        indicators.appendChild(dot);
+                    });
+
+                    this.container.appendChild(indicators);
+                }
+            }
+
+            showSlide(index) {
+                const slides = this.container.querySelectorAll('.carousel-slide');
+                const dots = this.container.querySelectorAll('.carousel-dot');
+                const counter = this.container.querySelector('.carousel-counter');
+
+                if (slides.length === 0) return;
+
+                // Wrap around
+                if (index >= slides.length) index = 0;
+                if (index < 0) index = slides.length - 1;
+
+                this.currentIndex = index;
+
+                // Update slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                // Update dots
+                dots.forEach(dot => dot.classList.remove('active'));
+                if (dots[index]) dots[index].classList.add('active');
+
+                // Update counter
+                if (counter) {
+                    counter.textContent = `${index + 1} / ${slides.length}`;
+                }
+            }
+
+            navigate(direction) {
+                this.showSlide(this.currentIndex + direction);
+                this.resetAutoPlay();
+            }
+
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.showSlide(this.currentIndex + 1);
+                }, 4000); // Change image every 4 seconds
+            }
+
+            resetAutoPlay() {
+                clearInterval(this.autoPlayInterval);
+                this.startAutoPlay();
+            }
+        }
+
+        // Load testimonials from database
+        async function loadTestimonials() {
+            const container = document.getElementById('testimonialsContainer');
+
+            try {
+                const response = await fetch('/api/testimonials/approved?property=Heritage Farm');
+                const data = await response.json();
+
+                if (data.success && data.testimonials && data.testimonials.length > 0) {
+                    container.innerHTML = data.testimonials.map(testimonial => `
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}</div>
+                            <p class="testimonial-text">"${testimonial.text}"</p>
+                            <div class="testimonial-author">${testimonial.user ? testimonial.user.name : 'Anonymous Hunter'}</div>
+                            <div class="testimonial-details">
+                                ${testimonial.huntType ? testimonial.huntType + ' • ' : ''}
+                                ${testimonial.huntDate ? new Date(testimonial.huntDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Show default message if no testimonials
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                            <p>Be the first to share your hunting experience at Heritage Farm!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                // Show fallback message
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666; grid-column: 1 / -1;">
+                        <p>Experience the diversity of Heritage Farm yourself!</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize carousels when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new Carousel('bigGameCarousel', galleryImages.bigGame, 'assets/images/heritage-farm/big-game/');
+            new Carousel('smallGameCarousel', galleryImages.smallGame, 'assets/images/heritage-farm/small-game/');
+            new Carousel('propertyCarousel', galleryImages.propertyPictures, 'assets/images/heritage-farm/property-pictures/');
+
+            // Load testimonials
+            loadTestimonials();
         });
     </script>
 </body>

@@ -118,11 +118,11 @@ function getHuntingConfirmationEmail(booking) {
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkIn).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-in Date:</span> ${new Date(booking.checkinDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
-        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkOut).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        <span class="detail-label">Check-out Date:</span> ${new Date(booking.checkoutDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       
       <div class="detail-row">
@@ -141,11 +141,31 @@ function getHuntingConfirmationEmail(booking) {
         <span class="detail-label">Payment Status:</span> ${booking.paymentStatus === 'paid' ? 'Paid' : 'Pay on Arrival'}
       </div>
 
-      ${booking.discountCode ? `
+      ${booking.discountCode === 'KIDS1ST' ? `
+      <div style="background: #e3f2fd; border: 2px solid #1976d2; padding: 20px; margin-top: 15px; border-radius: 8px;">
+        <h3 style="color: #1565c0; margin: 0 0 15px 0; text-align: center;">🎯 YOUTH HUNTER PROGRAM</h3>
+        <p style="margin: 0 0 15px 0; color: #1565c0; font-size: 16px; text-align: center;">
+          <strong>FREE HUNT - 100% Discount Applied</strong><br>
+          ${booking.originalPrice ? `<span style="text-decoration: line-through;">Original: $${booking.originalPrice}</span>` : ''}
+        </p>
+        <div style="background: rgba(255,255,255,0.9); padding: 15px; border-radius: 6px; border-left: 4px solid #1976d2;">
+          <p style="margin: 0 0 10px 0; color: #0d47a1; font-size: 15px; line-height: 1.6;">
+            <strong>Thank you for introducing the next generation to hunting!</strong>
+          </p>
+          <p style="margin: 10px 0; color: #1565c0; line-height: 1.7;">
+            At M77 AG, we deeply appreciate youth hunters and understand how important family is to our operation and the future of hunting. Teaching kids to be safe and responsible with firearms builds a new generation of Americans who understand the value of our Second Amendment rights and the importance of a standing militia.
+          </p>
+          <p style="margin: 10px 0 0 0; color: #0d47a1; font-weight: bold; font-size: 16px; text-align: center;">
+            America Strong! 🇺🇸
+          </p>
+        </div>
+      </div>
+      ` : booking.discountCode ? `
       <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; margin-top: 15px; border-radius: 8px; text-align: center;">
-        <h3 style="color: #2e7d32; margin: 0 0 10px 0;">KYLE CARES PROGRAM</h3>
+        <h3 style="color: #2e7d32; margin: 0 0 10px 0;">${booking.discountCode === 'BEEF' ? 'BEEF PROGRAM' : booking.discountCode === 'REVIEW' ? 'THANK YOU FOR YOUR REVIEW!' : 'KYLE CARES PROGRAM'}</h3>
         <p style="margin: 0; color: #2e7d32; font-size: 16px;">
-          Thank you for being a valued member of the Kyle Cares Program!<br>
+          ${booking.discountCode === 'REVIEW' ? 'We appreciate you taking the time to share your experience!' : 'Thank you for being a valued member of our program!'}
+          <br>
           <strong>${booking.discountPercent}% discount applied</strong><br>
           ${booking.originalPrice ? `<span style="text-decoration: line-through;">Original: $${booking.originalPrice}</span>` : ''}
         </p>
@@ -157,10 +177,18 @@ function getHuntingConfirmationEmail(booking) {
     </div>
 
     <div class="warning-box">
-      <h3>REQUIRED: Sign Liability Waiver</h3>
-      <p><strong>Before your hunt, you MUST sign the liability waiver.</strong></p>
-      <p>You will not be allowed to hunt without a signed waiver.</p>
-      <a href="https://m77ag.com/hunting-liability-waiver.html?bookingId=${booking._id}" class="btn">SIGN WAIVER NOW</a>
+      <h3>REQUIRED: All Hunters Must Sign Waiver</h3>
+      <p><strong>EVERY hunter in your party MUST sign the liability waiver before hunting.</strong></p>
+      <p><strong>You have ${booking.numberOfHunters || booking.numHunters} hunters booked.</strong> Each person needs to sign individually.</p>
+      <p style="margin-top: 15px;"><strong>Share this link with your entire hunting party:</strong></p>
+      <a href="https://m77ag.com/sign-waiver.html?bookingId=${booking._id}" class="btn" style="margin-bottom: 15px;">SIGN WAIVER - ALL HUNTERS</a>
+      <p style="font-size: 14px; color: #666; margin-top: 10px;">
+        Each hunter can sign using your Booking ID: <strong>${booking._id.toString().slice(-8).toUpperCase()}</strong><br>
+        Or they can sign manually and we'll match it to your booking by date.
+      </p>
+      <p style="margin-top: 15px; color: #721c24; font-weight: bold;">
+        WARNING: No one will be allowed to hunt without a signed waiver.
+      </p>
     </div>
     
     <div class="important-info">
@@ -229,15 +257,20 @@ function getAdminNotificationEmail(booking) {
       
       <h3>Booking Details:</h3>
       <div class="detail"><span class="label">Property:</span> ${propertyName}</div>
-      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkIn).toLocaleDateString()}</div>
-      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkOut).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-in:</span> ${new Date(booking.checkinDate).toLocaleDateString()}</div>
+      <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkoutDate).toLocaleDateString()}</div>
       <div class="detail"><span class="label">Hunters:</span> ${booking.numberOfHunters}</div>
       <div class="detail"><span class="label">Nights:</span> ${booking.numberOfNights}</div>
       <div class="detail"><span class="label">Total Price:</span> $${booking.totalPrice}</div>
       <div class="detail"><span class="label">Payment Status:</span> ${booking.paymentStatus}</div>
-      ${booking.discountCode ? `
+      ${booking.discountCode === 'KIDS1ST' ? `
+      <div class="detail" style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-left: 3px solid #1976d2;">
+        <span class="label" style="color: #1565c0;">🎯 Youth Hunter Program:</span> ${booking.discountCode} (${booking.discountPercent}% off - FREE)
+        ${booking.originalPrice ? `<br><span style="color: #666;">Original Price: $${booking.originalPrice}</span>` : ''}
+      </div>
+      ` : booking.discountCode ? `
       <div class="detail" style="margin-top: 15px; padding: 10px; background: #e8f5e9; border-left: 3px solid #4caf50;">
-        <span class="label" style="color: #2e7d32;">Kyle Cares Program:</span> ${booking.discountCode} (${booking.discountPercent}% off)
+        <span class="label" style="color: #2e7d32;">${booking.discountCode === 'BEEF' ? 'BEEF Program' : booking.discountCode === 'REVIEW' ? 'Review Discount' : 'Kyle Cares Program'}:</span> ${booking.discountCode} (${booking.discountPercent}% off)
         ${booking.originalPrice ? `<br><span style="color: #666;">Original Price: $${booking.originalPrice}</span>` : ''}
       </div>
       ` : ''}

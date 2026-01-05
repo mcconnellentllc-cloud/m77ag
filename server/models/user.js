@@ -1,37 +1,118 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: { 
-    type: String, 
+  // Basic Info
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
     required: true,
-    unique: true 
+    unique: true,
+    lowercase: true,
+    trim: true
   },
-  email: { 
-    type: String, 
-    required: true,
-    unique: true 
+  phone: {
+    type: String,
+    required: true
   },
-  password: { 
-    type: String, 
-    required: true 
+  password: {
+    type: String,
+    required: true
   },
-  role: { 
-    type: String, 
-    default: 'user',
-    enum: ['user', 'admin'] 
+
+  // User Type
+  role: {
+    type: String,
+    enum: ['customer', 'admin'],
+    default: 'customer'
+  },
+
+  // Profile
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    zip: String
+  },
+
+  // Hunting Info
+  huntingLicense: String,
+  emergencyContact: {
+    name: String,
+    phone: String,
+    relationship: String
+  },
+
+  // Account Status
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+
+  // Season Pass
+  seasonPass: {
+    active: {
+      type: Boolean,
+      default: false
+    },
+    type: {
+      type: String,
+      enum: ['5-day', '10-day', null],
+      default: null
+    },
+    purchaseDate: Date,
+    expiresAt: Date,
+    creditsTotal: {
+      type: Number,
+      default: 0
+    },
+    creditsRemaining: {
+      type: Number,
+      default: 0
+    },
+    amountPaid: Number,
+    bookingIds: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Booking'
+    }]
+  },
+
+  // Customer Loyalty / Spending Tracker
+  lifetimeSpend: {
+    type: Number,
+    default: 0
+  },
+  loyaltyTier: {
+    type: String,
+    enum: ['none', 'bronze', 'silver', 'gold', 'platinum'],
+    default: 'none'
+  },
+  loyaltyDiscountActive: {
+    type: Boolean,
+    default: false
+  },
+
+  // Timestamps
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  lastLogin: {
+    type: Date
   }
-}, { 
-  timestamps: { 
-    createdAt: 'created_at', 
-    updatedAt: 'updated_at' 
-  } 
 });
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -46,26 +127,39 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Create model from schema
-const User = mongoose.model('User', userSchema);
-
-// Function to create default admin user
-const createDefaultAdmin = async () => {
-  try {
-    const adminExists = await User.findOne({ email: process.env.ADMIN_EMAIL || 'admin@m77ag.com' });
-    
-    if (!adminExists) {
-      await User.create({
-        username: 'admin',
-        email: process.env.ADMIN_EMAIL || 'admin@m77ag.com',
-        password: process.env.ADMIN_PASSWORD || 'M77admin2024!',
-        role: 'admin'
-      });
-      console.log('Default admin user created');
-    }
-  } catch (error) {
-    console.error('Error creating default admin:', error);
-  }
+// Don't return password in JSON
+userSchema.methods.toJSON = function() {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
 };
 
-module.exports = { User, createDefaultAdmin };
+const User = mongoose.model('User', userSchema);
+
+// Create default admin user if none exists
+async function createDefaultAdmin() {
+  try {
+    const adminExists = await User.findOne({ role: 'admin' });
+
+    if (!adminExists) {
+      const defaultAdmin = new User({
+        name: 'M77 AG Admin',
+        email: 'admin@m77ag.com',
+        phone: '970-571-1015',
+        password: 'M77ag2024!Admin', // Change this after first login!
+        role: 'admin',
+        emailVerified: true,
+        isActive: true
+      });
+
+      await defaultAdmin.save();
+      console.log('Default admin user created: admin@m77ag.com');
+      console.log('WARNING: Default password is M77ag2024!Admin - Change this immediately!');
+    }
+  } catch (error) {
+    console.error('Error creating default admin:', error.message);
+  }
+}
+
+module.exports = User;
+module.exports.createDefaultAdmin = createDefaultAdmin;

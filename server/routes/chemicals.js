@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const chemicalController = require('../controllers/chemicalController');
-const { protect } = require('../middleware/auth');
+const { authenticate, isAdmin } = require('../middleware/auth');
 
 // Public routes
 // Get all chemical products
@@ -24,6 +24,6 @@ router.get('/price-comparison', chemicalController.getPriceComparison);
 
 // Protected routes (admin only)
 // Update product price
-router.patch('/products/:id/price', protect, chemicalController.updateProductPrice);
+router.patch('/products/:id/price', authenticate, isAdmin, chemicalController.updateProductPrice);
 
 module.exports = router;
