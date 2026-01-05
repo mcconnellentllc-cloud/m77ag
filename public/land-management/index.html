@@ -99,8 +99,28 @@
         }
 
         .user-type-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .icon-admin {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+        }
+
+        .icon-landlord {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        }
+
+        .icon-producer {
+            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
         }
 
         .user-type-card h3 {
@@ -320,7 +340,7 @@
 
             <div class="user-types">
                 <div class="user-type-card admin" onclick="window.location.href='/land-management/login'">
-                    <div class="user-type-icon">🔐</div>
+                    <div class="user-type-icon icon-admin">A</div>
                     <span class="user-type-badge badge-admin">Farm Admin</span>
                     <h3>M77 AG Admin</h3>
                     <p>
@@ -331,7 +351,7 @@
                 </div>
 
                 <div class="user-type-card landlord" onclick="window.location.href='/land-management/login'">
-                    <div class="user-type-icon">📊</div>
+                    <div class="user-type-icon icon-landlord">L</div>
                     <span class="user-type-badge badge-landlord">Invitation Only</span>
                     <h3>Landlord Access</h3>
                     <p>
@@ -342,7 +362,7 @@
                 </div>
 
                 <div class="user-type-card" onclick="window.location.href='/land-management/signup'">
-                    <div class="user-type-icon">🌾</div>
+                    <div class="user-type-icon icon-producer">P</div>
                     <span class="user-type-badge badge-producer">Free Access</span>
                     <h3>Producer Portal</h3>
                     <p>
@@ -360,7 +380,7 @@
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <h3>💰 Financial Tracking</h3>
+                    <h3>Financial Tracking</h3>
                     <ul>
                         <li>Real-time expense tracking</li>
                         <li>Income and revenue management</li>
@@ -372,7 +392,7 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>📈 Production Management</h3>
+                    <h3>Production Management</h3>
                     <ul>
                         <li>Historical yield tracking</li>
                         <li>Production projections</li>
@@ -384,7 +404,7 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>🗺️ Field Management</h3>
+                    <h3>Field Management</h3>
                     <ul>
                         <li>Field and parcel tracking</li>
                         <li>Crop rotation planning</li>
@@ -396,7 +416,7 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>🤝 Landlord Relations</h3>
+                    <h3>Landlord Relations</h3>
                     <ul>
                         <li>Landlord payment tracking</li>
                         <li>Balance management</li>
@@ -408,7 +428,7 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>📊 Dynamic Reports</h3>
+                    <h3>Dynamic Reports</h3>
                     <ul>
                         <li>Filter by farm, field, year, crop</li>
                         <li>Expense breakdown by category</li>
@@ -420,7 +440,7 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>🎯 Planning Tools</h3>
+                    <h3>Planning Tools</h3>
                     <ul>
                         <li>Budget projections</li>
                         <li>Upcoming bills calendar</li>
