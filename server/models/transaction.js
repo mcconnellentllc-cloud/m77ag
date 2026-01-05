@@ -47,6 +47,11 @@ const transactionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Property'
   },
+  // Land Management System support
+  farm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Farm'
+  },
   field: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Field'
@@ -54,6 +59,11 @@ const transactionSchema = new mongoose.Schema({
   landlord: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  // Land Management User support
+  landManagementUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'LandManagementUser'
   },
   // For expense allocation
   acresApplied: Number, // Number of acres this expense applies to
@@ -101,12 +111,41 @@ const transactionSchema = new mongoose.Schema({
     enum: ['pending', 'completed', 'void'],
     default: 'completed'
   },
+  // Bill tracking
+  dueDate: Date,
+  isPaid: {
+    type: Boolean,
+    default: false
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['unpaid', 'partial', 'paid', 'overdue'],
+    default: 'unpaid'
+  },
+  // Budget/Projection tracking
+  isProjected: {
+    type: Boolean,
+    default: false
+  },
+  projectedFor: {
+    year: Number,
+    month: Number,
+    quarter: Number
+  },
+  // Crop year for multi-year analysis
+  cropYear: {
+    type: Number
+  },
   // Notes
   notes: String,
   // Created by (which user entered this)
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  createdByLandManagementUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'LandManagementUser'
   }
 }, {
   timestamps: true
@@ -115,10 +154,16 @@ const transactionSchema = new mongoose.Schema({
 // Indexes for efficient queries
 transactionSchema.index({ type: 1, category: 1 });
 transactionSchema.index({ property: 1, date: -1 });
+transactionSchema.index({ farm: 1, date: -1 });
 transactionSchema.index({ field: 1, date: -1 });
 transactionSchema.index({ landlord: 1, date: -1 });
+transactionSchema.index({ landManagementUser: 1, date: -1 });
 transactionSchema.index({ date: -1 });
 transactionSchema.index({ status: 1 });
+transactionSchema.index({ cropYear: -1 });
+transactionSchema.index({ dueDate: 1 });
+transactionSchema.index({ paymentStatus: 1 });
+transactionSchema.index({ isProjected: 1, 'projectedFor.year': 1 });
 
 // Virtual for calculating per-unit costs
 transactionSchema.virtual('perBushelCost').get(function() {
@@ -200,6 +245,158 @@ transactionSchema.methods.calculatePerAcreMetrics = function(totalAcres) {
     acres: totalAcres,
     totalCost: this.amount
   };
+};
+
+// Static method for dynamic farm reports with filters
+transactionSchema.statics.getFarmReport = async function(filters = {}) {
+  const {
+    farmId,
+    fieldId,
+    landManagementUserId,
+    cropYear,
+    cropType,
+    startDate,
+    endDate,
+    type,
+    category,
+    includeProjected = false
+  } = filters;
+
+  const matchStage = {};
+
+  if (farmId) matchStage.farm = mongoose.Types.ObjectId(farmId);
+  if (fieldId) matchStage.field = mongoose.Types.ObjectId(fieldId);
+  if (landManagementUserId) matchStage.landManagementUser = mongoose.Types.ObjectId(landManagementUserId);
+  if (cropYear) matchStage.cropYear = cropYear;
+  if (cropType) matchStage['cropDetails.cropType'] = cropType;
+  if (type) matchStage.type = type;
+  if (category) matchStage.category = category;
+  if (!includeProjected) matchStage.isProjected = { $ne: true };
+
+  if (startDate || endDate) {
+    matchStage.date = {};
+    if (startDate) matchStage.date.$gte = new Date(startDate);
+    if (endDate) matchStage.date.$lte = new Date(endDate);
+  }
+
+  const transactions = await this.find(matchStage).sort({ date: -1 });
+
+  const summary = {
+    totalIncome: 0,
+    totalExpense: 0,
+    netProfit: 0,
+    byCategory: {},
+    transactions: transactions
+  };
+
+  transactions.forEach(t => {
+    if (t.type === 'income') {
+      summary.totalIncome += t.amount;
+    } else {
+      summary.totalExpense += t.amount;
+    }
+
+    if (!summary.byCategory[t.category]) {
+      summary.byCategory[t.category] = { total: 0, count: 0 };
+    }
+    summary.byCategory[t.category].total += t.amount;
+    summary.byCategory[t.category].count += 1;
+  });
+
+  summary.netProfit = summary.totalIncome - summary.totalExpense;
+
+  return summary;
+};
+
+// Static method to get upcoming bills
+transactionSchema.statics.getUpcomingBills = async function(farmId, daysAhead = 30) {
+  const today = new Date();
+  const futureDate = new Date();
+  futureDate.setDate(today.getDate() + daysAhead);
+
+  const bills = await this.find({
+    farm: farmId,
+    type: 'expense',
+    dueDate: { $gte: today, $lte: futureDate },
+    paymentStatus: { $in: ['unpaid', 'partial'] }
+  }).sort({ dueDate: 1 });
+
+  const summary = {
+    totalDue: 0,
+    billCount: bills.length,
+    bills: bills,
+    byCategory: {}
+  };
+
+  bills.forEach(bill => {
+    summary.totalDue += bill.amount;
+    if (!summary.byCategory[bill.category]) {
+      summary.byCategory[bill.category] = { total: 0, count: 0 };
+    }
+    summary.byCategory[bill.category].total += bill.amount;
+    summary.byCategory[bill.category].count += 1;
+  });
+
+  return summary;
+};
+
+// Static method to get expense projections
+transactionSchema.statics.getExpenseProjections = async function(farmId, year) {
+  const projections = await this.find({
+    farm: farmId,
+    isProjected: true,
+    'projectedFor.year': year,
+    type: 'expense'
+  }).sort({ 'projectedFor.month': 1 });
+
+  const summary = {
+    totalProjected: 0,
+    byMonth: {},
+    byCategory: {},
+    projections: projections
+  };
+
+  projections.forEach(p => {
+    summary.totalProjected += p.amount;
+
+    const month = p.projectedFor.month || 0;
+    if (!summary.byMonth[month]) {
+      summary.byMonth[month] = { total: 0, count: 0 };
+    }
+    summary.byMonth[month].total += p.amount;
+    summary.byMonth[month].count += 1;
+
+    if (!summary.byCategory[p.category]) {
+      summary.byCategory[p.category] = { total: 0, count: 0 };
+    }
+    summary.byCategory[p.category].total += p.amount;
+    summary.byCategory[p.category].count += 1;
+  });
+
+  return summary;
+};
+
+// Static method for multi-year comparison
+transactionSchema.statics.getMultiYearComparison = async function(farmId, years) {
+  const comparisons = [];
+
+  for (const year of years) {
+    const summary = await this.getFarmReport({
+      farmId: farmId,
+      cropYear: year,
+      includeProjected: false
+    });
+
+    comparisons.push({
+      year: year,
+      totalIncome: summary.totalIncome,
+      totalExpense: summary.totalExpense,
+      netProfit: summary.netProfit,
+      byCategory: summary.byCategory
+    });
+  }
+
+  return comparisons;
 };
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
