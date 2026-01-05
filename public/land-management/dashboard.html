@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - M77 AG Land Management</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2d5016;
+            color: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            font-size: 16px;
+        }
+
+        .role-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .welcome-section h1 {
+            color: #2d5016;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #2d5016;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-link {
+            display: inline-block;
+            color: #2d5016;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .card-link:hover {
+            color: #1a3009;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2d5016;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                height: auto;
+                padding: 20px 0;
+                gap: 15px;
+            }
+
+            .main-container {
+                padding: 20px;
+            }
+
+            .welcome-section h1 {
+                font-size: 24px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">M77 AG Land Management</div>
+            <div class="user-info">
+                <span class="user-name" id="userName">Loading...</span>
+                <span class="role-badge" id="userRole"></span>
+                <button class="btn-logout" onclick="logout()">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <div id="loadingSection" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading your dashboard...</p>
+    </div>
+
+    <div id="dashboardContent" style="display: none;">
+        <div class="main-container">
+            <div class="welcome-section">
+                <h1 id="welcomeMessage">Welcome</h1>
+                <p id="welcomeDescription">Access your farming tools and management features below.</p>
+            </div>
+
+            <div id="dashboardCards" class="dashboard-grid">
+                <!-- Cards will be dynamically inserted here based on user role -->
+            </div>
+        </div>
+    </div>
+
+    <div id="errorSection" style="display: none;">
+        <div class="main-container">
+            <div class="error-message">
+                <h2>Access Denied</h2>
+                <p id="errorMessage">Please log in to access this page.</p>
+                <br>
+                <a href="/land-management/login" style="color: #2d5016; font-weight: 600;">Go to Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            const token = localStorage.getItem('lm_token');
+
+            if (!token) {
+                showError('Not authenticated. Please log in.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/land-management/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const data = await response.json();
+                const user = data.user;
+
+                // Update user info in header
+                document.getElementById('userName').textContent =
+                    `${user.firstName} ${user.lastName}`;
+                document.getElementById('userRole').textContent = user.role;
+
+                // Update welcome message
+                document.getElementById('welcomeMessage').textContent =
+                    `Welcome back, ${user.firstName}!`;
+
+                // Load role-specific dashboard
+                loadRoleBasedDashboard(user);
+
+                // Show dashboard
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                showError('Failed to load dashboard. Please try logging in again.');
+            }
+        }
+
+        function loadRoleBasedDashboard(user) {
+            const cardsContainer = document.getElementById('dashboardCards');
+            let cards = '';
+
+            if (user.role === 'super-admin') {
+                document.getElementById('welcomeDescription').textContent =
+                    'Administrator access - Manage all farms and users';
+                cards = `
+                    <div class="card">
+                        <h3>Farm Management</h3>
+                        <p>View and manage all farms, fields, and operations.</p>
+                        <a href="#" class="card-link">Manage Farms &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>User Management</h3>
+                        <p>Manage farm owners, landlords, and public users.</p>
+                        <a href="#" class="card-link">Manage Users &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>System Settings</h3>
+                        <p>Configure system-wide settings and preferences.</p>
+                        <a href="#" class="card-link">View Settings &rarr;</a>
+                    </div>
+                `;
+            } else if (user.role === 'farm-owner') {
+                document.getElementById('welcomeDescription').textContent =
+                    'Manage your farm operations and landlord relationships';
+                cards = `
+                    <div class="card">
+                        <h3>Field Management</h3>
+                        <p>View and manage your fields, crops, and parcels.</p>
+                        <a href="#" class="card-link">View Fields &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>Landlord Management</h3>
+                        <p>Invite and manage landlord access to their parcels.</p>
+                        <a href="#" class="card-link">Manage Landlords &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>Cost Calculators</h3>
+                        <p>Calculate farming costs and analyze profitability.</p>
+                        <a href="#" class="card-link">Open Calculators &rarr;</a>
+                    </div>
+                `;
+            } else if (user.role === 'landlord') {
+                document.getElementById('welcomeDescription').textContent =
+                    'View your parcels and manage your preferences';
+                cards = `
+                    <div class="card">
+                        <h3>My Parcels</h3>
+                        <p>View details about your land and current crops.</p>
+                        <a href="#" class="card-link">View Parcels &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>Payment Preferences</h3>
+                        <p>Set your check schedule and delivery preferences.</p>
+                        <a href="#" class="card-link">Manage Preferences &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>Production Reports</h3>
+                        <p>View yield and production data for your parcels.</p>
+                        <a href="#" class="card-link">View Reports &rarr;</a>
+                    </div>
+                `;
+            } else {
+                document.getElementById('welcomeDescription').textContent =
+                    'Access farming calculators and tools';
+                cards = `
+                    <div class="card">
+                        <h3>Cost Calculators</h3>
+                        <p>Calculate farming costs for various operations.</p>
+                        <a href="/custom-farming" class="card-link">Open Calculator &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>Chemical Programs</h3>
+                        <p>Estimate chemical program costs and applications.</p>
+                        <a href="#" class="card-link">View Programs &rarr;</a>
+                    </div>
+                    <div class="card">
+                        <h3>Market Information</h3>
+                        <p>Access commodity prices and market data.</p>
+                        <a href="#" class="card-link">View Markets &rarr;</a>
+                    </div>
+                `;
+            }
+
+            cardsContainer.innerHTML = cards;
+        }
+
+        function showError(message) {
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorSection').style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('lm_token');
+            localStorage.removeItem('lm_user');
+            window.location.href = '/land-management/login';
+        }
+
+        // Load dashboard on page load
+        window.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
