@@ -9,14 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const cookieParser = require('cookie-parser');
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Connect to MongoDB
 const mongoose = require('mongoose');
 const { createDefaultAdmin } = require('./models/user');
+const { createDefaultFarm } = require('./controllers/landManagementAuthController');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
 mongoose.connect(MONGODB_URI)
@@ -25,6 +28,8 @@ mongoose.connect(MONGODB_URI)
     console.log('Database:', MONGODB_URI.split('@')[1] || 'localhost');
     // Create default admin user
     createDefaultAdmin();
+    // Create default farm and super admin for land management
+    createDefaultFarm();
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
@@ -36,6 +41,7 @@ const bookingRoutes = require('./routes/bookings');
 const huntingRoutes = require('./routes/hunting');
 const serviceRoutes = require('./routes/services');
 const chemicalRoutes = require('./routes/chemicals');
+const landManagementRoutes = require('./routes/landManagement');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -43,6 +49,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/hunting', huntingRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/chemicals', chemicalRoutes);
+app.use('/api/land-management', landManagementRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -98,6 +105,23 @@ app.get('/services', (req, res) => {
 
 app.get('/custom-farming', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/custom-farming.html'));
+});
+
+// Land management routes
+app.get('/land-management', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/index.html'));
+});
+
+app.get('/land-management/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/login.html'));
+});
+
+app.get('/land-management/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/signup.html'));
+});
+
+app.get('/land-management/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/dashboard.html'));
 });
 
 app.get('/heritage-farm', (req, res) => {
