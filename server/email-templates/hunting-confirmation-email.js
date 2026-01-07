@@ -202,13 +202,26 @@ function getHuntingConfirmationEmail(booking) {
       </ul>
     </div>
 
+    <div style="background: linear-gradient(135deg, #d4a54a 0%, #c09440 100%); padding: 25px; border-radius: 8px; text-align: center; margin: 30px 0;">
+      <h3 style="color: white; margin: 0 0 15px 0;">Had a Great Hunt?</h3>
+      <p style="color: white; margin: 0 0 20px 0; font-size: 16px;">
+        Share your experience and get <strong>75% off</strong> your next hunt!
+      </p>
+      <a href="https://m77ag.com/submit-review" style="background-color: white; color: #2c5530; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+        Leave a Review & Get 75% Off
+      </a>
+      <p style="color: white; font-size: 14px; margin: 15px 0 0 0;">
+        Positive reviews automatically receive the REVIEW discount code!
+      </p>
+    </div>
+
     <p>If you have any questions or need to make changes to your reservation, please contact us:</p>
     <p>
       <strong>Kyle McConnell</strong><br>
       Phone: 970-571-1015<br>
       Email: hunting@m77ag.com
     </p>
-    
+
     <p>We look forward to hosting you!</p>
     
     <p>Best regards,<br>

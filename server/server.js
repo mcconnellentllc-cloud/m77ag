@@ -44,6 +44,7 @@ const chemicalRoutes = require('./routes/chemicals');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
 const seasonPassRoutes = require('./routes/seasonPass');
+const reviewRoutes = require('./routes/reviews');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -59,6 +60,7 @@ app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -168,6 +170,10 @@ app.get('/season-pass', (req, res) => {
 
 app.get('/my-account', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/my-account.html'));
+});
+
+app.get('/submit-review', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/submit-review.html'));
 });
 
 // Main route - must come last among GET routes
