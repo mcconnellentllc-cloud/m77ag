@@ -156,7 +156,7 @@
         
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 40px;
             margin-bottom: 80px;
         }
@@ -245,7 +245,13 @@
             color: rgba(255, 255, 255, 0.6);
         }
         
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
             .services-grid {
                 grid-template-columns: 1fr;
             }
@@ -384,6 +390,27 @@
                             <li>Flexible boarding options</li>
                         </ul>
                         <a href="/custom-cow-care" class="service-btn">Request Information</a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="assets/images/heritage-farm/property-pictures/corn-field-sunset.jpeg" alt="Land Management & AG Tracker">
+                    </div>
+                    <div class="service-content">
+                        <h3 class="service-title">Land Management & AG Tracker</h3>
+                        <p class="service-description">
+                            Comprehensive farm financial management system with real-time expense tracking, production projections, and profitability analysis.
+                        </p>
+                        <ul class="service-features">
+                            <li>Real-time financial tracking</li>
+                            <li>Production projections & forecasting</li>
+                            <li>Multi-year performance analysis</li>
+                            <li>Landlord payment management</li>
+                            <li>Bill tracking & cash flow</li>
+                            <li>Interactive reports & analytics</li>
+                        </ul>
+                        <a href="/land-management" class="service-btn">Access AG Tracker</a>
                     </div>
                 </div>
             </div>
