@@ -50,6 +50,7 @@ const landManagementRoutes = require('./routes/landManagement');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
 const seasonPassRoutes = require('./routes/seasonPass');
+const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
 
 // API routes
@@ -67,6 +68,7 @@ app.use('/api/land-management', landManagementRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
 
 // Health check / test route
@@ -194,6 +196,10 @@ app.get('/season-pass', (req, res) => {
 
 app.get('/my-account', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/my-account.html'));
+});
+
+app.get('/submit-review', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/submit-review.html'));
 });
 
 // Main route - must come last among GET routes
