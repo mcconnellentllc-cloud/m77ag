@@ -49,6 +49,7 @@ const chemicalRoutes = require('./routes/chemicals');
 const landManagementRoutes = require('./routes/landManagement');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
+const rentalRoutes = require('./routes/rentals');
 const seasonPassRoutes = require('./routes/seasonPass');
 const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
@@ -67,6 +68,7 @@ app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/land-management', landManagementRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
+app.use('/api/rentals', rentalRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
@@ -188,6 +190,22 @@ app.get('/hunting-liability-waiver', (req, res) => {
 
 app.get('/forsale', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/forsale.html'));
+});
+
+app.get('/rentals', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/rentals.html'));
+});
+
+app.get('/tenant', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/tenant/portal.html'));
+});
+
+app.get('/tenant/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/tenant/login.html'));
+});
+
+app.get('/admin/rentals', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/rentals.html'));
 });
 
 app.get('/season-pass', (req, res) => {
