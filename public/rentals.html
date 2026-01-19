@@ -631,6 +631,250 @@
                 padding: 0 15px;
             }
         }
+
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1500;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(45, 80, 22, 0.5);
+        }
+
+        .chat-toggle svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .chat-toggle .close-icon {
+            display: none;
+        }
+
+        .chat-toggle.active .chat-icon {
+            display: none;
+        }
+
+        .chat-toggle.active .close-icon {
+            display: block;
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 75px;
+            right: 0;
+            width: 380px;
+            height: 520px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .chat-header-info h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .chat-header-info p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8f8f8;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.bot {
+            background: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.typing {
+            background: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #2d5016;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #2d5016;
+        }
+
+        .chat-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-send svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .quick-questions {
+            padding: 10px 15px 5px;
+            background: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-btn {
+            background: #f0f7f0;
+            border: 1px solid #2d5016;
+            color: #2d5016;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: #2d5016;
+            color: #fff;
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100vw - 30px);
+                height: calc(100vh - 140px);
+                bottom: 70px;
+                right: -5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -680,7 +924,7 @@
             <!-- Details -->
             <div class="property-details">
                 <h1 class="property-title">3 Bedroom House</h1>
-                <p class="property-address">Phillips County, Colorado</p>
+                <p class="property-address">168 Hwy 59, Sedgwick, CO 80749</p>
 
                 <div class="property-badges">
                     <span class="badge gold">Utilities Included</span>
@@ -886,6 +1130,40 @@
                 <button class="modal-btn" onclick="closeModal()">Got It</button>
             </div>
         </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="chat-avatar">🏠</div>
+                <div class="chat-header-info">
+                    <h4>Property Assistant</h4>
+                    <p>Ask about this rental</p>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    Hi there! I'm here to help answer questions about this rental property. It's a great 3-bedroom house in the country, about half a mile north of the Sedgwick County line. What would you like to know?
+                </div>
+            </div>
+            <div class="quick-questions" id="quickQuestions">
+                <button class="quick-btn" onclick="askQuick('What schools are nearby?')">Schools?</button>
+                <button class="quick-btn" onclick="askQuick('What utilities are included?')">Utilities?</button>
+                <button class="quick-btn" onclick="askQuick('Are pets allowed?')">Pets?</button>
+                <button class="quick-btn" onclick="askQuick('What is country living like here?')">Country living?</button>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
+                <button class="chat-send" id="chatSend" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+        <button class="chat-toggle" id="chatToggle" onclick="toggleChat()">
+            <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h10v2H7zm0-3h10v2H7z"/></svg>
+            <svg class="close-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
     </div>
 
     <!-- Footer -->
@@ -1110,6 +1388,221 @@
         document.getElementById('hamburger').addEventListener('click', () => {
             document.getElementById('navMenu').classList.toggle('active');
         });
+
+        // ==================== CHAT BOT ====================
+
+        // Property knowledge base for the AI
+        const propertyKnowledge = {
+            location: {
+                address: "168 Hwy 59, Sedgwick, CO 80749",
+                description: "Located at 168 Hwy 59 in Sedgwick, CO - about half a mile north of the Sedgwick County line. This is true country living - wide open spaces, peaceful nights, and friendly neighbors.",
+                area: "Phillips County, northeastern Colorado"
+            },
+            property: {
+                bedrooms: 3,
+                bathrooms: 1.5,
+                features: ["Central heat and AC", "Refrigerator included", "Stove included", "Washer/dryer hookups", "Off-street parking", "Large yard", "Enclosed porch"],
+                utilities: "All utilities are included in the rent - electricity, gas, water, sewer, and trash.",
+                pets: "Yes, we are pet-friendly! We just ask that you let us know about your pets during the application."
+            },
+            pricing: {
+                monthToMonth: 1400,
+                sixMonth: 1300,
+                twelveMonth: 1250,
+                deposit: "Security deposit equals one month's rent, refundable per Colorado law within 30 days of move-out minus any damages beyond normal wear."
+            },
+            schools: {
+                options: ["Haxtun School District", "Ovid-Sedgwick (Revere) School District"],
+                description: "Families can choose between Haxtun or Ovid-Sedgwick (Revere) school systems - both are excellent small-town schools with great teachers and strong community involvement. Class sizes are small so kids get individual attention."
+            },
+            countryLiving: {
+                description: "This is authentic country living. You'll want a mower for the yard in summer and a snowblower for the driveway in winter - that's just part of life out here. The trade-off is peace and quiet, beautiful sunsets, and knowing your neighbors. We work really well with tenants who treat us and our property well - it's a two-way relationship built on respect.",
+                expectations: "Tenants should be comfortable with rural life - you're not in town, so you'll need reliable transportation. But the quiet and space more than make up for it."
+            },
+            landlord: {
+                style: "We believe in good relationships with our tenants. If you treat us and the property well, we'll do the same for you. Communication is key - if something needs fixing, let us know and we'll take care of it.",
+                contact: "Kyle at 970-571-1015 or rentals@m77ag.com"
+            },
+            application: {
+                process: "Fill out the application on this page and submit your first month's rent plus security deposit. We review applications within 24-48 hours, run a background check, and get back to you quickly.",
+                requirements: "We look for tenants with stable income (generally 2.5-3x monthly rent), good rental history, and no concerning background issues."
+            }
+        };
+
+        let chatHistory = [];
+        let isProcessing = false;
+
+        // Toggle chat window
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            const chatToggle = document.getElementById('chatToggle');
+            chatWindow.classList.toggle('active');
+            chatToggle.classList.toggle('active');
+        }
+
+        // Handle enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Quick question buttons
+        function askQuick(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+            // Hide quick questions after first use
+            document.getElementById('quickQuestions').style.display = 'none';
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message || isProcessing) return;
+
+            isProcessing = true;
+            input.value = '';
+            document.getElementById('chatSend').disabled = true;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatHistory.push({ role: 'user', content: message });
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                const response = await fetch('/api/rentals/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        history: chatHistory,
+                        propertyKnowledge: propertyKnowledge
+                    })
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (data.success) {
+                    addMessage(data.response, 'bot');
+                    chatHistory.push({ role: 'assistant', content: data.response });
+                } else {
+                    // Fallback to local response
+                    const fallbackResponse = generateLocalResponse(message);
+                    addMessage(fallbackResponse, 'bot');
+                    chatHistory.push({ role: 'assistant', content: fallbackResponse });
+                }
+            } catch (error) {
+                hideTyping();
+                // Fallback to local response
+                const fallbackResponse = generateLocalResponse(message);
+                addMessage(fallbackResponse, 'bot');
+                chatHistory.push({ role: 'assistant', content: fallbackResponse });
+            }
+
+            isProcessing = false;
+            document.getElementById('chatSend').disabled = false;
+        }
+
+        // Generate local response as fallback
+        function generateLocalResponse(message) {
+            const msg = message.toLowerCase();
+
+            // Schools
+            if (msg.includes('school') || msg.includes('education') || msg.includes('kids')) {
+                return propertyKnowledge.schools.description;
+            }
+
+            // Utilities
+            if (msg.includes('utilit') || msg.includes('electric') || msg.includes('gas') || msg.includes('water') || msg.includes('bill')) {
+                return propertyKnowledge.property.utilities;
+            }
+
+            // Pets
+            if (msg.includes('pet') || msg.includes('dog') || msg.includes('cat') || msg.includes('animal')) {
+                return propertyKnowledge.property.pets;
+            }
+
+            // Country living / rural
+            if (msg.includes('country') || msg.includes('rural') || msg.includes('area') || msg.includes('neighbor') || msg.includes('mow') || msg.includes('snow')) {
+                return propertyKnowledge.countryLiving.description;
+            }
+
+            // Location
+            if (msg.includes('where') || msg.includes('location') || msg.includes('address') || msg.includes('sedgwick')) {
+                return `The property is located at ${propertyKnowledge.location.address}, about half a mile north of the Sedgwick County line. This is true country living - wide open spaces, peaceful nights, and friendly neighbors.`;
+            }
+
+            // Price / rent
+            if (msg.includes('price') || msg.includes('cost') || msg.includes('rent') || msg.includes('month')) {
+                return `We have flexible lease options: $${propertyKnowledge.pricing.monthToMonth}/month for month-to-month, $${propertyKnowledge.pricing.sixMonth}/month for a 6-month lease (save $600/year), or $${propertyKnowledge.pricing.twelveMonth}/month for a 12-month lease (save $1,800/year). All utilities are included!`;
+            }
+
+            // Deposit
+            if (msg.includes('deposit') || msg.includes('security')) {
+                return propertyKnowledge.pricing.deposit;
+            }
+
+            // Bedrooms / bathrooms
+            if (msg.includes('bedroom') || msg.includes('bathroom') || msg.includes('room') || msg.includes('size')) {
+                return `This home has ${propertyKnowledge.property.bedrooms} bedrooms and ${propertyKnowledge.property.bathrooms} bathrooms. It includes an enclosed porch, good-sized yard, and all the essentials - fridge, stove, and washer/dryer hookups.`;
+            }
+
+            // Application process
+            if (msg.includes('apply') || msg.includes('application') || msg.includes('process') || msg.includes('move in')) {
+                return propertyKnowledge.application.process;
+            }
+
+            // Contact
+            if (msg.includes('contact') || msg.includes('call') || msg.includes('phone') || msg.includes('email')) {
+                return `You can reach Kyle at 970-571-1015 or email rentals@m77ag.com. We're happy to answer any questions or schedule a showing!`;
+            }
+
+            // Features / amenities
+            if (msg.includes('feature') || msg.includes('ameniti') || msg.includes('include') || msg.includes('have')) {
+                return `The property includes: ${propertyKnowledge.property.features.join(', ')}. Plus all utilities are paid!`;
+            }
+
+            // Available / availability
+            if (msg.includes('available') || msg.includes('when') || msg.includes('ready')) {
+                return `The property is available now! You can select your desired move-in date on the application form. We can typically get you moved in within a week or two of approval.`;
+            }
+
+            // Default response
+            return `Great question! This is a 3-bedroom, 1.5-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?`;
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTyping() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message typing';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
     </script>
 </body>
 </html>
