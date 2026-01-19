@@ -708,4 +708,289 @@ router.get('/admin/export/communication/:leaseId', async (req, res) => {
   }
 });
 
+// ============================================
+// APPOINTMENT SCHEDULING
+// ============================================
+
+// Submit appointment request (sends email to office@m77ag.com)
+router.post('/appointment', async (req, res) => {
+  try {
+    const { name, phone, email, preferredDate, preferredTimes, notes, property, type } = req.body;
+
+    if (!name || !phone || !email || !preferredDate) {
+      return res.status(400).json({ success: false, message: 'Name, phone, email, and date are required' });
+    }
+
+    // Format the appointment data for email
+    const formattedDate = new Date(preferredDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const timePrefs = preferredTimes && preferredTimes.length > 0
+      ? preferredTimes.join(', ')
+      : 'Not specified';
+
+    // Try to send email via nodemailer if configured
+    try {
+      const nodemailer = require('nodemailer');
+
+      // Check if email credentials are configured
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: 'office@m77ag.com',
+          subject: `Rental Showing Request - ${property}`,
+          html: `
+            <h2>New Showing Request</h2>
+            <p><strong>Property:</strong> ${property}</p>
+            <hr>
+            <h3>Contact Information</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <hr>
+            <h3>Preferred Showing Time</h3>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time Preference:</strong> ${timePrefs}</p>
+            ${notes ? `<hr><h3>Notes</h3><p>${notes}</p>` : ''}
+            <hr>
+            <p style="color: #666; font-size: 12px;">
+              Submitted: ${new Date().toLocaleString()}<br>
+              Reply directly to this email or call/text Kyle at 970-571-1015
+            </p>
+          `,
+          text: `
+New Showing Request
+Property: ${property}
+
+Contact Information:
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+
+Preferred Showing Time:
+Date: ${formattedDate}
+Time Preference: ${timePrefs}
+
+${notes ? `Notes: ${notes}` : ''}
+
+Submitted: ${new Date().toLocaleString()}
+          `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Appointment email sent to office@m77ag.com');
+      } else {
+        // Log the appointment request if email not configured
+        console.log('=== APPOINTMENT REQUEST ===');
+        console.log('Property:', property);
+        console.log('Name:', name);
+        console.log('Phone:', phone);
+        console.log('Email:', email);
+        console.log('Date:', formattedDate);
+        console.log('Times:', timePrefs);
+        console.log('Notes:', notes || 'None');
+        console.log('===========================');
+      }
+    } catch (emailError) {
+      console.log('Email not sent (nodemailer may not be installed):', emailError.message);
+      console.log('=== APPOINTMENT REQUEST ===');
+      console.log('Property:', property);
+      console.log('Name:', name);
+      console.log('Phone:', phone);
+      console.log('Email:', email);
+      console.log('Date:', formattedDate);
+      console.log('Times:', timePrefs);
+      console.log('Notes:', notes || 'None');
+      console.log('===========================');
+    }
+
+    res.json({
+      success: true,
+      message: 'Appointment request submitted successfully'
+    });
+
+  } catch (error) {
+    console.error('Appointment submission error:', error);
+    // Still return success - we don't want to block the user
+    res.json({ success: true, message: 'Request received' });
+  }
+});
+
+// ============================================
+// RENTAL PROPERTY CHATBOT
+// ============================================
+
+// Chat endpoint for rental property questions
+router.post('/chat', async (req, res) => {
+  try {
+    const { message, history, propertyKnowledge } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ success: false, message: 'Message is required' });
+    }
+
+    // Try to use Anthropic API if available
+    const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+    if (ANTHROPIC_API_KEY) {
+      try {
+        const systemPrompt = `You are a helpful property assistant for M77 AG Rentals. You're answering questions about a 3-bedroom rental property in rural Phillips County, Colorado.
+
+PROPERTY DETAILS:
+- Address: 168 Hwy 59, Sedgwick, CO 80749
+- Location: About half a mile north of Sedgwick County line
+- Bedrooms: 3
+- Bathrooms: 1.5
+- Features: Central heat & AC, refrigerator, stove, washer/dryer hookups, off-street parking, large yard, enclosed porch
+- All utilities included (electricity, gas, water, sewer, trash)
+- Pet friendly
+
+PRICING (utilities included):
+- Month-to-month: $1,400/month
+- 6-month lease: $1,300/month (save $600/year)
+- 12-month lease: $1,250/month (save $1,800/year)
+- Security deposit: 1 month rent, refundable per Colorado law
+
+SCHOOLS:
+- Families can choose between Haxtun or Ovid-Sedgwick (Revere) school districts
+- Both are excellent small-town schools with great community involvement and small class sizes
+
+COUNTRY LIVING:
+- This is authentic country living - wide open spaces, peaceful nights, friendly neighbors
+- Tenants need a mower for summer and snowblower for winter - that's part of rural life
+- Not in town, so reliable transportation needed
+- The landlord values good relationships - if tenants treat the property well, they'll do the same
+
+CONTACT:
+- Kyle at 970-571-1015
+- Email: rentals@m77ag.com
+
+Keep responses friendly, conversational, and concise. Focus on being helpful and informative.`;
+
+        const anthropicMessages = (history || []).slice(-10).map(msg => ({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content
+        }));
+
+        anthropicMessages.push({ role: 'user', content: message });
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 500,
+            system: systemPrompt,
+            messages: anthropicMessages
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.content && data.content[0]) {
+          return res.json({
+            success: true,
+            response: data.content[0].text
+          });
+        }
+      } catch (apiError) {
+        console.error('Anthropic API error:', apiError.message);
+        // Fall through to local response
+      }
+    }
+
+    // Fallback: Generate local response based on keywords
+    const localResponse = generateLocalChatResponse(message, propertyKnowledge);
+    res.json({ success: true, response: localResponse });
+
+  } catch (error) {
+    console.error('Chat error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Local response generator
+function generateLocalChatResponse(message, knowledge) {
+  const msg = message.toLowerCase();
+
+  // Schools
+  if (msg.includes('school') || msg.includes('education') || msg.includes('kids')) {
+    return "Families can choose between Haxtun or Ovid-Sedgwick (Revere) school systems - both are excellent small-town schools with great teachers and strong community involvement. Class sizes are small so kids get individual attention.";
+  }
+
+  // Utilities
+  if (msg.includes('utilit') || msg.includes('electric') || msg.includes('gas') || msg.includes('water') || msg.includes('bill')) {
+    return "All utilities are included in the rent - electricity, gas, water, sewer, and trash. You won't have any extra utility bills!";
+  }
+
+  // Pets
+  if (msg.includes('pet') || msg.includes('dog') || msg.includes('cat') || msg.includes('animal')) {
+    return "Yes, we are pet-friendly! We just ask that you let us know about your pets during the application so we can note it on the lease.";
+  }
+
+  // Country living
+  if (msg.includes('country') || msg.includes('rural') || msg.includes('neighbor') || msg.includes('mow') || msg.includes('snow')) {
+    return "This is authentic country living. You'll want a mower for the yard in summer and a snowblower for the driveway in winter - that's just part of life out here. The trade-off is peace and quiet, beautiful sunsets, and knowing your neighbors. We work really well with tenants who treat us and our property well.";
+  }
+
+  // Location
+  if (msg.includes('where') || msg.includes('location') || msg.includes('address') || msg.includes('sedgwick')) {
+    return "The property is located at 168 Hwy 59, Sedgwick, CO 80749 - about half a mile north of the Sedgwick County line. It's true country living - wide open spaces, peaceful nights, and friendly neighbors.";
+  }
+
+  // Price
+  if (msg.includes('price') || msg.includes('cost') || msg.includes('rent') || msg.includes('month')) {
+    return "We have flexible lease options: $1,400/month for month-to-month, $1,300/month for a 6-month lease (save $600/year), or $1,250/month for a 12-month lease (save $1,800/year). All utilities are included!";
+  }
+
+  // Deposit
+  if (msg.includes('deposit') || msg.includes('security')) {
+    return "Security deposit equals one month's rent, refundable per Colorado law within 30 days of move-out minus any damages beyond normal wear.";
+  }
+
+  // Bedrooms
+  if (msg.includes('bedroom') || msg.includes('bathroom') || msg.includes('room') || msg.includes('size')) {
+    return "This home has 3 bedrooms and 1.5 bathrooms. It includes an enclosed porch, good-sized yard, and all the essentials - fridge, stove, and washer/dryer hookups.";
+  }
+
+  // Application
+  if (msg.includes('apply') || msg.includes('application') || msg.includes('process') || msg.includes('move in')) {
+    return "Fill out the application on this page and submit your first month's rent plus security deposit. We review applications within 24-48 hours, run a background check, and get back to you quickly. We can typically get you moved in within a week or two of approval!";
+  }
+
+  // Contact
+  if (msg.includes('contact') || msg.includes('call') || msg.includes('phone') || msg.includes('email')) {
+    return "You can reach Kyle at 970-571-1015 or email rentals@m77ag.com. We're happy to answer any questions or schedule a showing!";
+  }
+
+  // Features
+  if (msg.includes('feature') || msg.includes('ameniti') || msg.includes('include') || msg.includes('have')) {
+    return "The property includes: Central heat & AC, refrigerator, stove, washer/dryer hookups, off-street parking, large yard, and an enclosed porch. Plus all utilities are paid!";
+  }
+
+  // Available
+  if (msg.includes('available') || msg.includes('when') || msg.includes('ready')) {
+    return "The property is available now! You can select your desired move-in date on the application form. We can typically get you moved in within a week or two of approval.";
+  }
+
+  // Default
+  return "This is a 3-bedroom, 1.5-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?";
+}
+
 module.exports = router;
