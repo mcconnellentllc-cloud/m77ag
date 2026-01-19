@@ -43,6 +43,7 @@ const serviceRoutes = require('./routes/services');
 const chemicalRoutes = require('./routes/chemicals');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
+const rentalRoutes = require('./routes/rentals');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -57,6 +58,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
+app.use('/api/rentals', rentalRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -158,6 +160,22 @@ app.get('/hunting-liability-waiver', (req, res) => {
 
 app.get('/forsale', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/forsale.html'));
+});
+
+app.get('/rentals', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/rentals.html'));
+});
+
+app.get('/tenant', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/tenant/portal.html'));
+});
+
+app.get('/tenant/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/tenant/login.html'));
+});
+
+app.get('/admin/rentals', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/rentals.html'));
 });
 
 // Main route - must come last among GET routes
