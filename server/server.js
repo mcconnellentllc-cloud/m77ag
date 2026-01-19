@@ -9,14 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const cookieParser = require('cookie-parser');
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Connect to MongoDB
 const mongoose = require('mongoose');
 const { createDefaultAdmin } = require('./models/user');
+const { createDefaultFarm } = require('./controllers/landManagementAuthController');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
 mongoose.connect(MONGODB_URI)
@@ -25,6 +28,8 @@ mongoose.connect(MONGODB_URI)
     console.log('Database:', MONGODB_URI.split('@')[1] || 'localhost');
     // Create default admin user
     createDefaultAdmin();
+    // Create default farm and super admin for land management
+    createDefaultFarm();
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
@@ -41,9 +46,13 @@ const ledgerRoutes = require('./routes/ledger');
 const harvestDataRoutes = require('./routes/harvestData');
 const serviceRoutes = require('./routes/services');
 const chemicalRoutes = require('./routes/chemicals');
+const landManagementRoutes = require('./routes/landManagement');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
 const rentalRoutes = require('./routes/rentals');
+const seasonPassRoutes = require('./routes/seasonPass');
+const reviewRoutes = require('./routes/reviews');
+const financialReportsRoutes = require('./routes/financialReports');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -56,9 +65,13 @@ app.use('/api/ledger', ledgerRoutes);
 app.use('/api/harvest', harvestDataRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/chemicals', chemicalRoutes);
+app.use('/api/land-management', landManagementRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/rentals', rentalRoutes);
+app.use('/api/season-pass', seasonPassRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/financial-reports', financialReportsRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -146,6 +159,23 @@ app.get('/custom-farming', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/custom-farming.html'));
 });
 
+// Land management routes
+app.get('/land-management', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/index.html'));
+});
+
+app.get('/land-management/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/login.html'));
+});
+
+app.get('/land-management/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/signup.html'));
+});
+
+app.get('/land-management/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/land-management/dashboard.html'));
+});
+
 app.get('/heritage-farm', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/heritage-farm.html'));
 });
@@ -176,6 +206,18 @@ app.get('/tenant/login', (req, res) => {
 
 app.get('/admin/rentals', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/rentals.html'));
+});
+
+app.get('/season-pass', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/season-pass.html'));
+});
+
+app.get('/my-account', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/my-account.html'));
+});
+
+app.get('/submit-review', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/submit-review.html'));
 });
 
 // Main route - must come last among GET routes

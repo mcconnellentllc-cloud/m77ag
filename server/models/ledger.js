@@ -4,13 +4,20 @@ const ledgerSchema = new mongoose.Schema({
   // Parties involved
   landlord: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'User'
+  },
+  // Land Management System support
+  landManagementUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'LandManagementUser'
   },
   property: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Property',
-    required: true
+    ref: 'Property'
+  },
+  farm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Farm'
   },
   // Ledger entry details
   entryType: {
@@ -122,7 +129,9 @@ const ledgerSchema = new mongoose.Schema({
 
 // Indexes for efficient queries
 ledgerSchema.index({ landlord: 1, status: 1 });
+ledgerSchema.index({ landManagementUser: 1, status: 1 });
 ledgerSchema.index({ property: 1, cropYear: -1 });
+ledgerSchema.index({ farm: 1, cropYear: -1 });
 ledgerSchema.index({ entryDate: -1 });
 ledgerSchema.index({ dueDate: 1 });
 ledgerSchema.index({ status: 1 });

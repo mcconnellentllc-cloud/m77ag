@@ -56,6 +56,49 @@ const userSchema = new mongoose.Schema({
     default: false
   },
 
+  // Season Pass
+  seasonPass: {
+    active: {
+      type: Boolean,
+      default: false
+    },
+    type: {
+      type: String,
+      enum: ['5-day', '10-day', null],
+      default: null
+    },
+    purchaseDate: Date,
+    expiresAt: Date,
+    creditsTotal: {
+      type: Number,
+      default: 0
+    },
+    creditsRemaining: {
+      type: Number,
+      default: 0
+    },
+    amountPaid: Number,
+    bookingIds: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Booking'
+    }]
+  },
+
+  // Customer Loyalty / Spending Tracker
+  lifetimeSpend: {
+    type: Number,
+    default: 0
+  },
+  loyaltyTier: {
+    type: String,
+    enum: ['none', 'bronze', 'silver', 'gold', 'platinum'],
+    default: 'none'
+  },
+  loyaltyDiscountActive: {
+    type: Boolean,
+    default: false
+  },
+
   // Timestamps
   createdAt: {
     type: Date,
