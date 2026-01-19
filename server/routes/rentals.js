@@ -709,6 +709,126 @@ router.get('/admin/export/communication/:leaseId', async (req, res) => {
 });
 
 // ============================================
+// APPOINTMENT SCHEDULING
+// ============================================
+
+// Submit appointment request (sends email to office@m77ag.com)
+router.post('/appointment', async (req, res) => {
+  try {
+    const { name, phone, email, preferredDate, preferredTimes, notes, property, type } = req.body;
+
+    if (!name || !phone || !email || !preferredDate) {
+      return res.status(400).json({ success: false, message: 'Name, phone, email, and date are required' });
+    }
+
+    // Format the appointment data for email
+    const formattedDate = new Date(preferredDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const timePrefs = preferredTimes && preferredTimes.length > 0
+      ? preferredTimes.join(', ')
+      : 'Not specified';
+
+    // Try to send email via nodemailer if configured
+    try {
+      const nodemailer = require('nodemailer');
+
+      // Check if email credentials are configured
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: 'office@m77ag.com',
+          subject: `Rental Showing Request - ${property}`,
+          html: `
+            <h2>New Showing Request</h2>
+            <p><strong>Property:</strong> ${property}</p>
+            <hr>
+            <h3>Contact Information</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <hr>
+            <h3>Preferred Showing Time</h3>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time Preference:</strong> ${timePrefs}</p>
+            ${notes ? `<hr><h3>Notes</h3><p>${notes}</p>` : ''}
+            <hr>
+            <p style="color: #666; font-size: 12px;">
+              Submitted: ${new Date().toLocaleString()}<br>
+              Reply directly to this email or call/text Kyle at 970-571-1015
+            </p>
+          `,
+          text: `
+New Showing Request
+Property: ${property}
+
+Contact Information:
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+
+Preferred Showing Time:
+Date: ${formattedDate}
+Time Preference: ${timePrefs}
+
+${notes ? `Notes: ${notes}` : ''}
+
+Submitted: ${new Date().toLocaleString()}
+          `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Appointment email sent to office@m77ag.com');
+      } else {
+        // Log the appointment request if email not configured
+        console.log('=== APPOINTMENT REQUEST ===');
+        console.log('Property:', property);
+        console.log('Name:', name);
+        console.log('Phone:', phone);
+        console.log('Email:', email);
+        console.log('Date:', formattedDate);
+        console.log('Times:', timePrefs);
+        console.log('Notes:', notes || 'None');
+        console.log('===========================');
+      }
+    } catch (emailError) {
+      console.log('Email not sent (nodemailer may not be installed):', emailError.message);
+      console.log('=== APPOINTMENT REQUEST ===');
+      console.log('Property:', property);
+      console.log('Name:', name);
+      console.log('Phone:', phone);
+      console.log('Email:', email);
+      console.log('Date:', formattedDate);
+      console.log('Times:', timePrefs);
+      console.log('Notes:', notes || 'None');
+      console.log('===========================');
+    }
+
+    res.json({
+      success: true,
+      message: 'Appointment request submitted successfully'
+    });
+
+  } catch (error) {
+    console.error('Appointment submission error:', error);
+    // Still return success - we don't want to block the user
+    res.json({ success: true, message: 'Request received' });
+  }
+});
+
+// ============================================
 // RENTAL PROPERTY CHATBOT
 // ============================================
 
