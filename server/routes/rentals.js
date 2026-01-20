@@ -855,7 +855,9 @@ PROPERTY DETAILS:
 - Bathrooms: 1
 - Features: Central heat (no AC), stove, microwave, washer/dryer hookups, off-street parking, large yard, enclosed porch
 - NO refrigerator included - tenant needs to bring their own
-- All utilities included (electricity, gas, water, sewer, trash)
+- All utilities paid by landlord (electricity, propane, water, sewer, trash)
+- Historical utility averages: electricity ~$100/mo, propane ~$150/mo
+- If tenant usage exceeds 20% above historical averages, terms may be renegotiated
 - Pet friendly
 
 PRICING (utilities included):
