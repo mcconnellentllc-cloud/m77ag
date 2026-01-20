@@ -275,6 +275,14 @@
         .modal-body {
             padding: 25px;
         }
+        .tab-badge {
+            background: #c62828;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
         /* Responsive */
         @media (max-width: 1200px) {
             .summary-grid { grid-template-columns: repeat(3, 1fr); }
@@ -329,6 +337,7 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" onclick="showTab('overview')">Overview</button>
+            <button class="tab" onclick="showTab('applications')" id="applicationsTab">Applications <span id="appBadge" class="tab-badge" style="display:none;"></span></button>
             <button class="tab" onclick="showTab('tenants')">Tenants</button>
             <button class="tab" onclick="showTab('payments')">Payments</button>
             <button class="tab" onclick="showTab('messages')">Messages</button>
@@ -365,6 +374,53 @@
                 <div id="recentActivity">
                     <p style="color: #999; text-align: center; padding: 20px;">No recent activity</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Applications Tab -->
+        <div class="tab-content" id="applicationsTab">
+            <div class="card">
+                <h3 class="card-title">Showing Requests</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Preferred Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="showingsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <h3 class="card-title">Rental Applications</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Move-in Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -683,6 +739,8 @@
             loadMessages();
             loadRepairs();
             loadLeasesForExport();
+            loadApplications();
+            loadShowings();
         });
 
         // Tab switching
@@ -896,6 +954,103 @@
                 }
             } catch (error) {
                 console.error('Error loading leases:', error);
+            }
+        }
+
+        // Load rental applications
+        async function loadApplications() {
+            try {
+                const response = await fetch('/api/rentals/admin/applications');
+                const data = await response.json();
+
+                const tbody = document.getElementById('applicationsTable');
+                if (!data.success || !data.applications || data.applications.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No applications yet</td></tr>';
+                    return;
+                }
+
+                // Update badge
+                const pending = data.applications.filter(a => a.status === 'pending').length;
+                if (pending > 0) {
+                    document.getElementById('appBadge').textContent = pending;
+                    document.getElementById('appBadge').style.display = 'inline';
+                }
+
+                tbody.innerHTML = data.applications.map(a => `
+                    <tr>
+                        <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+                        <td><strong>${a.firstName} ${a.lastName}</strong></td>
+                        <td><a href="tel:${a.phone}">${a.phone}</a></td>
+                        <td><a href="mailto:${a.email}">${a.email}</a></td>
+                        <td>${a.moveInDate ? new Date(a.moveInDate).toLocaleDateString() : '-'}</td>
+                        <td><span class="status-badge status-${a.status || 'pending'}">${a.status || 'Pending'}</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="updateApplicationStatus('${a._id}', 'reviewed')">Mark Reviewed</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                document.getElementById('applicationsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No applications yet</td></tr>';
+            }
+        }
+
+        // Load showing requests
+        async function loadShowings() {
+            try {
+                const response = await fetch('/api/rentals/admin/showings');
+                const data = await response.json();
+
+                const tbody = document.getElementById('showingsTable');
+                if (!data.success || !data.showings || data.showings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No showing requests yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.showings.map(s => `
+                    <tr>
+                        <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+                        <td><strong>${s.name}</strong></td>
+                        <td><a href="tel:${s.phone}">${s.phone}</a></td>
+                        <td><a href="mailto:${s.email}">${s.email}</a></td>
+                        <td>${s.preferredDate ? new Date(s.preferredDate).toLocaleDateString() : '-'} ${s.preferredTime || ''}</td>
+                        <td><span class="status-badge status-${s.status || 'pending'}">${s.status || 'Pending'}</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="updateShowingStatus('${s._id}', 'contacted')">Mark Contacted</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading showings:', error);
+                document.getElementById('showingsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No showing requests yet</td></tr>';
+            }
+        }
+
+        // Update application status
+        async function updateApplicationStatus(id, status) {
+            try {
+                await fetch(`/api/rentals/admin/applications/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                loadApplications();
+            } catch (error) {
+                console.error('Error updating application:', error);
+            }
+        }
+
+        // Update showing status
+        async function updateShowingStatus(id, status) {
+            try {
+                await fetch(`/api/rentals/admin/showings/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                loadShowings();
+            } catch (error) {
+                console.error('Error updating showing:', error);
             }
         }
 

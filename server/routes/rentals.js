@@ -5,6 +5,8 @@ const Tenant = require('../models/tenant');
 const Lease = require('../models/lease');
 const RentPayment = require('../models/rentPayment');
 const PropertyMessage = require('../models/propertyMessage');
+const RentalApplication = require('../models/rentalApplication');
+const ShowingRequest = require('../models/showingRequest');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -816,6 +818,24 @@ Submitted: ${new Date().toLocaleString()}
       console.log('===========================');
     }
 
+    // Save to database
+    try {
+      const showing = new ShowingRequest({
+        name,
+        email,
+        phone,
+        preferredDate: preferredDate ? new Date(preferredDate) : null,
+        preferredTime: timePrefs,
+        notes,
+        property: property || '168 Hwy 59, Sedgwick, CO',
+        status: 'pending'
+      });
+      await showing.save();
+      console.log('Showing request saved to database');
+    } catch (dbError) {
+      console.log('Database save skipped:', dbError.message);
+    }
+
     res.json({
       success: true,
       message: 'Appointment request submitted successfully'
@@ -825,6 +845,78 @@ Submitted: ${new Date().toLocaleString()}
     console.error('Appointment submission error:', error);
     // Still return success - we don't want to block the user
     res.json({ success: true, message: 'Request received' });
+  }
+});
+
+// Submit rental application (public)
+router.post('/application', async (req, res) => {
+  try {
+    const { firstName, lastName, email, phone, moveInDate, notes, property } = req.body;
+
+    const application = new RentalApplication({
+      firstName,
+      lastName,
+      email,
+      phone,
+      moveInDate: moveInDate ? new Date(moveInDate) : null,
+      notes,
+      property: property || '168 Hwy 59, Sedgwick, CO',
+      status: 'pending'
+    });
+
+    await application.save();
+    console.log('Rental application saved:', firstName, lastName);
+
+    res.json({ success: true, message: 'Application submitted' });
+  } catch (error) {
+    console.error('Application save error:', error);
+    res.json({ success: true, message: 'Application received' });
+  }
+});
+
+// ============================================
+// ADMIN ENDPOINTS FOR APPLICATIONS/SHOWINGS
+// ============================================
+
+// Get all showing requests (admin)
+router.get('/admin/showings', async (req, res) => {
+  try {
+    const showings = await ShowingRequest.find().sort({ createdAt: -1 });
+    res.json({ success: true, showings });
+  } catch (error) {
+    res.json({ success: true, showings: [] });
+  }
+});
+
+// Update showing status (admin)
+router.patch('/admin/showings/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    await ShowingRequest.findByIdAndUpdate(req.params.id, { status });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Get all rental applications (admin)
+router.get('/admin/applications', async (req, res) => {
+  try {
+    const applications = await RentalApplication.find().sort({ createdAt: -1 });
+    res.json({ success: true, applications });
+  } catch (error) {
+    res.json({ success: true, applications: [] });
+  }
+});
+
+// Update application status (admin)
+router.patch('/admin/applications/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    await RentalApplication.findByIdAndUpdate(req.params.id, { status });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

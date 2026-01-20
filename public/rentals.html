@@ -1765,6 +1765,23 @@
                     localStorage.setItem('tenantToken', registerData.token);
                     localStorage.setItem('tenant', JSON.stringify(registerData.tenant));
 
+                    // Also save application record for admin tracking
+                    try {
+                        await fetch('/api/rentals/application', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                firstName: applicationData.firstName,
+                                lastName: applicationData.lastName,
+                                email: applicationData.email,
+                                phone: applicationData.phone,
+                                moveInDate: applicationData.moveInDate,
+                                notes: applicationData.notes,
+                                property: '168 Hwy 59, Sedgwick, CO'
+                            })
+                        });
+                    } catch (e) { console.log('Application tracking:', e); }
+
                     // Show success modal
                     document.getElementById('successModal').classList.add('active');
                     document.body.style.overflow = 'hidden';
