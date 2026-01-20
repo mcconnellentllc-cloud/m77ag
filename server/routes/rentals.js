@@ -878,7 +878,7 @@ COUNTRY LIVING:
 
 CONTACT:
 - Kyle at 970-571-1015
-- Email: rentals@m77ag.com
+- Email: office@m77ag.com
 
 Keep responses friendly, conversational, and concise. Focus on being helpful and informative.`;
 
@@ -979,7 +979,7 @@ function generateLocalChatResponse(message, knowledge) {
 
   // Contact
   if (msg.includes('contact') || msg.includes('call') || msg.includes('phone') || msg.includes('email')) {
-    return "You can reach Kyle at 970-571-1015 or email rentals@m77ag.com. We're happy to answer any questions or schedule a showing!";
+    return "You can reach Kyle at 970-571-1015 or email office@m77ag.com. We're happy to answer any questions or schedule a showing!";
   }
 
   // Features
