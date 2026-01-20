@@ -846,14 +846,15 @@ router.post('/chat', async (req, res) => {
 
     if (ANTHROPIC_API_KEY) {
       try {
-        const systemPrompt = `You are a helpful property assistant for M77 AG Rentals. You're answering questions about a 3-bedroom rental property in rural Phillips County, Colorado.
+        const systemPrompt = `You are a helpful property assistant for M77 AG Rentals. You're answering questions about a 2-bedroom rental property in rural Phillips County, Colorado.
 
 PROPERTY DETAILS:
 - Address: 168 Hwy 59, Sedgwick, CO 80749
 - Location: About half a mile north of Sedgwick County line
-- Bedrooms: 3
-- Bathrooms: 1.5
-- Features: Central heat & AC, refrigerator, stove, washer/dryer hookups, off-street parking, large yard, enclosed porch
+- Bedrooms: 2
+- Bathrooms: 1
+- Features: Central heat (no AC), stove, microwave, washer/dryer hookups, off-street parking, large yard, enclosed porch
+- NO refrigerator included - tenant needs to bring their own
 - All utilities included (electricity, gas, water, sewer, trash)
 - Pet friendly
 
@@ -966,7 +967,7 @@ function generateLocalChatResponse(message, knowledge) {
 
   // Bedrooms
   if (msg.includes('bedroom') || msg.includes('bathroom') || msg.includes('room') || msg.includes('size')) {
-    return "This home has 3 bedrooms and 1.5 bathrooms. It includes an enclosed porch, good-sized yard, and all the essentials - fridge, stove, and washer/dryer hookups.";
+    return "This home has 2 bedrooms and 1 bathroom. It includes an enclosed porch, good-sized yard, stove, microwave, and washer/dryer hookups. No fridge is included - you'll need to bring your own.";
   }
 
   // Application
@@ -981,7 +982,7 @@ function generateLocalChatResponse(message, knowledge) {
 
   // Features
   if (msg.includes('feature') || msg.includes('ameniti') || msg.includes('include') || msg.includes('have')) {
-    return "The property includes: Central heat & AC, refrigerator, stove, washer/dryer hookups, off-street parking, large yard, and an enclosed porch. Plus all utilities are paid!";
+    return "The property includes: Central heat (no AC), stove, microwave, washer/dryer hookups, off-street parking, large yard, and an enclosed porch. No fridge included - you'll need to bring your own. Plus all utilities are paid!";
   }
 
   // Available
@@ -990,7 +991,7 @@ function generateLocalChatResponse(message, knowledge) {
   }
 
   // Default
-  return "This is a 3-bedroom, 1.5-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?";
+  return "This is a 2-bedroom, 1-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?";
 }
 
 module.exports = router;

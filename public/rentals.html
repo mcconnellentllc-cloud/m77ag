@@ -1228,7 +1228,7 @@
 
             <!-- Details -->
             <div class="property-details">
-                <h1 class="property-title">3 Bedroom House</h1>
+                <h1 class="property-title">2 Bedroom House</h1>
                 <p class="property-address">168 Hwy 59, Sedgwick, CO 80749</p>
 
                 <div class="property-badges">
@@ -1268,11 +1268,11 @@
                 <div class="features-section">
                     <h3 class="features-title">Features & Amenities</h3>
                     <div class="features-grid">
-                        <div class="feature-item">3 Bedrooms</div>
-                        <div class="feature-item">1.5 Bathrooms</div>
+                        <div class="feature-item">2 Bedrooms</div>
+                        <div class="feature-item">1 Bathroom</div>
                         <div class="feature-item">All Utilities Paid</div>
-                        <div class="feature-item">Central Heat & AC</div>
-                        <div class="feature-item">Refrigerator Included</div>
+                        <div class="feature-item">Central Heat</div>
+                        <div class="feature-item">Stove & Microwave Included</div>
                         <div class="feature-item">Stove Included</div>
                         <div class="feature-item">Washer/Dryer Hookups</div>
                         <div class="feature-item">Off-Street Parking</div>
@@ -1540,7 +1540,7 @@
             </div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-message bot">
-                    Hi there! I'm here to help answer questions about this rental property. It's a great 3-bedroom house in the country, about half a mile north of the Sedgwick County line. What would you like to know?
+                    Hi there! I'm here to help answer questions about this rental property. It's a cozy 2-bedroom house in the country, about half a mile north of the Sedgwick County line. What would you like to know?
                 </div>
             </div>
             <div class="quick-questions" id="quickQuestions">
@@ -1795,9 +1795,9 @@
                 area: "Phillips County, northeastern Colorado"
             },
             property: {
-                bedrooms: 3,
-                bathrooms: 1.5,
-                features: ["Central heat and AC", "Refrigerator included", "Stove included", "Washer/dryer hookups", "Off-street parking", "Large yard", "Enclosed porch"],
+                bedrooms: 2,
+                bathrooms: 1,
+                features: ["Central heat", "Stove included", "Microwave included", "Washer/dryer hookups", "Off-street parking", "Large yard", "Enclosed porch"],
                 utilities: "All utilities are included in the rent - electricity, gas, water, sewer, and trash.",
                 pets: "Yes, we are pet-friendly! We just ask that you let us know about your pets during the application."
             },
@@ -1946,7 +1946,7 @@
 
             // Bedrooms / bathrooms
             if (msg.includes('bedroom') || msg.includes('bathroom') || msg.includes('room') || msg.includes('size')) {
-                return `This home has ${propertyKnowledge.property.bedrooms} bedrooms and ${propertyKnowledge.property.bathrooms} bathrooms. It includes an enclosed porch, good-sized yard, and all the essentials - fridge, stove, and washer/dryer hookups.`;
+                return `This home has ${propertyKnowledge.property.bedrooms} bedrooms and ${propertyKnowledge.property.bathrooms} bathroom. It includes an enclosed porch, good-sized yard, stove, microwave, and washer/dryer hookups. No fridge is included - you'll need to bring your own.`;
             }
 
             // Application process
@@ -1970,7 +1970,7 @@
             }
 
             // Default response
-            return `Great question! This is a 3-bedroom, 1.5-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?`;
+            return `Great question! This is a 2-bedroom, 1-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?`;
         }
 
         // Add message to chat
