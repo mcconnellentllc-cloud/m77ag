@@ -846,7 +846,7 @@ router.post('/chat', async (req, res) => {
 
     if (ANTHROPIC_API_KEY) {
       try {
-        const systemPrompt = `You are a helpful property assistant for M77 AG Rentals. You're answering questions about a 2-bedroom rental property in rural Phillips County, Colorado.
+        const systemPrompt = `You are a helpful property assistant for M77 AG Rentals. You're answering questions about a 2-bedroom rental property in rural Sedgwick County, Colorado.
 
 PROPERTY DETAILS:
 - Address: 168 Hwy 59, Sedgwick, CO 80749
