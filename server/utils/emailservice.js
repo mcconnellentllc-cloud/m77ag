@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const { getHuntingConfirmationEmail, getAdminNotificationEmail } = require('../email-templates/hunting-confirmation-email');
 const { getWaiverConfirmationEmail, getAdminWaiverNotification } = require('../email-templates/waiver-confirmation-email');
 const { getServiceContractEmail, getAdminServiceNotification } = require('../email-templates/service-contract-email');
+const { getEquipmentPurchaseEmail, getAdminEquipmentNotification } = require('../email-templates/equipment-purchase-email');
 
 // Create email transporter for Gmail
 const createTransporter = () => {
@@ -136,8 +137,44 @@ const sendServiceContract = async (serviceData) => {
   }
 };
 
+// Send equipment purchase confirmation email
+const sendEquipmentPurchaseConfirmation = async (purchaseData) => {
+  try {
+    const transporter = createTransporter();
+
+    // Generate HTML emails from templates
+    const customerEmailHTML = getEquipmentPurchaseEmail(purchaseData);
+    const adminEmailHTML = getAdminEquipmentNotification(purchaseData);
+
+    // Email to buyer with purchase confirmation
+    await transporter.sendMail({
+      from: `"M77 AG Equipment" <${process.env.EMAIL_USER || 'office@m77ag.com'}>`,
+      replyTo: 'office@m77ag.com',
+      to: purchaseData.buyerEmail,
+      subject: `Purchase Confirmed - ${purchaseData.equipmentTitle} - M77 AG`,
+      html: customerEmailHTML
+    });
+
+    // Email to admin/Kyle at office@m77ag.com
+    await transporter.sendMail({
+      from: `"M77 AG Equipment" <${process.env.EMAIL_USER || 'office@m77ag.com'}>`,
+      replyTo: 'office@m77ag.com',
+      to: 'office@m77ag.com',
+      subject: `SOLD: ${purchaseData.equipmentTitle} - $${purchaseData.finalPrice.toLocaleString()}`,
+      html: adminEmailHTML
+    });
+
+    console.log('Equipment purchase confirmation emails sent successfully');
+    return true;
+  } catch (error) {
+    console.error('Error sending equipment purchase email:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendBookingConfirmation,
   sendWaiverConfirmation,
-  sendServiceContract
+  sendServiceContract,
+  sendEquipmentPurchaseConfirmation
 };
