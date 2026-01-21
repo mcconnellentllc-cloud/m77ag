@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Properties - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            color: #2c2c2c;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar {
+            padding: 20px 0;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #d4af37;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 60px 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Property Card */
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        /* Image Gallery */
+        .gallery-section {
+            background: #1a1a1a;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-image-container {
+            width: 100%;
+            height: 500px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-gallery {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: border-color 0.3s;
+            flex-shrink: 0;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            border-color: #d4af37;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Property Details */
+        .details-section {
+            padding: 40px;
+        }
+
+        .property-header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .property-address {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-yellow {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+
+        .badge-green {
+            background: #2d5016;
+            color: white;
+        }
+
+        .badge-blue {
+            background: #1976d2;
+            color: white;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 18px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 40px;
+        }
+
+        .cta-button:hover {
+            background: #c49d2f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Lease Terms */
+        .lease-terms {
+            margin-bottom: 40px;
+        }
+
+        .lease-terms h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .lease-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .lease-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lease-option:hover {
+            border-color: #2d5016;
+            background: #f9f9f9;
+        }
+
+        .lease-option.selected {
+            border-color: #2d5016;
+            background: #e8f5e9;
+        }
+
+        .lease-option-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .lease-option-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .lease-option-price-unit {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .lease-option-savings {
+            font-size: 13px;
+            color: #d4af37;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* Features & Amenities */
+        .features-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            color: #2d5016;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .property-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-image-container {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .lease-options {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="logo">M77 AG</a>
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">HOME</a></li>
+                    <li><a href="/services" class="nav-link">SERVICES</a></li>
+                    <li><a href="/forsale" class="nav-link">EQUIPMENT</a></li>
+                    <li><a href="/hunting" class="nav-link">HUNTING</a></li>
+                    <li><a href="/rentals.html" class="nav-link active">RENTALS</a></li>
+                    <li><a href="/about" class="nav-link">ABOUT</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="property-card">
+            <div class="property-grid">
+                <!-- Image Gallery -->
+                <div class="gallery-section">
+                    <div class="main-image-container">
+                        <img id="mainImage" src="/api/placeholder/800/500" alt="Property Image" class="main-image">
+                    </div>
+                    <div class="thumbnail-gallery">
+                        <div class="thumbnail active">
+                            <img src="/api/placeholder/100/80" alt="Exterior" data-main="/api/placeholder/800/500">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/80" alt="Living Room" data-main="/api/placeholder/800/500">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/80" alt="Kitchen" data-main="/api/placeholder/800/500">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/80" alt="Bedroom" data-main="/api/placeholder/800/500">
+                        </div>
+                        <div class="thumbnail">
+                            <img src="/api/placeholder/100/80" alt="Bathroom" data-main="/api/placeholder/800/500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Details -->
+                <div class="details-section">
+                    <div class="property-header">
+                        <h1>2 Bedroom House</h1>
+                        <p class="property-address">168 Hwy 59, Sedgwick, CO 80749</p>
+                    </div>
+
+                    <div class="badges">
+                        <span class="badge badge-yellow">UTILITIES INCLUDED</span>
+                        <span class="badge badge-green">AVAILABLE NOW</span>
+                        <span class="badge badge-blue">PET FRIENDLY</span>
+                    </div>
+
+                    <button class="cta-button">SCHEDULE A SHOWING</button>
+
+                    <!-- Lease Terms -->
+                    <div class="lease-terms">
+                        <h3>Select Lease Term</h3>
+                        <div class="lease-options">
+                            <div class="lease-option selected">
+                                <div class="lease-option-label">Month-to-Month</div>
+                                <div class="lease-option-price">$1,400<span class="lease-option-price-unit">/mo</span></div>
+                                <div class="lease-option-savings">Maximum Flexibility</div>
+                            </div>
+                            <div class="lease-option">
+                                <div class="lease-option-label">6-Month Lease</div>
+                                <div class="lease-option-price">$1,300<span class="lease-option-price-unit">/mo</span></div>
+                                <div class="lease-option-savings">Save $600/year</div>
+                            </div>
+                            <div class="lease-option">
+                                <div class="lease-option-label">12-Month Lease</div>
+                                <div class="lease-option-price">$1,250<span class="lease-option-price-unit">/mo</span></div>
+                                <div class="lease-option-savings">Save $1,800/year</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features & Amenities -->
+                    <div class="features-section">
+                        <h3>Features & Amenities</h3>
+                        <div class="features-grid">
+                            <div class="feature-item">2 Bedrooms</div>
+                            <div class="feature-item">1 Bathroom</div>
+                            <div class="feature-item">All Utilities Paid</div>
+                            <div class="feature-item">Central Heat</div>
+                            <div class="feature-item">Stove & Microwave Included</div>
+                            <div class="feature-item">No Refrigerator</div>
+                            <div class="feature-item">Washer/Dryer Hookups</div>
+                            <div class="feature-item">Off-Street Parking</div>
+                            <div class="feature-item">Pet Friendly</div>
+                            <div class="feature-item">Large Yard</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Image gallery functionality
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.getElementById('mainImage');
+
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                // Remove active class from all thumbnails
+                thumbnails.forEach(t => t.classList.remove('active'));
+
+                // Add active class to clicked thumbnail
+                this.classList.add('active');
+
+                // Update main image
+                const newSrc = this.querySelector('img').dataset.main;
+                mainImage.src = newSrc;
+            });
+        });
+
+        // Lease option selection
+        const leaseOptions = document.querySelectorAll('.lease-option');
+
+        leaseOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                leaseOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Schedule showing button
+        document.querySelector('.cta-button').addEventListener('click', function() {
+            alert('Please call (970) 520-1807 to schedule a showing or email office@m77ag.com');
+        });
+    </script>
+</body>
+</html>
