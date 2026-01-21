@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const { getHuntingConfirmationEmail, getAdminNotificationEmail } = require('../email-templates/hunting-confirmation-email');
 const { getWaiverConfirmationEmail, getAdminWaiverNotification } = require('../email-templates/waiver-confirmation-email');
+const { getServiceContractEmail, getAdminServiceNotification } = require('../email-templates/service-contract-email');
 
 // Create email transporter for Gmail
 const createTransporter = () => {
@@ -98,7 +99,45 @@ const sendWaiverConfirmation = async (booking) => {
   }
 };
 
+// Send service contract email
+const sendServiceContract = async (serviceData) => {
+  try {
+    const transporter = createTransporter();
+
+    // Generate HTML emails from templates
+    const customerEmailHTML = getServiceContractEmail(serviceData);
+    const adminEmailHTML = getAdminServiceNotification(serviceData);
+
+    // Email to customer with service contract
+    if (serviceData.email) {
+      await transporter.sendMail({
+        from: `"M77 AG Services" <${process.env.EMAIL_USER || 'office@m77ag.com'}>`,
+        replyTo: 'office@m77ag.com',
+        to: serviceData.email,
+        subject: `Service Contract - ${serviceData.name} - M77 AG Custom Farming`,
+        html: customerEmailHTML
+      });
+    }
+
+    // Email to office@m77ag.com
+    await transporter.sendMail({
+      from: `"M77 AG Services" <${process.env.EMAIL_USER || 'office@m77ag.com'}>`,
+      replyTo: 'office@m77ag.com',
+      to: 'office@m77ag.com',
+      subject: `New Service Contract: ${serviceData.name} - ${serviceData.acres} acres`,
+      html: adminEmailHTML
+    });
+
+    console.log('Service contract emails sent successfully');
+    return true;
+  } catch (error) {
+    console.error('Error sending service contract email:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendBookingConfirmation,
-  sendWaiverConfirmation
+  sendWaiverConfirmation,
+  sendServiceContract
 };

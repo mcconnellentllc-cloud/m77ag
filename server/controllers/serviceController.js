@@ -1,4 +1,5 @@
 const ServiceRequest = require('../models/service');
+const { sendServiceContract } = require('../utils/emailservice');
 
 // Service pricing structure
 const SERVICE_PRICES = {
@@ -77,9 +78,25 @@ exports.createServiceRequest = async (req, res) => {
 
     await serviceRequest.save();
 
+    // Send service contract email to customer and office
+    try {
+      await sendServiceContract({
+        name,
+        phone,
+        email,
+        serviceType,
+        acres,
+        notes,
+        ...pricing
+      });
+    } catch (emailError) {
+      console.error('Error sending service contract email:', emailError);
+      // Don't fail the request if email fails
+    }
+
     res.status(201).json({
       success: true,
-      message: 'Service request created successfully',
+      message: 'Service contract sent successfully',
       data: serviceRequest
     });
   } catch (error) {
