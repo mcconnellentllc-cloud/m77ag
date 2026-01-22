@@ -486,6 +486,10 @@
                     <span class="nav-icon">📈</span>
                     <span>Analytics</span>
                 </li>
+                <li class="nav-item" data-view="landlords">
+                    <span class="nav-icon">👥</span>
+                    <span>Landlords</span>
+                </li>
             </ul>
         </div>
 
@@ -640,6 +644,39 @@
                     </div>
                     <div id="perAcreAnalysis">
                         <p>Select a property to view per-acre analysis</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Landlords Section -->
+            <div id="landlords" class="view-section">
+                <h2 style="margin-bottom: 1.5rem;">Landlord Management</h2>
+
+                <!-- Landlords Overview -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Landlord Accounts</h3>
+                        <button class="btn btn-primary btn-small" onclick="openLandlordPreferencesModal()">View All Preferences</button>
+                    </div>
+                    <div id="landlordsOverview" class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading landlords...</p>
+                    </div>
+                </div>
+
+                <!-- Field Projections Update -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Update Field Projections</h3>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                            Updates here will automatically reflect in landlord portals
+                        </p>
+                    </div>
+                    <div id="fieldProjectionsUpdate">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading fields...</p>
+                        </div>
                     </div>
                 </div>
             </div>

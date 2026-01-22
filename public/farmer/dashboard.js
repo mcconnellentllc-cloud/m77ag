@@ -119,11 +119,31 @@ async function loadHarvest() {
 }
 
 async function loadLandlords() {
-    // Get unique landlords from properties
-    const landlordIds = [...new Set(properties.map(p => p.landlord?._id).filter(Boolean))];
-    landlords = properties
-        .map(p => p.landlord)
-        .filter((l, i, arr) => l && arr.findIndex(x => x._id === l._id) === i);
+    try {
+        // Fetch all landlord users with their preferences
+        const data = await apiCall('/admin/users?role=landlord');
+        landlords = data.users || [];
+
+        // Also get landlord financial summaries
+        for (const landlord of landlords) {
+            try {
+                const summaryData = await apiCall(`/farmer/landlord/${landlord._id}/summary`);
+                landlord.financialSummary = summaryData.summary || {};
+            } catch (error) {
+                console.error(`Error loading summary for ${landlord.name}:`, error);
+                landlord.financialSummary = {};
+            }
+        }
+
+        renderLandlordsOverview();
+        renderFieldProjectionsUpdate();
+    } catch (error) {
+        console.error('Error loading landlords:', error);
+        // Fallback to extracting from properties
+        landlords = properties
+            .map(p => p.landlord)
+            .filter((l, i, arr) => l && arr.findIndex(x => x._id === l._id) === i);
+    }
 }
 
 // Navigation
@@ -156,6 +176,9 @@ function switchView(viewName) {
         renderAnalytics();
     } else if (viewName === 'rotation') {
         renderRotationTable();
+    } else if (viewName === 'landlords') {
+        renderLandlordsOverview();
+        renderFieldProjectionsUpdate();
     }
 }
 
@@ -501,6 +524,173 @@ function renderAnalytics() {
     console.log('Analytics view loaded');
 }
 
+function renderLandlordsOverview() {
+    const container = document.getElementById('landlordsOverview');
+
+    if (!landlords || landlords.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No landlords found. Landlords will appear here once properties are assigned.</p></div>';
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Landlord</th>
+                        <th>Properties</th>
+                        <th>Total Acres</th>
+                        <th>Grain Sale Preferences</th>
+                        <th>Payment Preferences</th>
+                        <th>Running Bill</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${landlords.map(landlord => {
+                        const landlordProperties = properties.filter(p => p.landlord?._id === landlord._id);
+                        const totalAcres = landlordProperties.reduce((sum, p) => sum + (p.totalAcres || 0), 0);
+                        const prefs = landlord.landlordPreferences || {};
+                        const grainPrices = prefs.grainSalePrice || {};
+                        const summary = landlord.financialSummary || {};
+
+                        // Calculate net balance
+                        const rentOwed = summary.rentOwed || 0;
+                        const expensesOwed = summary.expensesOwed || 0;
+                        const incomeOwed = summary.incomeOwed || 0;
+                        const netBalance = (rentOwed + incomeOwed) - expensesOwed;
+
+                        const grainPriceDisplay = [
+                            grainPrices.corn ? `Corn: $${grainPrices.corn.toFixed(2)}` : null,
+                            grainPrices.soybeans ? `Soy: $${grainPrices.soybeans.toFixed(2)}` : null,
+                            grainPrices.wheat ? `Wheat: $${grainPrices.wheat.toFixed(2)}` : null,
+                            grainPrices.milo ? `Milo: $${grainPrices.milo.toFixed(2)}` : null
+                        ].filter(Boolean).join('<br>') || 'Not set';
+
+                        const paymentTiming = prefs.paymentTiming ? prefs.paymentTiming.replace('_', ' ') : 'Not set';
+                        const paymentMethod = prefs.paymentMethod ? prefs.paymentMethod.toUpperCase() : 'Not set';
+
+                        return `
+                            <tr>
+                                <td><strong>${landlord.name || landlord.username}</strong><br><small>${landlord.email}</small></td>
+                                <td>${landlordProperties.length}</td>
+                                <td>${totalAcres.toFixed(0)} acres</td>
+                                <td><small>${grainPriceDisplay}</small></td>
+                                <td><small>${paymentTiming}<br>${paymentMethod}</small></td>
+                                <td style="font-weight: 600; color: ${netBalance >= 0 ? '#28a745' : '#dc3545'}">
+                                    ${netBalance >= 0 ? '+' : ''}$${netBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                </td>
+                                <td>
+                                    <button class="btn btn-secondary btn-small" onclick="viewLandlordDetails('${landlord._id}')">View Details</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function renderFieldProjectionsUpdate() {
+    const container = document.getElementById('fieldProjectionsUpdate');
+
+    if (fields.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🌾</div><p>No fields to update. Add fields first.</p></div>';
+        return;
+    }
+
+    // Group fields by landlord
+    const fieldsByLandlord = {};
+    fields.forEach(field => {
+        const landlordId = field.property?.landlord?._id;
+        if (!landlordId) return;
+
+        if (!fieldsByLandlord[landlordId]) {
+            fieldsByLandlord[landlordId] = {
+                landlord: field.property.landlord,
+                fields: []
+            };
+        }
+        fieldsByLandlord[landlordId].fields.push(field);
+    });
+
+    const landlordGroups = Object.values(fieldsByLandlord);
+
+    if (landlordGroups.length === 0) {
+        container.innerHTML = '<p style="padding: 1rem; color: #666;">No fields with landlord assignments yet.</p>';
+        return;
+    }
+
+    container.innerHTML = landlordGroups.map(group => `
+        <div style="margin-bottom: 2rem; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+            <h4 style="margin-bottom: 1rem; color: #2c5f2d;">${group.landlord.name || group.landlord.username}</h4>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Acres</th>
+                            <th>Crop</th>
+                            <th>Est. Yield (bu/ac)</th>
+                            <th>Break-Even ($/ac)</th>
+                            <th>Profit/Loss ($/ac)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${group.fields.map(field => {
+                            const crop = field.currentCrop || {};
+                            const financials = field.financials || {};
+
+                            return `
+                                <tr>
+                                    <td><strong>${field.name}</strong></td>
+                                    <td>${field.acres || 0}</td>
+                                    <td>${crop.cropType || 'None'}</td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            value="${crop.estimatedYield || ''}"
+                                            placeholder="0.0"
+                                            style="width: 80px; padding: 0.25rem;"
+                                            onchange="updateFieldProjection('${field._id}', 'estimatedYield', this.value)"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value="${financials.breakEvenPerAcre || ''}"
+                                            placeholder="0.00"
+                                            style="width: 80px; padding: 0.25rem;"
+                                            onchange="updateFieldProjection('${field._id}', 'breakEvenPerAcre', this.value)"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value="${financials.profitPerAcre || ''}"
+                                            placeholder="0.00"
+                                            style="width: 80px; padding: 0.25rem; color: ${(financials.profitPerAcre || 0) >= 0 ? '#28a745' : '#dc3545'}"
+                                            onchange="updateFieldProjection('${field._id}', 'profitPerAcre', this.value)"
+                                        />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary btn-small" onclick="saveFieldProjections('${field._id}')">Save</button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `).join('');
+}
+
 // Modal Functions
 function openPropertyModal(propertyId = null) {
     showAlert('Property form will be implemented in the next update', 'info');
@@ -567,6 +757,206 @@ function recordPayment(entryId) {
     })
     .catch(error => {
         showAlert('Error recording payment: ' + error.message, 'error');
+    });
+}
+
+// Landlord Management Functions
+function viewLandlordDetails(landlordId) {
+    const landlord = landlords.find(l => l._id === landlordId);
+    if (!landlord) return;
+
+    const landlordProperties = properties.filter(p => p.landlord?._id === landlordId);
+    const landlordFields = fields.filter(f => f.property?.landlord?._id === landlordId);
+
+    const modalHTML = `
+        <div class="modal active" id="landlordDetailsModal" onclick="if(event.target === this) closeModal('landlordDetailsModal')">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">${landlord.name || landlord.username} - Details</h3>
+                    <button class="modal-close" onclick="closeModal('landlordDetailsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h4 style="margin-bottom: 1rem;">Contact Information</h4>
+                    <p><strong>Email:</strong> ${landlord.email}</p>
+                    ${landlord.phone ? `<p><strong>Phone:</strong> ${landlord.phone}</p>` : ''}
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Grain Sale Preferences</h4>
+                    ${renderGrainPreferences(landlord.landlordPreferences?.grainSalePrice)}
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Payment Preferences</h4>
+                    ${renderPaymentPreferences(landlord.landlordPreferences)}
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Properties (${landlordProperties.length})</h4>
+                    <ul>
+                        ${landlordProperties.map(p => `<li>${p.name} - ${p.totalAcres || 0} acres</li>`).join('')}
+                    </ul>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Fields (${landlordFields.length})</h4>
+                    <ul>
+                        ${landlordFields.map(f => `<li>${f.name} - ${f.acres || 0} acres - ${f.currentCrop?.cropType || 'No crop'}</li>`).join('')}
+                    </ul>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Financial Summary</h4>
+                    ${renderFinancialSummary(landlord.financialSummary)}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('landlordDetailsModal')">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('modalContainer').innerHTML = modalHTML;
+}
+
+function renderGrainPreferences(grainPrices) {
+    if (!grainPrices) return '<p style="color: #666;">No grain sale preferences set</p>';
+
+    const prices = [];
+    if (grainPrices.corn) prices.push(`Corn: $${grainPrices.corn.toFixed(2)}/bu`);
+    if (grainPrices.soybeans) prices.push(`Soybeans: $${grainPrices.soybeans.toFixed(2)}/bu`);
+    if (grainPrices.wheat) prices.push(`Wheat: $${grainPrices.wheat.toFixed(2)}/bu`);
+    if (grainPrices.milo) prices.push(`Milo: $${grainPrices.milo.toFixed(2)}/bu`);
+
+    return prices.length > 0
+        ? `<ul>${prices.map(p => `<li>${p}</li>`).join('')}</ul>`
+        : '<p style="color: #666;">No grain sale preferences set</p>';
+}
+
+function renderPaymentPreferences(prefs) {
+    if (!prefs) return '<p style="color: #666;">No payment preferences set</p>';
+
+    const items = [];
+    if (prefs.paymentTiming) items.push(`Timing: ${prefs.paymentTiming.replace('_', ' ')}`);
+    if (prefs.paymentMethod) items.push(`Method: ${prefs.paymentMethod.toUpperCase()}`);
+    if (prefs.customPaymentDate) items.push(`Custom Date: ${new Date(prefs.customPaymentDate).toLocaleDateString()}`);
+    if (prefs.specialInstructions) items.push(`Instructions: ${prefs.specialInstructions}`);
+
+    return items.length > 0
+        ? `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`
+        : '<p style="color: #666;">No payment preferences set</p>';
+}
+
+function renderFinancialSummary(summary) {
+    if (!summary) return '<p style="color: #666;">No financial data available</p>';
+
+    const rentOwed = summary.rentOwed || 0;
+    const expensesOwed = summary.expensesOwed || 0;
+    const incomeOwed = summary.incomeOwed || 0;
+    const netBalance = (rentOwed + incomeOwed) - expensesOwed;
+
+    return `
+        <table style="width: 100%;">
+            <tr>
+                <td><strong>Rent Owed to Landlord:</strong></td>
+                <td style="text-align: right;">$${rentOwed.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            </tr>
+            <tr>
+                <td><strong>Income Owed to Landlord:</strong></td>
+                <td style="text-align: right;">$${incomeOwed.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            </tr>
+            <tr>
+                <td><strong>Expenses Owed to M77 AG:</strong></td>
+                <td style="text-align: right;">$${expensesOwed.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            </tr>
+            <tr style="border-top: 2px solid #333; font-weight: 600;">
+                <td><strong>Net Balance:</strong></td>
+                <td style="text-align: right; color: ${netBalance >= 0 ? '#28a745' : '#dc3545'}">
+                    ${netBalance >= 0 ? '+' : ''}$${netBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="padding-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                    <small>${netBalance >= 0 ? 'Owed to landlord' : 'Owed to M77 AG'}</small>
+                </td>
+            </tr>
+        </table>
+    `;
+}
+
+function openLandlordPreferencesModal() {
+    const modalHTML = `
+        <div class="modal active" id="landlordPrefsModal" onclick="if(event.target === this) closeModal('landlordPrefsModal')">
+            <div class="modal-content" style="max-width: 900px;">
+                <div class="modal-header">
+                    <h3 class="modal-title">All Landlord Preferences</h3>
+                    <button class="modal-close" onclick="closeModal('landlordPrefsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    ${landlords.map(landlord => `
+                        <div style="margin-bottom: 2rem; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+                            <h4 style="color: #2c5f2d; margin-bottom: 0.5rem;">${landlord.name || landlord.username}</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <strong>Grain Sale Preferences:</strong>
+                                    ${renderGrainPreferences(landlord.landlordPreferences?.grainSalePrice)}
+                                </div>
+                                <div>
+                                    <strong>Payment Preferences:</strong>
+                                    ${renderPaymentPreferences(landlord.landlordPreferences)}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('landlordPrefsModal')">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('modalContainer').innerHTML = modalHTML;
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.remove();
+}
+
+// Field Projection Updates
+const fieldProjectionUpdates = {};
+
+function updateFieldProjection(fieldId, attribute, value) {
+    if (!fieldProjectionUpdates[fieldId]) {
+        fieldProjectionUpdates[fieldId] = {};
+    }
+
+    if (attribute === 'estimatedYield') {
+        if (!fieldProjectionUpdates[fieldId].currentCrop) {
+            fieldProjectionUpdates[fieldId].currentCrop = {};
+        }
+        fieldProjectionUpdates[fieldId].currentCrop.estimatedYield = parseFloat(value);
+    } else if (attribute === 'breakEvenPerAcre' || attribute === 'profitPerAcre') {
+        if (!fieldProjectionUpdates[fieldId].financials) {
+            fieldProjectionUpdates[fieldId].financials = {};
+        }
+        fieldProjectionUpdates[fieldId].financials[attribute] = parseFloat(value);
+    }
+
+    console.log('Field projection update queued:', fieldId, attribute, value);
+}
+
+function saveFieldProjections(fieldId) {
+    const updates = fieldProjectionUpdates[fieldId];
+    if (!updates) {
+        showAlert('No changes to save', 'info');
+        return;
+    }
+
+    apiCall(`/fields/${fieldId}`, {
+        method: 'PUT',
+        body: JSON.stringify(updates)
+    })
+    .then(() => {
+        showAlert('Field projections updated successfully! Landlord portal will reflect changes.', 'success');
+        delete fieldProjectionUpdates[fieldId];
+        loadFields().then(() => {
+            renderFieldProjectionsUpdate();
+        });
+    })
+    .catch(error => {
+        showAlert('Error updating field projections: ' + error.message, 'error');
     });
 }
 

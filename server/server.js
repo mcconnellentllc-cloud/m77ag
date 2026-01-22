@@ -45,6 +45,7 @@ const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
 const seasonPassRoutes = require('./routes/seasonPass');
 const landlordRoutes = require('./routes/landlord');
+const farmerRoutes = require('./routes/farmer');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -61,6 +62,7 @@ app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
 app.use('/api/landlord', landlordRoutes);
+app.use('/api/farmer', farmerRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {

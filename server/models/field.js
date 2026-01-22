@@ -91,6 +91,15 @@ const fieldSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Transaction'
   }],
+  // Financial projections (visible to landlords)
+  financials: {
+    breakEvenPerAcre: Number,      // Break-even price per acre
+    profitPerAcre: Number,          // Projected profit/loss per acre
+    totalExpenses: Number,          // Total projected expenses for field
+    projectedRevenue: Number,       // Total projected revenue for field
+    costPerBushel: Number,          // Cost per bushel calculation
+    lastUpdated: Date               // When projections were last updated
+  },
   // Field status
   status: {
     type: String,
