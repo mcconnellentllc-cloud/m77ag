@@ -44,6 +44,7 @@ const chemicalRoutes = require('./routes/chemicals');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
 const seasonPassRoutes = require('./routes/seasonPass');
+const landlordRoutes = require('./routes/landlord');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -59,6 +60,7 @@ app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
+app.use('/api/landlord', landlordRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {

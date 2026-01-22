@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   // User Type
   role: {
     type: String,
-    enum: ['customer', 'admin'],
+    enum: ['customer', 'admin', 'landlord', 'farmer'],
     default: 'customer'
   },
 
@@ -83,6 +83,51 @@ const userSchema = new mongoose.Schema({
       ref: 'Booking'
     }]
   },
+
+  // Landlord-specific fields
+  landlordPreferences: {
+    // Grain sale price target (per bushel)
+    grainSalePrice: {
+      corn: Number,
+      soybeans: Number,
+      wheat: Number,
+      milo: Number
+    },
+    // When landlord wants to be paid
+    paymentTiming: {
+      type: String,
+      enum: ['immediately', 'after_harvest', 'end_of_year', 'custom'],
+      default: 'after_harvest'
+    },
+    customPaymentDate: Date,
+    // Payment method preferences
+    paymentMethod: {
+      type: String,
+      enum: ['check', 'ach', 'wire'],
+      default: 'check'
+    },
+    // ACH/Bank info (encrypted in production)
+    bankInfo: {
+      accountName: String,
+      routingNumber: String,
+      accountNumber: String,
+      accountType: {
+        type: String,
+        enum: ['checking', 'savings']
+      }
+    },
+    // Stripe customer ID for ACH payments
+    stripeCustomerId: String,
+    stripeBankAccountId: String,
+    // Notes from landlord
+    specialInstructions: String
+  },
+
+  // Properties owned (for landlords)
+  properties: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property'
+  }],
 
   // Timestamps
   createdAt: {
