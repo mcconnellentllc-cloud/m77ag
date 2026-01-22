@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hunting Reservations - M77 AG</title>
-    
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c5530">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="M77 AG">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+
     <!-- PayPal SDK - LIVE CLIENT ID -->
     <script src="https://www.paypal.com/sdk/js?client-id=AdX73h4Ob3MtFXKDbUGq2sRNctji2Ew30O3pOWJcH78KxfvObnsnqReYQNDPaK6bSiWZ2qwnhel2Gl3X&currency=USD"></script>
     
@@ -435,6 +443,7 @@
                     <li><a href="/services" class="nav-link">Services</a></li>
                     <li><a href="/forsale" class="nav-link">Equipment</a></li>
                     <li><a href="/hunting" class="nav-link active">Hunting</a></li>
+                    <li><a href="/rentals" class="nav-link">Rentals</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
                     <li><a href="/admin" class="nav-link">Admin</a></li>
                 </ul>
@@ -445,6 +454,21 @@
     <div class="container">
         <h1 class="page-title">Hunting Reservations</h1>
         <p class="page-subtitle">Book your hunt on our historic Northeast Colorado properties</p>
+
+        <!-- Season Pass Promotion Banner -->
+        <div style="background: linear-gradient(135deg, #2c5530 0%, #1a3d1f 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center;">
+            <h2 style="color: #d4af37; margin: 0 0 15px 0; font-size: 28px;">💰 SAVE BIG with a Season Pass!</h2>
+            <p style="font-size: 18px; margin-bottom: 20px; line-height: 1.6;">
+                Hunt BOTH properties (2,710 acres) all season long!<br>
+                <strong style="color: #d4af37;">5-Day Pass: $750</strong> ($150/day) • <strong style="color: #d4af37;">10-Day Pass: $1,400</strong> ($140/day)
+            </p>
+            <a href="/season-pass" style="display: inline-block; background: #d4af37; color: #1a1a1a; padding: 15px 40px; text-decoration: none; font-weight: 700; font-size: 18px; border-radius: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">
+                View Season Pass Options →
+            </a>
+            <p style="margin: 15px 0 0 0; font-size: 14px; opacity: 0.9;">
+                Or continue below to book individual days
+            </p>
+        </div>
 
         <!-- Property Cards -->
         <div class="property-cards">
@@ -659,18 +683,15 @@
                 </div>
 
                 <div class="form-group" style="background: #f0f7f0; padding: 20px; border-radius: 8px; border: 2px solid #2c5530;">
-                    <label style="display: flex; align-items: flex-start; cursor: pointer; margin-bottom: 0;">
-                        <input type="checkbox" id="createAccountCheckbox" style="width: auto; margin-right: 10px; margin-top: 3px;">
-                        <div>
-                            <span style="font-weight: 600; color: #2c5530;">Create an account to access your bookings and submit testimonials (optional)</span>
-                            <div style="font-size: 13px; color: #666; margin-top: 5px; line-height: 1.4;">
-                                With an account, you can view all your bookings, track waiver status, and submit hunting testimonials with photos.
-                            </div>
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-weight: 600; color: #2c5530; display: block; margin-bottom: 5px;">Create Your Account</span>
+                        <div style="font-size: 13px; color: #666; line-height: 1.4;">
+                            An account will be created for you to view bookings, track waiver status, and submit hunting testimonials with photos.
                         </div>
-                    </label>
-                    <div id="passwordField" style="display: none; margin-top: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c5530;">Create Password</label>
-                        <input type="password" id="accountPassword" minlength="6" placeholder="Minimum 6 characters" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c5530;">Create Password *</label>
+                        <input type="password" id="accountPassword" minlength="6" placeholder="Minimum 6 characters" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px;">
                         <div style="font-size: 12px; color: #666; margin-top: 5px;">
                             Choose a password you'll remember - you'll use it to log in later
                         </div>
@@ -816,16 +837,39 @@
                         You will NOT be allowed to hunt without a signed waiver.
                     </p>
                 </div>
-                <div id="accountCreatedMessage" style="display: none; background: #e7f5e7; border-left: 5px solid #2d7a2d; padding: 15px; text-align: left; margin-bottom: 20px;">
-                    <p style="margin: 0 0 10px 0; color: #2d7a2d; font-weight: bold; font-size: 16px;">
-                        Account Created Successfully!
+                <div id="accountCreatedMessage" style="display: none; background: #e7f5e7; border-left: 5px solid #2d7a2d; padding: 20px; text-align: left; margin-bottom: 20px;">
+                    <p style="margin: 0 0 15px 0; color: #2d7a2d; font-weight: bold; font-size: 18px;">
+                        📱 Account Created! Add M77 AG to Your Home Screen
                     </p>
-                    <p style="margin: 0 0 10px 0; color: #2d7a2d; line-height: 1.6;">
-                        You can now log in to view your bookings and submit hunting testimonials.
+                    <p style="margin: 0 0 15px 0; color: #2d7a2d; line-height: 1.6;">
+                        Get quick access to your bookings, season pass, and property maps!
                     </p>
-                    <a href="/user/dashboard" style="display: inline-block; background: #2c5530; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 5px;">
-                        Go to My Dashboard
-                    </a>
+
+                    <!-- iPhone Instructions -->
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 iPhone/iPad:</p>
+                        <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8; font-size: 14px;">
+                            <li>Tap the <strong>Share button</strong> (square with arrow pointing up) at the bottom of Safari</li>
+                            <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                            <li>Tap <strong>"Add"</strong> in the top right</li>
+                            <li>M77 AG will now appear on your home screen like an app!</li>
+                        </ol>
+                    </div>
+
+                    <!-- Android Instructions -->
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 Android:</p>
+                        <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8; font-size: 14px;">
+                            <li>Tap the <strong>menu button</strong> (three dots) in Chrome</li>
+                            <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                            <li>Tap <strong>"Add"</strong> or <strong>"Install"</strong></li>
+                            <li>M77 AG will now appear on your home screen!</li>
+                        </ol>
+                    </div>
+
+                    <p style="margin: 15px 0 0 0; color: #2d7a2d; font-size: 13px; font-style: italic;">
+                        ✅ You can now access your bookings, season pass, and property information instantly from your home screen!
+                    </p>
                 </div>
                 <button onclick="document.getElementById('bookingSuccessModal').style.display='none'; document.body.style.overflow='auto';" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
                     GOT IT
@@ -909,7 +953,11 @@
             'KCP25': 25,
             'BEEF100': 100,
             'BEEF50': 50,
-            'HUNTAGAIN': 25
+            'BEEF': 100,
+            'REVIEW': 75,
+            'KIDS1ST': 100,
+            'HUNTAGAIN': 25,
+            'BOERNER#1': 100
         };
         
         // PHEASANT SEASON: Sept 1 - Jan 31
@@ -1147,7 +1195,8 @@
                         half.innerHTML = '<small style="font-size: 10px;">Rest</small>';
                         half.style.cursor = 'pointer';
                         half.title = 'Game rest period';
-                    } else if (bookings[property]) {
+                    } else if (bookings[property] || bookings['Both Properties']) {
+                        // Mark as booked if either the specific property OR "Both Properties" is booked
                         half.classList.add('booked');
                     } else if (isHighDemand) {
                         half.classList.add('high-demand');
@@ -1216,7 +1265,19 @@
                 discountMsg.style.display = 'block';
 
                 if (discountPercent === 100) {
-                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> FREE - Kyle Cares Program';
+                    let freeMessage = 'FREE';
+                    if (codeInput === 'BEEF') {
+                        freeMessage = 'FREE - BEEF Program';
+                    } else if (codeInput === 'KIDS1ST') {
+                        freeMessage = 'FREE - Youth Hunter Program';
+                    } else if (codeInput === 'BOERNER#1') {
+                        freeMessage = 'FREE - Thank you Bryce!';
+                    } else if (codeInput.startsWith('KCP') || codeInput === 'BEEF100') {
+                        freeMessage = 'FREE - Kyle Cares Program';
+                    }
+                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> ' + freeMessage;
+                } else if (discountPercent === 75) {
+                    discountApplied.innerHTML = '<s>$' + originalCost + '</s> 75% off - Thank you for your review!';
                 } else {
                     discountApplied.innerHTML = '<s>$' + originalCost + '</s> ' + discountPercent + '% off';
                 }
@@ -1320,9 +1381,16 @@
             }
 
             // Validate at least one game species is selected
-            const gameChecked = document.getElementById('deer').checked ||
+            const gameChecked = document.getElementById('muleDeerBuck').checked ||
+                               document.getElementById('muleDeerDoe').checked ||
+                               document.getElementById('whitetailBuck').checked ||
+                               document.getElementById('whitetailDoe').checked ||
                                document.getElementById('pheasant').checked ||
-                               document.getElementById('turkey').checked;
+                               document.getElementById('turkey').checked ||
+                               document.getElementById('dove').checked ||
+                               document.getElementById('coyote').checked ||
+                               document.getElementById('prairieDogs').checked ||
+                               document.getElementById('rattlesnake').checked;
             if (!gameChecked) {
                 alert('Please select at least one game species');
                 return;
@@ -1390,36 +1458,34 @@
             .then(async data => {
                 console.log('Response data:', data);
                 if (data.success) {
-                    // Create account if checkbox is checked
-                    if (document.getElementById('createAccountCheckbox').checked) {
-                        const password = document.getElementById('accountPassword').value;
-                        if (password && password.length >= 6) {
-                            try {
-                                const accountResponse = await fetch('/api/auth/register', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        name: document.getElementById('hunterName').value,
-                                        email: document.getElementById('hunterEmail').value,
-                                        phone: document.getElementById('hunterPhone').value,
-                                        password: password
-                                    })
-                                });
+                    // Always create account for every booking
+                    const password = document.getElementById('accountPassword').value;
+                    if (password && password.length >= 6) {
+                        try {
+                            const accountResponse = await fetch('/api/auth/register', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    name: document.getElementById('hunterName').value,
+                                    email: document.getElementById('hunterEmail').value,
+                                    phone: document.getElementById('hunterPhone').value,
+                                    password: password
+                                })
+                            });
 
-                                const accountData = await accountResponse.json();
-                                if (accountData.success) {
-                                    console.log('Account created successfully');
-                                    // Store token and user info
-                                    localStorage.setItem('token', accountData.token);
-                                    localStorage.setItem('user', JSON.stringify(accountData.user));
-                                } else {
-                                    console.log('Account creation failed:', accountData.message);
-                                    // Don't fail the booking if account creation fails
-                                }
-                            } catch (error) {
-                                console.error('Account creation error:', error);
+                            const accountData = await accountResponse.json();
+                            if (accountData.success) {
+                                console.log('Account created successfully');
+                                // Store token and user info
+                                localStorage.setItem('token', accountData.token);
+                                localStorage.setItem('user', JSON.stringify(accountData.user));
+                            } else {
+                                console.log('Account creation failed:', accountData.message);
                                 // Don't fail the booking if account creation fails
                             }
+                        } catch (error) {
+                            console.error('Account creation error:', error);
+                            // Don't fail the booking if account creation fails
                         }
                     }
 
@@ -1428,9 +1494,9 @@
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
 
-                    // Show account creation message if account was created
+                    // Always show account creation message since account is always created
                     const accountMessage = document.getElementById('accountCreatedMessage');
-                    if (document.getElementById('createAccountCheckbox').checked && localStorage.getItem('token')) {
+                    if (localStorage.getItem('token')) {
                         accountMessage.style.display = 'block';
                     } else {
                         accountMessage.style.display = 'none';
@@ -1457,19 +1523,7 @@
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
         document.getElementById('discountCode').addEventListener('input', calculateTotal);
 
-        // Show/hide password field when create account checkbox is checked
-        document.getElementById('createAccountCheckbox').addEventListener('change', function() {
-            const passwordField = document.getElementById('passwordField');
-            const passwordInput = document.getElementById('accountPassword');
-            if (this.checked) {
-                passwordField.style.display = 'block';
-                passwordInput.required = true;
-            } else {
-                passwordField.style.display = 'none';
-                passwordInput.required = false;
-                passwordInput.value = '';
-            }
-        });
+        // Account password is now always required (no checkbox needed)
 
         // Show/hide coyote hunting type field when coyote checkbox is checked
         document.getElementById('coyote').addEventListener('change', function() {
@@ -1906,6 +1960,15 @@
                     document.getElementById('chatbot-body').scrollTop = document.getElementById('chatbot-body').scrollHeight;
                 }, 500);
             }, 300);
+        }
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('M77 AG: Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
         }
     </script>
 </body>

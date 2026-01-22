@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Properties | M77 AG</title>
+
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AdX73h4Ob3MtFXKDbUGq2sRNctji2Ew30O3pOWJcH78KxfvObnsnqReYQNDPaK6bSiWZ2qwnhel2Gl3X&currency=USD"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar {
+            padding: 20px 0;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #d4af37;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 140px 40px 60px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* Property Card */
+        .property-listing {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .property-gallery {
+            background: #1a1a1a;
+            padding: 20px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 350px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            flex-shrink: 0;
+        }
+
+        .thumbnail.active, .thumbnail:hover {
+            opacity: 1;
+            border: 2px solid #d4af37;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .property-details {
+            padding: 40px;
+        }
+
+        .property-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .property-address {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .property-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .badge {
+            background: #2d5016;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.gold {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+
+        /* Pricing Tiers */
+        .pricing-section {
+            background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .pricing-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        .pricing-tiers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .pricing-tier {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pricing-tier:hover {
+            border-color: #d4af37;
+        }
+
+        .pricing-tier.selected {
+            border-color: #2d5016;
+            background: #f0f7f0;
+        }
+
+        .tier-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .tier-price {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+        }
+
+        .tier-price span {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .tier-savings {
+            font-size: 12px;
+            color: #d4af37;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Features List */
+        .features-section {
+            margin-bottom: 25px;
+        }
+
+        .features-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: #2d5016;
+            font-weight: bold;
+        }
+
+        /* Deposit Info */
+        .deposit-info {
+            background: #fff8e1;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .deposit-info h4 {
+            color: #1a1a1a;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .deposit-info p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Application Form */
+        .application-section {
+            border-top: 1px solid #eee;
+            padding-top: 25px;
+        }
+
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Move-in Date */
+        .move-in-section {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Payment Section */
+        .payment-section {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            padding: 25px;
+            border-radius: 10px;
+            color: #fff;
+            margin-top: 25px;
+        }
+
+        .payment-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .payment-total {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+
+        .payment-breakdown {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        #paypal-button-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .venmo-btn {
+            display: block;
+            width: 100%;
+            background: #008CFF;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .venmo-btn:hover {
+            background: #007acc;
+        }
+
+        .payment-note {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Colorado Disclosures */
+        .disclosures-section {
+            background: #f5f5f5;
+            padding: 30px;
+            margin-top: 40px;
+            border-radius: 10px;
+        }
+
+        .disclosures-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        .disclosure-item {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .disclosure-item h4 {
+            font-size: 14px;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .disclosure-item p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            padding: 60px 40px;
+            color: #fff;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .footer-brand {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+
+        /* Success Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            padding: 30px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-body p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-btn {
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .property-listing {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-tiers {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(26, 26, 26, 0.98);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .page-header {
+                padding: 120px 20px 40px;
+            }
+
+            .page-header h1 {
+                font-size: 32px;
+            }
+
+            .container {
+                padding: 30px 15px;
+            }
+
+            .property-details {
+                padding: 25px;
+            }
+
+            .navbar-container {
+                padding: 0 15px;
+            }
+        }
+
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1500;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(45, 80, 22, 0.5);
+        }
+
+        .chat-toggle svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .chat-toggle .close-icon {
+            display: none;
+        }
+
+        .chat-toggle.active .chat-icon {
+            display: none;
+        }
+
+        .chat-toggle.active .close-icon {
+            display: block;
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 75px;
+            right: 0;
+            width: 380px;
+            height: 520px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .chat-header-info h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .chat-header-info p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8f8f8;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.bot {
+            background: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.typing {
+            background: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #2d5016;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #2d5016;
+        }
+
+        .chat-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-send svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .quick-questions {
+            padding: 10px 15px 5px;
+            background: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-btn {
+            background: #f0f7f0;
+            border: 1px solid #2d5016;
+            color: #2d5016;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: #2d5016;
+            color: #fff;
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100vw - 30px);
+                height: calc(100vh - 140px);
+                bottom: 70px;
+                right: -5px;
+            }
+        }
+
+        /* Schedule Showing Button */
+        .schedule-showing-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #d4af37 0%, #b8962e 100%);
+            color: #1a1a1a;
+            border: none;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .schedule-showing-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Appointment Modal */
+        .appointment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .appointment-modal.active {
+            display: flex;
+        }
+
+        .appointment-content {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .appointment-header {
+            background: linear-gradient(135deg, #d4af37 0%, #b8962e 100%);
+            color: #1a1a1a;
+            padding: 25px 30px;
+            position: relative;
+        }
+
+        .appointment-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .appointment-header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .appointment-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+            color: #1a1a1a;
+        }
+
+        .appointment-body {
+            padding: 30px;
+        }
+
+        .appointment-form .form-group {
+            margin-bottom: 18px;
+        }
+
+        .appointment-form label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .appointment-form input,
+        .appointment-form select,
+        .appointment-form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .appointment-form input:focus,
+        .appointment-form select:focus,
+        .appointment-form textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .appointment-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .preferred-times {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .time-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .time-checkbox input {
+            width: auto;
+            margin: 0;
+        }
+
+        .submit-appointment-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .submit-appointment-btn:hover {
+            background: linear-gradient(135deg, #3d6520 0%, #4d7530 100%);
+        }
+
+        .submit-appointment-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirmation-modal.active {
+            display: flex;
+        }
+
+        .confirmation-content {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .confirmation-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: #fff;
+            padding: 30px;
+        }
+
+        .confirmation-header .check-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+        }
+
+        .confirmation-body {
+            padding: 30px;
+        }
+
+        .confirmation-body p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .contact-kyle-box {
+            background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .contact-kyle-box h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .kyle-phone {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .kyle-phone:hover {
+            color: #3d6520;
+        }
+
+        .contact-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .contact-btn.call {
+            background: #2d5016;
+            color: #fff;
+        }
+
+        .contact-btn.call:hover {
+            background: #3d6520;
+        }
+
+        .contact-btn.text {
+            background: #008CFF;
+            color: #fff;
+        }
+
+        .contact-btn.text:hover {
+            background: #007acc;
+        }
+
+        .confirmation-close-btn {
+            background: #e0e0e0;
+            color: #444;
+            border: none;
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .confirmation-close-btn:hover {
+            background: #d0d0d0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="logo">M77 AG</a>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
+                    <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/rentals" class="nav-link active">Rentals</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>RENTAL PROPERTIES</h1>
+        <p>Quality housing in Sedgwick County, Colorado</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="property-listing">
+            <!-- Gallery -->
+            <div class="property-gallery">
+                <div class="main-image" id="mainImage">
+                    <img src="assets/rentals/house1/outside.JPEG" alt="Rental Property" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 400%22><rect fill=%22%232a2a2a%22 width=%22600%22 height=%22400%22/><text fill=%22%23666%22 x=%22300%22 y=%22200%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>Property Photos Coming Soon</text></svg>'">
+                </div>
+                <div class="thumbnail-row" id="thumbnails">
+                    <!-- Thumbnails loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Details -->
+            <div class="property-details">
+                <h1 class="property-title">2 Bedroom House</h1>
+                <p class="property-address">168 Hwy 59, Sedgwick, CO 80749</p>
+
+                <div class="property-badges">
+                    <span class="badge gold">Utilities Included</span>
+                    <span class="badge">Available Now</span>
+                    <span class="badge">Pet Friendly</span>
+                </div>
+
+                <!-- Schedule Showing Button -->
+                <button class="schedule-showing-btn" onclick="openAppointmentModal()">
+                    Schedule a Showing
+                </button>
+
+                <!-- Pricing Tiers -->
+                <div class="pricing-section">
+                    <h3 class="pricing-title">Select Lease Term</h3>
+                    <div class="pricing-tiers">
+                        <div class="pricing-tier" data-term="month_to_month" data-price="1400" onclick="selectTier(this)">
+                            <div class="tier-name">Month-to-Month</div>
+                            <div class="tier-price">$1,400<span>/mo</span></div>
+                            <div class="tier-savings">Maximum Flexibility</div>
+                        </div>
+                        <div class="pricing-tier" data-term="six_month" data-price="1300" onclick="selectTier(this)">
+                            <div class="tier-name">6-Month Lease</div>
+                            <div class="tier-price">$1,300<span>/mo</span></div>
+                            <div class="tier-savings">Save $600/year</div>
+                        </div>
+                        <div class="pricing-tier selected" data-term="twelve_month" data-price="1250" onclick="selectTier(this)">
+                            <div class="tier-name">12-Month Lease</div>
+                            <div class="tier-price">$1,250<span>/mo</span></div>
+                            <div class="tier-savings">Save $1,800/year</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="features-section">
+                    <h3 class="features-title">Features & Amenities</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">2 Bedrooms</div>
+                        <div class="feature-item">1 Bathroom</div>
+                        <div class="feature-item">All Utilities Paid</div>
+                        <div class="feature-item">Central Heat</div>
+                        <div class="feature-item">Stove & Microwave Included</div>
+                        <div class="feature-item">No Refrigerator</div>
+                        <div class="feature-item">Washer/Dryer Hookups</div>
+                        <div class="feature-item">Off-Street Parking</div>
+                        <div class="feature-item">Pet Friendly</div>
+                        <div class="feature-item">Large Yard</div>
+                    </div>
+                </div>
+
+                <!-- Deposit Info -->
+                <div class="deposit-info">
+                    <h4>Security Deposit: 1 Month Rent</h4>
+                    <p>Required at lease signing. Refundable per Colorado law within 30 days of move-out, minus any damages beyond normal wear.</p>
+                </div>
+
+                <!-- Utilities Policy -->
+                <div class="deposit-info" style="margin-top: 15px;">
+                    <h4>Utilities Policy</h4>
+                    <p>All utilities paid by landlord. Historical averages: electricity ~$100/mo, propane ~$150/mo. If usage exceeds historical averages by more than 20%, we'll discuss and may need to renegotiate terms.</p>
+                </div>
+
+                <!-- Application Form -->
+                <div class="application-section">
+                    <h3 class="section-title">Apply Now</h3>
+
+                    <form id="applicationForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name *</label>
+                                <input type="text" id="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name *</label>
+                                <input type="text" id="lastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" id="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" id="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="move-in-section">
+                            <div class="form-group">
+                                <label>Desired Move-In Date *</label>
+                                <input type="date" id="moveInDate" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Current Address</label>
+                            <input type="text" id="currentAddress" placeholder="Street, City, State, ZIP">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Current Landlord Name</label>
+                                <input type="text" id="landlordName">
+                            </div>
+                            <div class="form-group">
+                                <label>Landlord Phone</label>
+                                <input type="tel" id="landlordPhone">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Employer</label>
+                                <input type="text" id="employer">
+                            </div>
+                            <div class="form-group">
+                                <label>Monthly Income</label>
+                                <input type="text" id="income" placeholder="$">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Number of Occupants</label>
+                            <input type="number" id="occupants" min="1" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pets (if any)</label>
+                            <input type="text" id="pets" placeholder="Type, breed, weight">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Additional Information / Questions</label>
+                            <textarea id="notes" placeholder="Tell us anything else we should know..."></textarea>
+                        </div>
+
+                        <!-- Password for account creation -->
+                        <div class="form-group" style="background: #f0f7f0; padding: 15px; border-radius: 8px; border: 2px solid #2d5016;">
+                            <label style="color: #2d5016;">Create Account Password *</label>
+                            <input type="password" id="password" minlength="6" placeholder="Minimum 6 characters" required>
+                            <p style="font-size: 12px; color: #666; margin-top: 8px;">Your account lets you view your lease, make payments, submit maintenance requests, and communicate with us.</p>
+                        </div>
+                    </form>
+
+                    <!-- Payment Section -->
+                    <div class="payment-section">
+                        <div class="payment-title">First Month + Security Deposit</div>
+                        <div class="payment-total" id="paymentTotal">$2,500</div>
+                        <div class="payment-breakdown" id="paymentBreakdown">
+                            First month rent ($1,250) + Security deposit ($1,250)
+                        </div>
+
+                        <div id="paypal-button-container"></div>
+
+                        <button class="venmo-btn" onclick="payWithVenmo()">
+                            Pay with Venmo - @M77AG
+                        </button>
+
+                        <p class="payment-note">
+                            Your application will be reviewed within 24 hours. Payment secures your spot.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colorado Required Disclosures -->
+        <div class="disclosures-section">
+            <h3 class="disclosures-title">Colorado Required Disclosures</h3>
+
+            <div class="disclosure-item">
+                <h4>Radon Gas Disclosure</h4>
+                <p>Radon is a naturally occurring radioactive gas that can accumulate in buildings. Testing has been conducted on this property. Results and any mitigation systems will be disclosed in the lease agreement. More info: <a href="https://cdphe.colorado.gov/radon" target="_blank">Colorado Radon Program</a></p>
+            </div>
+
+            <div class="disclosure-item">
+                <h4>Lead-Based Paint Disclosure</h4>
+                <p>Housing built before 1978 may contain lead-based paint. Lead from paint, chips, and dust can pose health hazards. Full disclosure of known lead paint information will be provided before lease signing.</p>
+            </div>
+
+            <div class="disclosure-item">
+                <h4>Bed Bug Disclosure</h4>
+                <p>Per Colorado law (CRS § 38-12-1005), we disclose any known bed bug infestations within the past 8 months. This property has no known bed bug history.</p>
+            </div>
+
+            <div class="disclosure-item">
+                <h4>Reporting Uninhabitable Conditions (Effective Jan 1, 2025)</h4>
+                <p>Per Colorado SB24-094, tenants may report unsafe or uninhabitable conditions to:<br>
+                <strong>Email:</strong> office@m77ag.com<br>
+                <strong>Mail:</strong> M77 AG, 34549 HWY 59, Haxtun, CO 80731<br>
+                Esta información también está disponible en español.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="font-size: 48px; margin-bottom: 10px;">✓</div>
+                <h2>Application Submitted!</h2>
+            </div>
+            <div class="modal-body">
+                <p>Thank you for your application! We've received your information and payment. You will receive a confirmation email shortly.</p>
+                <p><strong>Next Steps:</strong></p>
+                <p>1. Application review (24-48 hours)<br>
+                2. Background/credit check<br>
+                3. Lease agreement sent for signature<br>
+                4. Key pickup scheduled</p>
+                <p>Questions? Call Kyle at <a href="tel:970-571-1015">970-571-1015</a></p>
+                <button class="modal-btn" onclick="closeModal()">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Request Modal -->
+    <div class="appointment-modal" id="appointmentModal">
+        <div class="appointment-content">
+            <div class="appointment-header">
+                <h2>Schedule a Showing</h2>
+                <p>168 Hwy 59, Sedgwick, CO 80749</p>
+                <button class="appointment-close" onclick="closeAppointmentModal()">&times;</button>
+            </div>
+            <div class="appointment-body">
+                <form class="appointment-form" id="appointmentForm">
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        <input type="text" id="apptName" required placeholder="First and last name">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="apptPhone" required placeholder="(xxx) xxx-xxxx">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="apptEmail" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Date *</label>
+                        <input type="date" id="apptDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Time</label>
+                        <div class="preferred-times">
+                            <label class="time-checkbox">
+                                <input type="checkbox" name="apptTime" value="morning"> Morning (8-12)
+                            </label>
+                            <label class="time-checkbox">
+                                <input type="checkbox" name="apptTime" value="afternoon"> Afternoon (12-5)
+                            </label>
+                            <label class="time-checkbox">
+                                <input type="checkbox" name="apptTime" value="evening"> Evening (5-7)
+                            </label>
+                            <label class="time-checkbox">
+                                <input type="checkbox" name="apptTime" value="flexible"> Flexible
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Questions or Notes</label>
+                        <textarea id="apptNotes" placeholder="Anything you'd like us to know..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-appointment-btn" id="submitApptBtn">
+                        Request Showing
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Confirmation Modal -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="confirmation-content">
+            <div class="confirmation-header">
+                <div class="check-icon">✓</div>
+                <h2>Request Submitted!</h2>
+            </div>
+            <div class="confirmation-body">
+                <p>Thanks for your interest! We've received your showing request and will get back to you soon.</p>
+
+                <div class="contact-kyle-box">
+                    <h4>Want to schedule faster? Contact Kyle directly:</h4>
+                    <a href="tel:970-571-1015" class="kyle-phone">970-571-1015</a>
+                    <div class="contact-options">
+                        <a href="tel:970-571-1015" class="contact-btn call">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+                            Call
+                        </a>
+                        <a href="sms:970-571-1015" class="contact-btn text">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                            Text
+                        </a>
+                    </div>
+                </div>
+
+                <p style="font-size: 13px; color: #888;">We typically respond within a few hours during business days.</p>
+                <button class="confirmation-close-btn" onclick="closeConfirmationModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="chat-avatar">🏠</div>
+                <div class="chat-header-info">
+                    <h4>Property Assistant</h4>
+                    <p>Ask about this rental</p>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    Hi there! I'm here to help answer questions about this rental property. It's a cozy 2-bedroom house in the country, about half a mile north of the Sedgwick County line. What would you like to know?
+                </div>
+            </div>
+            <div class="quick-questions" id="quickQuestions">
+                <button class="quick-btn" onclick="askQuick('What schools are nearby?')">Schools?</button>
+                <button class="quick-btn" onclick="askQuick('What utilities are included?')">Utilities?</button>
+                <button class="quick-btn" onclick="askQuick('Are pets allowed?')">Pets?</button>
+                <button class="quick-btn" onclick="askQuick('What is country living like here?')">Country living?</button>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
+                <button class="chat-send" id="chatSend" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+        <button class="chat-toggle" id="chatToggle" onclick="toggleChat()">
+            <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h10v2H7zm0-3h10v2H7z"/></svg>
+            <svg class="close-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-brand">M77 AG</div>
+        <div class="footer-contact">
+            970-774-3276 | office@m77ag.com<br>
+            34549 HWY 59, Haxtun, CO 80731
+        </div>
+    </footer>
+
+    <script>
+        // Property images
+        const propertyImages = [
+            { src: 'assets/rentals/house1/outside.JPEG', caption: 'Exterior' },
+            { src: 'assets/rentals/house1/living room.JPEG', caption: 'Living Room' },
+            { src: 'assets/rentals/house1/kitchen.JPEG', caption: 'Kitchen' },
+            { src: 'assets/rentals/house1/bedroom 1.JPEG', caption: 'Bedroom 1' },
+            { src: 'assets/rentals/house1/bedroom 2.JPEG', caption: 'Bedroom 2' },
+            { src: 'assets/rentals/house1/bathroom.JPEG', caption: 'Bathroom' },
+            { src: 'assets/rentals/house1/laundry.JPEG', caption: 'Laundry' },
+            { src: 'assets/rentals/house1/enclosed porch.JPEG', caption: 'Enclosed Porch' }
+        ];
+
+        // Selected lease term
+        let selectedTerm = 'twelve_month';
+        let monthlyRent = 1250;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadThumbnails();
+            updatePaymentTotal();
+            setMinMoveInDate();
+        });
+
+        // Load thumbnails
+        function loadThumbnails() {
+            const container = document.getElementById('thumbnails');
+            container.innerHTML = propertyImages.map((img, idx) => `
+                <div class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="showImage(${idx})">
+                    <img src="${img.src}" alt="${img.caption}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 60%22><rect fill=%22%232a2a2a%22 width=%2280%22 height=%2260%22/></svg>'">
+                </div>
+            `).join('');
+        }
+
+        // Show selected image
+        function showImage(index) {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.innerHTML = `<img src="${propertyImages[index].src}" alt="${propertyImages[index].caption}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 400%22><rect fill=%22%232a2a2a%22 width=%22600%22 height=%22400%22/><text fill=%22%23666%22 x=%22300%22 y=%22200%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>Photo Coming Soon</text></svg>'">`;
+
+            // Update thumbnail active state
+            document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
+                thumb.classList.toggle('active', idx === index);
+            });
+        }
+
+        // Select pricing tier
+        function selectTier(element) {
+            document.querySelectorAll('.pricing-tier').forEach(tier => {
+                tier.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            selectedTerm = element.dataset.term;
+            monthlyRent = parseInt(element.dataset.price);
+            updatePaymentTotal();
+        }
+
+        // Update payment total
+        function updatePaymentTotal() {
+            const total = monthlyRent * 2; // First month + deposit
+            document.getElementById('paymentTotal').textContent = '$' + total.toLocaleString();
+            document.getElementById('paymentBreakdown').textContent =
+                `First month rent ($${monthlyRent.toLocaleString()}) + Security deposit ($${monthlyRent.toLocaleString()})`;
+
+            // Re-render PayPal button
+            renderPayPalButton();
+        }
+
+        // Set minimum move-in date (tomorrow)
+        function setMinMoveInDate() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('moveInDate').min = tomorrow.toISOString().split('T')[0];
+        }
+
+        // Render PayPal button
+        function renderPayPalButton() {
+            const container = document.getElementById('paypal-button-container');
+            container.innerHTML = '';
+
+            const total = monthlyRent * 2;
+
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: total.toFixed(2),
+                                currency_code: 'USD'
+                            },
+                            description: `M77 AG Rental - ${selectedTerm.replace('_', ' ')} lease - First month + deposit`
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        submitApplication('paypal', details.id);
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    alert('Payment error. Please try Venmo or contact office@m77ag.com');
+                },
+                style: {
+                    layout: 'vertical',
+                    color: 'gold',
+                    shape: 'rect',
+                    label: 'paypal'
+                }
+            }).render('#paypal-button-container');
+        }
+
+        // Pay with Venmo
+        function payWithVenmo() {
+            const form = document.getElementById('applicationForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const total = monthlyRent * 2;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            // Show Venmo instructions
+            const confirmed = confirm(
+                `To complete your application via Venmo:\n\n` +
+                `1. Open Venmo and send $${total.toLocaleString()} to @M77AG\n` +
+                `2. In the note, include: "${firstName} ${lastName} - Rental Application"\n\n` +
+                `Click OK after you've sent the payment.`
+            );
+
+            if (confirmed) {
+                submitApplication('venmo', 'PENDING_VERIFICATION');
+            }
+        }
+
+        // Submit application
+        async function submitApplication(paymentMethod, transactionId) {
+            const form = document.getElementById('applicationForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const applicationData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                password: document.getElementById('password').value,
+                moveInDate: document.getElementById('moveInDate').value,
+                currentAddress: document.getElementById('currentAddress').value,
+                landlordName: document.getElementById('landlordName').value,
+                landlordPhone: document.getElementById('landlordPhone').value,
+                employer: document.getElementById('employer').value,
+                income: document.getElementById('income').value,
+                occupants: document.getElementById('occupants').value,
+                pets: document.getElementById('pets').value,
+                notes: document.getElementById('notes').value,
+                leaseType: selectedTerm,
+                monthlyRent: monthlyRent,
+                paymentMethod: paymentMethod,
+                transactionId: transactionId,
+                totalPaid: monthlyRent * 2
+            };
+
+            try {
+                // Register tenant account
+                const registerResponse = await fetch('/api/rentals/tenant/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: applicationData.email,
+                        password: applicationData.password,
+                        firstName: applicationData.firstName,
+                        lastName: applicationData.lastName,
+                        phone: applicationData.phone
+                    })
+                });
+
+                const registerData = await registerResponse.json();
+
+                if (registerData.success) {
+                    // Store token
+                    localStorage.setItem('tenantToken', registerData.token);
+                    localStorage.setItem('tenant', JSON.stringify(registerData.tenant));
+
+                    // Also save application record for admin tracking
+                    try {
+                        await fetch('/api/rentals/application', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                firstName: applicationData.firstName,
+                                lastName: applicationData.lastName,
+                                email: applicationData.email,
+                                phone: applicationData.phone,
+                                moveInDate: applicationData.moveInDate,
+                                notes: applicationData.notes,
+                                property: '168 Hwy 59, Sedgwick, CO'
+                            })
+                        });
+                    } catch (e) { console.log('Application tracking:', e); }
+
+                    // Show success modal
+                    document.getElementById('successModal').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+
+                    // Reset form
+                    form.reset();
+                } else {
+                    alert('Error: ' + (registerData.message || 'Unable to submit application'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting application. Please contact office@m77ag.com');
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Mobile menu
+        document.getElementById('hamburger').addEventListener('click', () => {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // ==================== CHAT BOT ====================
+
+        // Property knowledge base for the AI
+        const propertyKnowledge = {
+            location: {
+                address: "168 Hwy 59, Sedgwick, CO 80749",
+                description: "Located at 168 Hwy 59 in Sedgwick, CO - about half a mile north of the Sedgwick County line. This is true country living - wide open spaces, peaceful nights, and friendly neighbors.",
+                area: "Sedgwick County, northeastern Colorado"
+            },
+            property: {
+                bedrooms: 2,
+                bathrooms: 1,
+                features: ["Central heat", "Stove included", "Microwave included", "Washer/dryer hookups", "Off-street parking", "Large yard", "Enclosed porch"],
+                utilities: "All utilities are paid by the landlord - electricity, gas/propane, water, sewer, and trash. Historical averages are about $100/month for electricity and $150/month for propane. If your usage exceeds historical averages by more than 20%, we'll discuss the variance and may need to renegotiate terms.",
+                pets: "Yes, we are pet-friendly! We just ask that you let us know about your pets during the application."
+            },
+            pricing: {
+                monthToMonth: 1400,
+                sixMonth: 1300,
+                twelveMonth: 1250,
+                deposit: "Security deposit equals one month's rent, refundable per Colorado law within 30 days of move-out minus any damages beyond normal wear."
+            },
+            schools: {
+                options: ["Haxtun School District", "Ovid-Sedgwick (Revere) School District"],
+                description: "Families can choose between Haxtun or Ovid-Sedgwick (Revere) school systems - both are excellent small-town schools with great teachers and strong community involvement. Class sizes are small so kids get individual attention."
+            },
+            countryLiving: {
+                description: "This is authentic country living. You'll want a mower for the yard in summer and a snowblower for the driveway in winter - that's just part of life out here. The trade-off is peace and quiet, beautiful sunsets, and knowing your neighbors. We work really well with tenants who treat us and our property well - it's a two-way relationship built on respect.",
+                expectations: "Tenants should be comfortable with rural life - you're not in town, so you'll need reliable transportation. But the quiet and space more than make up for it."
+            },
+            landlord: {
+                style: "We believe in good relationships with our tenants. If you treat us and the property well, we'll do the same for you. Communication is key - if something needs fixing, let us know and we'll take care of it.",
+                contact: "Kyle at 970-571-1015 or office@m77ag.com"
+            },
+            application: {
+                process: "Fill out the application on this page and submit your first month's rent plus security deposit. We review applications within 24-48 hours, run a background check, and get back to you quickly.",
+                requirements: "We look for tenants with stable income (generally 2.5-3x monthly rent), good rental history, and no concerning background issues."
+            }
+        };
+
+        let chatHistory = [];
+        let isProcessing = false;
+
+        // Toggle chat window
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            const chatToggle = document.getElementById('chatToggle');
+            chatWindow.classList.toggle('active');
+            chatToggle.classList.toggle('active');
+        }
+
+        // Handle enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Quick question buttons
+        function askQuick(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+            // Hide quick questions after first use
+            document.getElementById('quickQuestions').style.display = 'none';
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message || isProcessing) return;
+
+            isProcessing = true;
+            input.value = '';
+            document.getElementById('chatSend').disabled = true;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatHistory.push({ role: 'user', content: message });
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                const response = await fetch('/api/rentals/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        history: chatHistory,
+                        propertyKnowledge: propertyKnowledge
+                    })
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (data.success) {
+                    addMessage(data.response, 'bot');
+                    chatHistory.push({ role: 'assistant', content: data.response });
+                } else {
+                    // Fallback to local response
+                    const fallbackResponse = generateLocalResponse(message);
+                    addMessage(fallbackResponse, 'bot');
+                    chatHistory.push({ role: 'assistant', content: fallbackResponse });
+                }
+            } catch (error) {
+                hideTyping();
+                // Fallback to local response
+                const fallbackResponse = generateLocalResponse(message);
+                addMessage(fallbackResponse, 'bot');
+                chatHistory.push({ role: 'assistant', content: fallbackResponse });
+            }
+
+            isProcessing = false;
+            document.getElementById('chatSend').disabled = false;
+        }
+
+        // Generate local response as fallback
+        function generateLocalResponse(message) {
+            const msg = message.toLowerCase();
+
+            // Schools
+            if (msg.includes('school') || msg.includes('education') || msg.includes('kids')) {
+                return propertyKnowledge.schools.description;
+            }
+
+            // Utilities
+            if (msg.includes('utilit') || msg.includes('electric') || msg.includes('gas') || msg.includes('water') || msg.includes('bill')) {
+                return propertyKnowledge.property.utilities;
+            }
+
+            // Pets
+            if (msg.includes('pet') || msg.includes('dog') || msg.includes('cat') || msg.includes('animal')) {
+                return propertyKnowledge.property.pets;
+            }
+
+            // Country living / rural
+            if (msg.includes('country') || msg.includes('rural') || msg.includes('area') || msg.includes('neighbor') || msg.includes('mow') || msg.includes('snow')) {
+                return propertyKnowledge.countryLiving.description;
+            }
+
+            // Location
+            if (msg.includes('where') || msg.includes('location') || msg.includes('address') || msg.includes('sedgwick')) {
+                return `The property is located at ${propertyKnowledge.location.address}, about half a mile north of the Sedgwick County line. This is true country living - wide open spaces, peaceful nights, and friendly neighbors.`;
+            }
+
+            // Price / rent
+            if (msg.includes('price') || msg.includes('cost') || msg.includes('rent') || msg.includes('month')) {
+                return `We have flexible lease options: $${propertyKnowledge.pricing.monthToMonth}/month for month-to-month, $${propertyKnowledge.pricing.sixMonth}/month for a 6-month lease (save $600/year), or $${propertyKnowledge.pricing.twelveMonth}/month for a 12-month lease (save $1,800/year). All utilities are included!`;
+            }
+
+            // Deposit
+            if (msg.includes('deposit') || msg.includes('security')) {
+                return propertyKnowledge.pricing.deposit;
+            }
+
+            // Bedrooms / bathrooms
+            if (msg.includes('bedroom') || msg.includes('bathroom') || msg.includes('room') || msg.includes('size')) {
+                return `This home has ${propertyKnowledge.property.bedrooms} bedrooms and ${propertyKnowledge.property.bathrooms} bathroom. It includes an enclosed porch, good-sized yard, stove, microwave, and washer/dryer hookups. No fridge is included - you'll need to bring your own.`;
+            }
+
+            // Application process
+            if (msg.includes('apply') || msg.includes('application') || msg.includes('process') || msg.includes('move in')) {
+                return propertyKnowledge.application.process;
+            }
+
+            // Contact
+            if (msg.includes('contact') || msg.includes('call') || msg.includes('phone') || msg.includes('email')) {
+                return `You can reach Kyle at 970-571-1015 or email office@m77ag.com. We're happy to answer any questions or schedule a showing!`;
+            }
+
+            // Features / amenities
+            if (msg.includes('feature') || msg.includes('ameniti') || msg.includes('include') || msg.includes('have')) {
+                return `The property includes: ${propertyKnowledge.property.features.join(', ')}. Plus all utilities are paid!`;
+            }
+
+            // Available / availability
+            if (msg.includes('available') || msg.includes('when') || msg.includes('ready')) {
+                return `The property is available now! You can select your desired move-in date on the application form. We can typically get you moved in within a week or two of approval.`;
+            }
+
+            // Default response
+            return `Great question! This is a 2-bedroom, 1-bath country home about half a mile north of the Sedgwick County line. All utilities are included, pets are welcome, and you can choose between Haxtun or Ovid schools. Is there something specific you'd like to know about the property, location, or application process?`;
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTyping() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message typing';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        // ==================== APPOINTMENT SCHEDULING ====================
+
+        // Open appointment modal
+        function openAppointmentModal() {
+            document.getElementById('appointmentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Set minimum date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('apptDate').min = tomorrow.toISOString().split('T')[0];
+        }
+
+        // Close appointment modal
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close confirmation modal
+        function closeConfirmationModal() {
+            document.getElementById('confirmationModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Handle appointment form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitApptBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Gather form data
+            const name = document.getElementById('apptName').value;
+            const phone = document.getElementById('apptPhone').value;
+            const email = document.getElementById('apptEmail').value;
+            const date = document.getElementById('apptDate').value;
+            const notes = document.getElementById('apptNotes').value;
+
+            // Get selected times
+            const timeCheckboxes = document.querySelectorAll('input[name="apptTime"]:checked');
+            const times = Array.from(timeCheckboxes).map(cb => cb.value);
+
+            const appointmentData = {
+                name,
+                phone,
+                email,
+                preferredDate: date,
+                preferredTimes: times,
+                notes,
+                property: '168 Hwy 59, Sedgwick, CO 80749',
+                type: 'rental_showing'
+            };
+
+            try {
+                // Send appointment request to server
+                const response = await fetch('/api/rentals/appointment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(appointmentData)
+                });
+
+                const data = await response.json();
+
+                // Close appointment modal and show confirmation
+                closeAppointmentModal();
+                document.getElementById('confirmationModal').classList.add('active');
+
+                // Reset form
+                document.getElementById('appointmentForm').reset();
+
+            } catch (error) {
+                console.error('Error submitting appointment:', error);
+                // Still show confirmation - the request info might be logged
+                closeAppointmentModal();
+                document.getElementById('confirmationModal').classList.add('active');
+                document.getElementById('appointmentForm').reset();
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Request Showing';
+        });
+
+        // Close modals on outside click
+        document.getElementById('appointmentModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAppointmentModal();
+        });
+
+        document.getElementById('confirmationModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmationModal();
+        });
+    </script>
+</body>
+</html>

@@ -9,13 +9,20 @@ const harvestDataSchema = new mongoose.Schema({
   },
   property: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Property',
-    required: true
+    ref: 'Property'
+  },
+  // Land Management System support
+  farm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Farm'
   },
   landlord: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'User'
+  },
+  landManagementUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'LandManagementUser'
   },
   // Harvest details
   cropYear: {
@@ -156,7 +163,9 @@ const harvestDataSchema = new mongoose.Schema({
 // Indexes for efficient queries
 harvestDataSchema.index({ field: 1, cropYear: -1 });
 harvestDataSchema.index({ property: 1, cropYear: -1 });
+harvestDataSchema.index({ farm: 1, cropYear: -1 });
 harvestDataSchema.index({ landlord: 1, cropYear: -1 });
+harvestDataSchema.index({ landManagementUser: 1, cropYear: -1 });
 harvestDataSchema.index({ cropYear: -1 });
 harvestDataSchema.index({ harvestStartDate: -1 });
 

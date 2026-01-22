@@ -1,74 +1,117 @@
 const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema({
-  // Basic field information
-  name: {
-    type: String,
+  // Farm Association (using Farm model for land management compatibility)
+  farm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Farm',
     required: true
   },
+
+  // Field Identification
+  fieldName: {
+    type: String,
+    required: true,
+    trim: true
+  },
   fieldNumber: {
-    type: String
+    type: String,
+    trim: true
   },
   description: {
     type: String
   },
-  // Link to parent property
-  property: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Property',
-    required: true
-  },
-  landlord: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  // Field size
+
+  // Field Size
   acres: {
     type: Number,
     required: true
   },
-  // Soil information
-  soilType: {
-    type: String
+
+  // Location Information
+  location: {
+    address: String,
+    gpsCoordinates: {
+      latitude: Number,
+      longitude: Number
+    },
+    legalDescription: String,
+    section: String,
+    township: String,
+    range: String
   },
-  soilClass: {
-    type: String // e.g., 'Class I', 'Class II', etc.
-  },
-  drainageTile: {
-    type: Boolean,
-    default: false
-  },
-  irrigated: {
-    type: Boolean,
-    default: false
-  },
-  // Boundary data
+
+  // GeoJSON Boundary Data
   boundary: {
     type: {
       type: String,
       enum: ['Polygon'],
       default: 'Polygon'
     },
-    coordinates: [[Number]] // GeoJSON format
+    coordinates: [[Number]]
   },
   kmlFile: {
-    type: String // Path to KML file if uploaded
+    type: String
   },
-  // Current crop information
+
+  // Landlord/Owner (using LandManagementUser for compatibility)
+  landlord: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'LandManagementUser'
+  },
+  landlordName: String,
+
+  // Lease Terms
+  leaseTerms: {
+    leaseType: {
+      type: String,
+      enum: ['cash-rent', 'crop-share', 'flex-lease', 'owned'],
+      default: 'cash-rent'
+    },
+    rentPerAcre: Number,
+    totalRent: Number,
+    sharePercentage: Number,
+    leaseStart: Date,
+    leaseEnd: Date,
+    paymentSchedule: String,
+    paymentLocation: String
+  },
+
+  // Soil Information
+  soilType: {
+    type: String
+  },
+  soilClass: {
+    type: String
+  },
+  irrigated: {
+    type: Boolean,
+    default: false
+  },
+  drainageTile: {
+    type: Boolean,
+    default: false
+  },
+  averageCornYield: Number,
+  averageWheatYield: Number,
+
+  // Current Crop Information
   currentCrop: {
     year: Number,
     cropType: {
       type: String,
-      enum: ['corn', 'soybeans', 'wheat', 'milo', 'sunflower', 'fallow', 'other']
+      enum: ['corn', 'wheat', 'milo', 'soybeans', 'sunflower', 'fallow', 'other']
     },
     variety: String,
     plantingDate: Date,
+    harvestDate: Date,
     expectedHarvestDate: Date,
-    estimatedYield: Number, // bushels per acre
+    estimatedYield: Number,
+    expectedYield: Number,
     actualYield: Number
   },
-  // Historical crop data (last 5-10 years)
+
+  // Historical Crop Data
   cropHistory: [{
     year: {
       type: Number,
@@ -81,11 +124,15 @@ const fieldSchema = new mongoose.Schema({
     variety: String,
     plantingDate: Date,
     harvestDate: Date,
-    yield: Number, // bushels per acre
+    yield: Number,
     pricePerBushel: Number,
     totalRevenue: Number,
+    revenue: Number,
+    costs: Number,
+    netIncome: Number,
     notes: String
   }],
+
   // Future crop planning (7 years in advance)
   cropPlan: [{
     year: {
@@ -100,11 +147,13 @@ const fieldSchema = new mongoose.Schema({
     variety: String,
     notes: String
   }],
-  // Field-specific expenses (chemicals, fertilizer, etc.)
+
+  // Field-specific Expenses
   fieldExpenses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Transaction'
   }],
+
   // Financial projections (visible to landlords)
   financials: {
     breakEvenPerAcre: Number,      // Break-even price per acre
@@ -114,12 +163,18 @@ const fieldSchema = new mongoose.Schema({
     costPerBushel: Number,          // Cost per bushel calculation
     lastUpdated: Date               // When projections were last updated
   },
-  // Field status
+
+  // Field Status
   status: {
     type: String,
     enum: ['active', 'fallow', 'retired', 'CRP'],
     default: 'active'
   },
+  active: {
+    type: Boolean,
+    default: true
+  },
+
   // Notes
   notes: {
     type: String
@@ -129,10 +184,16 @@ const fieldSchema = new mongoose.Schema({
 });
 
 // Indexes for efficient queries
-fieldSchema.index({ property: 1 });
+fieldSchema.index({ farm: 1 });
 fieldSchema.index({ landlord: 1 });
+fieldSchema.index({ fieldName: 1, farm: 1 });
 fieldSchema.index({ 'currentCrop.year': 1 });
 fieldSchema.index({ status: 1 });
+
+// Virtual for full field name
+fieldSchema.virtual('fullName').get(function() {
+  return this.fieldNumber ? `${this.fieldName} (#${this.fieldNumber})` : this.fieldName;
+});
 
 // Virtual for calculating average historical yield
 fieldSchema.virtual('averageYield').get(function() {

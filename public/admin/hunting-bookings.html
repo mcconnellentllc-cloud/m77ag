@@ -664,6 +664,25 @@
             </div>
         </div>
 
+        <!-- Customer Tools -->
+        <div class="bookings-section" style="margin-bottom: 20px;">
+            <div class="section-header">
+                <h2 class="section-title">Customer Tools</h2>
+            </div>
+            <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Customer Email</label>
+                        <input type="email" id="customerEmailInput" placeholder="Enter email to update spend..." style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <button onclick="updateCustomerSpend()" style="padding: 10px 20px; background: #2c5530; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; min-width: 180px;">
+                        Update Lifetime Spend
+                    </button>
+                </div>
+                <div id="spendResult" style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; display: none;"></div>
+            </div>
+        </div>
+
         <!-- Bookings Table -->
         <div class="bookings-section">
             <div class="section-header">
@@ -743,6 +762,7 @@
                             <select id="editParcel" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                                 <option value="Heritage Farm">Heritage Farm</option>
                                 <option value="Prairie Peace">Prairie Peace</option>
+                                <option value="Both Properties">Both Properties</option>
                             </select>
                         </div>
                         <div>
@@ -760,6 +780,14 @@
                         <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Total Price ($)</label>
                             <input type="number" id="editTotalPrice" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Daily Rate ($)</label>
+                            <input type="number" id="editDailyRate" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Number of Nights</label>
+                            <input type="number" id="editNumNights" min="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 5px; font-weight: 600;">Payment Status</label>
@@ -1014,6 +1042,8 @@
             document.getElementById('editCheckoutDate').value = currentBooking.checkoutDate ? new Date(currentBooking.checkoutDate).toISOString().split('T')[0] : '';
             document.getElementById('editNumHunters').value = currentBooking.numHunters || 1;
             document.getElementById('editTotalPrice').value = currentBooking.totalPrice || 0;
+            document.getElementById('editDailyRate').value = currentBooking.dailyRate || 200;
+            document.getElementById('editNumNights').value = currentBooking.numNights || 0;
             document.getElementById('editPaymentStatus').value = currentBooking.paymentStatus || 'pending';
             document.getElementById('editStatus').value = currentBooking.status || 'confirmed';
             document.getElementById('editNotes').value = currentBooking.notes || '';
@@ -1039,6 +1069,8 @@
                 checkoutDate: document.getElementById('editCheckoutDate').value,
                 numHunters: parseInt(document.getElementById('editNumHunters').value),
                 totalPrice: parseFloat(document.getElementById('editTotalPrice').value),
+                dailyRate: parseFloat(document.getElementById('editDailyRate').value),
+                numNights: parseInt(document.getElementById('editNumNights').value),
                 paymentStatus: document.getElementById('editPaymentStatus').value,
                 status: document.getElementById('editStatus').value,
                 notes: document.getElementById('editNotes').value
@@ -1061,11 +1093,12 @@
                     closeEditModal();
                     loadBookings();
                 } else {
-                    alert('Failed to update booking: ' + data.message);
+                    const errorMsg = data.error ? `${data.message}: ${data.error}` : data.message;
+                    alert('Failed to update booking: ' + errorMsg);
                 }
             } catch (error) {
                 console.error('Error updating booking:', error);
-                alert('Error updating booking');
+                alert('Error updating booking: ' + error.message);
             }
         }
 
@@ -1230,6 +1263,78 @@
             } catch (error) {
                 console.error('Error sending email:', error);
                 alert('Error sending confirmation email');
+            }
+        }
+
+        // Update Customer Lifetime Spend
+        async function updateCustomerSpend() {
+            const email = document.getElementById('customerEmailInput').value.trim();
+            const resultDiv = document.getElementById('spendResult');
+
+            if (!email) {
+                alert('Please enter a customer email address');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<div style="color: #666;">Calculating lifetime spend...</div>';
+
+                const response = await fetch('/api/hunting/recalculate-spend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const customer = data.customer;
+                    const tierColors = {
+                        'none': '#999',
+                        'bronze': '#cd7f32',
+                        'silver': '#c0c0c0',
+                        'gold': '#ffd700',
+                        'platinum': '#e5e4e2'
+                    };
+
+                    resultDiv.innerHTML = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Customer</div>
+                                <div style="font-weight: 600; color: #2c5530;">${customer.name}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Lifetime Spend</div>
+                                <div style="font-weight: 700; font-size: 18px; color: #2c5530;">$${customer.lifetimeSpend.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Loyalty Tier</div>
+                                <div style="font-weight: 600; font-size: 16px; color: ${tierColors[customer.loyaltyTier]}; text-transform: uppercase;">${customer.loyaltyTier}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Bookings</div>
+                                <div style="font-weight: 600;">${customer.bookingsCount}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; font-size: 13px; color: #2c5530;">
+                            ✅ Customer lifetime spend updated successfully!
+                        </div>
+                    `;
+
+                    // Clear input
+                    document.getElementById('customerEmailInput').value = '';
+                } else {
+                    resultDiv.innerHTML = `<div style="color: #c62828;">❌ ${data.message}</div>`;
+                }
+
+            } catch (error) {
+                console.error('Error updating customer spend:', error);
+                resultDiv.innerHTML = `<div style="color: #c62828;">❌ Error updating customer spend. Please try again.</div>`;
             }
         }
 

@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Season Pass - M77 AG Hunting</title>
 
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c5530">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="M77 AG">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+
     <!-- PayPal SDK - LIVE CLIENT ID -->
     <script src="https://www.paypal.com/sdk/js?client-id=AdX73h4Ob3MtFXKDbUGq2sRNctji2Ew30O3pOWJcH78KxfvObnsnqReYQNDPaK6bSiWZ2qwnhel2Gl3X&currency=USD"></script>
 
@@ -349,15 +357,15 @@
 
     <div class="container">
         <h1 class="page-title">🏹 Hunting Season Pass</h1>
-        <p class="page-subtitle">Reserve your hunting days in advance and save!</p>
+        <p class="page-subtitle">Hunt BOTH properties (2,710 acres) - Save up to $1,600!</p>
 
         <div class="benefits-section">
             <h2>Why Get a Season Pass?</h2>
             <ul class="benefits-list">
-                <li><strong>Save Money:</strong> Pay $150/day instead of $200/day</li>
+                <li><strong>BOTH Properties Included:</strong> Every credit gives you access to ALL 2,710 acres - Heritage Farm AND Prairie Peace!</li>
+                <li><strong>Massive Savings:</strong> Pay as low as $140/day instead of $300/day for both properties</li>
                 <li><strong>Reserve Your Dates:</strong> Book your preferred dates early to guarantee availability</li>
-                <li><strong>Flexible Booking:</strong> Use your credits throughout the entire season</li>
-                <li><strong>Priority Access:</strong> Season pass holders can book before general public</li>
+                <li><strong>Flexible Booking:</strong> Use your credits throughout the entire season (Sept - March)</li>
                 <li><strong>Easy Management:</strong> View all your bookings and remaining credits in one dashboard</li>
             </ul>
         </div>
@@ -372,20 +380,20 @@
             <div class="pass-option" data-type="5-day" data-price="750">
                 <div class="pass-type">5-Day Pass</div>
                 <div class="pass-price">$750</div>
-                <div class="pass-price-per">$150 per day</div>
-                <div class="savings-badge">Save $250</div>
+                <div class="pass-price-per">$150 per day - BOTH properties!</div>
+                <div class="savings-badge">Save $750</div>
                 <div class="pass-description">
-                    Perfect for the occasional hunter. Get 5 day credits to use throughout the season.
+                    Perfect for the occasional hunter. Hunt all 2,710 acres across BOTH properties for 5 days. Normally $1,500!
                 </div>
             </div>
 
-            <div class="pass-option" data-type="10-day" data-price="1500">
+            <div class="pass-option" data-type="10-day" data-price="1400">
                 <div class="pass-type">10-Day Pass</div>
-                <div class="pass-price">$1,500</div>
-                <div class="pass-price-per">$150 per day</div>
-                <div class="savings-badge">Save $500</div>
+                <div class="pass-price">$1,400</div>
+                <div class="pass-price-per">$140 per day - BOTH properties!</div>
+                <div class="savings-badge">Save $1,600</div>
                 <div class="pass-description">
-                    Best value! Get 10 day credits for serious hunters who want maximum flexibility.
+                    Best value! Hunt all 2,710 acres across BOTH properties for 10 days. Normally $3,000!
                 </div>
             </div>
         </div>
@@ -571,6 +579,15 @@
                     showError('Payment failed. Please try again.');
                 }
             }).render('#paypal-button-container');
+        }
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('M77 AG: Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
         }
     </script>
 </body>

@@ -179,6 +179,41 @@ const bookingController = {
 
       await booking.save();
 
+      // Update customer lifetime spend (for loyalty tracking)
+      try {
+        const User = require('../models/user');
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (user && totalPrice > 0) {
+          user.lifetimeSpend = (user.lifetimeSpend || 0) + totalPrice;
+
+          // Auto-update loyalty tier based on spend
+          if (user.lifetimeSpend >= 5000) {
+            user.loyaltyTier = 'platinum';
+          } else if (user.lifetimeSpend >= 3000) {
+            user.loyaltyTier = 'gold';
+          } else if (user.lifetimeSpend >= 2000) {
+            user.loyaltyTier = 'silver';
+          } else if (user.lifetimeSpend >= 1000) {
+            user.loyaltyTier = 'bronze';
+          }
+
+          await User.updateOne(
+            { _id: user._id },
+            {
+              $set: {
+                lifetimeSpend: user.lifetimeSpend,
+                loyaltyTier: user.loyaltyTier
+              }
+            }
+          );
+
+          console.log(`Updated ${email} lifetime spend: $${user.lifetimeSpend} (${user.loyaltyTier} tier)`);
+        }
+      } catch (spendError) {
+        console.error('Error updating customer spend:', spendError);
+        // Don't fail the booking if spend tracking fails
+      }
+
       // Create automatic game rest periods
       await createGameRestPeriods(booking);
 
@@ -459,7 +494,8 @@ const bookingController = {
       console.error('Error updating booking:', error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update booking'
+        message: 'Failed to update booking',
+        error: error.message
       });
     }
   },
@@ -758,6 +794,272 @@ const bookingController = {
       res.status(500).json({
         success: false,
         message: 'Failed to fetch bookings'
+      });
+    }
+  },
+
+  // Search for customer by name or email (for manual booking creation)
+  searchCustomer: async (req, res) => {
+    try {
+      const { query } = req.query;
+
+      if (!query || query.length < 3) {
+        return res.json({
+          success: true,
+          customers: []
+        });
+      }
+
+      const Booking = require('../models/booking');
+
+      // Search bookings by customer name or email
+      const bookings = await Booking.find({
+        $or: [
+          { customerName: new RegExp(query, 'i') },
+          { email: new RegExp(query, 'i') }
+        ]
+      }).sort({ createdAt: -1 }).limit(10);
+
+      // Get unique customers
+      const customersMap = new Map();
+      bookings.forEach(booking => {
+        const key = booking.email.toLowerCase();
+        if (!customersMap.has(key)) {
+          customersMap.set(key, {
+            name: booking.customerName,
+            email: booking.email,
+            phone: booking.phone,
+            lastBooking: booking.createdAt
+          });
+        }
+      });
+
+      const customers = Array.from(customersMap.values());
+
+      res.json({
+        success: true,
+        customers
+      });
+
+    } catch (error) {
+      console.error('Error searching customers:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to search customers'
+      });
+    }
+  },
+
+  // Admin: Create manual booking (for phone/offline bookings)
+  createManualBooking: async (req, res) => {
+    try {
+      const {
+        customerName,
+        email,
+        phone,
+        parcel,
+        checkinDate,
+        checkoutDate,
+        numHunters,
+        gameSpecies,
+        totalPrice,
+        paymentMethod,
+        paymentStatus,
+        notes
+      } = req.body;
+
+      // Create dates at noon local time
+      const checkinDateTime = new Date(checkinDate);
+      checkinDateTime.setHours(12, 0, 0, 0);
+
+      const checkoutDateTime = new Date(checkoutDate);
+      checkoutDateTime.setHours(12, 0, 0, 0);
+
+      // Calculate days
+      const numNights = Math.ceil((checkoutDateTime - checkinDateTime) / 86400000);
+      const dailyRate = parcel === 'Both Properties' ? 300 : 200;
+
+      // Check if dates are available
+      let existingBooking;
+      if (parcel === 'Both Properties') {
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: 'Heritage Farm' },
+            { parcel: 'Prairie Peace' },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
+        });
+      } else {
+        existingBooking = await Booking.findOne({
+          $or: [
+            { parcel: parcel },
+            { parcel: 'Both Properties' }
+          ],
+          status: { $in: ['pending', 'confirmed'] },
+          checkinDate: { $lte: checkoutDateTime },
+          checkoutDate: { $gte: checkinDateTime }
+        });
+      }
+
+      if (existingBooking) {
+        return res.status(400).json({
+          success: false,
+          message: `These dates are already booked (${existingBooking.parcel})`
+        });
+      }
+
+      // Create booking
+      const booking = new Booking({
+        customerName,
+        email: email.toLowerCase(),
+        phone,
+        parcel,
+        checkinDate: checkinDateTime,
+        checkoutDate: checkoutDateTime,
+        numHunters: numHunters || 1,
+        gameSpecies: gameSpecies || 'Pheasant',
+        dailyRate,
+        numNights,
+        campingFee: 0,
+        totalPrice: totalPrice || (dailyRate * numNights),
+        paymentMethod: paymentMethod || 'cash',
+        paymentStatus: paymentStatus || 'paid',
+        status: 'confirmed',
+        waiverSigned: false,
+        notes: notes || 'Manual booking created by admin'
+      });
+
+      await booking.save();
+
+      // Update customer spend
+      try {
+        const User = require('../models/user');
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (user && booking.totalPrice > 0) {
+          user.lifetimeSpend = (user.lifetimeSpend || 0) + booking.totalPrice;
+
+          if (user.lifetimeSpend >= 5000) user.loyaltyTier = 'platinum';
+          else if (user.lifetimeSpend >= 3000) user.loyaltyTier = 'gold';
+          else if (user.lifetimeSpend >= 2000) user.loyaltyTier = 'silver';
+          else if (user.lifetimeSpend >= 1000) user.loyaltyTier = 'bronze';
+
+          await User.updateOne(
+            { _id: user._id },
+            { $set: { lifetimeSpend: user.lifetimeSpend, loyaltyTier: user.loyaltyTier } }
+          );
+        }
+      } catch (spendError) {
+        console.error('Error updating spend:', spendError);
+      }
+
+      // Send confirmation email
+      try {
+        await sendBookingConfirmation(booking);
+        console.log('Confirmation email sent to:', email);
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'Manual booking created successfully',
+        booking
+      });
+
+    } catch (error) {
+      console.error('Error creating manual booking:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create manual booking: ' + error.message
+      });
+    }
+  },
+
+  // Admin: Recalculate customer lifetime spend
+  recalculateCustomerSpend: async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is required'
+        });
+      }
+
+      const User = require('../models/user');
+
+      // Find user
+      const user = await User.findOne({ email: email.toLowerCase() });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'No user account found for this email'
+        });
+      }
+
+      // Find all paid bookings for this email
+      const bookings = await Booking.find({
+        email: email.toLowerCase(),
+        paymentStatus: { $in: ['paid', 'paid_in_full', 'complimentary'] }
+      });
+
+      // Calculate total spend
+      let totalSpend = 0;
+      const bookingDetails = [];
+
+      bookings.forEach(booking => {
+        const amount = booking.totalPrice || 0;
+        totalSpend += amount;
+        bookingDetails.push({
+          date: booking.checkinDate,
+          amount: amount,
+          property: booking.parcel
+        });
+      });
+
+      // Determine loyalty tier
+      let tier = 'none';
+      if (totalSpend >= 5000) tier = 'platinum';
+      else if (totalSpend >= 3000) tier = 'gold';
+      else if (totalSpend >= 2000) tier = 'silver';
+      else if (totalSpend >= 1000) tier = 'bronze';
+
+      // Update user
+      await User.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            lifetimeSpend: totalSpend,
+            loyaltyTier: tier
+          }
+        }
+      );
+
+      console.log(`Updated ${email} - Lifetime Spend: $${totalSpend}, Tier: ${tier}`);
+
+      res.json({
+        success: true,
+        message: 'Customer lifetime spend recalculated successfully',
+        customer: {
+          name: user.name,
+          email: user.email,
+          lifetimeSpend: totalSpend,
+          loyaltyTier: tier,
+          bookingsCount: bookings.length,
+          bookings: bookingDetails
+        }
+      });
+
+    } catch (error) {
+      console.error('Error recalculating customer spend:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to recalculate customer spend: ' + error.message
       });
     }
   }

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M77 AG Tracker - Land Management System</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .access-section {
+            background: white;
+            border-radius: 12px;
+            padding: 50px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .access-section h2 {
+            color: #2d5016;
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .user-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .user-type-card {
+            background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .user-type-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(45, 80, 22, 0.15);
+            border-color: #2d5016;
+        }
+
+        .user-type-card.admin {
+            border-color: #d32f2f;
+        }
+
+        .user-type-card.admin:hover {
+            border-color: #d32f2f;
+            box-shadow: 0 12px 30px rgba(211, 47, 47, 0.15);
+        }
+
+        .user-type-card.landlord {
+            border-color: #1976d2;
+        }
+
+        .user-type-card.landlord:hover {
+            border-color: #1976d2;
+            box-shadow: 0 12px 30px rgba(25, 118, 210, 0.15);
+        }
+
+        .user-type-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .icon-admin {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+        }
+
+        .icon-landlord {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        }
+
+        .icon-producer {
+            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+        }
+
+        .user-type-card h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .user-type-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .badge-admin {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .badge-landlord {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-producer {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .user-type-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .user-type-card .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: #2d5016;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .user-type-card.admin .btn {
+            background: #d32f2f;
+        }
+
+        .user-type-card.landlord .btn {
+            background: #1976d2;
+        }
+
+        .user-type-card .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .features-section {
+            background: white;
+            border-radius: 12px;
+            padding: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .features-section h2 {
+            color: #2d5016;
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .features-section p {
+            text-align: center;
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #2d5016;
+        }
+
+        .feature-card h3 {
+            color: #2d5016;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            color: #666;
+        }
+
+        .feature-card li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .feature-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2d5016;
+            font-weight: bold;
+        }
+
+        .screenshots {
+            margin-top: 50px;
+            padding-top: 50px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .screenshots h3 {
+            color: #2d5016;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .screenshot-item {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .screenshot-item h4 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .screenshot-item p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .placeholder-screenshot {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            height: 300px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d5016;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .back-link a {
+            color: #2d5016;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 968px) {
+            .user-types,
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .screenshot-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>M77 AG Tracker</h1>
+        <p>Professional Farm Financial Management System</p>
+    </div>
+
+    <div class="container">
+        <div class="access-section">
+            <h2>Choose Your Access Level</h2>
+
+            <div class="user-types">
+                <div class="user-type-card admin" onclick="window.location.href='/land-management/login'">
+                    <div class="user-type-icon icon-admin">A</div>
+                    <span class="user-type-badge badge-admin">Farm Admin</span>
+                    <h3>M77 AG Admin</h3>
+                    <p>
+                        Full system control for M77 AG farm owners. Manage all operations, track expenses,
+                        view projections, and manage landlord relationships.
+                    </p>
+                    <a href="/land-management/login" class="btn">Admin Login</a>
+                </div>
+
+                <div class="user-type-card landlord" onclick="window.location.href='/land-management/login'">
+                    <div class="user-type-icon icon-landlord">L</div>
+                    <span class="user-type-badge badge-landlord">Invitation Only</span>
+                    <h3>Landlord Access</h3>
+                    <p>
+                        Secure portal for M77 AG landlords. View your parcels, track production,
+                        set payment preferences, and access your financial reports.
+                    </p>
+                    <a href="/land-management/login" class="btn">Landlord Login</a>
+                </div>
+
+                <div class="user-type-card" onclick="window.location.href='/land-management/signup'">
+                    <div class="user-type-icon icon-producer">P</div>
+                    <span class="user-type-badge badge-producer">Free Access</span>
+                    <h3>Producer Portal</h3>
+                    <p>
+                        Free tools for agricultural producers. Access farming calculators,
+                        cost estimators, and planning tools for your operation.
+                    </p>
+                    <a href="/land-management/signup" class="btn">Sign Up Free</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2>What's Inside the AG Tracker</h2>
+            <p>Comprehensive farm management tools designed for modern agriculture</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Financial Tracking</h3>
+                    <ul>
+                        <li>Real-time expense tracking</li>
+                        <li>Income and revenue management</li>
+                        <li>Bill tracking with due dates</li>
+                        <li>Payment status monitoring</li>
+                        <li>Cash flow projections</li>
+                        <li>Profitability analysis</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Production Management</h3>
+                    <ul>
+                        <li>Historical yield tracking</li>
+                        <li>Production projections</li>
+                        <li>Conservative/Expected/Optimistic scenarios</li>
+                        <li>Crop variety performance</li>
+                        <li>Multi-year comparisons</li>
+                        <li>Actual vs projected variance</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Field Management</h3>
+                    <ul>
+                        <li>Field and parcel tracking</li>
+                        <li>Crop rotation planning</li>
+                        <li>Soil type documentation</li>
+                        <li>Lease term management</li>
+                        <li>GeoJSON boundary support</li>
+                        <li>KML file integration</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Landlord Relations</h3>
+                    <ul>
+                        <li>Landlord payment tracking</li>
+                        <li>Balance management</li>
+                        <li>Payment schedule automation</li>
+                        <li>Landlord portal access</li>
+                        <li>Check preferences</li>
+                        <li>Transparent reporting</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Dynamic Reports</h3>
+                    <ul>
+                        <li>Filter by farm, field, year, crop</li>
+                        <li>Expense breakdown by category</li>
+                        <li>Multi-year performance trends</li>
+                        <li>Profitability by field</li>
+                        <li>Market strategy tracking</li>
+                        <li>Export to Excel/PDF</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Planning Tools</h3>
+                    <ul>
+                        <li>Budget projections</li>
+                        <li>Upcoming bills calendar</li>
+                        <li>Market price scenarios</li>
+                        <li>ROI calculations</li>
+                        <li>Break-even analysis</li>
+                        <li>Strategic planning</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="screenshots">
+                <h3>System Preview</h3>
+                <div class="screenshot-grid">
+                    <div class="screenshot-item">
+                        <div class="placeholder-screenshot">
+                            Dashboard Overview
+                        </div>
+                        <h4>Dashboard</h4>
+                        <p>
+                            Real-time financial overview with current year profit/loss, upcoming bills,
+                            and key performance indicators at a glance.
+                        </p>
+                    </div>
+
+                    <div class="screenshot-item">
+                        <div class="placeholder-screenshot">
+                            Financial Reports
+                        </div>
+                        <h4>Financial Reports</h4>
+                        <p>
+                            Dynamic filtering by farm, field, landlord, year, and crop. View expenses by category,
+                            track income sources, and analyze profitability.
+                        </p>
+                    </div>
+
+                    <div class="screenshot-item">
+                        <div class="placeholder-screenshot">
+                            Production Projections
+                        </div>
+                        <h4>Production Forecasting</h4>
+                        <p>
+                            Project future yields with conservative, expected, and optimistic scenarios.
+                            Compare projections against actual performance.
+                        </p>
+                    </div>
+
+                    <div class="screenshot-item">
+                        <div class="placeholder-screenshot">
+                            Field Management
+                        </div>
+                        <h4>Field Management</h4>
+                        <p>
+                            Track all fields and parcels with lease terms, crop history, and landlord information.
+                            Visualize field boundaries and performance metrics.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/services">&larr; Back to Services</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -28,6 +28,8 @@ const seasonPassController = {
       }
 
       // Validate pass type and set credits
+      // Pricing: 5-day = $750, 10-day = $1,400
+      // Season pass holders get access to BOTH properties (2,710 acres) for each credit
       let creditsTotal = 0;
       if (passType === '5-day') {
         creditsTotal = 5;

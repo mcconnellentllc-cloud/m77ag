@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account - M77 AG Hunting</title>
 
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c5530">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="M77 AG">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -370,9 +378,45 @@
     </div>
 
     <div class="container">
-        <div id="successBanner" class="success-banner" style="display: none;">
-            <h2>🎉 Welcome to M77 AG Season Pass!</h2>
-            <p>Your purchase was successful. Start booking your hunt dates below!</p>
+        <div id="successBanner" class="success-banner" style="display: none; position: relative;">
+            <button onclick="document.getElementById('successBanner').style.display='none';" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold;">&times;</button>
+
+            <div style="margin-bottom: 25px;">
+                <h2 style="font-size: 32px; margin-bottom: 10px;">🎉 Welcome to M77 AG Season Pass!</h2>
+                <p style="font-size: 18px;">Your purchase was successful! Start booking your hunt dates below.</p>
+            </div>
+
+            <!-- PWA Installation Instructions -->
+            <div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 25px; text-align: left; margin-top: 20px;">
+                <p style="margin: 0 0 15px 0; font-weight: bold; font-size: 18px; text-align: center;">
+                    📱 Add M77 AG to Your Home Screen for Quick Access!
+                </p>
+                <p style="margin: 0 0 20px 0; text-align: center; font-size: 15px;">
+                    Access your bookings, season pass, and property maps instantly:
+                </p>
+
+                <!-- iPhone Instructions -->
+                <div style="background: rgba(255,255,255,0.95); color: #333; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                    <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 iPhone/iPad:</p>
+                    <ol style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 14px;">
+                        <li>Tap the <strong>Share button</strong> (square with arrow pointing up) at the bottom of Safari</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                        <li>Tap <strong>"Add"</strong> in the top right</li>
+                        <li>M77 AG will now appear on your home screen like an app!</li>
+                    </ol>
+                </div>
+
+                <!-- Android Instructions -->
+                <div style="background: rgba(255,255,255,0.95); color: #333; padding: 15px; border-radius: 6px;">
+                    <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 Android:</p>
+                    <ol style="margin: 0; padding-left: 20px; line-height: 1.8; font-size: 14px;">
+                        <li>Tap the <strong>menu button</strong> (three dots) in Chrome</li>
+                        <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                        <li>Tap <strong>"Add"</strong> or <strong>"Install"</strong></li>
+                        <li>M77 AG will now appear on your home screen!</li>
+                    </ol>
+                </div>
+            </div>
         </div>
 
         <div class="welcome-header">
@@ -449,9 +493,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('success') === 'true') {
             document.getElementById('successBanner').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('successBanner').style.display = 'none';
-            }, 10000);
+            // Banner stays visible until user closes it (has close button)
         }
 
         async function loadAccount() {
@@ -571,6 +613,79 @@
         function logout() {
             localStorage.removeItem('userToken');
             window.location.href = '/season-pass.html';
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installBanner = document.createElement('div');
+        installBanner.id = 'installBanner';
+        installBanner.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #2c5530 0%, #3a6d3f 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 10000;
+            animation: slideUp 0.3s ease;
+        `;
+        installBanner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; font-size: 16px; margin-bottom: 5px;">📱 Add M77 AG to Your Home Screen</div>
+                    <div style="font-size: 13px; opacity: 0.9;">Quick access to your bookings and season pass!</div>
+                </div>
+                <button onclick="installPWA()" style="background: #d4af37; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    Install
+                </button>
+                <button onclick="dismissInstall()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
+                    ✕
+                </button>
+            </div>
+        `;
+
+        // Show install banner on successful purchase or when visiting account page
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show banner after 2 seconds
+            setTimeout(() => {
+                document.body.appendChild(installBanner);
+                installBanner.style.display = 'block';
+            }, 2000);
+        });
+
+        window.installPWA = async function() {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                console.log('PWA installed');
+            }
+
+            deferredPrompt = null;
+            installBanner.style.display = 'none';
+        };
+
+        window.dismissInstall = function() {
+            installBanner.style.display = 'none';
+            localStorage.setItem('pwaInstallDismissed', 'true');
+        };
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed'));
+            });
         }
 
         // Load account data on page load
