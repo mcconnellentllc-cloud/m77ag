@@ -174,7 +174,7 @@ function switchView(viewName) {
     // Refresh view data if needed
     if (viewName === 'analytics') {
         renderAnalytics();
-    } else if (viewName === 'rotation') {
+    } else if (viewName === 'master') {
         renderRotationTable();
     } else if (viewName === 'landlords') {
         renderLandlordsOverview();
