@@ -100,3 +100,107 @@ exports.isCustomer = (req, res, next) => {
 
   next();
 };
+
+// Middleware to check if user is admin or employee (for internal features)
+exports.isStaff = (req, res, next) => {
+  if (!req.userRole || !['admin', 'employee'].includes(req.userRole)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Staff access required.'
+    });
+  }
+
+  next();
+};
+
+// Middleware to check employee permissions for specific actions
+exports.canPerformAction = (action) => {
+  return async (req, res, next) => {
+    // Admins can do everything
+    if (req.userRole === 'admin') {
+      return next();
+    }
+
+    // For employees, check specific permissions
+    if (req.userRole === 'employee') {
+      const user = await User.findById(req.userId);
+
+      if (!user) {
+        return res.status(403).json({
+          success: false,
+          message: 'User not found.'
+        });
+      }
+
+      const permissions = user.employeePermissions || {};
+
+      // Map actions to permission fields
+      const permissionMap = {
+        'add_cattle': 'canAddCattleRecords',
+        'edit_cattle': 'canEditCattleRecords',
+        'delete_cattle': 'canDeleteCattleRecords',
+        'add_equipment_log': 'canAddEquipmentLogs',
+        'edit_equipment_log': 'canEditEquipmentLogs',
+        'add_transaction': 'canAddTransactions',
+        'edit_transaction': 'canEditTransactions',
+        'view_financials': 'canViewFinancials',
+        'view_reports': 'canViewReports'
+      };
+
+      const permissionField = permissionMap[action];
+
+      if (permissionField && permissions[permissionField] === true) {
+        return next();
+      }
+
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to perform this action.'
+      });
+    }
+
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied.'
+    });
+  };
+};
+
+// Middleware to check if employee has access to specific area
+exports.hasAreaAccess = (area) => {
+  return async (req, res, next) => {
+    // Admins can access everything
+    if (req.userRole === 'admin') {
+      return next();
+    }
+
+    // For employees, check area access
+    if (req.userRole === 'employee') {
+      const user = await User.findById(req.userId);
+
+      if (!user) {
+        return res.status(403).json({
+          success: false,
+          message: 'User not found.'
+        });
+      }
+
+      const accessAreas = user.employeePermissions?.accessAreas || [];
+
+      if (accessAreas.includes(area) || accessAreas.length === 0) {
+        // Empty array means access to all areas
+        return next();
+      }
+
+      return res.status(403).json({
+        success: false,
+        message: `You do not have access to the ${area} section.`
+      });
+    }
+
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied.'
+    });
+  };
+};
