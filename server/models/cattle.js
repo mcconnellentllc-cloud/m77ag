@@ -26,6 +26,47 @@ const cattleSchema = new mongoose.Schema({
     trim: true
   },
 
+  // M77 Custom Fields
+  owner: {
+    type: String,
+    default: 'M77',
+    trim: true
+  },
+  tagColor: {
+    type: String,
+    enum: ['Yellow', 'Blue', 'Green', 'White', 'Purple', 'Orange', 'Red', 'Pink', 'Black', 'Other'],
+    trim: true
+  },
+  calvingGroup: {
+    type: String,
+    enum: ['SPRING', 'FALL', 'YEAR_ROUND'],
+    default: 'SPRING'
+  },
+
+  // Annual Calving Records (tracks production by year)
+  annualCalvingRecords: [{
+    year: {
+      type: Number,
+      required: true
+    },
+    hadCalf: {
+      type: Boolean,
+      default: false
+    },
+    calfSurvived: {
+      type: Boolean,
+      default: false
+    },
+    calfTag: String,
+    calfSex: {
+      type: String,
+      enum: ['bull', 'heifer']
+    },
+    weaningWeight: Number,  // Calf's weaning weight
+    weaningDate: Date,
+    notes: String
+  }],
+
   // USDA Official Identification (for government programs)
   usda: {
     officialTagNumber: {

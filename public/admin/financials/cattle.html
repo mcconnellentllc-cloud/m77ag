@@ -2421,30 +2421,107 @@
             let errors = 0;
 
             for (const row of importData) {
-                // Map CSV columns to our model
-                const cattleData = {
-                    tagNumber: row.tagNumber || row.tag || row.Tag || row['Tag Number'],
-                    name: row.name || row.Name,
-                    type: mapType(row.type || row.Type || row.sex || row.Sex),
-                    breed: row.breed || row.Breed,
-                    birthDate: parseDate(row.birthDate || row.BirthDate || row['Birth Date'] || row.dob || row.DOB),
-                    birthWeight: parseInt(row.birthWeight || row.BirthWeight || row['Birth Weight']) || undefined,
-                    dam: { tagNumber: row.damTag || row.dam || row.Dam || row['Dam Tag'] },
-                    sire: { tagNumber: row.sireTag || row.sire || row.Sire || row['Sire Tag'] },
-                    currentPasture: row.pasture || row.Pasture || row.location,
-                    color: row.color || row.Color,
-                    status: mapStatus(row.status || row.Status, includeArchived),
-                    estimatedValue: parseFloat(row.value || row.Value || row.estimatedValue) || undefined
-                };
+                // Detect M77 format (has TAG # and TAG COLOR columns)
+                const isM77Format = row['TAG #'] !== undefined || row['TAG COLOR'] !== undefined;
 
-                if (!cattleData.tagNumber || !cattleData.type || !cattleData.birthDate) {
-                    errors++;
-                    continue;
+                let cattleData;
+
+                if (isM77Format) {
+                    // M77 Spreadsheet Format
+                    const tagNumber = row['TAG #'] || row['TAG#'] || row.tagNumber;
+                    const birthYear = parseInt(row['Birth Year'] || row['BirthYear']);
+                    const birthDate = birthYear ? `${birthYear}-01-01` : null;
+
+                    // Build calving records from year columns
+                    const annualCalvingRecords = [];
+
+                    // 2024 calving - "31" means had calf that survived to weaning
+                    const calf2024 = row['2024 CALF'] || row['2024CALF'];
+                    if (calf2024 && calf2024 !== '0' && calf2024 !== '') {
+                        annualCalvingRecords.push({
+                            year: 2024,
+                            hadCalf: true,
+                            calfSurvived: true,
+                            notes: 'Calf survived to weaning'
+                        });
+                    }
+
+                    // 2023 weaning weight
+                    const ww2023 = parseInt(row['2023 WW'] || row['2023WW']);
+                    if (ww2023) {
+                        annualCalvingRecords.push({
+                            year: 2023,
+                            hadCalf: true,
+                            calfSurvived: true,
+                            weaningWeight: ww2023
+                        });
+                    }
+
+                    // 2022 calf
+                    const calf2022 = row['2022 CALF'] || row['2022CALF'];
+                    if (calf2022 && calf2022 !== '0' && calf2022 !== '') {
+                        annualCalvingRecords.push({
+                            year: 2022,
+                            hadCalf: true,
+                            calfSurvived: true
+                        });
+                    }
+
+                    cattleData = {
+                        tagNumber: String(tagNumber),
+                        type: 'cow',  // All are breeding cows
+                        breed: 'Angus',  // M77 Angus
+                        owner: row['OWNER'] || row.OWNER || 'M77',
+                        tagColor: mapTagColor(row['TAG COLOR'] || row['TAGCOLOR']),
+                        calvingGroup: mapCalvingGroup(row['GROUP'] || row.GROUP),
+                        birthDate: birthDate,
+                        dam: { tagNumber: row['DAM TAG'] || row['DAMTAG'] || undefined },
+                        sire: { tagNumber: row['SIRE'] || row.SIRE || undefined },
+                        purchaseInfo: {
+                            price: parseFloat(row['PUR $'] || row['PUR$']) || undefined
+                        },
+                        birthWeight: parseInt(row['BW']) || undefined,
+                        status: 'active',
+                        annualCalvingRecords: annualCalvingRecords.length > 0 ? annualCalvingRecords : undefined
+                    };
+
+                    // Only require tag number for M77 format
+                    if (!cattleData.tagNumber) {
+                        errors++;
+                        continue;
+                    }
+
+                    // If no birth date, estimate based on being a mature cow (assume 5 years old)
+                    if (!cattleData.birthDate) {
+                        cattleData.birthDate = `${new Date().getFullYear() - 5}-01-01`;
+                    }
+
+                } else {
+                    // Generic CSV format
+                    cattleData = {
+                        tagNumber: row.tagNumber || row.tag || row.Tag || row['Tag Number'],
+                        name: row.name || row.Name,
+                        type: mapType(row.type || row.Type || row.sex || row.Sex),
+                        breed: row.breed || row.Breed,
+                        birthDate: parseDate(row.birthDate || row.BirthDate || row['Birth Date'] || row.dob || row.DOB),
+                        birthWeight: parseInt(row.birthWeight || row.BirthWeight || row['Birth Weight']) || undefined,
+                        dam: { tagNumber: row.damTag || row.dam || row.Dam || row['Dam Tag'] },
+                        sire: { tagNumber: row.sireTag || row.sire || row.Sire || row['Sire Tag'] },
+                        currentPasture: row.pasture || row.Pasture || row.location,
+                        color: row.color || row.Color,
+                        status: mapStatus(row.status || row.Status, includeArchived),
+                        estimatedValue: parseFloat(row.value || row.Value || row.estimatedValue) || undefined
+                    };
+
+                    if (!cattleData.tagNumber || !cattleData.type || !cattleData.birthDate) {
+                        errors++;
+                        continue;
+                    }
                 }
 
                 // Check for duplicates
                 if (skipDuplicates) {
-                    const exists = allCattle.find(c => c.tagNumber === cattleData.tagNumber);
+                    const exists = allCattle.find(c => c.tagNumber === String(cattleData.tagNumber));
                     if (exists) {
                         skipped++;
                         continue;
@@ -2461,9 +2538,11 @@
                     if (data.success) {
                         imported++;
                     } else {
+                        console.error('Import error:', data.message, cattleData);
                         errors++;
                     }
                 } catch (e) {
+                    console.error('Import exception:', e);
                     errors++;
                 }
             }
@@ -2473,15 +2552,39 @@
             const content = document.getElementById('importResultsContent');
             content.innerHTML = `
                 <div style="padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                    <p><strong>Imported:</strong> ${imported} animals</p>
+                    <p><strong>Imported:</strong> ${imported} cows</p>
                     <p><strong>Skipped (duplicates):</strong> ${skipped}</p>
                     <p><strong>Errors:</strong> ${errors}</p>
                 </div>
             `;
             results.style.display = 'block';
 
-            showToast(`Imported ${imported} animals`);
+            showToast(`Imported ${imported} cows`);
             loadCattle();
+        }
+
+        function mapTagColor(color) {
+            if (!color) return undefined;
+            const colorMap = {
+                'Yellow': 'Yellow', 'yellow': 'Yellow', 'YELLOW': 'Yellow',
+                'Blue': 'Blue', 'blue': 'Blue', 'BLUE': 'Blue',
+                'Green': 'Green', 'green': 'Green', 'GREEN': 'Green',
+                'White': 'White', 'white': 'White', 'WHITE': 'White',
+                'Purple': 'Purple', 'purple': 'Purple', 'PURPLE': 'Purple',
+                'Orange': 'Orange', 'orange': 'Orange', 'ORANGE': 'Orange',
+                'Red': 'Red', 'red': 'Red', 'RED': 'Red',
+                'Pink': 'Pink', 'pink': 'Pink', 'PINK': 'Pink',
+                'Black': 'Black', 'black': 'Black', 'BLACK': 'Black'
+            };
+            return colorMap[color] || 'Other';
+        }
+
+        function mapCalvingGroup(group) {
+            if (!group) return 'SPRING';
+            const upper = group.toUpperCase();
+            if (upper.includes('SPRING')) return 'SPRING';
+            if (upper.includes('FALL')) return 'FALL';
+            return 'YEAR_ROUND';
         }
 
         function mapType(type) {
@@ -2508,6 +2611,10 @@
 
         function parseDate(dateStr) {
             if (!dateStr) return null;
+            // Try year only (like "2011")
+            if (/^\d{4}$/.test(dateStr)) {
+                return `${dateStr}-01-01`;
+            }
             // Try various formats
             const date = new Date(dateStr);
             if (!isNaN(date)) return date.toISOString().split('T')[0];
