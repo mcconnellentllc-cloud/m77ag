@@ -1257,8 +1257,19 @@
                             <input type="text" id="tagNumber" required placeholder="e.g., 2401">
                         </div>
                         <div class="form-group">
-                            <label>Name (optional)</label>
-                            <input type="text" id="cattleName" placeholder="e.g., Bessie">
+                            <label>Tag Color</label>
+                            <select id="cattleTagColor">
+                                <option value="">Select color...</option>
+                                <option value="Yellow">Yellow</option>
+                                <option value="Blue">Blue</option>
+                                <option value="Green">Green</option>
+                                <option value="White">White</option>
+                                <option value="Purple">Purple</option>
+                                <option value="Orange">Orange</option>
+                                <option value="Red">Red</option>
+                                <option value="Pink">Pink</option>
+                                <option value="Black">Black</option>
+                            </select>
                         </div>
                     </div>
 
@@ -1278,7 +1289,7 @@
                         </div>
                         <div class="form-group">
                             <label>Breed</label>
-                            <input type="text" id="breed" placeholder="e.g., Angus, Hereford">
+                            <input type="text" id="breed" placeholder="e.g., Angus" value="Angus">
                         </div>
                     </div>
 
@@ -1306,12 +1317,18 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Current Pasture</label>
-                            <input type="text" id="currentPasture" placeholder="e.g., North 40">
+                            <label>Owner</label>
+                            <input type="text" id="cattleOwner" placeholder="e.g., M77" value="M77">
                         </div>
                         <div class="form-group">
-                            <label>Color/Markings</label>
-                            <input type="text" id="color" placeholder="e.g., Black, Red with white face">
+                            <label>Calving Group</label>
+                            <select id="cattleCalvingGroup">
+                                <option value="SPRING">Spring</option>
+                                <option value="FALL">Fall</option>
+                                <option value="YEAR_ROUND">Year Round</option>
+                            </select>
+                        </div>
+                    </div>
                         </div>
                     </div>
 
@@ -3935,9 +3952,9 @@
 
             const cattleData = {
                 tagNumber: document.getElementById('tagNumber').value,
-                name: document.getElementById('cattleName').value || undefined,
+                tagColor: document.getElementById('cattleTagColor').value || undefined,
                 type: document.getElementById('cattleType').value,
-                breed: document.getElementById('breed').value || undefined,
+                breed: document.getElementById('breed').value || 'Angus',
                 birthDate: document.getElementById('birthDate').value,
                 birthWeight: document.getElementById('birthWeight').value ? parseInt(document.getElementById('birthWeight').value) : undefined,
                 dam: {
@@ -3946,8 +3963,8 @@
                 sire: {
                     tagNumber: document.getElementById('sireTag').value || undefined
                 },
-                currentPasture: document.getElementById('currentPasture').value || undefined,
-                color: document.getElementById('color').value || undefined,
+                owner: document.getElementById('cattleOwner').value || 'M77',
+                calvingGroup: document.getElementById('cattleCalvingGroup').value || 'SPRING',
                 notes: document.getElementById('cattleNotes').value || undefined
             };
 
