@@ -338,4 +338,172 @@ router.post('/:id/calving', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/cattle/:id/offspring
+ * Get all offspring of a cow or bull
+ */
+router.get('/:id/offspring', async (req, res) => {
+  try {
+    const offspring = await Cattle.getOffspring(req.params.id);
+    res.json({ success: true, data: offspring });
+  } catch (error) {
+    console.error('Error fetching offspring:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/:id/production
+ * Get production report for a cow
+ */
+router.get('/:id/production', async (req, res) => {
+  try {
+    const report = await Cattle.getProductionReport(req.params.id);
+    if (!report) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error fetching production report:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/:id/progeny
+ * Get progeny report for a bull
+ */
+router.get('/:id/progeny', async (req, res) => {
+  try {
+    const report = await Cattle.getBullProgenyReport(req.params.id);
+    if (!report) {
+      return res.status(404).json({ success: false, message: 'Bull not found' });
+    }
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error fetching progeny report:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/genetics/summary
+ * Get genetics summary for the herd
+ */
+router.get('/genetics/summary', async (req, res) => {
+  try {
+    const summary = await Cattle.getGeneticsSummary();
+    res.json({ success: true, data: summary });
+  } catch (error) {
+    console.error('Error fetching genetics summary:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/genetics
+ * Add or update genetic test results
+ */
+router.post('/:id/genetics', async (req, res) => {
+  try {
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    // Update genetics object
+    cattle.genetics = {
+      ...cattle.genetics,
+      ...req.body,
+      tested: true
+    };
+    cattle.lastModifiedBy = req.userId;
+
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Genetic data updated' });
+  } catch (error) {
+    console.error('Error updating genetics:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/annual-calving
+ * Add annual calving record with weaning info
+ */
+router.post('/:id/annual-calving', async (req, res) => {
+  try {
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    const { year, hadCalf, calfSurvived, calfTag, calfSex, weaningWeight, weaningDate, sireTag, notes } = req.body;
+
+    // Check if year record already exists
+    const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === year);
+
+    const record = {
+      year,
+      hadCalf: hadCalf !== false,
+      calfSurvived: calfSurvived !== false,
+      calfTag,
+      calfSex,
+      weaningWeight: weaningWeight ? parseInt(weaningWeight) : undefined,
+      weaningDate: weaningDate ? new Date(weaningDate) : undefined,
+      sireTag,
+      notes
+    };
+
+    if (existingIndex >= 0) {
+      // Update existing
+      cattle.annualCalvingRecords[existingIndex] = record;
+    } else {
+      // Add new
+      cattle.annualCalvingRecords.push(record);
+    }
+
+    cattle.lastModifiedBy = req.userId;
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Calving record updated' });
+  } catch (error) {
+    console.error('Error updating calving record:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/link-offspring
+ * Link an offspring to this parent (updates offspringIds array)
+ */
+router.post('/:id/link-offspring', async (req, res) => {
+  try {
+    const { offspringId } = req.body;
+
+    const parent = await Cattle.findById(req.params.id);
+    if (!parent) {
+      return res.status(404).json({ success: false, message: 'Parent not found' });
+    }
+
+    const offspring = await Cattle.findById(offspringId);
+    if (!offspring) {
+      return res.status(404).json({ success: false, message: 'Offspring not found' });
+    }
+
+    // Add to parent's offspring array if not already there
+    if (!parent.offspringIds.includes(offspringId)) {
+      parent.offspringIds.push(offspringId);
+      parent.lastModifiedBy = req.userId;
+      await parent.save();
+    }
+
+    res.json({ success: true, data: parent, message: 'Offspring linked' });
+  } catch (error) {
+    console.error('Error linking offspring:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

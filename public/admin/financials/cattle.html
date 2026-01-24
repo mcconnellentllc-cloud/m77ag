@@ -1224,6 +1224,8 @@
             <div class="modal-body" style="padding: 0;">
                 <div class="detail-tabs">
                     <button class="tab-btn active" onclick="switchTab('basic')">Basic Info</button>
+                    <button class="tab-btn" onclick="switchTab('genetics')">Genetics</button>
+                    <button class="tab-btn" onclick="switchTab('production')">Production</button>
                     <button class="tab-btn" onclick="switchTab('usda')">USDA/ID</button>
                     <button class="tab-btn" onclick="switchTab('lrp')">LRP Insurance</button>
                     <button class="tab-btn" onclick="switchTab('erp')">ERP/Disaster</button>
@@ -1520,6 +1522,225 @@
                         <h4 style="margin-bottom: 15px;">Health History</h4>
                         <div id="healthHistoryList" style="max-height: 150px; overflow-y: auto; border: 1px solid #e8e6e3; border-radius: 8px; padding: 10px;">
                             <p style="color: #666;">No health records</p>
+                        </div>
+                    </div>
+
+                    <!-- Genetics Tab -->
+                    <div id="tab-genetics" class="tab-panel">
+                        <h4 style="margin-bottom: 15px; color: #6a1b9a;">DNA & Genetic Testing</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tested?</label>
+                                <select id="detailGenTested">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Test Date</label>
+                                <input type="date" id="detailGenTestDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Lab</label>
+                                <select id="detailGenLab">
+                                    <option value="">Select Lab</option>
+                                    <option value="Neogen">Neogen</option>
+                                    <option value="Zoetis">Zoetis (Clarifide)</option>
+                                    <option value="GeneSeek">GeneSeek</option>
+                                    <option value="UC_Davis">UC Davis</option>
+                                    <option value="Texas_AM">Texas A&M</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sample Type</label>
+                                <select id="detailGenSampleType">
+                                    <option value="">Select Type</option>
+                                    <option value="hair">Hair (TSU)</option>
+                                    <option value="blood">Blood</option>
+                                    <option value="tissue">Tissue</option>
+                                    <option value="semen">Semen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sample/Case ID</label>
+                                <input type="text" id="detailGenSampleId" placeholder="Lab sample number">
+                            </div>
+                            <div class="form-group">
+                                <label>DNA Profile Number</label>
+                                <input type="text" id="detailGenDnaProfile" placeholder="Registration DNA#">
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 20px 0 15px; color: #6a1b9a;">Parentage Verification</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Parentage Verified?</label>
+                                <select id="detailGenParentage">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sire Verified?</label>
+                                <select id="detailGenSireVerified">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sire Confidence %</label>
+                                <input type="number" id="detailGenSireConf" min="0" max="100" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Dam Verified?</label>
+                                <select id="detailGenDamVerified">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 20px 0 15px; color: #6a1b9a;">Genomic EPDs</h4>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">CED</label>
+                                <input type="number" id="detailEpdCed" step="0.1" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">BW</label>
+                                <input type="number" id="detailEpdBw" step="0.1" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">WW</label>
+                                <input type="number" id="detailEpdWw" step="0.1" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">YW</label>
+                                <input type="number" id="detailEpdYw" step="0.1" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">Milk</label>
+                                <input type="number" id="detailEpdMilk" step="0.1" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">Marb</label>
+                                <input type="number" id="detailEpdMarb" step="0.01" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">RE</label>
+                                <input type="number" id="detailEpdRe" step="0.01" style="padding: 6px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 5px;">
+                                <label style="font-size: 11px;">$B</label>
+                                <input type="number" id="detailEpdB" step="1" style="padding: 6px;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Genetic Notes</label>
+                            <textarea id="detailGenNotes" rows="2" placeholder="Test results, conditions, carriers, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Production Tab -->
+                    <div id="tab-production" class="tab-panel">
+                        <h4 style="margin-bottom: 15px; color: #2e7d32;">Production Summary</h4>
+                        <div id="productionSummary" style="background: #f5f5f5; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;">
+                                <div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #2e7d32;" id="prodTotalCalves">0</div>
+                                    <div style="font-size: 12px; color: #666;">Total Calves</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #1976d2;" id="prodCalvesWeaned">0</div>
+                                    <div style="font-size: 12px; color: #666;">Weaned</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #f57c00;" id="prodWeanRate">0%</div>
+                                    <div style="font-size: 12px; color: #666;">Wean Rate</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #7b1fa2;" id="prodAvgWW">0</div>
+                                    <div style="font-size: 12px; color: #666;">Avg WW (lbs)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style="margin-bottom: 15px; color: #2e7d32;">Annual Calving Records</h4>
+                        <div id="annualCalvingList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e8e6e3; border-radius: 8px; margin-bottom: 15px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead style="background: #f5f5f5; position: sticky; top: 0;">
+                                    <tr>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Year</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Calf?</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Calf Tag</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Sex</th>
+                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">WW</th>
+                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Sire</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="annualCalvingBody">
+                                    <tr><td colspan="6" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4 style="margin-bottom: 15px; color: #2e7d32;">Add/Update Calving Record</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year</label>
+                                <input type="number" id="calvingYear" min="2010" max="2030" value="2024">
+                            </div>
+                            <div class="form-group">
+                                <label>Had Calf?</label>
+                                <select id="calvingHadCalf">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No (Open)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Calf Tag #</label>
+                                <input type="text" id="calvingCalfTag" placeholder="Calf's tag number">
+                            </div>
+                            <div class="form-group">
+                                <label>Calf Sex</label>
+                                <select id="calvingCalfSex">
+                                    <option value="">Unknown</option>
+                                    <option value="bull">Bull</option>
+                                    <option value="heifer">Heifer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Weaning Weight (lbs)</label>
+                                <input type="number" id="calvingWW" min="0" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Sire Tag/Name</label>
+                                <input type="text" id="calvingSire" placeholder="Sire tag or name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="calvingCalfSurvived" checked>
+                                Calf survived to weaning
+                            </label>
+                        </div>
+                        <button class="btn-secondary" onclick="addCalvingRecord()">Save Calving Record</button>
+
+                        <h4 style="margin: 25px 0 15px; color: #2e7d32;">Offspring</h4>
+                        <div id="offspringList" style="max-height: 150px; overflow-y: auto; border: 1px solid #e8e6e3; border-radius: 8px; padding: 10px;">
+                            <p style="color: #666;">No offspring records</p>
                         </div>
                     </div>
                 </div>
@@ -2199,6 +2420,35 @@
             renderWeightHistory(cattle.weightRecords || []);
             renderHealthHistory(cattle.healthRecords || []);
 
+            // Genetics
+            document.getElementById('detailGenTested').value = cattle.genetics?.tested ? 'true' : 'false';
+            document.getElementById('detailGenTestDate').value = cattle.genetics?.testDate ? cattle.genetics.testDate.split('T')[0] : '';
+            document.getElementById('detailGenLab').value = cattle.genetics?.lab || '';
+            document.getElementById('detailGenSampleType').value = cattle.genetics?.sampleType || '';
+            document.getElementById('detailGenSampleId').value = cattle.genetics?.sampleId || '';
+            document.getElementById('detailGenDnaProfile').value = cattle.genetics?.dnaProfileNumber || '';
+            document.getElementById('detailGenParentage').value = cattle.genetics?.parentageVerified ? 'true' : 'false';
+            document.getElementById('detailGenSireVerified').value = cattle.genetics?.sireVerified ? 'true' : 'false';
+            document.getElementById('detailGenSireConf').value = cattle.genetics?.sireConfidence || '';
+            document.getElementById('detailGenDamVerified').value = cattle.genetics?.damVerified ? 'true' : 'false';
+            document.getElementById('detailGenNotes').value = cattle.genetics?.notes || '';
+
+            // Genomic EPDs
+            const epds = cattle.genetics?.genomicEPDs || {};
+            document.getElementById('detailEpdCed').value = epds.ced || '';
+            document.getElementById('detailEpdBw').value = epds.bw || '';
+            document.getElementById('detailEpdWw').value = epds.ww || '';
+            document.getElementById('detailEpdYw').value = epds.yw || '';
+            document.getElementById('detailEpdMilk').value = epds.milk || '';
+            document.getElementById('detailEpdMarb').value = epds.marb || '';
+            document.getElementById('detailEpdRe').value = epds.re || '';
+            document.getElementById('detailEpdB').value = epds.$b || '';
+
+            // Production
+            renderProductionSummary(cattle);
+            renderAnnualCalving(cattle.annualCalvingRecords || []);
+            loadOffspring(cattle._id);
+
             // Reset to first tab
             switchTab('basic');
             openModal('detailModal');
@@ -2248,6 +2498,129 @@
                     ${r.product ? `<br><span style="color: #666;">${r.product} ${r.dosage || ''}</span>` : ''}
                 </div>
             `).join('');
+        }
+
+        function renderProductionSummary(cattle) {
+            const records = cattle.annualCalvingRecords || [];
+            const totalCalves = records.filter(r => r.hadCalf).length;
+            const calvesWeaned = records.filter(r => r.calfSurvived).length;
+            const weightsRecorded = records.filter(r => r.weaningWeight > 0);
+            const avgWW = weightsRecorded.length > 0
+                ? Math.round(weightsRecorded.reduce((sum, r) => sum + r.weaningWeight, 0) / weightsRecorded.length)
+                : 0;
+            const weanRate = totalCalves > 0 ? Math.round((calvesWeaned / totalCalves) * 100) : 0;
+
+            document.getElementById('prodTotalCalves').textContent = totalCalves;
+            document.getElementById('prodCalvesWeaned').textContent = calvesWeaned;
+            document.getElementById('prodWeanRate').textContent = weanRate + '%';
+            document.getElementById('prodAvgWW').textContent = avgWW || '-';
+        }
+
+        function renderAnnualCalving(records) {
+            const tbody = document.getElementById('annualCalvingBody');
+            if (!records.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>';
+                return;
+            }
+            const sorted = [...records].sort((a, b) => b.year - a.year);
+            tbody.innerHTML = sorted.map(r => `
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${r.year}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">
+                        ${r.hadCalf ? '<span style="color: #2e7d32;">Yes</span>' : '<span style="color: #c62828;">No</span>'}
+                    </td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${r.calfTag || '-'}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${r.calfSex || '-'}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${r.weaningWeight || '-'}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${r.sireTag || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadOffspring(cattleId) {
+            const container = document.getElementById('offspringList');
+            try {
+                const response = await fetch(`/api/cattle/${cattleId}/offspring`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(o => `
+                        <div style="padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${o.tagNumber}</strong> ${o.name ? '(' + o.name + ')' : ''}
+                                <span style="color: #666; font-size: 12px; margin-left: 8px;">${o.type}</span>
+                            </div>
+                            <div style="font-size: 12px; color: #666;">
+                                ${o.birthDate ? new Date(o.birthDate).toLocaleDateString() : ''}
+                                ${o.birthWeight ? ' - ' + o.birthWeight + ' lbs' : ''}
+                            </div>
+                            <span style="padding: 2px 8px; border-radius: 4px; font-size: 11px; background: ${o.status === 'active' ? '#e8f5e9' : '#ffebee'}; color: ${o.status === 'active' ? '#2e7d32' : '#c62828'};">
+                                ${o.status}
+                            </span>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p style="color: #666; padding: 10px;">No offspring records</p>';
+                }
+            } catch (error) {
+                console.error('Error loading offspring:', error);
+                container.innerHTML = '<p style="color: #c62828; padding: 10px;">Error loading offspring</p>';
+            }
+        }
+
+        async function addCalvingRecord() {
+            if (!currentDetailCattle) {
+                showToast('No animal selected', 'error');
+                return;
+            }
+
+            const year = parseInt(document.getElementById('calvingYear').value);
+            const hadCalf = document.getElementById('calvingHadCalf').value === 'true';
+            const calfTag = document.getElementById('calvingCalfTag').value;
+            const calfSex = document.getElementById('calvingCalfSex').value;
+            const weaningWeight = document.getElementById('calvingWW').value;
+            const sireTag = document.getElementById('calvingSire').value;
+            const calfSurvived = document.getElementById('calvingCalfSurvived').checked;
+
+            if (!year) {
+                showToast('Year is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/cattle/${currentDetailCattle._id}/annual-calving`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({
+                        year,
+                        hadCalf,
+                        calfSurvived: hadCalf && calfSurvived,
+                        calfTag: calfTag || undefined,
+                        calfSex: calfSex || undefined,
+                        weaningWeight: weaningWeight || undefined,
+                        sireTag: sireTag || undefined
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Calving record saved');
+                    currentDetailCattle = data.data;
+                    renderProductionSummary(data.data);
+                    renderAnnualCalving(data.data.annualCalvingRecords || []);
+                    // Clear form
+                    document.getElementById('calvingCalfTag').value = '';
+                    document.getElementById('calvingCalfSex').value = '';
+                    document.getElementById('calvingWW').value = '';
+                    document.getElementById('calvingSire').value = '';
+                } else {
+                    showToast(data.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving calving record:', error);
+                showToast('Error saving calving record', 'error');
+            }
         }
 
         function addGrazingRecord() {
@@ -2331,6 +2704,30 @@
                     claimNumber: document.getElementById('detailErpClaimNumber').value || undefined,
                     claimAmount: parseFloat(document.getElementById('detailErpClaimAmount').value) || undefined,
                     paymentReceived: parseFloat(document.getElementById('detailErpPayment').value) || undefined
+                },
+
+                genetics: {
+                    tested: document.getElementById('detailGenTested').value === 'true',
+                    testDate: document.getElementById('detailGenTestDate').value || undefined,
+                    lab: document.getElementById('detailGenLab').value || undefined,
+                    sampleType: document.getElementById('detailGenSampleType').value || undefined,
+                    sampleId: document.getElementById('detailGenSampleId').value || undefined,
+                    dnaProfileNumber: document.getElementById('detailGenDnaProfile').value || undefined,
+                    parentageVerified: document.getElementById('detailGenParentage').value === 'true',
+                    sireVerified: document.getElementById('detailGenSireVerified').value === 'true',
+                    sireConfidence: parseFloat(document.getElementById('detailGenSireConf').value) || undefined,
+                    damVerified: document.getElementById('detailGenDamVerified').value === 'true',
+                    notes: document.getElementById('detailGenNotes').value || undefined,
+                    genomicEPDs: {
+                        ced: parseFloat(document.getElementById('detailEpdCed').value) || undefined,
+                        bw: parseFloat(document.getElementById('detailEpdBw').value) || undefined,
+                        ww: parseFloat(document.getElementById('detailEpdWw').value) || undefined,
+                        yw: parseFloat(document.getElementById('detailEpdYw').value) || undefined,
+                        milk: parseFloat(document.getElementById('detailEpdMilk').value) || undefined,
+                        marb: parseFloat(document.getElementById('detailEpdMarb').value) || undefined,
+                        re: parseFloat(document.getElementById('detailEpdRe').value) || undefined,
+                        $b: parseFloat(document.getElementById('detailEpdB').value) || undefined
+                    }
                 }
             };
 
