@@ -147,6 +147,10 @@
             margin-top: 20px;
         }
 
+        .card-stats.four-col {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
         .stat-item {
             text-align: center;
         }
@@ -372,6 +376,38 @@
         </div>
 
         <div class="business-grid">
+            <!-- FINANCIALS - Primary Card -->
+            <a href="/admin/financials" class="business-card" style="grid-column: span 2;">
+                <div class="card-header" style="background: linear-gradient(135deg, #1a5f2a 0%, #2d8f4a 100%);">
+                    <div class="card-icon">$</div>
+                    <div class="card-title">Financial Command Center</div>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Complete farm financial management - track profitability by enterprise, manage expenses, monitor cash flow, and generate reports. Your all-in-one dashboard for Crops, Cattle, Equipment, and Capital Investments.
+                    </p>
+                    <div class="card-stats four-col">
+                        <div class="stat-item">
+                            <div class="stat-number" id="ytdProfit">--</div>
+                            <div class="stat-label">YTD Profit</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="headCount">--</div>
+                            <div class="stat-label">Head Count</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="cropAcres">--</div>
+                            <div class="stat-label">Crop Acres</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="assetValue">--</div>
+                            <div class="stat-label">Asset Value</div>
+                        </div>
+                    </div>
+                    <div class="view-dashboard-btn">Enter Financial Dashboard</div>
+                </div>
+            </a>
+
             <a href="/admin/hunting-bookings" class="business-card">
                 <div class="card-header">
                     <div class="card-icon">Hunting</div>
@@ -452,18 +488,6 @@
                     <div class="view-dashboard-btn">View Dashboard</div>
                 </div>
             </a>
-
-            <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
-                <div class="card-header" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
-                    <div class="card-icon">Cattle</div>
-                    <div class="card-title">Our Farm Operations</div>
-                </div>
-                <div class="card-body">
-                    <p class="card-description">
-                        Coming soon - Track cattle inventory, monitor feed and health records, manage pasture rotations.
-                    </p>
-                </div>
-            </div>
 
             <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
                 <div class="card-header" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">

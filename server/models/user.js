@@ -26,8 +26,45 @@ const userSchema = new mongoose.Schema({
   // User Type
   role: {
     type: String,
-    enum: ['customer', 'admin'],
+    enum: ['customer', 'admin', 'employee'],
     default: 'customer'
+  },
+
+  // Employee-specific permissions (when role is 'employee')
+  employeePermissions: {
+    // Data Entry Permissions
+    canAddCattleRecords: { type: Boolean, default: true },
+    canEditCattleRecords: { type: Boolean, default: false },
+    canDeleteCattleRecords: { type: Boolean, default: false },
+
+    canAddEquipmentLogs: { type: Boolean, default: true },
+    canEditEquipmentLogs: { type: Boolean, default: false },
+
+    canAddTransactions: { type: Boolean, default: false },
+    canEditTransactions: { type: Boolean, default: false },
+
+    canViewFinancials: { type: Boolean, default: true },
+    canViewReports: { type: Boolean, default: true },
+
+    // Specific access areas
+    accessAreas: [{
+      type: String,
+      enum: ['cattle', 'crops', 'equipment', 'capital', 'hunting', 'rentals']
+    }]
+  },
+
+  // Employee Details
+  employeeDetails: {
+    position: String,
+    hireDate: Date,
+    supervisor: String,
+    department: String,
+    phone: String,
+    emergencyContact: {
+      name: String,
+      phone: String,
+      relationship: String
+    }
   },
 
   // Profile
