@@ -55,6 +55,7 @@ const landlordRoutes = require('./routes/landlord');
 const farmerRoutes = require('./routes/farmer');
 const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
+const cattleRoutes = require('./routes/cattle');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -76,6 +77,7 @@ app.use('/api/landlord', landlordRoutes);
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
+app.use('/api/cattle', cattleRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -122,6 +124,27 @@ app.get('/admin/testimonials', (req, res) => {
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+// Financial Command Center routes
+app.get('/admin/financials', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials.html'));
+});
+
+app.get('/admin/financials/crops', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/crops.html'));
+});
+
+app.get('/admin/financials/cattle', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/cattle.html'));
+});
+
+app.get('/admin/financials/equipment', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/equipment.html'));
+});
+
+app.get('/admin/financials/capital', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/capital.html'));
 });
 
 // User routes
