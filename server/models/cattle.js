@@ -326,7 +326,7 @@ const cattleSchema = new mongoose.Schema({
   // Classification
   type: {
     type: String,
-    enum: ['cow', 'bull', 'heifer', 'steer', 'calf', 'bred_heifer'],
+    enum: ['cow', 'bull', 'heifer', 'steer', 'calf', 'bred_heifer', 'fat'],
     required: true
   },
   breed: {
