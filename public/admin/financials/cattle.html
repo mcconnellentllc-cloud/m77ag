@@ -205,8 +205,10 @@
 
         .summary-card.cows::before { background: #8b4513; }
         .summary-card.bulls::before { background: #1a1a1a; }
+        .summary-card.heifers::before { background: #7b1fa2; }
         .summary-card.calves::before { background: #d4af37; }
-        .summary-card.births::before { background: #2d8f4a; }
+        .summary-card.steers::before { background: #1565c0; }
+        .summary-card.fats::before { background: #2e7d32; }
         .summary-card.value::before { background: #0070ba; }
 
         .summary-label {
@@ -412,6 +414,7 @@
         .type-badge.steer { background: #e3f2fd; color: #1565c0; }
         .type-badge.calf { background: #fff3e0; color: #e65100; }
         .type-badge.bred_heifer { background: #f3e5f5; color: #7b1fa2; }
+        .type-badge.fat { background: #e8f5e9; color: #2e7d32; }
 
         .status-badge {
             display: inline-block;
@@ -1040,7 +1043,7 @@
         </div>
 
         <!-- Summary Cards -->
-        <div class="summary-grid">
+        <div class="summary-grid" style="grid-template-columns: repeat(7, 1fr);">
             <div class="summary-card cows">
                 <div class="summary-label">Cows</div>
                 <div class="summary-value" id="cowCount">--</div>
@@ -1051,15 +1054,25 @@
                 <div class="summary-value" id="bullCount">--</div>
                 <div class="summary-change">herd sires</div>
             </div>
-            <div class="summary-card calves">
-                <div class="summary-label">Calves & Heifers</div>
-                <div class="summary-value" id="youngStock">--</div>
-                <div class="summary-change">growing stock</div>
+            <div class="summary-card heifers">
+                <div class="summary-label">Heifers</div>
+                <div class="summary-value" id="heiferCount">--</div>
+                <div class="summary-change">replacements</div>
             </div>
-            <div class="summary-card births">
-                <div class="summary-label">Births YTD</div>
-                <div class="summary-value" id="birthsYTD">--</div>
-                <div class="summary-change" id="birthYear">2025</div>
+            <div class="summary-card calves">
+                <div class="summary-label">Calves</div>
+                <div class="summary-value" id="calfCount">--</div>
+                <div class="summary-change">young stock</div>
+            </div>
+            <div class="summary-card steers">
+                <div class="summary-label">Steers</div>
+                <div class="summary-value" id="steerCount">--</div>
+                <div class="summary-change">feeders</div>
+            </div>
+            <div class="summary-card fats">
+                <div class="summary-label">Fats</div>
+                <div class="summary-value" id="fatCount">--</div>
+                <div class="summary-change">finished</div>
             </div>
             <div class="summary-card value">
                 <div class="summary-label">Herd Value</div>
@@ -1145,6 +1158,7 @@
                     <option value="bred_heifer">Bred Heifers</option>
                     <option value="steer">Steers</option>
                     <option value="calf">Calves</option>
+                    <option value="fat">Fats (Finished)</option>
                 </select>
             </div>
             <div class="filter-group">
@@ -1259,6 +1273,7 @@
                                 <option value="bred_heifer">Bred Heifer</option>
                                 <option value="steer">Steer</option>
                                 <option value="calf">Calf</option>
+                                <option value="fat">Fat (Finished)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1672,6 +1687,7 @@
                                     <option value="bred_heifer">Bred Heifer</option>
                                     <option value="steer">Steer</option>
                                     <option value="calf">Calf</option>
+                                    <option value="fat">Fat (Finished)</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -2309,6 +2325,12 @@
             replacementHeifer: {
                 open: 1400,
                 bred: 1800
+            },
+            // Fat/Finished cattle (per lb live weight)
+            fatCattle: {
+                choice: 1.85,    // Choice grade, $185/cwt
+                select: 1.70,    // Select grade, $170/cwt
+                standard: 1.55   // Standard grade, $155/cwt
             }
         };
 
@@ -2393,6 +2415,12 @@
                     }
                     break;
 
+                case 'fat':
+                    // Finished cattle at slaughter prices
+                    // Assume choice grade for well-finished cattle
+                    value = weight * MARKET_PRICES.fatCattle.choice;
+                    break;
+
                 default:
                     value = weight * 1.50;  // Default estimate
             }
@@ -2432,6 +2460,8 @@
                     return Math.min(ageYears * 500, 1200);  // Up to 1200 lbs
                 case 'calf':
                     return Math.max(ageYears * 12 * 60, 150);  // ~60 lbs/month
+                case 'fat':
+                    return 1250;  // Finished cattle typically 1200-1400 lbs
                 default:
                     return 800;
             }
@@ -2831,7 +2861,8 @@
                 heifer: 0,
                 bred_heifer: 0,
                 steer: 0,
-                calf: 0
+                calf: 0,
+                fat: 0
             };
 
             let totalValue = 0;
@@ -2842,11 +2873,11 @@
 
             document.getElementById('cowCount').textContent = counts.cow;
             document.getElementById('bullCount').textContent = counts.bull;
-            document.getElementById('youngStock').textContent = counts.heifer + counts.bred_heifer + counts.steer + counts.calf;
+            document.getElementById('heiferCount').textContent = counts.heifer + counts.bred_heifer;
+            document.getElementById('calfCount').textContent = counts.calf;
+            document.getElementById('steerCount').textContent = counts.steer;
+            document.getElementById('fatCount').textContent = counts.fat;
             document.getElementById('herdValue').textContent = formatCurrency(totalValue);
-
-            // Set current year
-            document.getElementById('birthYear').textContent = new Date().getFullYear();
         }
 
         // Filter cattle based on selections
@@ -2981,7 +3012,8 @@
                 'heifer': 'Heifer',
                 'bred_heifer': 'Bred Heifer',
                 'steer': 'Steer',
-                'calf': 'Calf'
+                'calf': 'Calf',
+                'fat': 'Fat'
             };
             return types[type] || type;
         }
