@@ -26,6 +26,178 @@ const cattleSchema = new mongoose.Schema({
     trim: true
   },
 
+  // USDA Official Identification (for government programs)
+  usda: {
+    officialTagNumber: {
+      type: String,  // 840 tag - 15 digit number starting with 840
+      trim: true
+    },
+    premisesId: {
+      type: String,  // 7-character Premises Identification Number (PIN)
+      trim: true
+    },
+    ageVerified: {
+      type: Boolean,
+      default: false
+    },
+    ageVerificationDate: Date,
+    ageVerificationMethod: {
+      type: String,
+      enum: ['birth_record', 'dentition', 'documentation', 'other']
+    },
+    sourceVerified: {
+      type: Boolean,
+      default: false
+    },
+    countryOfOrigin: {
+      type: String,
+      default: 'USA'
+    },
+    brandInspectionNumber: String,
+    brandInspectionDate: Date
+  },
+
+  // LRP - Livestock Risk Protection Insurance
+  lrp: {
+    covered: {
+      type: Boolean,
+      default: false
+    },
+    policyNumber: String,
+    coverageLevel: Number,  // Percentage (e.g., 95.5)
+    targetWeight: Number,   // Expected sale weight in lbs
+    endorsementDate: Date,  // When coverage began
+    endDate: Date,          // Coverage end date
+    headCount: Number,      // Number of head covered under this policy
+    expectedPrice: Number,  // $/cwt at time of purchase
+    actualPrice: Number,    // Actual price at settlement
+    indemnity: Number,      // Indemnity payment received
+    premium: Number,        // Premium paid
+    agent: {
+      name: String,
+      phone: String,
+      email: String
+    },
+    notes: String
+  },
+
+  // ERP - Emergency Relief Program & Disaster Assistance
+  erp: {
+    eligibleForERP: {
+      type: Boolean,
+      default: false
+    },
+    disasterYear: Number,
+    disasterType: {
+      type: String,
+      enum: ['drought', 'flood', 'wildfire', 'hurricane', 'winter_storm', 'disease', 'other']
+    },
+    lossDocumented: {
+      type: Boolean,
+      default: false
+    },
+    lossDate: Date,
+    lossDescription: String,
+    claimFiled: {
+      type: Boolean,
+      default: false
+    },
+    claimNumber: String,
+    claimAmount: Number,
+    paymentReceived: Number,
+    paymentDate: Date
+  },
+
+  // ELAP - Emergency Livestock Assistance Program
+  elap: {
+    eligible: {
+      type: Boolean,
+      default: false
+    },
+    programYear: Number,
+    assistanceType: {
+      type: String,
+      enum: ['grazing_loss', 'feed_transportation', 'water_hauling', 'other']
+    },
+    paymentReceived: Number
+  },
+
+  // Grazing History (for pasture rotation and government programs)
+  grazingHistory: [{
+    pasture: {
+      type: String,
+      required: true
+    },
+    startDate: {
+      type: Date,
+      required: true
+    },
+    endDate: Date,
+    acres: Number,
+    stockingRate: Number,  // Head per acre or AUM
+    forageType: {
+      type: String,
+      enum: ['native_grass', 'improved_pasture', 'crop_residue', 'cover_crop', 'hay_field', 'other']
+    },
+    forageCondition: {
+      type: String,
+      enum: ['excellent', 'good', 'fair', 'poor']
+    },
+    supplementalFeed: Boolean,
+    notes: String,
+    recordedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  }],
+
+  // Program Enrollment Status
+  programEnrollment: {
+    // Beef Quality Assurance (BQA)
+    bqaCertified: {
+      type: Boolean,
+      default: false
+    },
+    bqaCertificationDate: Date,
+    bqaLevel: String,
+
+    // NHTC - Non-Hormone Treated Cattle
+    nhtcEligible: {
+      type: Boolean,
+      default: false
+    },
+    nhtcEnrollmentDate: Date,
+
+    // GAP - Global Animal Partnership
+    gapCertified: {
+      type: Boolean,
+      default: false
+    },
+    gapLevel: Number,  // 1-5+
+
+    // Organic
+    organicCertified: {
+      type: Boolean,
+      default: false
+    },
+    organicCertifier: String,
+
+    // Natural Program
+    naturalProgram: {
+      type: Boolean,
+      default: false
+    },
+    naturalProgramName: String,
+
+    // Other certifications
+    otherCertifications: [{
+      name: String,
+      certificationDate: Date,
+      expirationDate: Date,
+      certifier: String
+    }]
+  },
+
   // Classification
   type: {
     type: String,

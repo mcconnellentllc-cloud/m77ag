@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Cattle = require('../models/cattle');
-const { authenticate, isStaff, canPerformAction, hasAreaAccess } = require('../middleware/auth');
+const { authenticate, isAdmin } = require('../middleware/auth');
 
-// All routes require authentication and staff access
+// All routes require authentication
 router.use(authenticate);
-router.use(isStaff);
-router.use(hasAreaAccess('cattle'));
 
 /**
  * GET /api/cattle
@@ -117,7 +115,7 @@ router.get('/:id', async (req, res) => {
  * POST /api/cattle
  * Create new cattle record
  */
-router.post('/', canPerformAction('add_cattle'), async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const cattleData = {
       ...req.body,
@@ -142,7 +140,7 @@ router.post('/', canPerformAction('add_cattle'), async (req, res) => {
  * PUT /api/cattle/:id
  * Update cattle record
  */
-router.put('/:id', canPerformAction('edit_cattle'), async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const cattle = await Cattle.findByIdAndUpdate(
       req.params.id,
@@ -166,9 +164,9 @@ router.put('/:id', canPerformAction('edit_cattle'), async (req, res) => {
 
 /**
  * DELETE /api/cattle/:id
- * Delete cattle record
+ * Delete cattle record (admin only)
  */
-router.delete('/:id', canPerformAction('delete_cattle'), async (req, res) => {
+router.delete('/:id', isAdmin, async (req, res) => {
   try {
     const cattle = await Cattle.findByIdAndDelete(req.params.id);
 
@@ -187,7 +185,7 @@ router.delete('/:id', canPerformAction('delete_cattle'), async (req, res) => {
  * POST /api/cattle/:id/weight
  * Add weight record (employee-friendly)
  */
-router.post('/:id/weight', canPerformAction('add_cattle'), async (req, res) => {
+router.post('/:id/weight', async (req, res) => {
   try {
     const { weight, condition, notes, date } = req.body;
 
@@ -218,7 +216,7 @@ router.post('/:id/weight', canPerformAction('add_cattle'), async (req, res) => {
  * POST /api/cattle/:id/health
  * Add health record (employee-friendly)
  */
-router.post('/:id/health', canPerformAction('add_cattle'), async (req, res) => {
+router.post('/:id/health', async (req, res) => {
   try {
     const healthRecord = {
       ...req.body,
@@ -254,7 +252,7 @@ router.post('/:id/health', canPerformAction('add_cattle'), async (req, res) => {
  * POST /api/cattle/:id/breeding
  * Add breeding record
  */
-router.post('/:id/breeding', canPerformAction('add_cattle'), async (req, res) => {
+router.post('/:id/breeding', async (req, res) => {
   try {
     const cattle = await Cattle.findById(req.params.id);
     if (!cattle) {
@@ -281,7 +279,7 @@ router.post('/:id/breeding', canPerformAction('add_cattle'), async (req, res) =>
  * POST /api/cattle/:id/calving
  * Record calving event - creates new calf record and updates dam
  */
-router.post('/:id/calving', canPerformAction('add_cattle'), async (req, res) => {
+router.post('/:id/calving', async (req, res) => {
   try {
     const dam = await Cattle.findById(req.params.id);
     if (!dam) {
