@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cattle Management - M77 AG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+        }
+
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #d4af37;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #d4af37;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #8b4513;
+            background: rgba(139, 69, 19, 0.2);
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #d4af37;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c49d2e;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .breadcrumb a {
+            color: #8b4513;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-title {
+            font-size: 36px;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #a0522d;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: white;
+            color: #1a1a1a;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: #8b4513;
+            color: #8b4513;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #8b4513;
+        }
+
+        .summary-card.cows::before { background: #8b4513; }
+        .summary-card.bulls::before { background: #1a1a1a; }
+        .summary-card.calves::before { background: #d4af37; }
+        .summary-card.births::before { background: #2d8f4a; }
+        .summary-card.value::before { background: #0070ba; }
+
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .summary-change {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .quick-actions h3 {
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            background: #f8f7f5;
+            border: 2px solid #e8e6e3;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .action-btn:hover {
+            border-color: #8b4513;
+            background: #fdf8f3;
+        }
+
+        .action-btn .icon {
+            font-size: 18px;
+        }
+
+        /* Filters */
+        .filters-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 15px;
+            border: 2px solid #e8e6e3;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #8b4513;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-left: 40px;
+            border: 2px solid #e8e6e3;
+            border-radius: 6px;
+            font-size: 14px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23999' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") no-repeat 12px center;
+            background-size: 20px;
+        }
+
+        /* Cattle Table */
+        .cattle-table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #e8e6e3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+
+        .table-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f7f5;
+        }
+
+        th {
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #e8e6e3;
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #fdf8f3;
+        }
+
+        .tag-number {
+            font-weight: 700;
+            color: #8b4513;
+            cursor: pointer;
+        }
+
+        .tag-number:hover {
+            text-decoration: underline;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-badge.cow { background: #fdf2e9; color: #8b4513; }
+        .type-badge.bull { background: #1a1a1a; color: white; }
+        .type-badge.heifer { background: #e8f5e9; color: #2d5016; }
+        .type-badge.steer { background: #e3f2fd; color: #1565c0; }
+        .type-badge.calf { background: #fff3e0; color: #e65100; }
+        .type-badge.bred_heifer { background: #f3e5f5; color: #7b1fa2; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-badge.active { background: #e8f5e9; color: #2d5016; }
+        .status-badge.sold { background: #e3f2fd; color: #1565c0; }
+        .status-badge.deceased { background: #ffebee; color: #c62828; }
+
+        .action-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .action-icon.weight {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .action-icon.health {
+            background: #e8f5e9;
+            color: #2d5016;
+        }
+
+        .action-icon.edit {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid #e8e6e3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: #1a1a1a;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f3f0;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #e8e6e3;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .form-group label span {
+            color: #dc3545;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #e8e6e3;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b4513;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e8e6e3;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 2000;
+        }
+
+        .toast.success {
+            background: #2d5016;
+        }
+
+        .toast.error {
+            background: #dc3545;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">M77 AG</div>
+            <nav class="nav-links">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/financials">Financials</a>
+                <a href="/admin/financials/cattle" class="active">Cattle</a>
+                <a href="/admin/financials/crops">Crops</a>
+                <a href="/admin/financials/equipment">Equipment</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-role" id="userRole">Admin</span>
+                <span class="user-name" id="userName">Welcome</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/admin/dashboard">Admin</a> /
+                    <a href="/admin/financials">Financials</a> /
+                    Cattle
+                </div>
+                <h1 class="page-title">Cattle Management</h1>
+                <p class="page-subtitle">Track your herd - births, weights, health records, and more</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="exportHerd()">Export</button>
+                <button class="btn-primary" onclick="openAddCattleModal()">
+                    <span>+</span> Add Animal
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card cows">
+                <div class="summary-label">Cows</div>
+                <div class="summary-value" id="cowCount">--</div>
+                <div class="summary-change">breeding females</div>
+            </div>
+            <div class="summary-card bulls">
+                <div class="summary-label">Bulls</div>
+                <div class="summary-value" id="bullCount">--</div>
+                <div class="summary-change">herd sires</div>
+            </div>
+            <div class="summary-card calves">
+                <div class="summary-label">Calves & Heifers</div>
+                <div class="summary-value" id="youngStock">--</div>
+                <div class="summary-change">growing stock</div>
+            </div>
+            <div class="summary-card births">
+                <div class="summary-label">Births YTD</div>
+                <div class="summary-value" id="birthsYTD">--</div>
+                <div class="summary-change" id="birthYear">2025</div>
+            </div>
+            <div class="summary-card value">
+                <div class="summary-label">Herd Value</div>
+                <div class="summary-value" id="herdValue">--</div>
+                <div class="summary-change">estimated</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="openQuickWeightModal()">
+                    <span class="icon">Scale</span>
+                    Record Weight
+                </button>
+                <button class="action-btn" onclick="openQuickHealthModal()">
+                    <span class="icon">+</span>
+                    Add Health Record
+                </button>
+                <button class="action-btn" onclick="openCalvingModal()">
+                    <span class="icon">Calf</span>
+                    Record Calving
+                </button>
+                <button class="action-btn" onclick="openBreedingModal()">
+                    <span class="icon">Breed</span>
+                    Log Breeding
+                </button>
+                <button class="action-btn" onclick="openGroupUpdateModal()">
+                    <span class="icon">Group</span>
+                    Group Update
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label>Type</label>
+                <select id="filterType" onchange="filterCattle()">
+                    <option value="">All Types</option>
+                    <option value="cow">Cows</option>
+                    <option value="bull">Bulls</option>
+                    <option value="heifer">Heifers</option>
+                    <option value="bred_heifer">Bred Heifers</option>
+                    <option value="steer">Steers</option>
+                    <option value="calf">Calves</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus" onchange="filterCattle()">
+                    <option value="active">Active</option>
+                    <option value="">All Status</option>
+                    <option value="sold">Sold</option>
+                    <option value="deceased">Deceased</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Pasture</label>
+                <select id="filterPasture" onchange="filterCattle()">
+                    <option value="">All Pastures</option>
+                </select>
+            </div>
+            <div class="filter-group search-box">
+                <label>Search</label>
+                <input type="text" id="searchInput" placeholder="Search by tag or name..." onkeyup="filterCattle()">
+            </div>
+        </div>
+
+        <!-- Cattle Table -->
+        <div class="cattle-table-container">
+            <div class="table-header">
+                <h3>Herd List</h3>
+                <span class="table-count"><span id="displayCount">0</span> animals shown</span>
+            </div>
+            <div id="cattleTableContent">
+                <div class="loading">Loading cattle data...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Cattle Modal -->
+    <div class="modal-overlay" id="addCattleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="cattleModalTitle">Add New Animal</h2>
+                <button class="modal-close" onclick="closeModal('addCattleModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="cattleForm">
+                    <input type="hidden" id="cattleId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tag Number <span>*</span></label>
+                            <input type="text" id="tagNumber" required placeholder="e.g., 2401">
+                        </div>
+                        <div class="form-group">
+                            <label>Name (optional)</label>
+                            <input type="text" id="cattleName" placeholder="e.g., Bessie">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type <span>*</span></label>
+                            <select id="cattleType" required>
+                                <option value="">Select type...</option>
+                                <option value="cow">Cow</option>
+                                <option value="bull">Bull</option>
+                                <option value="heifer">Heifer</option>
+                                <option value="bred_heifer">Bred Heifer</option>
+                                <option value="steer">Steer</option>
+                                <option value="calf">Calf</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Breed</label>
+                            <input type="text" id="breed" placeholder="e.g., Angus, Hereford">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Birth Date <span>*</span></label>
+                            <input type="date" id="birthDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Birth Weight (lbs)</label>
+                            <input type="number" id="birthWeight" placeholder="e.g., 85">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dam Tag (Mother)</label>
+                            <input type="text" id="damTag" placeholder="e.g., 2201">
+                        </div>
+                        <div class="form-group">
+                            <label>Sire Tag (Father)</label>
+                            <input type="text" id="sireTag" placeholder="e.g., B001">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Current Pasture</label>
+                            <input type="text" id="currentPasture" placeholder="e.g., North 40">
+                        </div>
+                        <div class="form-group">
+                            <label>Color/Markings</label>
+                            <input type="text" id="color" placeholder="e.g., Black, Red with white face">
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="cattleNotes" placeholder="Any additional notes..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('addCattleModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveCattle()">Save Animal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Weight Modal -->
+    <div class="modal-overlay" id="weightModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Record Weight</h2>
+                <button class="modal-close" onclick="closeModal('weightModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="weightForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Animal Tag <span>*</span></label>
+                            <select id="weightCattleId" required>
+                                <option value="">Select animal...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date <span>*</span></label>
+                            <input type="date" id="weightDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Weight (lbs) <span>*</span></label>
+                            <input type="number" id="weightValue" required placeholder="e.g., 550">
+                        </div>
+                        <div class="form-group">
+                            <label>Body Condition</label>
+                            <select id="weightCondition">
+                                <option value="good">Good</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="thin">Thin</option>
+                                <option value="fat">Fat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="weightNotes" placeholder="Any notes about this weight..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('weightModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveWeight()">Save Weight</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Health Modal -->
+    <div class="modal-overlay" id="healthModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Health Record</h2>
+                <button class="modal-close" onclick="closeModal('healthModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="healthForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Animal Tag <span>*</span></label>
+                            <select id="healthCattleId" required>
+                                <option value="">Select animal...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date <span>*</span></label>
+                            <input type="date" id="healthDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type <span>*</span></label>
+                            <select id="healthType" required>
+                                <option value="">Select type...</option>
+                                <option value="vaccination">Vaccination</option>
+                                <option value="deworming">Deworming</option>
+                                <option value="treatment">Treatment</option>
+                                <option value="antibiotic">Antibiotic</option>
+                                <option value="vitamin">Vitamin/Mineral</option>
+                                <option value="injury">Injury</option>
+                                <option value="illness">Illness</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Product/Treatment</label>
+                            <input type="text" id="healthProduct" placeholder="e.g., Bovishield Gold">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dosage</label>
+                            <input type="text" id="healthDosage" placeholder="e.g., 2ml">
+                        </div>
+                        <div class="form-group">
+                            <label>Withdrawal Days</label>
+                            <input type="number" id="healthWithdrawal" placeholder="e.g., 21">
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="healthNotes" placeholder="Any notes about this treatment..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('healthModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveHealth()">Save Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calving Modal -->
+    <div class="modal-overlay" id="calvingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Record Calving</h2>
+                <button class="modal-close" onclick="closeModal('calvingModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="calvingForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dam (Mother) <span>*</span></label>
+                            <select id="calvingDamId" required>
+                                <option value="">Select cow...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Calving Date <span>*</span></label>
+                            <input type="date" id="calvingDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Calf Tag Number <span>*</span></label>
+                            <input type="text" id="calfTag" required placeholder="e.g., 2501">
+                        </div>
+                        <div class="form-group">
+                            <label>Calf Sex <span>*</span></label>
+                            <select id="calfSex" required>
+                                <option value="">Select...</option>
+                                <option value="heifer">Heifer (Female)</option>
+                                <option value="bull">Bull (Male)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Birth Weight (lbs)</label>
+                            <input type="number" id="calfBirthWeight" placeholder="e.g., 85">
+                        </div>
+                        <div class="form-group">
+                            <label>Calving Ease</label>
+                            <select id="calvingEase">
+                                <option value="unassisted">Unassisted</option>
+                                <option value="easy_pull">Easy Pull</option>
+                                <option value="hard_pull">Hard Pull</option>
+                                <option value="c_section">C-Section</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sire Tag</label>
+                            <input type="text" id="calvingSireTag" placeholder="e.g., B001">
+                        </div>
+                        <div class="form-group">
+                            <label>Color/Markings</label>
+                            <input type="text" id="calfColor" placeholder="e.g., Black">
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="calvingNotes" placeholder="Any notes about this calving..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('calvingModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveCalving()">Record Calving</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <div class="footer">
+        2025 M77 AG Cattle Management. McConnell Enterprises LLC.
+    </div>
+
+    <script>
+        // Global state
+        let allCattle = [];
+        let filteredCattle = [];
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return false;
+            }
+            return token;
+        }
+
+        // Get auth headers
+        function getAuthHeaders() {
+            return {
+                'Authorization': 'Bearer ' + localStorage.getItem('adminToken'),
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return '$' + (amount || 0).toLocaleString();
+        }
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: getAuthHeaders()
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) {
+                        document.getElementById('userName').textContent = 'Welcome, ' + data.user.name;
+                        document.getElementById('userRole').textContent = data.user.role;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+            }
+        }
+
+        // Load cattle data
+        async function loadCattle() {
+            try {
+                const response = await fetch('/api/cattle', {
+                    headers: getAuthHeaders()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load cattle');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    allCattle = data.data;
+                    filterCattle();
+                    updateSummary();
+                    populateDropdowns();
+                }
+            } catch (error) {
+                console.error('Error loading cattle:', error);
+                document.getElementById('cattleTableContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">Cattle</div>
+                        <h3>No cattle found</h3>
+                        <p>Start by adding your first animal to the herd.</p>
+                        <button class="btn-primary" onclick="openAddCattleModal()">+ Add First Animal</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Load summary data
+        async function loadSummary() {
+            try {
+                const response = await fetch('/api/cattle/summary', {
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        const summary = data.data;
+                        document.getElementById('cowCount').textContent = summary.byType?.cow?.count || 0;
+                        document.getElementById('bullCount').textContent = summary.byType?.bull?.count || 0;
+
+                        const youngStock = (summary.byType?.calf?.count || 0) +
+                                          (summary.byType?.heifer?.count || 0) +
+                                          (summary.byType?.bred_heifer?.count || 0) +
+                                          (summary.byType?.steer?.count || 0);
+                        document.getElementById('youngStock').textContent = youngStock;
+                        document.getElementById('birthsYTD').textContent = summary.birthsYTD || 0;
+                        document.getElementById('herdValue').textContent = formatCurrency(summary.totalValue);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading summary:', error);
+            }
+        }
+
+        // Update summary from local data
+        function updateSummary() {
+            const activeCattle = allCattle.filter(c => c.status === 'active');
+
+            const counts = {
+                cow: 0,
+                bull: 0,
+                heifer: 0,
+                bred_heifer: 0,
+                steer: 0,
+                calf: 0
+            };
+
+            let totalValue = 0;
+            activeCattle.forEach(c => {
+                counts[c.type] = (counts[c.type] || 0) + 1;
+                totalValue += c.estimatedValue || 0;
+            });
+
+            document.getElementById('cowCount').textContent = counts.cow;
+            document.getElementById('bullCount').textContent = counts.bull;
+            document.getElementById('youngStock').textContent = counts.heifer + counts.bred_heifer + counts.steer + counts.calf;
+            document.getElementById('herdValue').textContent = formatCurrency(totalValue);
+
+            // Set current year
+            document.getElementById('birthYear').textContent = new Date().getFullYear();
+        }
+
+        // Filter cattle based on selections
+        function filterCattle() {
+            const type = document.getElementById('filterType').value;
+            const status = document.getElementById('filterStatus').value;
+            const pasture = document.getElementById('filterPasture').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredCattle = allCattle.filter(cattle => {
+                if (type && cattle.type !== type) return false;
+                if (status && cattle.status !== status) return false;
+                if (pasture && cattle.currentPasture !== pasture) return false;
+                if (search) {
+                    const searchStr = (cattle.tagNumber + ' ' + (cattle.name || '')).toLowerCase();
+                    if (!searchStr.includes(search)) return false;
+                }
+                return true;
+            });
+
+            renderCattleTable();
+        }
+
+        // Render cattle table
+        function renderCattleTable() {
+            const container = document.getElementById('cattleTableContent');
+            document.getElementById('displayCount').textContent = filteredCattle.length;
+
+            if (filteredCattle.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">Cattle</div>
+                        <h3>No animals found</h3>
+                        <p>Try adjusting your filters or add a new animal.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tag</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Age</th>
+                            <th>Weight</th>
+                            <th>Pasture</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredCattle.map(cattle => renderCattleRow(cattle)).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Render single cattle row
+        function renderCattleRow(cattle) {
+            const age = calculateAge(cattle.birthDate);
+            const weight = getCurrentWeight(cattle);
+
+            return `
+                <tr>
+                    <td>
+                        <span class="tag-number" onclick="viewCattle('${cattle._id}')">${cattle.tagNumber}</span>
+                    </td>
+                    <td>${cattle.name || '-'}</td>
+                    <td>
+                        <span class="type-badge ${cattle.type}">${formatType(cattle.type)}</span>
+                    </td>
+                    <td>${age}</td>
+                    <td>${weight ? weight + ' lbs' : '-'}</td>
+                    <td>${cattle.currentPasture || '-'}</td>
+                    <td>
+                        <span class="status-badge ${cattle.status}">${cattle.status}</span>
+                    </td>
+                    <td>
+                        <div class="action-icons">
+                            <button class="action-icon weight" onclick="openQuickWeightModal('${cattle._id}')" title="Record Weight">Wt</button>
+                            <button class="action-icon health" onclick="openQuickHealthModal('${cattle._id}')" title="Health Record">+</button>
+                            <button class="action-icon edit" onclick="editCattle('${cattle._id}')" title="Edit">Edit</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Calculate age
+        function calculateAge(birthDate) {
+            if (!birthDate) return '-';
+            const birth = new Date(birthDate);
+            const now = new Date();
+            const months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+
+            if (months < 1) {
+                const days = Math.floor((now - birth) / (1000 * 60 * 60 * 24));
+                return days + 'd';
+            } else if (months < 12) {
+                return months + 'mo';
+            } else {
+                const years = Math.floor(months / 12);
+                const remainingMonths = months % 12;
+                return years + 'yr' + (remainingMonths > 0 ? ' ' + remainingMonths + 'mo' : '');
+            }
+        }
+
+        // Get current weight
+        function getCurrentWeight(cattle) {
+            if (cattle.weightRecords && cattle.weightRecords.length > 0) {
+                const sorted = [...cattle.weightRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
+                return sorted[0].weight;
+            }
+            return cattle.birthWeight || null;
+        }
+
+        // Format type for display
+        function formatType(type) {
+            const types = {
+                'cow': 'Cow',
+                'bull': 'Bull',
+                'heifer': 'Heifer',
+                'bred_heifer': 'Bred Heifer',
+                'steer': 'Steer',
+                'calf': 'Calf'
+            };
+            return types[type] || type;
+        }
+
+        // Populate dropdowns with cattle
+        function populateDropdowns() {
+            const activeCattle = allCattle.filter(c => c.status === 'active');
+
+            // Weight modal dropdown
+            const weightSelect = document.getElementById('weightCattleId');
+            weightSelect.innerHTML = '<option value="">Select animal...</option>';
+
+            // Health modal dropdown
+            const healthSelect = document.getElementById('healthCattleId');
+            healthSelect.innerHTML = '<option value="">Select animal...</option>';
+
+            // Calving modal dropdown (cows and bred heifers only)
+            const calvingSelect = document.getElementById('calvingDamId');
+            calvingSelect.innerHTML = '<option value="">Select cow...</option>';
+
+            activeCattle.forEach(cattle => {
+                const option = `<option value="${cattle._id}">${cattle.tagNumber}${cattle.name ? ' - ' + cattle.name : ''}</option>`;
+                weightSelect.innerHTML += option;
+                healthSelect.innerHTML += option;
+
+                if (['cow', 'bred_heifer'].includes(cattle.type)) {
+                    calvingSelect.innerHTML += option;
+                }
+            });
+
+            // Populate pasture filter
+            const pastures = [...new Set(activeCattle.map(c => c.currentPasture).filter(p => p))];
+            const pastureSelect = document.getElementById('filterPasture');
+            pastureSelect.innerHTML = '<option value="">All Pastures</option>';
+            pastures.forEach(p => {
+                pastureSelect.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openAddCattleModal() {
+            document.getElementById('cattleModalTitle').textContent = 'Add New Animal';
+            document.getElementById('cattleForm').reset();
+            document.getElementById('cattleId').value = '';
+            document.getElementById('birthDate').valueAsDate = new Date();
+            openModal('addCattleModal');
+        }
+
+        function openQuickWeightModal(cattleId = null) {
+            document.getElementById('weightForm').reset();
+            document.getElementById('weightDate').valueAsDate = new Date();
+            if (cattleId) {
+                document.getElementById('weightCattleId').value = cattleId;
+            }
+            openModal('weightModal');
+        }
+
+        function openQuickHealthModal(cattleId = null) {
+            document.getElementById('healthForm').reset();
+            document.getElementById('healthDate').valueAsDate = new Date();
+            if (cattleId) {
+                document.getElementById('healthCattleId').value = cattleId;
+            }
+            openModal('healthModal');
+        }
+
+        function openCalvingModal() {
+            document.getElementById('calvingForm').reset();
+            document.getElementById('calvingDate').valueAsDate = new Date();
+            openModal('calvingModal');
+        }
+
+        function openBreedingModal() {
+            showToast('Breeding modal coming soon', 'info');
+        }
+
+        function openGroupUpdateModal() {
+            showToast('Group update modal coming soon', 'info');
+        }
+
+        // Save cattle
+        async function saveCattle() {
+            const cattleId = document.getElementById('cattleId').value;
+            const isEdit = !!cattleId;
+
+            const cattleData = {
+                tagNumber: document.getElementById('tagNumber').value,
+                name: document.getElementById('cattleName').value || undefined,
+                type: document.getElementById('cattleType').value,
+                breed: document.getElementById('breed').value || undefined,
+                birthDate: document.getElementById('birthDate').value,
+                birthWeight: document.getElementById('birthWeight').value ? parseInt(document.getElementById('birthWeight').value) : undefined,
+                dam: {
+                    tagNumber: document.getElementById('damTag').value || undefined
+                },
+                sire: {
+                    tagNumber: document.getElementById('sireTag').value || undefined
+                },
+                currentPasture: document.getElementById('currentPasture').value || undefined,
+                color: document.getElementById('color').value || undefined,
+                notes: document.getElementById('cattleNotes').value || undefined
+            };
+
+            try {
+                const url = isEdit ? `/api/cattle/${cattleId}` : '/api/cattle';
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(cattleData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(isEdit ? 'Animal updated successfully' : 'Animal added successfully');
+                    closeModal('addCattleModal');
+                    loadCattle();
+                } else {
+                    showToast(data.message || 'Error saving animal', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving cattle:', error);
+                showToast('Error saving animal', 'error');
+            }
+        }
+
+        // Save weight
+        async function saveWeight() {
+            const cattleId = document.getElementById('weightCattleId').value;
+
+            if (!cattleId) {
+                showToast('Please select an animal', 'error');
+                return;
+            }
+
+            const weightData = {
+                weight: parseInt(document.getElementById('weightValue').value),
+                date: document.getElementById('weightDate').value,
+                condition: document.getElementById('weightCondition').value,
+                notes: document.getElementById('weightNotes').value || undefined
+            };
+
+            try {
+                const response = await fetch(`/api/cattle/${cattleId}/weight`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(weightData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Weight recorded successfully');
+                    closeModal('weightModal');
+                    loadCattle();
+                } else {
+                    showToast(data.message || 'Error recording weight', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving weight:', error);
+                showToast('Error recording weight', 'error');
+            }
+        }
+
+        // Save health record
+        async function saveHealth() {
+            const cattleId = document.getElementById('healthCattleId').value;
+
+            if (!cattleId) {
+                showToast('Please select an animal', 'error');
+                return;
+            }
+
+            const healthData = {
+                type: document.getElementById('healthType').value,
+                date: document.getElementById('healthDate').value,
+                product: document.getElementById('healthProduct').value || undefined,
+                dosage: document.getElementById('healthDosage').value || undefined,
+                withdrawalDays: document.getElementById('healthWithdrawal').value ? parseInt(document.getElementById('healthWithdrawal').value) : undefined,
+                notes: document.getElementById('healthNotes').value || undefined
+            };
+
+            try {
+                const response = await fetch(`/api/cattle/${cattleId}/health`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(healthData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Health record added successfully');
+                    closeModal('healthModal');
+                    loadCattle();
+                } else {
+                    showToast(data.message || 'Error adding health record', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving health record:', error);
+                showToast('Error adding health record', 'error');
+            }
+        }
+
+        // Save calving
+        async function saveCalving() {
+            const damId = document.getElementById('calvingDamId').value;
+
+            if (!damId) {
+                showToast('Please select the dam (mother)', 'error');
+                return;
+            }
+
+            const calvingData = {
+                calfTag: document.getElementById('calfTag').value,
+                calfSex: document.getElementById('calfSex').value,
+                birthWeight: document.getElementById('calfBirthWeight').value ? parseInt(document.getElementById('calfBirthWeight').value) : undefined,
+                birthEase: document.getElementById('calvingEase').value,
+                sireTag: document.getElementById('calvingSireTag').value || undefined,
+                date: document.getElementById('calvingDate').value,
+                notes: document.getElementById('calvingNotes').value || undefined
+            };
+
+            try {
+                const response = await fetch(`/api/cattle/${damId}/calving`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(calvingData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Calving recorded - calf added to herd');
+                    closeModal('calvingModal');
+                    loadCattle();
+                } else {
+                    showToast(data.message || 'Error recording calving', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving calving:', error);
+                showToast('Error recording calving', 'error');
+            }
+        }
+
+        // Edit cattle
+        function editCattle(cattleId) {
+            const cattle = allCattle.find(c => c._id === cattleId);
+            if (!cattle) return;
+
+            document.getElementById('cattleModalTitle').textContent = 'Edit Animal';
+            document.getElementById('cattleId').value = cattle._id;
+            document.getElementById('tagNumber').value = cattle.tagNumber;
+            document.getElementById('cattleName').value = cattle.name || '';
+            document.getElementById('cattleType').value = cattle.type;
+            document.getElementById('breed').value = cattle.breed || '';
+            document.getElementById('birthDate').value = cattle.birthDate ? cattle.birthDate.split('T')[0] : '';
+            document.getElementById('birthWeight').value = cattle.birthWeight || '';
+            document.getElementById('damTag').value = cattle.dam?.tagNumber || '';
+            document.getElementById('sireTag').value = cattle.sire?.tagNumber || '';
+            document.getElementById('currentPasture').value = cattle.currentPasture || '';
+            document.getElementById('color').value = cattle.color || '';
+            document.getElementById('cattleNotes').value = cattle.notes || '';
+
+            openModal('addCattleModal');
+        }
+
+        // View cattle details
+        function viewCattle(cattleId) {
+            // For now, open edit modal
+            editCattle(cattleId);
+        }
+
+        // Export herd
+        function exportHerd() {
+            showToast('Export functionality coming soon');
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '/admin/login';
+        }
+
+        // Initialize page
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+
+            loadUserInfo();
+            loadCattle();
+            loadSummary();
+        });
+    </script>
+</body>
+</html>
