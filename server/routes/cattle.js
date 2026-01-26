@@ -506,4 +506,153 @@ router.post('/:id/link-offspring', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/cattle/import/csv
+ * Import cattle from the CSV file in /data/imports/cattle.csv
+ */
+router.post('/import/csv', isAdmin, async (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+
+  try {
+    const csvPath = path.join(__dirname, '../../data/imports/cattle.csv');
+
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ success: false, message: 'CSV file not found at /data/imports/cattle.csv' });
+    }
+
+    const content = fs.readFileSync(csvPath, 'utf-8');
+    const lines = content.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+
+    const records = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      const record = {};
+      headers.forEach((header, idx) => {
+        record[header] = values[idx] || '';
+      });
+      records.push(record);
+    }
+
+    let imported = 0;
+    let skipped = 0;
+    let errors = 0;
+    const errorDetails = [];
+
+    for (const row of records) {
+      const tagNumber = row.tag_number;
+
+      if (!tagNumber) {
+        errors++;
+        continue;
+      }
+
+      // Check if already exists
+      const exists = await Cattle.findOne({ tagNumber: String(tagNumber) });
+      if (exists) {
+        skipped++;
+        continue;
+      }
+
+      // Build calving records
+      const annualCalvingRecords = [];
+
+      // 2024 calving - "31" means had calf that survived to weaning
+      if (row.calf_wt_2024 === '31') {
+        annualCalvingRecords.push({
+          year: 2024,
+          hadCalf: true,
+          calfSurvived: true,
+          notes: 'Calf survived to weaning'
+        });
+      }
+
+      // 2023 weaning weight
+      const ww2023 = parseInt(row.ww_2023);
+      if (ww2023 > 0) {
+        annualCalvingRecords.push({
+          year: 2023,
+          hadCalf: true,
+          calfSurvived: true,
+          weaningWeight: ww2023
+        });
+      }
+
+      // Calculate birth date from birth_year
+      let birthDate = null;
+      const birthYear = parseInt(row.birth_year);
+      if (birthYear > 0) {
+        birthDate = new Date(`${birthYear}-03-01`);
+      } else {
+        const tag = parseInt(tagNumber);
+        if (tag >= 6000 && tag < 7000) {
+          birthDate = new Date('2016-03-01');
+        } else if (tag >= 2316 && tag <= 2325) {
+          birthDate = new Date('2023-03-01');
+        } else if (tag >= 2426 && tag <= 2432) {
+          birthDate = new Date('2024-03-01');
+        } else if (tag >= 2201 && tag <= 2215) {
+          birthDate = new Date('2022-03-01');
+        } else {
+          birthDate = new Date('2018-03-01');
+        }
+      }
+
+      // Map tag color
+      const colorMap = {
+        'Yellow': 'Yellow', 'Blue': 'Blue', 'Green': 'Green',
+        'White': 'White', 'Purple': 'Purple', 'Orange': 'Orange',
+        'Red': 'Red', 'Pink': 'Pink', 'Black': 'Black'
+      };
+
+      const cattleData = {
+        tagNumber: String(tagNumber),
+        type: 'cow',
+        breed: 'Angus',
+        owner: row.owner || 'M77',
+        tagColor: colorMap[row.tag_color] || 'Other',
+        calvingGroup: row.group_name === 'SPRING' ? 'SPRING' : 'FALL',
+        birthDate: birthDate,
+        status: 'active',
+        annualCalvingRecords: annualCalvingRecords.length > 0 ? annualCalvingRecords : undefined
+      };
+
+      // Add dam info if available
+      if (row.dam_tag && row.dam_tag !== 'NT' && row.dam_tag !== '') {
+        cattleData.dam = { tagNumber: String(row.dam_tag) };
+      }
+
+      // Add yearling weight if available
+      const yw = parseInt(row.yearling_weight);
+      if (yw > 0) {
+        cattleData.weightRecords = [{
+          date: new Date(`${birthYear + 1}-10-01`),
+          weight: yw,
+          notes: 'Yearling weight'
+        }];
+      }
+
+      try {
+        const cattle = new Cattle(cattleData);
+        await cattle.save();
+        imported++;
+      } catch (err) {
+        errors++;
+        errorDetails.push({ tag: tagNumber, error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Import complete: ${imported} imported, ${skipped} skipped, ${errors} errors`,
+      data: { imported, skipped, errors, errorDetails }
+    });
+
+  } catch (error) {
+    console.error('Error importing CSV:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;
