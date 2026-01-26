@@ -398,28 +398,19 @@
                         <span class="badge badge-blue">PET FRIENDLY</span>
                     </div>
 
-                    <button class="cta-button">SCHEDULE A SHOWING</button>
+                    <button class="cta-button" id="inquireButton">MAKE AN OFFER</button>
 
-                    <!-- Lease Terms -->
-                    <div class="lease-terms">
-                        <h3>Select Lease Term</h3>
-                        <div class="lease-options">
-                            <div class="lease-option selected">
-                                <div class="lease-option-label">Month-to-Month</div>
-                                <div class="lease-option-price">$1,400<span class="lease-option-price-unit">/mo</span></div>
-                                <div class="lease-option-savings">Maximum Flexibility</div>
-                            </div>
-                            <div class="lease-option">
-                                <div class="lease-option-label">6-Month Lease</div>
-                                <div class="lease-option-price">$1,300<span class="lease-option-price-unit">/mo</span></div>
-                                <div class="lease-option-savings">Save $600/year</div>
-                            </div>
-                            <div class="lease-option">
-                                <div class="lease-option-label">12-Month Lease</div>
-                                <div class="lease-option-price">$1,250<span class="lease-option-price-unit">/mo</span></div>
-                                <div class="lease-option-savings">Save $1,800/year</div>
-                            </div>
+                    <div class="rental-info">
+                        <div style="background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%); padding: 25px; border-radius: 8px; margin-bottom: 30px; text-align: center;">
+                            <h3 style="color: #d4af37; margin-bottom: 10px; font-size: 22px;">NOW ACCEPTING OFFERS</h3>
+                            <p style="color: rgba(255,255,255,0.95); font-size: 16px; line-height: 1.6; margin: 0;">
+                                We're accepting rental offers of <strong style="color: #d4af37;">$1,250/month or higher</strong>.
+                                Click above to chat with us and make your offer today!
+                            </p>
                         </div>
+                        <p style="text-align: center; color: #666; font-size: 14px;">
+                            Flexible lease terms available. All utilities included. Available immediately.
+                        </p>
                     </div>
 
                     <!-- Features & Amenities -->
@@ -472,10 +463,17 @@
             });
         });
 
-        // Schedule showing button
-        document.querySelector('.cta-button').addEventListener('click', function() {
-            alert('Please call (970) 520-1807 to schedule a showing or email office@m77ag.com');
+        // Inquire about rent button - opens chatbot
+        document.getElementById('inquireButton').addEventListener('click', function() {
+            if (window.rentalChatbot) {
+                window.rentalChatbot.openChat();
+            } else {
+                alert('Please call (970) 520-1807 or email office@m77ag.com to inquire about rental rates');
+            }
         });
     </script>
+
+    <!-- Rental Chatbot -->
+    <script src="/js/rental-chatbot.js"></script>
 </body>
 </html>

@@ -51,6 +51,8 @@ const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
 const seasonPassRoutes = require('./routes/seasonPass');
 const financialReportsRoutes = require('./routes/financialReports');
+const rentalRoutes = require('./routes/rental');
+const rentalBillingRoutes = require('./routes/rentalBilling');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -68,6 +70,8 @@ app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
+app.use('/api', rentalRoutes);
+app.use('/api', rentalBillingRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -220,6 +224,9 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Initialize rental billing cron jobs
+const { startRentalBillingJobs } = require('./jobs/rentalBillingCron');
+
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('='.repeat(50));
@@ -227,6 +234,11 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Time: ${new Date().toLocaleString()}`);
   console.log('='.repeat(50));
+
+  // Start rental billing automation
+  if (process.env.ENABLE_BILLING_CRON !== 'false') {
+    startRentalBillingJobs();
+  }
 });
 
 // Graceful shutdown
