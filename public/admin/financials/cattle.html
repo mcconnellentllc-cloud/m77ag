@@ -2465,23 +2465,31 @@
             const ageYears = getAgeInYears(cattle.birthDate);
             const type = cattle.type;
 
-            // Rough weight estimates by type and age
+            // Rough weight estimates by type and age (always return whole numbers)
+            let weight;
             switch (type) {
                 case 'cow':
-                    return 1100 + Math.min(ageYears - 2, 5) * 50;  // 1100-1350 lbs
+                    weight = 1100 + Math.min(ageYears - 2, 5) * 50;  // 1100-1350 lbs
+                    break;
                 case 'bull':
-                    return 1400 + Math.min(ageYears - 2, 6) * 100; // 1400-2000 lbs
+                    weight = 1400 + Math.min(ageYears - 2, 6) * 100; // 1400-2000 lbs
+                    break;
                 case 'heifer':
-                    return Math.min(ageYears * 400, 900);  // Up to 900 lbs
+                    weight = Math.min(ageYears * 400, 900);  // Up to 900 lbs
+                    break;
                 case 'steer':
-                    return Math.min(ageYears * 500, 1200);  // Up to 1200 lbs
+                    weight = Math.min(ageYears * 500, 1200);  // Up to 1200 lbs
+                    break;
                 case 'calf':
-                    return Math.max(ageYears * 12 * 60, 150);  // ~60 lbs/month
+                    weight = Math.max(ageYears * 12 * 60, 150);  // ~60 lbs/month
+                    break;
                 case 'fat':
-                    return 1250;  // Finished cattle typically 1200-1400 lbs
+                    weight = 1250;  // Finished cattle typically 1200-1400 lbs
+                    break;
                 default:
-                    return 800;
+                    weight = 800;
             }
+            return Math.round(weight);
         }
 
         function getProductionStats(cattle) {
@@ -3012,13 +3020,13 @@
             }
         }
 
-        // Get current weight
+        // Get current weight (always whole numbers)
         function getCurrentWeight(cattle) {
             if (cattle.weightRecords && cattle.weightRecords.length > 0) {
                 const sorted = [...cattle.weightRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
-                return sorted[0].weight;
+                return Math.round(sorted[0].weight);
             }
-            return cattle.birthWeight || null;
+            return cattle.birthWeight ? Math.round(cattle.birthWeight) : null;
         }
 
         // Format type for display

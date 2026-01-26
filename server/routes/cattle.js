@@ -623,6 +623,11 @@ router.post('/import/csv', isAdmin, async (req, res) => {
         cattleData.dam = { tagNumber: String(row.dam_tag) };
       }
 
+      // Add sire info if available (sire column contains tag number, not color)
+      if (row.sire && row.sire !== '' && row.sire !== 'NT') {
+        cattleData.sire = { tagNumber: String(row.sire) };
+      }
+
       // Add yearling weight if available
       const yw = parseInt(row.yearling_weight);
       if (yw > 0) {
