@@ -2303,7 +2303,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Year</label>
-                                <input type="number" id="calvingYear" min="2010" max="2030" value="2024">
+                                <input type="number" id="calvingYear" min="2010" max="2030" value="2026">
                             </div>
                             <div class="form-group">
                                 <label>Had Calf?</label>
@@ -3822,6 +3822,11 @@
                 if (data.success) {
                     showToast('Calving record saved');
                     currentDetailCattle = data.data;
+                    // Update allCattle array so calving progress reflects new data
+                    const idx = allCattle.findIndex(c => c._id === data.data._id);
+                    if (idx !== -1) {
+                        allCattle[idx] = data.data;
+                    }
                     renderProductionSummary(data.data);
                     renderAnnualCalving(data.data.annualCalvingRecords || []);
                     // Clear form
