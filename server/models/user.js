@@ -181,17 +181,17 @@ async function createDefaultAdmin() {
     if (!adminExists) {
       const defaultAdmin = new User({
         name: 'M77 AG Admin',
-        email: 'admin@m77ag.com',
+        email: 'office@m77ag.com',
         phone: '970-571-1015',
-        password: 'M77ag2024!Admin', // Change this after first login!
+        password: 'M77admin2025!', // Change this after first login!
         role: 'admin',
         emailVerified: true,
         isActive: true
       });
 
       await defaultAdmin.save();
-      console.log('Default admin user created: admin@m77ag.com');
-      console.log('WARNING: Default password is M77ag2024!Admin - Change this immediately!');
+      console.log('Default admin user created: office@m77ag.com');
+      console.log('WARNING: Default password is M77admin2025! - Change this immediately!');
     }
   } catch (error) {
     console.error('Error creating default admin:', error.message);
