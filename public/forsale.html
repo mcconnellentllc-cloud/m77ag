@@ -1064,15 +1064,14 @@
 
                     <!-- Price Box -->
                     <div class="price-box">
-                        <div class="price-label">Buy Now Price</div>
-                        <div class="price-value" id="itemPrice"></div>
-                        <div class="price-note">Includes all taxes. Ready for pickup in Phillips County, CO</div>
-                        <button class="buy-now-btn" id="buyNowBtn">BUY NOW</button>
+                        <div class="price-label">Ready to Deal!</div>
+                        <div class="price-value" style="font-size: 28px;">Make an Offer</div>
+                        <div class="price-note">We're ready to negotiate. Submit your best offer below!</div>
                     </div>
 
                     <!-- Make Offer -->
                     <div class="offer-section">
-                        <div class="offer-title">Or Make an Offer</div>
+                        <div class="offer-title">Start Negotiating</div>
                         <div class="offer-input-group">
                             <input type="text" class="offer-input" id="offerInput" placeholder="$0.00">
                             <button class="offer-btn" id="offerBtn">Submit Offer</button>
@@ -1523,10 +1522,10 @@
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">${item.title}</h3>
-                        <p class="card-details">${item.year} | ${item.subtitle}</p>
+                        <p class="card-details">${item.year ? item.year + ' | ' : ''}${item.subtitle}</p>
                         <div class="card-price">
-                            <span class="price-amount">$${item.buyNowPrice.toLocaleString()}</span>
-                            <button class="view-btn">View Details</button>
+                            <span class="price-amount" style="color: #d4af37;">Make an Offer</span>
+                            <button class="view-btn">View & Negotiate</button>
                         </div>
                     </div>
                 </div>
@@ -1554,8 +1553,7 @@
 
             // Populate modal
             document.getElementById('itemTitle').textContent = currentItem.title;
-            document.getElementById('itemSubtitle').textContent = `${currentItem.year} | ${currentItem.subtitle}`;
-            document.getElementById('itemPrice').textContent = '$' + currentItem.buyNowPrice.toLocaleString();
+            document.getElementById('itemSubtitle').textContent = currentItem.year ? `${currentItem.year} | ${currentItem.subtitle}` : currentItem.subtitle;
 
             // Gallery
             renderGallery();
@@ -1566,11 +1564,16 @@
             // Market Research
             renderMarketResearch();
 
-            // Reset chat
-            document.getElementById('chatBox').classList.remove('active');
+            // Initialize chat with welcome message
+            document.getElementById('chatBox').classList.add('active');
             document.getElementById('chatMessages').innerHTML = '';
             document.getElementById('offerInput').value = '';
             offerHistory = [];
+
+            // Show welcome message
+            setTimeout(() => {
+                addChatMessage('bot', `Hi there! I'm ready to negotiate on the ${currentItem.title}. This is quality equipment and we're motivated to sell. What's your best offer?`);
+            }, 500);
 
             // Show modal
             modalOverlay.classList.add('active');
@@ -1713,38 +1716,32 @@
         }
 
         function processOffer(offer) {
-            const buyNow = currentItem.buyNowPrice;
             const floor = currentItem.floorPrice;
-            const percentOfBuyNow = (offer / buyNow) * 100;
             const percentOfFloor = (offer / floor) * 100;
 
             let response;
 
-            if (offer >= buyNow) {
-                // At or above buy now - accept immediately
-                response = `Excellent! Your offer of $${offer.toLocaleString()} has been ACCEPTED! I'll send you the purchase details right away. Thank you for your business!`;
-                acceptOffer(offer);
-            } else if (offer >= floor) {
-                // Between floor and buy now - accept with enthusiasm
-                response = `You've got yourself a deal! I can accept $${offer.toLocaleString()}. That's a fair price for this quality equipment. Let me get the paperwork started!`;
+            if (offer >= floor) {
+                // At or above floor - accept the deal!
+                response = `You've got yourself a deal! I can accept $${offer.toLocaleString()}. That's a fair offer for this quality equipment. Let me get the paperwork started!`;
                 acceptOffer(offer);
             } else if (percentOfFloor >= 95) {
                 // Very close to floor - strong encouragement
-                response = `You're very close! I might be able to work with you at $${floor.toLocaleString()}. Can you come up just a bit?`;
+                response = `You're very close! Come up just a little bit and we can make this happen. What do you say?`;
             } else if (percentOfFloor >= 90) {
                 // Close to floor - encourage higher
                 const suggested = Math.round(floor * 1.02 / 100) * 100;
-                response = `I appreciate the offer, but we're a bit apart. The lowest I could consider is around $${suggested.toLocaleString()}. This unit is priced well below market already.`;
+                response = `I appreciate the offer, but we're a bit apart. I could work with something around $${suggested.toLocaleString()}. This is quality equipment at a fair price.`;
             } else if (percentOfFloor >= 80) {
                 // Getting warmer
                 const suggested = Math.round(floor * 1.05 / 100) * 100;
-                response = `Thanks for your interest! That's a bit low considering the condition and market value. Could you come up to $${suggested.toLocaleString()}? Check out the market research - we're already below average.`;
+                response = `Thanks for your interest! That's a bit low considering the condition and market value. Could you come up closer to $${suggested.toLocaleString()}? Check out the market research below.`;
             } else if (percentOfFloor >= 70) {
                 // Too low but engaging
-                response = `I understand you're looking for a good deal - who isn't? But at $${offer.toLocaleString()}, we're pretty far apart. This is a solid piece of equipment. What's the best you can do?`;
+                response = `I understand you're looking for a good deal - who isn't? But at $${offer.toLocaleString()}, we're still pretty far apart. This is solid equipment. What's your best offer?`;
             } else {
                 // Way too low
-                response = `I appreciate the offer, but $${offer.toLocaleString()} is significantly below what we can accept for this equipment. Take another look at the specs and condition - this is a quality unit priced to sell. What can you realistically offer?`;
+                response = `I appreciate the offer, but $${offer.toLocaleString()} is quite a bit below what we can accept. Take another look at the specs and condition - this is quality equipment. What can you realistically offer?`;
             }
 
             addChatMessage('bot', response);
