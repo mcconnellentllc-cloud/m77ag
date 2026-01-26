@@ -724,6 +724,110 @@
             background: #c49d2e;
         }
 
+        /* Calving Progress Section */
+        .calving-progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .calving-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calving-header h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .calving-header select {
+            padding: 8px 15px;
+            border: 2px solid #2d5016;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            background: white;
+            color: #2d5016;
+            cursor: pointer;
+        }
+
+        .calving-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 15px;
+        }
+
+        .calving-stat-box {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .calving-stat-box.highlight {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: white;
+        }
+
+        .calving-stat-box.highlight .calving-stat-label {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .calving-stat-box.highlight .calving-stat-value {
+            color: #d4af37;
+        }
+
+        .calving-stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .calving-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .calving-stat-value.green { color: #2e7d32; }
+        .calving-stat-value.orange { color: #ef6c00; }
+        .calving-stat-value.red { color: #c62828; }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #d4af37;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .calving-stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calving-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         /* View Toggle */
         .view-toggle {
             display: flex;
@@ -1108,6 +1212,55 @@
                 <button class="update-values-btn" onclick="updateHerdValues()">
                     <span>$</span> Update Values
                 </button>
+            </div>
+        </div>
+
+        <!-- Calving Progress Section -->
+        <div class="calving-progress-section">
+            <div class="calving-header">
+                <h3>Calving Progress</h3>
+                <select id="calvingProgressYear" onchange="updateCalvingProgress()">
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+            <div class="calving-stats-grid">
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Total Cows</div>
+                    <div class="calving-stat-value" id="calvingTotalCows">0</div>
+                </div>
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Calved</div>
+                    <div class="calving-stat-value green" id="calvingCalved">0</div>
+                </div>
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Left to Calve</div>
+                    <div class="calving-stat-value orange" id="calvingLeft">0</div>
+                </div>
+                <div class="calving-stat-box highlight">
+                    <div class="calving-stat-label">Progress</div>
+                    <div class="calving-stat-value" id="calvingProgress">0%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="calvingProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Heifers</div>
+                    <div class="calving-stat-value" id="calvingHeifers">0</div>
+                </div>
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Steers</div>
+                    <div class="calving-stat-value" id="calvingSteers">0</div>
+                </div>
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Live</div>
+                    <div class="calving-stat-value green" id="calvingLive">0</div>
+                </div>
+                <div class="calving-stat-box">
+                    <div class="calving-stat-label">Dead</div>
+                    <div class="calving-stat-value red" id="calvingDead">0</div>
+                </div>
             </div>
         </div>
 
@@ -2125,21 +2278,24 @@
 
                         <h4 style="margin-bottom: 15px; color: #2e7d32;">Annual Calving Records</h4>
                         <div id="annualCalvingList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e8e6e3; border-radius: 8px; margin-bottom: 15px;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                                 <thead style="background: #f5f5f5; position: sticky; top: 0;">
                                     <tr>
-                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Year</th>
-                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">Calf?</th>
-                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Tag</th>
-                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">Sex</th>
-                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">Born</th>
-                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">BW</th>
-                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">WW</th>
-                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Sire</th>
+                                        <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd;">Year</th>
+                                        <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd;">Tag</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;">Sex</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;">Born</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;">BW</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;">WW</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;" title="Calving Ease">CE</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;" title="Calf Vigor">CV</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;" title="Body Condition Score">BCS</th>
+                                        <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd;" title="Maternal Score">MTS</th>
+                                        <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd;">Notes</th>
                                     </tr>
                                 </thead>
                                 <tbody id="annualCalvingBody">
-                                    <tr><td colspan="8" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>
+                                    <tr><td colspan="11" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -2191,6 +2347,62 @@
                                 <label>Sire Tag/Name</label>
                                 <input type="text" id="calvingSire" placeholder="Sire tag or name">
                             </div>
+                        </div>
+                        <div class="form-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <div class="form-group">
+                                <label>Calving Ease (1-5)</label>
+                                <select id="calvingEase">
+                                    <option value="">--</option>
+                                    <option value="1">1 - No Assistance</option>
+                                    <option value="2">2 - Easy Pull</option>
+                                    <option value="3">3 - Hard Pull</option>
+                                    <option value="4">4 - Mechanical</option>
+                                    <option value="5">5 - C-Section</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Calf Vigor (1-5)</label>
+                                <select id="calvingVigor">
+                                    <option value="">--</option>
+                                    <option value="1">1 - Strong/Alert</option>
+                                    <option value="2">2 - Good</option>
+                                    <option value="3">3 - Average</option>
+                                    <option value="4">4 - Weak</option>
+                                    <option value="5">5 - Very Weak</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Cow BCS (1-9)</label>
+                                <select id="calvingBCS">
+                                    <option value="">--</option>
+                                    <option value="1">1 - Emaciated</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3 - Very Thin</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 - Moderate</option>
+                                    <option value="6">6 - Good</option>
+                                    <option value="7">7 - Fleshy</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9 - Obese</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Maternal Score (1-5)</label>
+                                <select id="calvingMaternalScore">
+                                    <option value="">--</option>
+                                    <option value="1">1 - Excellent (calm, attentive)</option>
+                                    <option value="2">2 - Good</option>
+                                    <option value="3">3 - Average</option>
+                                    <option value="4">4 - Poor (aggressive)</option>
+                                    <option value="5">5 - Dangerous (CULL)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Comments</label>
+                            <input type="text" id="calvingComments" placeholder="e.g., Late calving, needed help, etc.">
                         </div>
                         <div class="form-group">
                             <label>
@@ -2845,6 +3057,7 @@
                     filterCattle();
                     updateSummary();
                     populateDropdowns();
+                    updateCalvingProgress();
                 }
             } catch (error) {
                 console.error('Error loading cattle:', error);
@@ -2858,6 +3071,49 @@
                 document.getElementById('cowCardsContainer').innerHTML = emptyState;
                 document.getElementById('cattleTableContent').innerHTML = emptyState;
             }
+        }
+
+        // Update calving progress display
+        function updateCalvingProgress() {
+            const year = parseInt(document.getElementById('calvingProgressYear')?.value || new Date().getFullYear());
+
+            // Get breeding females (cows, bred heifers)
+            const breedingFemales = allCattle.filter(c =>
+                c.status === 'active' &&
+                (c.type === 'cow' || c.type === 'bred_heifer')
+            );
+
+            const totalCows = breedingFemales.length;
+            let calved = 0;
+            let heifers = 0;
+            let steers = 0;
+            let live = 0;
+            let dead = 0;
+
+            breedingFemales.forEach(cow => {
+                const record = (cow.annualCalvingRecords || []).find(r => r.year === year);
+                if (record && record.hadCalf) {
+                    calved++;
+                    if (record.calfSex === 'heifer') heifers++;
+                    if (record.calfSex === 'bull') steers++; // bulls become steers
+                    if (record.calfSurvived !== false) live++;
+                    else dead++;
+                }
+            });
+
+            const leftToCalve = totalCows - calved;
+            const progress = totalCows > 0 ? Math.round((calved / totalCows) * 100) : 0;
+
+            // Update display
+            document.getElementById('calvingTotalCows').textContent = totalCows;
+            document.getElementById('calvingCalved').textContent = calved;
+            document.getElementById('calvingLeft').textContent = leftToCalve;
+            document.getElementById('calvingProgress').textContent = progress + '%';
+            document.getElementById('calvingProgressBar').style.width = progress + '%';
+            document.getElementById('calvingHeifers').textContent = heifers;
+            document.getElementById('calvingSteers').textContent = steers;
+            document.getElementById('calvingLive').textContent = live;
+            document.getElementById('calvingDead').textContent = dead;
         }
 
         // Load summary data
@@ -3459,24 +3715,28 @@
         function renderAnnualCalving(records) {
             const tbody = document.getElementById('annualCalvingBody');
             if (!records.length) {
-                tbody.innerHTML = '<tr><td colspan="8" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>';
                 return;
             }
             const sorted = [...records].sort((a, b) => b.year - a.year);
-            tbody.innerHTML = sorted.map(r => `
+            tbody.innerHTML = sorted.map(r => {
+                // Highlight bad maternal scores
+                const mtsStyle = r.maternalScore >= 4 ? 'color: #c62828; font-weight: bold;' : '';
+                return `
                 <tr>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${r.year}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">
-                        ${r.hadCalf ? '<span style="color: #2e7d32;">Yes</span>' : '<span style="color: #c62828;">No</span>'}
-                    </td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${r.calfTag || '-'}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.calfSex || '-'}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.calfBirthDate ? new Date(r.calfBirthDate).toLocaleDateString() : '-'}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.birthWeight || '-'}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.weaningWeight || '-'}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${r.sireTag || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${r.year}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${r.calfTag || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.calfSex ? r.calfSex.charAt(0).toUpperCase() : '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.calfBirthDate ? new Date(r.calfBirthDate).toLocaleDateString('en-US', {month: 'numeric', day: 'numeric'}) : '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.birthWeight || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.weaningWeight || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.calvingEase || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.calfVigor || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center;">${r.cowBCS || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; text-align: center; ${mtsStyle}">${r.maternalScore || '-'}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; font-size: 11px; color: ${r.maternalScore >= 4 ? '#c62828' : '#666'};">${r.comments || r.notes || '-'}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         async function loadOffspring(cattleId) {
@@ -3525,6 +3785,11 @@
             const birthWeight = document.getElementById('calvingBirthWeight').value;
             const weaningWeight = document.getElementById('calvingWW').value;
             const sireTag = document.getElementById('calvingSire').value;
+            const calvingEase = document.getElementById('calvingEase').value;
+            const calfVigor = document.getElementById('calvingVigor').value;
+            const cowBCS = document.getElementById('calvingBCS').value;
+            const maternalScore = document.getElementById('calvingMaternalScore').value;
+            const comments = document.getElementById('calvingComments').value;
             const calfSurvived = document.getElementById('calvingCalfSurvived').checked;
 
             if (!year) {
@@ -3545,7 +3810,12 @@
                         calfBirthDate: calfBirthDate || undefined,
                         birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
                         weaningWeight: weaningWeight ? parseInt(weaningWeight) : undefined,
-                        sireTag: sireTag || undefined
+                        sireTag: sireTag || undefined,
+                        calvingEase: calvingEase || undefined,
+                        calfVigor: calfVigor || undefined,
+                        cowBCS: cowBCS || undefined,
+                        maternalScore: maternalScore || undefined,
+                        comments: comments || undefined
                     })
                 });
 
@@ -3562,6 +3832,13 @@
                     document.getElementById('calvingBirthWeight').value = '';
                     document.getElementById('calvingWW').value = '';
                     document.getElementById('calvingSire').value = '';
+                    document.getElementById('calvingEase').value = '';
+                    document.getElementById('calvingVigor').value = '';
+                    document.getElementById('calvingBCS').value = '';
+                    document.getElementById('calvingMaternalScore').value = '';
+                    document.getElementById('calvingComments').value = '';
+                    // Also update calving progress
+                    updateCalvingProgress();
                 } else {
                     showToast(data.message || 'Error saving', 'error');
                 }
