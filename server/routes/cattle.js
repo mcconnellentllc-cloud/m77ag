@@ -439,7 +439,11 @@ router.post('/:id/annual-calving', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Cattle not found' });
     }
 
-    const { year, hadCalf, calfSurvived, calfTag, calfSex, weaningWeight, weaningDate, sireTag, notes } = req.body;
+    const {
+      year, hadCalf, calfSurvived, calfTag, calfSex, calfBirthDate, birthWeight,
+      weaningWeight, weaningDate, sireTag, calvingEase, calfVigor, cowBCS,
+      maternalScore, comments, notes
+    } = req.body;
 
     // Check if year record already exists
     const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === year);
@@ -450,9 +454,16 @@ router.post('/:id/annual-calving', async (req, res) => {
       calfSurvived: calfSurvived !== false,
       calfTag,
       calfSex,
+      calfBirthDate: calfBirthDate ? new Date(calfBirthDate) : undefined,
+      birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
       weaningWeight: weaningWeight ? parseInt(weaningWeight) : undefined,
       weaningDate: weaningDate ? new Date(weaningDate) : undefined,
       sireTag,
+      calvingEase: calvingEase ? parseInt(calvingEase) : undefined,
+      calfVigor: calfVigor ? parseInt(calfVigor) : undefined,
+      cowBCS: cowBCS ? parseInt(cowBCS) : undefined,
+      maternalScore: maternalScore ? parseInt(maternalScore) : undefined,
+      comments,
       notes
     };
 
@@ -621,6 +632,11 @@ router.post('/import/csv', isAdmin, async (req, res) => {
       // Add dam info if available
       if (row.dam_tag && row.dam_tag !== 'NT' && row.dam_tag !== '') {
         cattleData.dam = { tagNumber: String(row.dam_tag) };
+      }
+
+      // Add sire info if available (sire column contains tag number, not color)
+      if (row.sire && row.sire !== '' && row.sire !== 'NT') {
+        cattleData.sire = { tagNumber: String(row.sire) };
       }
 
       // Add yearling weight if available

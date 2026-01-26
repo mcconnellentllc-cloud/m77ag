@@ -62,6 +62,8 @@ const cattleSchema = new mongoose.Schema({
       type: String,
       enum: ['bull', 'heifer']
     },
+    calfBirthDate: Date,  // Calf's birth date
+    birthWeight: Number,  // Calf's birth weight in lbs
     weaningWeight: Number,  // Calf's weaning weight
     weaningDate: Date,
     sireTag: String,  // Sire of this specific calf
@@ -69,6 +71,28 @@ const cattleSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Cattle'
     },
+    // Calving metrics
+    calvingEase: {
+      type: Number,
+      min: 1,
+      max: 5  // 1=No assist, 2=Easy pull, 3=Hard pull, 4=Mechanical, 5=C-section
+    },
+    calfVigor: {
+      type: Number,
+      min: 1,
+      max: 5  // 1=Strong/Alert, 2=Good, 3=Average, 4=Weak, 5=Very weak
+    },
+    cowBCS: {
+      type: Number,
+      min: 1,
+      max: 9  // Body Condition Score 1-9
+    },
+    maternalScore: {
+      type: Number,
+      min: 1,
+      max: 5  // 1=Excellent(calm), 2=Good, 3=Average, 4=Poor(aggressive), 5=Dangerous
+    },
+    comments: String,  // Notes like "BITCH TAKES", "Late Calving", etc.
     notes: String
   }],
 
