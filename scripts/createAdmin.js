@@ -24,7 +24,7 @@ async function createAdmin() {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    const email = 'admin@m77ag.com';
+    const email = 'office@m77ag.com';
     const password = 'M77admin2025!';
 
     // Check if exists
