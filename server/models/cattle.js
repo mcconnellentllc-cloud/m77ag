@@ -62,6 +62,8 @@ const cattleSchema = new mongoose.Schema({
       type: String,
       enum: ['bull', 'heifer']
     },
+    calfBirthDate: Date,  // Calf's birth date
+    birthWeight: Number,  // Calf's birth weight in lbs
     weaningWeight: Number,  // Calf's weaning weight
     weaningDate: Date,
     sireTag: String,  // Sire of this specific calf

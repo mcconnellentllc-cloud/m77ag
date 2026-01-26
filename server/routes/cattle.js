@@ -439,7 +439,7 @@ router.post('/:id/annual-calving', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Cattle not found' });
     }
 
-    const { year, hadCalf, calfSurvived, calfTag, calfSex, weaningWeight, weaningDate, sireTag, notes } = req.body;
+    const { year, hadCalf, calfSurvived, calfTag, calfSex, calfBirthDate, birthWeight, weaningWeight, weaningDate, sireTag, notes } = req.body;
 
     // Check if year record already exists
     const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === year);
@@ -450,6 +450,8 @@ router.post('/:id/annual-calving', async (req, res) => {
       calfSurvived: calfSurvived !== false,
       calfTag,
       calfSex,
+      calfBirthDate: calfBirthDate ? new Date(calfBirthDate) : undefined,
+      birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
       weaningWeight: weaningWeight ? parseInt(weaningWeight) : undefined,
       weaningDate: weaningDate ? new Date(weaningDate) : undefined,
       sireTag,

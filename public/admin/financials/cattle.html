@@ -2128,16 +2128,18 @@
                             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                                 <thead style="background: #f5f5f5; position: sticky; top: 0;">
                                     <tr>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Year</th>
-                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Calf?</th>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Calf Tag</th>
-                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">Sex</th>
-                                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">WW</th>
-                                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Sire</th>
+                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Year</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">Calf?</th>
+                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Tag</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">Sex</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">Born</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">BW</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">WW</th>
+                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Sire</th>
                                     </tr>
                                 </thead>
                                 <tbody id="annualCalvingBody">
-                                    <tr><td colspan="6" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>
+                                    <tr><td colspan="8" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -2168,6 +2170,16 @@
                                     <option value="bull">Bull</option>
                                     <option value="heifer">Heifer</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Calf Birth Date</label>
+                                <input type="date" id="calvingBirthDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Birth Weight (lbs)</label>
+                                <input type="number" id="calvingBirthWeight" min="0" max="150" step="1" placeholder="e.g., 85">
                             </div>
                         </div>
                         <div class="form-row">
@@ -3447,20 +3459,22 @@
         function renderAnnualCalving(records) {
             const tbody = document.getElementById('annualCalvingBody');
             if (!records.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="padding: 15px; text-align: center; color: #666;">No calving records</td></tr>';
                 return;
             }
             const sorted = [...records].sort((a, b) => b.year - a.year);
             tbody.innerHTML = sorted.map(r => `
                 <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${r.year}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${r.year}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">
                         ${r.hadCalf ? '<span style="color: #2e7d32;">Yes</span>' : '<span style="color: #c62828;">No</span>'}
                     </td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${r.calfTag || '-'}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${r.calfSex || '-'}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${r.weaningWeight || '-'}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee;">${r.sireTag || '-'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${r.calfTag || '-'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.calfSex || '-'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.calfBirthDate ? new Date(r.calfBirthDate).toLocaleDateString() : '-'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.birthWeight || '-'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${r.weaningWeight || '-'}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${r.sireTag || '-'}</td>
                 </tr>
             `).join('');
         }
@@ -3507,6 +3521,8 @@
             const hadCalf = document.getElementById('calvingHadCalf').value === 'true';
             const calfTag = document.getElementById('calvingCalfTag').value;
             const calfSex = document.getElementById('calvingCalfSex').value;
+            const calfBirthDate = document.getElementById('calvingBirthDate').value;
+            const birthWeight = document.getElementById('calvingBirthWeight').value;
             const weaningWeight = document.getElementById('calvingWW').value;
             const sireTag = document.getElementById('calvingSire').value;
             const calfSurvived = document.getElementById('calvingCalfSurvived').checked;
@@ -3526,7 +3542,9 @@
                         calfSurvived: hadCalf && calfSurvived,
                         calfTag: calfTag || undefined,
                         calfSex: calfSex || undefined,
-                        weaningWeight: weaningWeight || undefined,
+                        calfBirthDate: calfBirthDate || undefined,
+                        birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
+                        weaningWeight: weaningWeight ? parseInt(weaningWeight) : undefined,
                         sireTag: sireTag || undefined
                     })
                 });
@@ -3540,6 +3558,8 @@
                     // Clear form
                     document.getElementById('calvingCalfTag').value = '';
                     document.getElementById('calvingCalfSex').value = '';
+                    document.getElementById('calvingBirthDate').value = '';
+                    document.getElementById('calvingBirthWeight').value = '';
                     document.getElementById('calvingWW').value = '';
                     document.getElementById('calvingSire').value = '';
                 } else {
