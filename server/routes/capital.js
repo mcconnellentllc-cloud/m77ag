@@ -156,30 +156,45 @@ router.post('/:id/loan', async (req, res) => {
 
 /**
  * POST /api/capital/seed/kbfarms
- * Seed KB Farms capital investment data
+ * Seed KB Farms capital investment data (force=true to replace existing)
  */
 router.post('/seed/kbfarms', async (req, res) => {
   try {
-    // Check if KB Farms data already exists
-    const existing = await CapitalInvestment.findOne({ 'location.associatedFarm': 'KB Farms' });
-    if (existing) {
-      return res.json({
-        success: false,
-        message: 'KB Farms data already exists. Delete existing entries first to re-seed.',
-        count: await CapitalInvestment.countDocuments({ 'location.associatedFarm': 'KB Farms' })
-      });
+    const { force } = req.body;
+    const existingCount = await CapitalInvestment.countDocuments({ 'location.associatedFarm': 'KB Farms' });
+
+    // Delete existing if force=true
+    if (existingCount > 0) {
+      if (!force) {
+        return res.json({
+          success: false,
+          message: 'KB Farms data exists. Click again to replace with updated data.',
+          count: existingCount,
+          needsForce: true
+        });
+      }
+      await CapitalInvestment.deleteMany({ 'location.associatedFarm': 'KB Farms' });
     }
 
+    // Clear require cache to get fresh data
+    delete require.cache[require.resolve('../seeds/kbfarms-capital')];
     const { kbFarmsData } = require('../seeds/kbfarms-capital');
     const result = await CapitalInvestment.insertMany(kbFarmsData);
 
     const totalAcres = kbFarmsData.reduce((sum, item) => sum + (item.landDetails?.totalAcres || 0), 0);
+    const totalValue = kbFarmsData.reduce((sum, item) => sum + (item.currentValue?.estimatedValue || 0), 0);
+    const totalDebt = kbFarmsData.reduce((sum, item) => {
+      return sum + (item.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0);
+    }, 0);
 
     res.status(201).json({
       success: true,
       message: `Successfully seeded ${result.length} KB Farms capital investments`,
       count: result.length,
       totalAcres: totalAcres.toFixed(2),
+      totalValue: totalValue,
+      totalDebt: totalDebt,
+      equity: totalValue - totalDebt,
       data: result.map(r => ({ name: r.name, acres: r.landDetails?.totalAcres || 0 }))
     });
   } catch (error) {
@@ -190,18 +205,23 @@ router.post('/seed/kbfarms', async (req, res) => {
 
 /**
  * POST /api/capital/seed/vehicles
- * Seed vehicle capital investment data
+ * Seed vehicle capital investment data (force=true to replace existing)
  */
 router.post('/seed/vehicles', async (req, res) => {
   try {
-    // Check if vehicle data already exists
-    const existing = await CapitalInvestment.findOne({ type: 'vehicle' });
-    if (existing) {
-      return res.json({
-        success: false,
-        message: 'Vehicle data already exists. Delete existing entries first to re-seed.',
-        count: await CapitalInvestment.countDocuments({ type: 'vehicle' })
-      });
+    const { force } = req.body;
+    const existingCount = await CapitalInvestment.countDocuments({ type: 'vehicle' });
+
+    if (existingCount > 0) {
+      if (!force) {
+        return res.json({
+          success: false,
+          message: 'Vehicle data exists. Click again to replace with updated data.',
+          count: existingCount,
+          needsForce: true
+        });
+      }
+      await CapitalInvestment.deleteMany({ type: 'vehicle' });
     }
 
     const { vehicleData } = require('../seeds/vehicles-capital');
