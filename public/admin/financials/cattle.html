@@ -2409,7 +2409,14 @@
                                 Calf survived to weaning
                             </label>
                         </div>
-                        <button class="btn-secondary" onclick="addCalvingRecord()">Save Calving Record</button>
+                        <div class="form-group" style="background: #e8f5e9; padding: 12px; border-radius: 6px; margin-top: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="calvingCreateCalf" checked>
+                                <strong>Add calf to herd inventory</strong>
+                            </label>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">Creates a new calf record in your herd with dam linked to this cow</p>
+                        </div>
+                        <button class="btn-secondary" onclick="addCalvingRecord()" style="margin-top: 15px;">Save Calving Record</button>
 
                         <h4 style="margin: 25px 0 15px; color: #2e7d32;">Offspring</h4>
                         <div id="offspringList" style="max-height: 150px; overflow-y: auto; border: 1px solid #e8e6e3; border-radius: 8px; padding: 10px;">
@@ -3790,6 +3797,7 @@
             const maternalScore = document.getElementById('calvingMaternalScore').value;
             const comments = document.getElementById('calvingComments').value;
             const calfSurvived = document.getElementById('calvingCalfSurvived').checked;
+            const createCalf = document.getElementById('calvingCreateCalf').checked;
 
             if (!year) {
                 showToast('Year is required', 'error');
@@ -3797,6 +3805,7 @@
             }
 
             try {
+                // Save the calving record on the dam
                 const response = await fetch(`/api/cattle/${currentDetailCattle._id}/annual-calving`, {
                     method: 'POST',
                     headers: getAuthHeaders(),
@@ -3827,6 +3836,50 @@
                     if (idx !== -1) {
                         allCattle[idx] = data.data;
                     }
+
+                    // Create calf as new animal if checkbox is checked
+                    if (createCalf && hadCalf && calfTag) {
+                        try {
+                            // Determine calf type based on sex
+                            let calfType = 'calf';
+                            if (calfSex === 'heifer') calfType = 'heifer';
+                            if (calfSex === 'bull') calfType = 'steer'; // Most bull calves become steers
+
+                            const calfData = {
+                                tagNumber: calfTag,
+                                type: calfType,
+                                breed: currentDetailCattle.breed || 'Angus',
+                                birthDate: calfBirthDate || new Date().toISOString().split('T')[0],
+                                birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
+                                dam: { tagNumber: currentDetailCattle.tagNumber },
+                                sire: sireTag ? { tagNumber: sireTag } : undefined,
+                                owner: currentDetailCattle.owner || 'M77',
+                                calvingGroup: currentDetailCattle.calvingGroup,
+                                status: calfSurvived ? 'active' : 'deceased',
+                                notes: `Born to ${currentDetailCattle.tagNumber}. ${comments || ''}`
+                            };
+
+                            const calfResponse = await fetch('/api/cattle', {
+                                method: 'POST',
+                                headers: getAuthHeaders(),
+                                body: JSON.stringify(calfData)
+                            });
+
+                            const calfResult = await calfResponse.json();
+                            if (calfResult.success) {
+                                showToast(`Calf ${calfTag} added to herd!`, 'success');
+                                // Add to allCattle array
+                                allCattle.push(calfResult.data);
+                                filteredCattle = [...allCattle];
+                            } else {
+                                showToast(`Calving saved but calf creation failed: ${calfResult.message}`, 'warning');
+                            }
+                        } catch (calfError) {
+                            console.error('Error creating calf:', calfError);
+                            showToast('Calving saved but could not create calf record', 'warning');
+                        }
+                    }
+
                     renderProductionSummary(data.data);
                     renderAnnualCalving(data.data.annualCalvingRecords || []);
                     // Clear form
@@ -3841,8 +3894,9 @@
                     document.getElementById('calvingBCS').value = '';
                     document.getElementById('calvingMaternalScore').value = '';
                     document.getElementById('calvingComments').value = '';
-                    // Also update calving progress
+                    // Also update calving progress and refresh counts
                     updateCalvingProgress();
+                    loadSummary(); // Refresh the header counts
                 } else {
                     showToast(data.message || 'Error saving', 'error');
                 }
