@@ -11,7 +11,7 @@ const CapitalInvestment = require('../models/capitalInvestment');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
 const vehicleData = [
-  // Farm Trucks
+  // Farm Trucks - Combined loan account *9803
   {
     name: '2011 Ford F-250 (Grey)',
     type: 'vehicle',
@@ -21,10 +21,22 @@ const vehicleData = [
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 15000
     },
+    loans: [
+      {
+        lender: 'Bank (Account *9803 - Pickups)',
+        originalAmount: 0,
+        currentBalance: 11266.57,  // Half of $22,533.13 total
+        interestRate: 0,
+        paymentAmount: 5973.43,  // Half of $11,946.85
+        paymentFrequency: 'annual',
+        nextPaymentDate: new Date('2026-09-15'),
+        notes: 'Pickups loan (shared) - total $22,533.13, payment $11,946.85 due 09/15/2026'
+      }
+    ],
     status: 'owned',
-    notes: 'Personal/Farm vehicle'
+    notes: 'Personal/Farm vehicle - Loan account *9803'
   },
   {
     name: '2011 Dodge Ram 1500',
@@ -35,10 +47,22 @@ const vehicleData = [
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 12000
     },
+    loans: [
+      {
+        lender: 'Bank (Account *9803 - Pickups)',
+        originalAmount: 0,
+        currentBalance: 11266.56,  // Half of $22,533.13 total
+        interestRate: 0,
+        paymentAmount: 5973.42,  // Half of $11,946.85
+        paymentFrequency: 'annual',
+        nextPaymentDate: new Date('2026-09-15'),
+        notes: 'Pickups loan (shared) - total $22,533.13, payment $11,946.85 due 09/15/2026'
+      }
+    ],
     status: 'owned',
-    notes: 'Personal/Farm vehicle'
+    notes: 'Personal/Farm vehicle - Loan account *9803'
   },
 
   // Personal Vehicles

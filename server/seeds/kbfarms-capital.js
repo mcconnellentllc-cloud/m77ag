@@ -36,8 +36,10 @@ const kbFarmsData = [
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 0,
-      valuePerAcre: 0
+      estimatedValue: 458610,  // 269.4 tillable × $1,500 + 64.2 pasture × $850
+      valuePerAcre: 1375,
+      lastAppraisalDate: new Date('2026-01-01'),
+      notes: 'Based on NE Colorado 2025 land values: cropland $1,500/ac, pasture $850/ac'
     },
     improvements: [
       {
@@ -60,6 +62,18 @@ const kbFarmsData = [
         cost: 0,
         category: 'water_system',
         addedToValue: true
+      }
+    ],
+    loans: [
+      {
+        lender: 'Bank (Account *9767)',
+        originalAmount: 0,
+        currentBalance: 239659.90,
+        interestRate: 0,
+        paymentAmount: 38583.17,
+        paymentFrequency: 'annual',
+        nextPaymentDate: new Date('2026-03-01'),
+        notes: 'Pauli Section loan - $38,583.17 due 03/01/2026'
       }
     ],
     status: 'owned',
@@ -102,9 +116,23 @@ County: Phillips, Intersection: Northeast/Northwest`
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 0,
-      valuePerAcre: 0
+      estimatedValue: 609310,  // 348.2 crop × $1,200 + 202.1 pasture × $700 + building site $50,000
+      valuePerAcre: 1091,
+      lastAppraisalDate: new Date('2026-01-01'),
+      notes: 'Based on Sedgwick County 2025 values: cropland $1,200/ac, pasture $700/ac, plus rental house & outbuildings'
     },
+    loans: [
+      {
+        lender: 'Bank (Account *9860)',
+        originalAmount: 0,
+        currentBalance: 319265.62,
+        interestRate: 0,
+        paymentAmount: 29502.43,
+        paymentFrequency: 'annual',
+        nextPaymentDate: new Date('2026-11-01'),
+        notes: 'Michael Ground loan - $29,502.43 due 11/01/2026'
+      }
+    ],
     improvements: [
       {
         date: new Date('2024-01-01'),
@@ -176,8 +204,10 @@ County: Sedgwick, Intersection: Southeast/Northeast/Northwest`
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 0,
-      valuePerAcre: 0
+      estimatedValue: 93563,  // 149.7 × $625/ac (Logan County pasture)
+      valuePerAcre: 625,
+      lastAppraisalDate: new Date('2026-01-01'),
+      notes: 'Based on Logan County 2025 pasture values: $500-$725/ac range'
     },
     loans: [], // Paid off - no loans
     improvements: [
@@ -237,9 +267,23 @@ PAID OFF - No money owed`
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 0,
-      valuePerAcre: 0
+      estimatedValue: 187500,  // 114.7 pasture × $850 + $75,000 grain storage + $15,000 improvements
+      valuePerAcre: 1634,  // Higher due to grain storage infrastructure
+      lastAppraisalDate: new Date('2026-01-01'),
+      notes: 'Based on Phillips County pasture $850/ac + 25,000 bu grain storage value'
     },
+    loans: [
+      {
+        lender: 'Bank (Account *9826)',
+        originalAmount: 0,
+        currentBalance: 175581.77,
+        interestRate: 0,
+        paymentAmount: 15042.48,
+        paymentFrequency: 'annual',
+        nextPaymentDate: new Date('2026-03-01'),
+        notes: 'Madsen Pasture loan - $15,042.48 due 03/01/2026'
+      }
+    ],
     buildingDetails: {
       storageCapacity: '25,000 bushels',
       utilities: ['electric', 'water']
@@ -296,8 +340,10 @@ Features: 25,000 bu grain storage, well, electricity, corral`
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 0,
-      valuePerAcre: 0
+      estimatedValue: 404250,  // 269.5 × $1,500/ac (Phillips County cropland)
+      valuePerAcre: 1500,
+      lastAppraisalDate: new Date('2026-01-01'),
+      notes: 'Based on NE Colorado 2025 dryland cropland values'
     },
     status: 'owned',
     notes: `FSA Farm: 3720, Tract: 3815
