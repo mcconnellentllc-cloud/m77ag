@@ -101,6 +101,11 @@ const realEstateSchema = new mongoose.Schema({
     type: String,
     default: 'M77 AG'
   },
+  ownerEntity: {
+    type: String,
+    enum: ['M77 AG', 'McConnell Enterprises', 'Kyle & Brandi McConnell', 'Personal', 'Other'],
+    default: 'M77 AG'
+  },
   titleNumber: {
     type: String
   },
