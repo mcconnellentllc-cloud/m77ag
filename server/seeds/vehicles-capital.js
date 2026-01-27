@@ -21,7 +21,7 @@ const vehicleData = [
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 15000
+      estimatedValue: 20000
     },
     loans: [
       {
@@ -47,7 +47,7 @@ const vehicleData = [
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 12000
+      estimatedValue: 20000
     },
     loans: [
       {
