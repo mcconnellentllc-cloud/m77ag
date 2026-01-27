@@ -56,6 +56,8 @@ const landlordRoutes = require('./routes/landlord');
 const farmerRoutes = require('./routes/farmer');
 const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
+const realEstateRoutes = require('./routes/realEstate');
+const netWorthRoutes = require('./routes/netWorth');
 const cattleRoutes = require('./routes/cattle');
 const capitalRoutes = require('./routes/capital');
 
@@ -80,6 +82,8 @@ app.use('/api/landlord', landlordRoutes);
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
+app.use('/api/real-estate', realEstateRoutes);
+app.use('/api/net-worth', netWorthRoutes);
 app.use('/api/cattle', cattleRoutes);
 app.use('/api/capital', capitalRoutes);
 

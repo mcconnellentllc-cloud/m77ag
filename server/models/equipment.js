@@ -108,6 +108,13 @@ const equipmentSchema = new mongoose.Schema({
     default: 'Phillips County, CO'
   },
 
+  // Owner Entity (M77 AG, McConnell Enterprises, Personal, etc.)
+  ownerEntity: {
+    type: String,
+    enum: ['M77 AG', 'McConnell Enterprises', 'Kyle & Brandi McConnell', 'Personal', 'Other'],
+    default: 'M77 AG'
+  },
+
   // Notes
   notes: String,
 
