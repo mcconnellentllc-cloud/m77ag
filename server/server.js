@@ -60,6 +60,9 @@ const realEstateRoutes = require('./routes/realEstate');
 const netWorthRoutes = require('./routes/netWorth');
 const cattleRoutes = require('./routes/cattle');
 const capitalRoutes = require('./routes/capital');
+const cropInsuranceRoutes = require('./routes/cropInsurance');
+const cropInventoryRoutes = require('./routes/cropInventory');
+const farmingDashboardRoutes = require('./routes/farmingDashboard');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -86,6 +89,9 @@ app.use('/api/real-estate', realEstateRoutes);
 app.use('/api/net-worth', netWorthRoutes);
 app.use('/api/cattle', cattleRoutes);
 app.use('/api/capital', capitalRoutes);
+app.use('/api/crop-insurance', cropInsuranceRoutes);
+app.use('/api/crop-inventory', cropInventoryRoutes);
+app.use('/api/farming-dashboard', farmingDashboardRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -153,6 +159,15 @@ app.get('/admin/financials/equipment', (req, res) => {
 
 app.get('/admin/financials/capital', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/financials/capital.html'));
+});
+
+// Farming Dashboard routes
+app.get('/admin/farming', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
+});
+
+app.get('/admin/farming-dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
 });
 
 // User routes
