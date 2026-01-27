@@ -154,4 +154,38 @@ router.post('/:id/loan', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/capital/seed/kbfarms
+ * Seed KB Farms capital investment data
+ */
+router.post('/seed/kbfarms', async (req, res) => {
+  try {
+    // Check if KB Farms data already exists
+    const existing = await CapitalInvestment.findOne({ 'location.associatedFarm': 'KB Farms' });
+    if (existing) {
+      return res.json({
+        success: false,
+        message: 'KB Farms data already exists. Delete existing entries first to re-seed.',
+        count: await CapitalInvestment.countDocuments({ 'location.associatedFarm': 'KB Farms' })
+      });
+    }
+
+    const { kbFarmsData } = require('../seeds/kbfarms-capital');
+    const result = await CapitalInvestment.insertMany(kbFarmsData);
+
+    const totalAcres = kbFarmsData.reduce((sum, item) => sum + (item.landDetails?.totalAcres || 0), 0);
+
+    res.status(201).json({
+      success: true,
+      message: `Successfully seeded ${result.length} KB Farms capital investments`,
+      count: result.length,
+      totalAcres: totalAcres.toFixed(2),
+      data: result.map(r => ({ name: r.name, acres: r.landDetails?.totalAcres || 0 }))
+    });
+  } catch (error) {
+    console.error('Error seeding KB Farms data:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

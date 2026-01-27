@@ -492,6 +492,7 @@
             <p class="page-subtitle">Track land, buildings, and infrastructure investments</p>
         </div>
         <div class="header-actions">
+            <button class="btn-secondary" onclick="seedKBFarms()" title="Import KB Farms land data">Seed KB Farms</button>
             <button class="btn-secondary" onclick="exportData()">Export</button>
             <button class="btn-primary" onclick="openAddModal()">+ Add Asset</button>
         </div>
@@ -1076,6 +1077,35 @@
             } catch (error) {
                 console.error('Error saving asset:', error);
                 showToast('Error saving asset', true);
+            }
+        }
+
+        // Seed KB Farms data
+        async function seedKBFarms() {
+            if (!confirm('This will import KB Farms land parcel data (Pauli Section, Michael Section, Neal\'s Pasture, Madsen Pasture). Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/capital/seed/kbfarms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(`${result.message} - ${result.totalAcres} total acres`);
+                    loadData();
+                } else {
+                    showToast(result.message, !result.success);
+                }
+            } catch (error) {
+                console.error('Error seeding KB Farms:', error);
+                showToast('Error seeding KB Farms data', true);
             }
         }
 
