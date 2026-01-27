@@ -54,6 +54,7 @@ const rentalRoutes = require('./routes/rentals');
 const seasonPassRoutes = require('./routes/seasonPass');
 const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
+const realEstateRoutes = require('./routes/realEstate');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -74,6 +75,7 @@ app.use('/api/rentals', rentalRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
+app.use('/api/real-estate', realEstateRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
