@@ -188,4 +188,35 @@ router.post('/seed/kbfarms', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/capital/seed/vehicles
+ * Seed vehicle capital investment data
+ */
+router.post('/seed/vehicles', async (req, res) => {
+  try {
+    // Check if vehicle data already exists
+    const existing = await CapitalInvestment.findOne({ type: 'vehicle' });
+    if (existing) {
+      return res.json({
+        success: false,
+        message: 'Vehicle data already exists. Delete existing entries first to re-seed.',
+        count: await CapitalInvestment.countDocuments({ type: 'vehicle' })
+      });
+    }
+
+    const { vehicleData } = require('../seeds/vehicles-capital');
+    const result = await CapitalInvestment.insertMany(vehicleData);
+
+    res.status(201).json({
+      success: true,
+      message: `Successfully seeded ${result.length} vehicles`,
+      count: result.length,
+      data: result.map(r => ({ name: r.name, category: r.category }))
+    });
+  } catch (error) {
+    console.error('Error seeding vehicle data:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

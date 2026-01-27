@@ -493,6 +493,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-secondary" onclick="seedKBFarms()" title="Import KB Farms land data">Seed KB Farms</button>
+            <button class="btn-secondary" onclick="seedVehicles()" title="Import vehicle data">Seed Vehicles</button>
             <button class="btn-secondary" onclick="exportData()">Export</button>
             <button class="btn-primary" onclick="openAddModal()">+ Add Asset</button>
         </div>
@@ -1106,6 +1107,35 @@
             } catch (error) {
                 console.error('Error seeding KB Farms:', error);
                 showToast('Error seeding KB Farms data', true);
+            }
+        }
+
+        // Seed Vehicles data
+        async function seedVehicles() {
+            if (!confirm('This will import vehicle data (F-250, Dodge 1500, Escalade, Camry, Trans Am, Diplomat RV). Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/capital/seed/vehicles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(`${result.message}`);
+                    loadData();
+                } else {
+                    showToast(result.message, !result.success);
+                }
+            } catch (error) {
+                console.error('Error seeding vehicles:', error);
+                showToast('Error seeding vehicle data', true);
             }
         }
 
