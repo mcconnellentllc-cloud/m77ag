@@ -252,6 +252,7 @@
         .asset-card-header.land { background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%); }
         .asset-card-header.building { background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%); }
         .asset-card-header.infrastructure { background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%); }
+        .asset-card-header.vehicle { background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); }
 
         .asset-name {
             font-family: 'Oswald', sans-serif;
@@ -475,6 +476,91 @@
             margin-bottom: 10px;
             color: #1a1a1a;
         }
+
+        /* Vehicle Update Form Styles */
+        .vehicle-row {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #e8e6e3;
+        }
+
+        .vehicle-row:hover {
+            border-color: #d4af37;
+        }
+
+        .vehicle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .vehicle-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+
+        .vehicle-type-badge {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .vehicle-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .vehicle-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .vehicle-field label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .vehicle-field input,
+        .vehicle-field select {
+            padding: 10px 12px;
+            border: 2px solid #e8e6e3;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .vehicle-field input:focus,
+        .vehicle-field select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .vehicle-field input[type="number"] {
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .vehicle-current-value {
+            background: #fff;
+            border: 2px solid #d4af37;
+        }
+
+        .vehicle-field .value-display {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #d4af37;
+            padding: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -494,6 +580,7 @@
         <div class="header-actions">
             <button class="btn-secondary" onclick="seedKBFarms()" title="Import KB Farms land data">Seed KB Farms</button>
             <button class="btn-secondary" onclick="seedVehicles()" title="Import vehicle data">Seed Vehicles</button>
+            <button class="btn-secondary" onclick="openUpdateValuesModal()" title="Update vehicle values based on condition and mileage">Update Values</button>
             <button class="btn-secondary" onclick="exportData()">Export</button>
             <button class="btn-primary" onclick="openAddModal()">+ Add Asset</button>
         </div>
@@ -554,6 +641,7 @@
                     <option value="land">Land</option>
                     <option value="building">Building</option>
                     <option value="infrastructure">Infrastructure</option>
+                    <option value="vehicle">Vehicles</option>
                 </select>
             </div>
             <div class="filter-group">
@@ -751,6 +839,30 @@
         </div>
     </div>
 
+    <!-- Update Values Modal -->
+    <div class="modal-overlay" id="updateValuesModal">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
+                <h2>Update Vehicle Values</h2>
+                <button class="modal-close" onclick="closeModal('updateValuesModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: #666;">Enter the current condition, mileage, and estimated market value for each vehicle. Values will be updated in real-time.</p>
+                <div id="vehiclesList">
+                    <!-- Vehicle rows loaded dynamically -->
+                </div>
+                <div class="empty-state" id="noVehiclesState" style="display: none; padding: 30px;">
+                    <h3>No Vehicles Found</h3>
+                    <p>Use "Seed Vehicles" to import vehicle data first.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('updateValuesModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveVehicleValues()">Save All Values</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
@@ -863,13 +975,16 @@
                 const debt = (asset.loans || []).reduce((sum, l) => sum + (l.currentBalance || 0), 0);
                 const equity = value - debt;
                 const acres = asset.landDetails?.totalAcres || null;
+                const isVehicle = asset.type === 'vehicle' || ['truck', 'car', 'rv', 'tractor', 'combine', 'trailer', 'atv'].includes(asset.category);
+                const mileage = asset.vehicleDetails?.mileage;
+                const condition = asset.vehicleDetails?.condition || asset.buildingDetails?.condition;
 
                 // Get features from improvements or notes
                 const features = (asset.improvements || []).slice(0, 4).map(i => i.description);
 
                 return `
                     <div class="asset-card" onclick="viewAsset('${asset._id}')">
-                        <div class="asset-card-header ${asset.type}">
+                        <div class="asset-card-header ${isVehicle ? 'vehicle' : asset.type}">
                             <span class="asset-name">${asset.name}</span>
                             <span class="asset-type-badge">${asset.category?.replace('_', ' ') || asset.type}</span>
                         </div>
@@ -881,6 +996,12 @@
                                     <span class="asset-stat-value green">${acres.toLocaleString()}</span>
                                 </div>
                                 ` : ''}
+                                ${isVehicle && mileage ? `
+                                <div class="asset-stat">
+                                    <span class="asset-stat-label">Mileage</span>
+                                    <span class="asset-stat-value">${mileage.toLocaleString()} mi</span>
+                                </div>
+                                ` : ''}
                                 <div class="asset-stat">
                                     <span class="asset-stat-label">Value</span>
                                     <span class="asset-stat-value gold">$${value.toLocaleString()}</span>
@@ -889,10 +1010,17 @@
                                     <span class="asset-stat-label">Equity</span>
                                     <span class="asset-stat-value">${debt > 0 ? '$' + equity.toLocaleString() : 'Paid Off'}</span>
                                 </div>
+                                ${isVehicle && condition ? `
+                                <div class="asset-stat">
+                                    <span class="asset-stat-label">Condition</span>
+                                    <span class="asset-stat-value" style="text-transform: capitalize;">${condition}</span>
+                                </div>
+                                ` : `
                                 <div class="asset-stat">
                                     <span class="asset-stat-label">Farm</span>
                                     <span class="asset-stat-value">${asset.location?.associatedFarm || '-'}</span>
                                 </div>
+                                `}
                             </div>
                             ${features.length > 0 ? `
                             <div class="asset-features">
@@ -1102,7 +1230,8 @@
                 if (result.success) {
                     const equity = (result.totalValue - result.totalDebt).toLocaleString();
                     showToast(`${result.message} - $${equity} equity`);
-                    loadData();
+                    loadAssets();
+                    loadSummary();
                 } else if (result.needsForce) {
                     // Data exists, ask to replace
                     if (confirm(`${result.count} KB Farms entries exist. Replace with updated data?`)) {
@@ -1137,7 +1266,8 @@
 
                 if (result.success) {
                     showToast(`${result.message}`);
-                    loadData();
+                    loadAssets();
+                    loadSummary();
                 } else if (result.needsForce) {
                     if (confirm(`${result.count} vehicles exist. Replace with updated data?`)) {
                         seedVehicles(true);
@@ -1190,6 +1320,145 @@
             toast.textContent = message;
             toast.className = 'toast active' + (isError ? ' error' : '');
             setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        // Open Update Values Modal
+        function openUpdateValuesModal() {
+            const vehicles = allAssets.filter(a => a.type === 'vehicle' || a.category === 'truck' || a.category === 'car' || a.category === 'rv');
+            const container = document.getElementById('vehiclesList');
+            const emptyState = document.getElementById('noVehiclesState');
+
+            if (vehicles.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                openModal('updateValuesModal');
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = vehicles.map(vehicle => {
+                const currentValue = vehicle.currentValue?.estimatedValue || 0;
+                const condition = vehicle.vehicleDetails?.condition || vehicle.buildingDetails?.condition || '';
+                const mileage = vehicle.vehicleDetails?.mileage || '';
+                const year = vehicle.vehicleDetails?.year || '';
+
+                return `
+                    <div class="vehicle-row" data-id="${vehicle._id}">
+                        <div class="vehicle-header">
+                            <span class="vehicle-name">${vehicle.name}</span>
+                            <span class="vehicle-type-badge">${vehicle.category || vehicle.type}</span>
+                        </div>
+                        <div class="vehicle-fields">
+                            <div class="vehicle-field">
+                                <label>Year</label>
+                                <input type="number" class="vehicle-year" value="${year}" placeholder="e.g., 2011" min="1950" max="2030">
+                            </div>
+                            <div class="vehicle-field">
+                                <label>Mileage</label>
+                                <input type="number" class="vehicle-mileage" value="${mileage}" placeholder="e.g., 150000">
+                            </div>
+                            <div class="vehicle-field">
+                                <label>Condition</label>
+                                <select class="vehicle-condition">
+                                    <option value="">Select...</option>
+                                    <option value="excellent" ${condition === 'excellent' ? 'selected' : ''}>Excellent</option>
+                                    <option value="good" ${condition === 'good' ? 'selected' : ''}>Good</option>
+                                    <option value="fair" ${condition === 'fair' ? 'selected' : ''}>Fair</option>
+                                    <option value="poor" ${condition === 'poor' ? 'selected' : ''}>Poor</option>
+                                </select>
+                            </div>
+                            <div class="vehicle-field">
+                                <label>Estimated Value ($)</label>
+                                <input type="number" class="vehicle-value vehicle-current-value" value="${currentValue}" placeholder="0" step="100">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            openModal('updateValuesModal');
+        }
+
+        // Save Vehicle Values
+        async function saveVehicleValues() {
+            const rows = document.querySelectorAll('.vehicle-row');
+            const updates = [];
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const row of rows) {
+                const id = row.dataset.id;
+                const year = row.querySelector('.vehicle-year').value;
+                const mileage = row.querySelector('.vehicle-mileage').value;
+                const condition = row.querySelector('.vehicle-condition').value;
+                const value = row.querySelector('.vehicle-value').value;
+
+                updates.push({
+                    id,
+                    year: parseInt(year) || null,
+                    mileage: parseInt(mileage) || null,
+                    condition,
+                    value: parseFloat(value) || 0
+                });
+            }
+
+            // Update each vehicle
+            for (const update of updates) {
+                try {
+                    const asset = allAssets.find(a => a._id === update.id);
+                    if (!asset) continue;
+
+                    const updateData = {
+                        ...asset,
+                        currentValue: {
+                            ...asset.currentValue,
+                            estimatedValue: update.value
+                        },
+                        vehicleDetails: {
+                            ...(asset.vehicleDetails || {}),
+                            year: update.year,
+                            mileage: update.mileage,
+                            condition: update.condition
+                        }
+                    };
+
+                    // Also update buildingDetails.condition for backwards compatibility
+                    if (asset.buildingDetails) {
+                        updateData.buildingDetails = {
+                            ...asset.buildingDetails,
+                            condition: update.condition
+                        };
+                    }
+
+                    const response = await fetch(`/api/capital/${update.id}`, {
+                        method: 'PUT',
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify(updateData)
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+                } catch (error) {
+                    console.error('Error updating vehicle:', error);
+                    errorCount++;
+                }
+            }
+
+            closeModal('updateValuesModal');
+
+            if (errorCount > 0) {
+                showToast(`Updated ${successCount} vehicles, ${errorCount} errors`, true);
+            } else {
+                showToast(`Updated ${successCount} vehicle values!`);
+            }
+
+            // Reload data
+            loadAssets();
+            loadSummary();
         }
     </script>
 </body>
