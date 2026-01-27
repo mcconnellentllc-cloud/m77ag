@@ -2303,7 +2303,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Year</label>
-                                <input type="number" id="calvingYear" min="2010" max="2030" value="2026">
+                                <input type="number" id="calvingYear" min="2010" max="2030" value="2026" onchange="updateCalfTag()">
                             </div>
                             <div class="form-group">
                                 <label>Had Calf?</label>
@@ -2315,8 +2315,9 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Calf Tag #</label>
-                                <input type="text" id="calvingCalfTag" placeholder="Calf's tag number">
+                                <label>Calf Tag # <span style="font-weight: normal; color: #666;">(auto-generated)</span></label>
+                                <input type="text" id="calvingCalfTag" readonly style="background: #f5f5f5; font-weight: bold;">
+                                <p style="font-size: 11px; color: #888; margin-top: 4px;">Format: [Dam]-C[Year] (e.g., 2318-C26)</p>
                             </div>
                             <div class="form-group">
                                 <label>Calf Sex</label>
@@ -3651,9 +3652,21 @@
             renderAnnualCalving(cattle.annualCalvingRecords || []);
             loadOffspring(cattle._id);
 
+            // Auto-generate calf tag
+            updateCalfTag();
+
             // Reset to first tab
             switchTab('basic');
             openModal('detailModal');
+        }
+
+        // Auto-generate calf tag based on dam tag and year
+        function updateCalfTag() {
+            if (!currentDetailCattle) return;
+            const year = document.getElementById('calvingYear').value;
+            const yearSuffix = year.toString().slice(-2); // Get last 2 digits (2026 -> 26)
+            const calfTag = `${currentDetailCattle.tagNumber}-C${yearSuffix}`;
+            document.getElementById('calvingCalfTag').value = calfTag;
         }
 
         function renderGrazingHistory(history) {
