@@ -1082,8 +1082,8 @@
         }
 
         // Seed KB Farms data
-        async function seedKBFarms() {
-            if (!confirm('This will import KB Farms land parcel data (Pauli Section, Michael Section, Neal\'s Pasture, Madsen Pasture). Continue?')) {
+        async function seedKBFarms(force = false) {
+            if (!force && !confirm('This will import/update KB Farms land parcel data with current values and loan balances. Continue?')) {
                 return;
             }
 
@@ -1093,16 +1093,23 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    }
+                    },
+                    body: JSON.stringify({ force })
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
-                    showToast(`${result.message} - ${result.totalAcres} total acres`);
+                    const equity = (result.totalValue - result.totalDebt).toLocaleString();
+                    showToast(`${result.message} - $${equity} equity`);
                     loadData();
+                } else if (result.needsForce) {
+                    // Data exists, ask to replace
+                    if (confirm(`${result.count} KB Farms entries exist. Replace with updated data?`)) {
+                        seedKBFarms(true);
+                    }
                 } else {
-                    showToast(result.message, !result.success);
+                    showToast(result.message, true);
                 }
             } catch (error) {
                 console.error('Error seeding KB Farms:', error);
@@ -1111,8 +1118,8 @@
         }
 
         // Seed Vehicles data
-        async function seedVehicles() {
-            if (!confirm('This will import vehicle data (F-250, Dodge 1500, Escalade, Camry, Trans Am, Diplomat RV). Continue?')) {
+        async function seedVehicles(force = false) {
+            if (!force && !confirm('This will import/update vehicle data with loan balances. Continue?')) {
                 return;
             }
 
@@ -1122,7 +1129,8 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    }
+                    },
+                    body: JSON.stringify({ force })
                 });
 
                 const result = await response.json();
@@ -1130,8 +1138,12 @@
                 if (result.success) {
                     showToast(`${result.message}`);
                     loadData();
+                } else if (result.needsForce) {
+                    if (confirm(`${result.count} vehicles exist. Replace with updated data?`)) {
+                        seedVehicles(true);
+                    }
                 } else {
-                    showToast(result.message, !result.success);
+                    showToast(result.message, true);
                 }
             } catch (error) {
                 console.error('Error seeding vehicles:', error);

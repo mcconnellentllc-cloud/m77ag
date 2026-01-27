@@ -29,15 +29,15 @@ const kbFarmsData = [
       }
     },
     landDetails: {
-      totalAcres: 333.6,
-      tillableAcres: 269.4,
-      pastureAcres: 64.2,
+      totalAcres: 604,
+      tillableAcres: 480,
+      pastureAcres: 124,
       soilTypes: ['Hard'],
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 458610,  // 269.4 tillable × $1,500 + 64.2 pasture × $850
-      valuePerAcre: 1375,
+      estimatedValue: 724800,  // 604 acres × ~$1,200/ac avg
+      valuePerAcre: 1200,
       lastAppraisalDate: new Date('2026-01-01'),
       notes: 'Based on NE Colorado 2025 land values: cropland $1,500/ac, pasture $850/ac'
     },
@@ -108,18 +108,18 @@ County: Phillips, Intersection: Northeast/Northwest`
       }
     },
     landDetails: {
-      totalAcres: 558.3,
-      tillableAcres: 348.2,
-      pastureAcres: 202.1,
-      buildingSites: 1,
+      totalAcres: 400,
+      tillableAcres: 250,
+      pastureAcres: 142,
+      buildingSites: 8,
       soilTypes: ['Sand', 'Pasture'],
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 609310,  // 348.2 crop × $1,200 + 202.1 pasture × $700 + building site $50,000
-      valuePerAcre: 1091,
+      estimatedValue: 490000,  // 400 acres × ~$1,100/ac avg + rental house $50,000
+      valuePerAcre: 1225,
       lastAppraisalDate: new Date('2026-01-01'),
-      notes: 'Based on Sedgwick County 2025 values: cropland $1,200/ac, pasture $700/ac, plus rental house & outbuildings'
+      notes: 'Based on Sedgwick County 2025 values plus rental house & 5 outbuildings'
     },
     loans: [
       {
@@ -197,14 +197,13 @@ County: Sedgwick, Intersection: Southeast/Northeast/Northwest`
       }
     },
     landDetails: {
-      totalAcres: 149.7,
-      pastureAcres: 143.3,
-      wetlandAcres: 6.4,
-      soilTypes: ['Pasture', 'Waste'],
+      totalAcres: 152,
+      pastureAcres: 152,
+      soilTypes: ['Pasture'],
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 93563,  // 149.7 × $625/ac (Logan County pasture)
+      estimatedValue: 95000,  // 152 × $625/ac (Logan County pasture)
       valuePerAcre: 625,
       lastAppraisalDate: new Date('2026-01-01'),
       notes: 'Based on Logan County 2025 pasture values: $500-$725/ac range'
@@ -261,14 +260,14 @@ PAID OFF - No money owed`
       }
     },
     landDetails: {
-      totalAcres: 114.7,
-      pastureAcres: 114.7,
+      totalAcres: 160,
+      pastureAcres: 160,
       soilTypes: ['Pasture'],
       floodZone: false
     },
     currentValue: {
-      estimatedValue: 187500,  // 114.7 pasture × $850 + $75,000 grain storage + $15,000 improvements
-      valuePerAcre: 1634,  // Higher due to grain storage infrastructure
+      estimatedValue: 226000,  // 160 pasture × $850 + $75,000 grain storage + $15,000 improvements
+      valuePerAcre: 1413,  // Higher due to grain storage infrastructure
       lastAppraisalDate: new Date('2026-01-01'),
       notes: 'Based on Phillips County pasture $850/ac + 25,000 bu grain storage value'
     },
@@ -318,41 +317,6 @@ Fields included:
 Cross Roads: 5 & 10
 County: Phillips, Intersection: Southwest
 Features: 25,000 bu grain storage, well, electricity, corral`
-  },
-
-  // Additional KB Farms crop fields
-  {
-    name: 'KB Farms North Fields',
-    type: 'land',
-    category: 'cropland',
-    description: 'Northern crop fields including 20 NORTH, 21 SMALL, and 22 TOP HILL.',
-    location: {
-      legalDescription: 'N/2 & NE 17-6-47',
-      county: 'Phillips',
-      state: 'CO',
-      parcelNumber: 'FSA 3720-3815',
-      associatedFarm: 'KB Farms'
-    },
-    landDetails: {
-      totalAcres: 269.5,
-      tillableAcres: 269.5,
-      soilTypes: ['Hard'],
-      floodZone: false
-    },
-    currentValue: {
-      estimatedValue: 404250,  // 269.5 × $1,500/ac (Phillips County cropland)
-      valuePerAcre: 1500,
-      lastAppraisalDate: new Date('2026-01-01'),
-      notes: 'Based on NE Colorado 2025 dryland cropland values'
-    },
-    status: 'owned',
-    notes: `FSA Farm: 3720, Tract: 3815
-Fields included:
-- 20 NORTH: 64.8 acres, N/2 17-6-47
-- 21 SMALL: 44.7 acres, NE 17-6-47
-- 22 TOP HILL: 160.0 acres, N2 17-6-47
-Cross Roads: 5 & 10
-County: Phillips, Intersection: Southwest`
   }
 ];
 
