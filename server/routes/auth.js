@@ -12,14 +12,14 @@ router.get('/setup-admin', async (req, res) => {
   try {
     const User = require('../models/user');
 
-    // Try to find existing admin
-    let admin = await User.findOne({ email: 'admin@m77ag.com' });
+    // Try to find existing admin by email
+    let admin = await User.findOne({ email: 'office@m77ag.com' });
 
     if (admin) {
       // Reset the password and required fields
       admin.name = 'M77 AG Admin';
       admin.phone = '970-571-1015';
-      admin.password = 'M77ag2024!Admin';
+      admin.password = 'M77admin2025!';
       admin.role = 'admin';
       admin.isActive = true;
       admin.emailVerified = true;
@@ -28,16 +28,16 @@ router.get('/setup-admin', async (req, res) => {
       return res.json({
         success: true,
         message: 'Admin user password reset successfully',
-        email: 'admin@m77ag.com',
-        password: 'M77ag2024!Admin'
+        email: 'office@m77ag.com',
+        password: 'M77admin2025!'
       });
     } else {
       // Create new admin
       const newAdmin = new User({
         name: 'M77 AG Admin',
-        email: 'admin@m77ag.com',
+        email: 'office@m77ag.com',
         phone: '970-571-1015',
-        password: 'M77ag2024!Admin',
+        password: 'M77admin2025!',
         role: 'admin',
         emailVerified: true,
         isActive: true
@@ -48,8 +48,8 @@ router.get('/setup-admin', async (req, res) => {
       return res.json({
         success: true,
         message: 'Admin user created successfully',
-        email: 'admin@m77ag.com',
-        password: 'M77ag2024!Admin'
+        email: 'office@m77ag.com',
+        password: 'M77admin2025!'
       });
     }
   } catch (error) {

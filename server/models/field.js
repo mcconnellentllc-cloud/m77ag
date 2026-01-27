@@ -133,11 +133,36 @@ const fieldSchema = new mongoose.Schema({
     notes: String
   }],
 
+  // Future crop planning (7 years in advance)
+  cropPlan: [{
+    year: {
+      type: Number,
+      required: true
+    },
+    cropType: {
+      type: String,
+      required: true,
+      enum: ['corn', 'soybeans', 'wheat', 'milo', 'sunflower', 'fallow', 'other']
+    },
+    variety: String,
+    notes: String
+  }],
+
   // Field-specific Expenses
   fieldExpenses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Transaction'
   }],
+
+  // Financial projections (visible to landlords)
+  financials: {
+    breakEvenPerAcre: Number,      // Break-even price per acre
+    profitPerAcre: Number,          // Projected profit/loss per acre
+    totalExpenses: Number,          // Total projected expenses for field
+    projectedRevenue: Number,       // Total projected revenue for field
+    costPerBushel: Number,          // Cost per bushel calculation
+    lastUpdated: Date               // When projections were last updated
+  },
 
   // Field Status
   status: {
@@ -192,6 +217,33 @@ fieldSchema.methods.addCropHistory = function(cropData) {
   // Sort by year descending
   this.cropHistory.sort((a, b) => b.year - a.year);
   return this.save();
+};
+
+// Method to update crop plan for future years
+fieldSchema.methods.updateCropPlan = function(year, cropData) {
+  // Remove existing plan for this year if present
+  this.cropPlan = this.cropPlan.filter(plan => plan.year !== year);
+  // Add new plan
+  this.cropPlan.push({
+    year,
+    ...cropData
+  });
+  // Sort by year ascending
+  this.cropPlan.sort((a, b) => a.year - b.year);
+  return this.save();
+};
+
+// Method to get crop for any year (history, current, or planned)
+fieldSchema.methods.getCropForYear = function(year) {
+  const currentYear = new Date().getFullYear();
+
+  if (year === currentYear) {
+    return this.currentCrop;
+  } else if (year < currentYear) {
+    return this.cropHistory.find(crop => crop.year === year);
+  } else {
+    return this.cropPlan.find(plan => plan.year === year);
+  }
 };
 
 const Field = mongoose.model('Field', fieldSchema);

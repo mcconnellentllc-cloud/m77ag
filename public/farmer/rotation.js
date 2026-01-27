@@ -25,19 +25,34 @@ function renderRotationTable() {
         fieldsByProperty[propName].push(field);
     });
 
-    // Calculate current year
+    // Calculate current year + 7 years in advance
     const currentYear = new Date().getFullYear();
-    const years = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+    const years = [
+        currentYear - 2,  // 2 years back for reference
+        currentYear - 1,  // last year
+        currentYear,      // this year
+        currentYear + 1,  // next 7 years
+        currentYear + 2,
+        currentYear + 3,
+        currentYear + 4,
+        currentYear + 5,
+        currentYear + 6,
+        currentYear + 7
+    ];
 
     // Build table HTML
     let html = `
-        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
             <div>
+                <h3 style="margin: 0; color: #2c5f2d;">7-Year Crop Rotation Planning</h3>
+                <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem; color: #666;">
+                    Click any editable cell (green border) to plan future crops. Historical data is locked.
+                </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
                 <button class="btn btn-secondary btn-small" onclick="exportRotationToExcel()">📥 Export to Excel</button>
                 <button class="btn btn-secondary btn-small" onclick="printRotationTable()">🖨️ Print</button>
-            </div>
-            <div>
-                <button class="btn btn-primary btn-small" onclick="showRotationStats()">📊 Show Statistics</button>
+                <button class="btn btn-primary btn-small" onclick="showRotationStats()">📊 Statistics</button>
             </div>
         </div>
 
@@ -54,14 +69,23 @@ function renderRotationTable() {
                 <div class="card-header">
                     <h4 class="card-title">${propertyName} (${totalAcres.toFixed(1)} acres)</h4>
                 </div>
-                <div class="table-container">
-                    <table class="rotation-table" style="font-size: 0.9rem;">
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="rotation-table" style="font-size: 0.85rem; min-width: 1200px;">
                         <thead>
                             <tr>
-                                <th style="width: 150px;">Field Name</th>
-                                <th style="width: 80px;">Acres</th>
-                                ${years.map(y => `<th style="width: 100px;">${y}</th>`).join('')}
-                                <th style="width: 100px;">Actions</th>
+                                <th style="width: 120px; position: sticky; left: 0; background: #f8f9fa; z-index: 10;">Field Name</th>
+                                <th style="width: 60px; position: sticky; left: 120px; background: #f8f9fa; z-index: 10;">Acres</th>
+                                ${years.map(y => {
+                                    const isCurrent = y === currentYear;
+                                    const isPast = y < currentYear;
+                                    const headerStyle = isCurrent
+                                        ? 'background: #fff3cd; font-weight: 700; border: 2px solid #ffc107;'
+                                        : isPast
+                                        ? 'background: #f1f1f1; color: #666;'
+                                        : 'background: #d4edda; font-weight: 600; color: #2c5f2d;';
+                                    return `<th style="width: 85px; ${headerStyle}">${y}</th>`;
+                                }).join('')}
+                                <th style="width: 80px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,10 +133,12 @@ function renderRotationRow(field, years) {
             // Historical data from cropHistory
             const historyEntry = field.cropHistory?.find(h => h.year === year);
             crop = historyEntry?.cropType || '';
+            editable = false; // History is locked
         } else {
-            // Future year - plan
-            editable = true;
-            crop = ''; // Could add planning data here
+            // Future year - plan from cropPlan
+            const planEntry = field.cropPlan?.find(p => p.year === year);
+            crop = planEntry?.cropType || '';
+            editable = true; // Future plans are editable
         }
 
         const cropDisplay = crop ? formatCropName(crop) : '-';
@@ -120,7 +146,7 @@ function renderRotationRow(field, years) {
         const cellClass = editable ? 'editable-cell' : '';
 
         html += `
-            <td class="${cellClass}" style="background-color: ${cropColor}; cursor: ${editable ? 'pointer' : 'default'};"
+            <td class="${cellClass}" style="background-color: ${cropColor}; cursor: ${editable ? 'pointer' : 'default'}; border: ${editable ? '1px solid #2c5f2d' : '1px solid #ddd'};"
                 ${editable ? `onclick="editCrop('${field._id}', ${year})"` : ''}>
                 ${cropDisplay}
             </td>
@@ -203,7 +229,16 @@ function editCrop(fieldId, year) {
     const field = fields.find(f => f._id === fieldId);
     if (!field) return;
 
-    const currentCrop = year === new Date().getFullYear() ? field.currentCrop?.cropType || '' : '';
+    const currentYear = new Date().getFullYear();
+    let currentCrop = '';
+
+    if (year === currentYear) {
+        currentCrop = field.currentCrop?.cropType || '';
+    } else if (year > currentYear) {
+        // Future year - get from cropPlan
+        const planEntry = field.cropPlan?.find(p => p.year === year);
+        currentCrop = planEntry?.cropType || '';
+    }
 
     const modalHTML = `
         <div class="modal-content">
@@ -296,18 +331,32 @@ async function saveCropEdit() {
     const cropType = document.getElementById('editCropType').value;
     const variety = document.getElementById('editCropVariety').value;
 
-    try {
-        // Update field's current crop
-        await apiCall(`/fields/${fieldId}/current-crop`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                cropType,
-                year,
-                variety
-            })
-        });
+    const currentYear = new Date().getFullYear();
 
-        showAlert('Crop updated successfully!', 'success');
+    try {
+        if (year === currentYear) {
+            // Update current year crop
+            await apiCall(`/fields/${fieldId}/current-crop`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    cropType,
+                    year,
+                    variety
+                })
+            });
+        } else if (year > currentYear) {
+            // Update future crop plan
+            await apiCall(`/fields/${fieldId}/crop-plan`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    year,
+                    cropType,
+                    variety
+                })
+            });
+        }
+
+        showAlert('Crop plan updated successfully!', 'success');
         closeModal('editCropModal');
 
         await loadFields();
@@ -419,16 +468,21 @@ function showRotationStats() {
 function exportRotationToExcel() {
     const wb = XLSX.utils.book_new();
     const currentYear = new Date().getFullYear();
-    const years = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+    const years = [
+        currentYear - 2, currentYear - 1, currentYear,
+        currentYear + 1, currentYear + 2, currentYear + 3,
+        currentYear + 4, currentYear + 5, currentYear + 6, currentYear + 7
+    ];
 
     const data = [
-        ['Field Name', 'Property', 'Acres', ...years.map(y => y.toString())],
+        ['Field Name', 'Property', 'Landlord', 'Acres', ...years.map(y => y.toString())],
     ];
 
     fields.forEach(field => {
         const row = [
             field.name,
             field.property?.name || '',
+            field.property?.landlord?.name || field.property?.landlord?.username || '',
             field.acres || 0
         ];
 
@@ -439,8 +493,11 @@ function exportRotationToExcel() {
             } else if (year < currentYear) {
                 const historyEntry = field.cropHistory?.find(h => h.year === year);
                 crop = historyEntry?.cropType || '';
+            } else {
+                const planEntry = field.cropPlan?.find(p => p.year === year);
+                crop = planEntry?.cropType || '';
             }
-            row.push(crop);
+            row.push(formatCropName(crop) || '');
         });
 
         data.push(row);
@@ -448,14 +505,15 @@ function exportRotationToExcel() {
 
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws['!cols'] = [
-        {wch: 20}, {wch: 20}, {wch: 10},
+        {wch: 20}, {wch: 20}, {wch: 20}, {wch: 10},
+        {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12},
         {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12}
     ];
 
-    XLSX.utils.book_append_sheet(wb, ws, 'Crop Rotation');
-    XLSX.writeFile(wb, `M77AG_Crop_Rotation_${currentYear}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, 'Crop Rotation Plan');
+    XLSX.writeFile(wb, `M77AG_7Year_Rotation_Plan_${currentYear}.xlsx`);
 
-    showAlert('Rotation table exported to Excel!', 'success');
+    showAlert('7-Year Rotation Plan exported to Excel!', 'success');
 }
 
 // Print rotation table
