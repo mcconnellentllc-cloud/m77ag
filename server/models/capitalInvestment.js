@@ -14,7 +14,7 @@ const capitalInvestmentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['land', 'building', 'infrastructure', 'improvement', 'other'],
+    enum: ['land', 'building', 'infrastructure', 'improvement', 'vehicle', 'equipment', 'other'],
     required: true
   },
   category: {
@@ -26,6 +26,10 @@ const capitalInvestmentSchema = new mongoose.Schema({
       'barn', 'shop', 'grain_storage', 'equipment_shed', 'house', 'outbuilding', 'livestock_facility',
       // Infrastructure
       'fencing', 'irrigation', 'drainage', 'road', 'utilities', 'water_system',
+      // Vehicles
+      'truck', 'tractor', 'combine', 'car', 'rv', 'trailer', 'atv',
+      // Equipment
+      'planter', 'sprayer', 'tillage', 'hay_equipment', 'grain_handling',
       // Other
       'other'
     ],

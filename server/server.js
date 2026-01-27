@@ -57,6 +57,7 @@ const farmerRoutes = require('./routes/farmer');
 const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
 const cattleRoutes = require('./routes/cattle');
+const capitalRoutes = require('./routes/capital');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -80,6 +81,7 @@ app.use('/api/farmer', farmerRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
 app.use('/api/cattle', cattleRoutes);
+app.use('/api/capital', capitalRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
