@@ -265,6 +265,11 @@
         .card-btn.toggle-sale.not-for-sale {
             background: #666;
         }
+        .card-btn.sold {
+            background: #c0392b;
+            color: #fff;
+        }
+        .card-btn.sold:hover { background: #a93226; }
 
         /* Upcoming Payments */
         .payments-section {
@@ -1007,6 +1012,7 @@
                         <button class="card-btn toggle-sale ${item.forSale ? '' : 'not-for-sale'}" onclick="toggleForSale('${item._id}')">
                             ${item.forSale ? 'Remove from Sale' : 'List for Sale'}
                         </button>
+                        <button class="card-btn sold" onclick="markAsSold('${item._id}', '${item.title.replace(/'/g, "\\'")}')">Sold</button>
                     </div>
                 </div>
             `;
@@ -1104,6 +1110,41 @@
                 }
             } catch (error) {
                 console.error('Error toggling sale status:', error);
+            }
+        }
+
+        // Mark equipment as sold (delete from inventory)
+        async function markAsSold(id, title) {
+            const salePrice = prompt(`Enter sale price for "${title}":\n(Leave blank to just remove)`, '');
+
+            if (salePrice === null) return; // User cancelled
+
+            const confirmMsg = salePrice
+                ? `Mark "${title}" as SOLD for $${parseFloat(salePrice).toLocaleString()}?\n\nThis will remove it from your inventory.`
+                : `Remove "${title}" from inventory?\n\nThis cannot be undone.`;
+
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success message
+                    const msg = salePrice
+                        ? `${title} sold for $${parseFloat(salePrice).toLocaleString()}!`
+                        : `${title} removed from inventory.`;
+                    alert(msg);
+                    loadEquipment();
+                    loadSummary();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to remove equipment'));
+                }
+            } catch (error) {
+                console.error('Error marking as sold:', error);
+                alert('Error removing equipment');
             }
         }
 
