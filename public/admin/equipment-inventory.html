@@ -465,6 +465,32 @@
         .photo-upload-section {
             margin-top: 20px;
         }
+        .photo-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .photo-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 20px;
+            font-size: 16px;
+        }
+        .photo-btn .btn-icon {
+            font-size: 20px;
+        }
+        @media (max-width: 480px) {
+            .photo-buttons {
+                flex-direction: column;
+            }
+            .photo-btn {
+                padding: 18px 20px;
+                font-size: 18px;
+            }
+        }
         .drop-zone {
             border: 2px dashed #ccc;
             border-radius: 10px;
@@ -803,12 +829,21 @@
 
                     <h3 class="section-title">Photos</h3>
                     <div class="photo-upload-section" id="photoSection" style="display: none;">
+                        <div class="photo-buttons">
+                            <button type="button" class="btn btn-primary photo-btn" id="cameraBtn">
+                                <span class="btn-icon">📸</span> Take Photo
+                            </button>
+                            <button type="button" class="btn btn-secondary photo-btn" id="browseBtn">
+                                <span class="btn-icon">📁</span> Browse Files
+                            </button>
+                        </div>
+                        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+                        <input type="file" id="photoInput" multiple accept="image/*,.heic,.heif" style="display: none;">
                         <div class="drop-zone" id="dropZone">
                             <div class="drop-zone-icon">📷</div>
                             <div class="drop-zone-text">
-                                Drag & drop photos here or <span>click to browse</span>
+                                Or drag & drop photos here
                             </div>
-                            <input type="file" id="photoInput" multiple accept="image/*" style="display: none;">
                         </div>
                         <div id="uploadProgress"></div>
                         <div class="photo-preview-grid" id="photoPreviewGrid"></div>
@@ -1142,15 +1177,30 @@
 
         const dropZone = document.getElementById('dropZone');
         const photoInput = document.getElementById('photoInput');
+        const cameraInput = document.getElementById('cameraInput');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const browseBtn = document.getElementById('browseBtn');
         const photoSection = document.getElementById('photoSection');
         const photoSaveHint = document.getElementById('photoSaveHint');
         const uploadProgress = document.getElementById('uploadProgress');
         const photoPreviewGrid = document.getElementById('photoPreviewGrid');
 
-        // Click to browse
+        // Camera button - opens device camera
+        cameraBtn.addEventListener('click', () => cameraInput.click());
+
+        // Browse button - opens file picker
+        browseBtn.addEventListener('click', () => photoInput.click());
+
+        // Drop zone click - opens file picker
         dropZone.addEventListener('click', () => photoInput.click());
 
-        // File input change
+        // Camera input change (single photo from camera)
+        cameraInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            cameraInput.value = ''; // Reset for next photo
+        });
+
+        // File input change (multiple from gallery/files)
         photoInput.addEventListener('change', (e) => {
             handleFiles(e.target.files);
         });
@@ -1181,7 +1231,11 @@
 
             const formData = new FormData();
             for (const file of files) {
-                if (file.type.startsWith('image/')) {
+                // Accept all image types including HEIC/HEIF from iPhones
+                const isImage = file.type.startsWith('image/') ||
+                    file.name.toLowerCase().endsWith('.heic') ||
+                    file.name.toLowerCase().endsWith('.heif');
+                if (isImage) {
                     formData.append('images', file);
                 }
             }

@@ -23,12 +23,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit (HEIC can be larger)
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp|heic|heif/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    if (extname && mimetype) {
+    // HEIC files may have mimetype image/heic or image/heif
+    const isImage = file.mimetype.startsWith('image/') ||
+                   file.mimetype === 'application/octet-stream'; // iOS sometimes sends HEIC as octet-stream
+    if (extname || isImage) {
       return cb(null, true);
     }
     cb(new Error('Only image files are allowed'));
