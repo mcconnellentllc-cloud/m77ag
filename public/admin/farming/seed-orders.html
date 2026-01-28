@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seed Orders - M77 AG Farming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f3f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .breadcrumb a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #d4af37;
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-header h1 {
+            color: #2d5016;
+            font-size: 28px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .year-select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #c4a030 100%);
+            color: #1a1a1a;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2d5016;
+            border: 2px solid #2d5016;
+        }
+
+        .btn-secondary:hover {
+            background: #2d5016;
+            color: white;
+        }
+
+        /* Order Summary Card */
+        .order-summary {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .summary-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1e 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-header h2 {
+            font-size: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .summary-item .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .summary-item .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c2c2c;
+        }
+
+        .summary-item .value.green {
+            color: #2d5016;
+        }
+
+        .summary-item .value.gold {
+            color: #d4af37;
+        }
+
+        /* Seed Section */
+        .seed-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header.corn {
+            background: linear-gradient(135deg, #f57f17 0%, #ffb300 100%);
+            color: white;
+        }
+
+        .section-header.sorghum {
+            background: linear-gradient(135deg, #c62828 0%, #e53935 100%);
+            color: white;
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+        }
+
+        .section-body {
+            padding: 25px;
+        }
+
+        /* Seed Table */
+        .seed-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .seed-table th,
+        .seed-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .seed-table th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .seed-table td {
+            color: #444;
+        }
+
+        .seed-table tr:hover {
+            background: #fafafa;
+        }
+
+        .hybrid-name {
+            font-weight: 600;
+            color: #2d5016;
+        }
+
+        .traits-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Field Assignment */
+        .field-assignment {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .field-assignment h4 {
+            color: #2c2c2c;
+            margin-bottom: 15px;
+        }
+
+        .assignment-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .assignment-row:last-child {
+            border-bottom: none;
+        }
+
+        .assignment-row select,
+        .assignment-row input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .assignment-row select:focus,
+        .assignment-row input:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .btn-remove {
+            background: #ffebee;
+            color: #c62828;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background: #ffcdd2;
+        }
+
+        .btn-add-assignment {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #e8f5e9;
+            color: #2d5016;
+            border: 1px dashed #2d5016;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-add-assignment:hover {
+            background: #c8e6c9;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 10px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d5016, #4caf50);
+            border-radius: 4px;
+        }
+
+        /* Financial Summary */
+        .financial-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .financial-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: white;
+            padding: 20px 25px;
+        }
+
+        .financial-body {
+            padding: 25px;
+        }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .financial-column h4 {
+            color: #2c2c2c;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .financial-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #444;
+        }
+
+        .financial-row.total {
+            font-weight: bold;
+            color: #2c2c2c;
+            border-top: 1px solid #ddd;
+            margin-top: 10px;
+            padding-top: 15px;
+        }
+
+        .financial-row .discount {
+            color: #2e7d32;
+        }
+
+        .financial-row .negative {
+            color: #c62828;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: #2c2c2c;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .financial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .assignment-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .seed-table {
+                font-size: 13px;
+            }
+
+            .seed-table th,
+            .seed-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">M77 AG</div>
+                <div class="breadcrumb">
+                    <a href="/admin">Admin</a> / <a href="/admin/farming">Farming</a> / Seed Orders
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>2026 Seed Orders</h1>
+                <p>Pioneer seed order - Match hybrids to fields for planting</p>
+            </div>
+            <div class="header-actions">
+                <select class="year-select" id="yearSelect" onchange="changeYear()">
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                </select>
+                <button class="btn btn-secondary" onclick="printOrder()">Print Order</button>
+                <button class="btn btn-primary" onclick="saveAssignments()">Save Assignments</button>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="summary-header">
+                <h2>Order Summary - Pioneer (Business Partner ID: 18482203)</h2>
+                <span>McConnell Enterprises / M77 Ag</span>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="label">Total Corn Units</div>
+                    <div class="value">147.0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Total Sorghum Units</div>
+                    <div class="value">40.0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Gross Invoice</div>
+                    <div class="value">$68,460</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Total Discounts</div>
+                    <div class="value green">-$16,850</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Net Amount</div>
+                    <div class="value gold">$51,610</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Balance Due</div>
+                    <div class="value green">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corn Seeds Section -->
+        <div class="seed-section">
+            <div class="section-header corn">
+                <h3>Corn Seed - 147 Units (80K)</h3>
+                <span>Net: $44,906.40</span>
+            </div>
+            <div class="section-body">
+                <table class="seed-table">
+                    <thead>
+                        <tr>
+                            <th>Hybrid</th>
+                            <th>Traits</th>
+                            <th>Units</th>
+                            <th>Gross Price</th>
+                            <th>Avg Price/Unit</th>
+                            <th>Total Value</th>
+                            <th>Assigned</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cornTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sorghum Seeds Section -->
+        <div class="seed-section">
+            <div class="section-header sorghum">
+                <h3>Sorghum (Milo) Seed - 40 Units (600K)</h3>
+                <span>Net: $6,703.20</span>
+            </div>
+            <div class="section-body">
+                <table class="seed-table">
+                    <thead>
+                        <tr>
+                            <th>Hybrid</th>
+                            <th>Traits</th>
+                            <th>Units</th>
+                            <th>Gross Price</th>
+                            <th>Avg Price/Unit</th>
+                            <th>Total Value</th>
+                            <th>Assigned</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sorghumTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="financial-section">
+            <div class="financial-header">
+                <h3>Financial Summary</h3>
+            </div>
+            <div class="financial-body">
+                <div class="financial-grid">
+                    <div class="financial-column">
+                        <h4>Corn</h4>
+                        <div class="financial-row">
+                            <span>Gross Value</span>
+                            <span>$59,640.00</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Infinity Discount (22.0%)</span>
+                            <span class="discount">-$13,120.80</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Early Commitment (2.0%)</span>
+                            <span class="discount">-$1,192.80</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Per Unit Discount ($20/unit)</span>
+                            <span class="discount">-$420.00</span>
+                        </div>
+                        <div class="financial-row total">
+                            <span>Net Corn</span>
+                            <span>$44,906.40</span>
+                        </div>
+                    </div>
+                    <div class="financial-column">
+                        <h4>Sorghum</h4>
+                        <div class="financial-row">
+                            <span>Gross Value</span>
+                            <span>$8,820.00</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Infinity Discount (22.0%)</span>
+                            <span class="discount">-$1,940.40</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Early Commitment (2.0%)</span>
+                            <span class="discount">-$176.40</span>
+                        </div>
+                        <div class="financial-row total">
+                            <span>Net Sorghum</span>
+                            <span>$6,703.20</span>
+                        </div>
+                    </div>
+                    <div class="financial-column">
+                        <h4>Payments</h4>
+                        <div class="financial-row">
+                            <span>Total Due</span>
+                            <span>$51,609.60</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Paid to Date</span>
+                            <span class="discount">-$51,609.60</span>
+                        </div>
+                        <div class="financial-row total">
+                            <span>Balance</span>
+                            <span>$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Assignment Modal -->
+    <div class="modal" id="assignmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Hybrid to Field</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Hybrid</label>
+                    <input type="text" id="modalHybrid" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Select Field</label>
+                    <select id="modalField">
+                        <option value="">-- Select a Field --</option>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Acres</label>
+                        <input type="number" id="modalAcres" step="0.01" placeholder="80.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Units to Assign</label>
+                        <input type="number" id="modalUnits" step="0.1" placeholder="2.5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Planting Rate (seeds/acre)</label>
+                    <input type="number" id="modalRate" value="32000" placeholder="32000">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <input type="text" id="modalNotes" placeholder="Optional notes">
+                </div>
+                <button class="btn btn-primary" onclick="confirmAssignment()" style="width: 100%;">Assign to Field</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 2026 Seed Order Data from Pioneer invoice
+        const seedOrderData = {
+            year: 2026,
+            vendor: 'Pioneer',
+            businessPartnerId: '18482203',
+            corn: [
+                { hybrid: 'P0075AM', traits: 'AM/LL/RR2', units: 21.0, grossPrice: 390.00, avgPrice: 276.40, totalValue: 8190.00, assigned: 0 },
+                { hybrid: 'P05081AML', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 430.00, avgPrice: 326.80, totalValue: 9030.00, assigned: 0 },
+                { hybrid: 'P0622AML', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 420.00, avgPrice: 319.20, totalValue: 8820.00, assigned: 0 },
+                { hybrid: 'P0995AM', traits: 'AM/LL/RR2/AQ', units: 14.0, grossPrice: 370.00, avgPrice: 281.20, totalValue: 5180.00, assigned: 0 },
+                { hybrid: 'P1122AML', traits: 'AM/LL/RR2/AQ', units: 28.0, grossPrice: 410.00, avgPrice: 311.60, totalValue: 11480.00, assigned: 0 },
+                { hybrid: 'P1244AM', traits: 'AM/LL/RR2/AQ', units: 7.0, grossPrice: 360.00, avgPrice: 273.60, totalValue: 2520.00, assigned: 0 },
+                { hybrid: 'P13841PWUE', traits: 'AVBL/VTP/HX1/LL/RR2/ENL/AQ', units: 7.0, grossPrice: 440.00, avgPrice: 334.40, totalValue: 3080.00, assigned: 0 },
+                { hybrid: 'P14830AML', traits: 'AM/LL/RR2', units: 7.0, grossPrice: 480.00, avgPrice: 364.80, totalValue: 3360.00, assigned: 0 },
+                { hybrid: 'P1548AM', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 380.00, avgPrice: 288.80, totalValue: 7980.00, assigned: 0 }
+            ],
+            sorghum: [
+                { hybrid: '86P20', traits: 'Conventional NSI1', units: 20.0, grossPrice: 225.00, avgPrice: 171.00, totalValue: 4500.00, assigned: 0 },
+                { hybrid: '88P71', traits: 'Conventional NSI1', units: 20.0, grossPrice: 216.00, avgPrice: 164.16, totalValue: 4320.00, assigned: 0 }
+            ],
+            fieldAssignments: {}
+        };
+
+        // Available fields (would come from API in production)
+        const availableFields = [
+            { id: 'f1', name: '16.W BIG FIELD', acres: 80.09, farm: 'HDFARMS' },
+            { id: 'f2', name: '17.W MULVIHILL', acres: 79.85, farm: 'HDFARMS' },
+            { id: 'f3', name: '43.E E/2 S/4', acres: 79.10, farm: 'LAFARMS' },
+            { id: 'f4', name: '44.E S. TOWN', acres: 77.40, farm: 'LAFARMS' },
+            { id: 'f5', name: '55.S KIRBY HOUSE', acres: 71.50, farm: 'MEFARMS' },
+            { id: 'f6', name: '10 OURS', acres: 156.00, farm: 'PETERSON' },
+            { id: 'f7', name: '26 SW KIRBY', acres: 148.30, farm: 'KBFARMS' },
+            { id: 'f8', name: '30 NORTH HOME', acres: 160.00, farm: 'HDFARMS' },
+            { id: 'f9', name: '35 EAST PIVOT', acres: 125.00, farm: 'LAFARMS' },
+            { id: 'f10', name: '40 WEST DRYLAND', acres: 200.00, farm: 'PETERSON' }
+        ];
+
+        let currentHybrid = null;
+        let currentSeedType = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCornTable();
+            renderSorghumTable();
+            populateFieldDropdown();
+        });
+
+        function renderCornTable() {
+            const tbody = document.getElementById('cornTableBody');
+            let html = '';
+
+            seedOrderData.corn.forEach((seed, index) => {
+                const assignedPercent = (seed.assigned / seed.units * 100).toFixed(0);
+                html += `
+                    <tr>
+                        <td><span class="hybrid-name">${seed.hybrid}</span></td>
+                        <td><span class="traits-badge">${seed.traits}</span></td>
+                        <td>${seed.units.toFixed(1)}</td>
+                        <td>$${seed.grossPrice.toFixed(2)}</td>
+                        <td>$${seed.avgPrice.toFixed(2)}</td>
+                        <td>$${seed.totalValue.toLocaleString()}</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>${seed.assigned.toFixed(1)} / ${seed.units.toFixed(1)}</span>
+                                    <span>${assignedPercent}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${assignedPercent}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="openAssignModal('corn', ${index})">
+                                Assign
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function renderSorghumTable() {
+            const tbody = document.getElementById('sorghumTableBody');
+            let html = '';
+
+            seedOrderData.sorghum.forEach((seed, index) => {
+                const assignedPercent = (seed.assigned / seed.units * 100).toFixed(0);
+                html += `
+                    <tr>
+                        <td><span class="hybrid-name">${seed.hybrid}</span></td>
+                        <td><span class="traits-badge">${seed.traits}</span></td>
+                        <td>${seed.units.toFixed(1)}</td>
+                        <td>$${seed.grossPrice.toFixed(2)}</td>
+                        <td>$${seed.avgPrice.toFixed(2)}</td>
+                        <td>$${seed.totalValue.toLocaleString()}</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>${seed.assigned.toFixed(1)} / ${seed.units.toFixed(1)}</span>
+                                    <span>${assignedPercent}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${assignedPercent}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="openAssignModal('sorghum', ${index})">
+                                Assign
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function populateFieldDropdown() {
+            const select = document.getElementById('modalField');
+            let html = '<option value="">-- Select a Field --</option>';
+
+            availableFields.forEach(field => {
+                html += `<option value="${field.id}" data-acres="${field.acres}">${field.name} (${field.acres} ac) - ${field.farm}</option>`;
+            });
+
+            select.innerHTML = html;
+
+            // Auto-fill acres when field is selected
+            select.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const acres = selectedOption.dataset.acres;
+                if (acres) {
+                    document.getElementById('modalAcres').value = acres;
+                    // Calculate units based on 32K seeds/acre for corn (80K bag)
+                    const rate = parseInt(document.getElementById('modalRate').value) || 32000;
+                    const unitsNeeded = (parseFloat(acres) * rate / 80000).toFixed(2);
+                    document.getElementById('modalUnits').value = unitsNeeded;
+                }
+            });
+        }
+
+        function openAssignModal(seedType, index) {
+            currentSeedType = seedType;
+            currentHybrid = index;
+
+            const seed = seedType === 'corn' ? seedOrderData.corn[index] : seedOrderData.sorghum[index];
+            document.getElementById('modalHybrid').value = `${seed.hybrid} (${seed.units - seed.assigned} units available)`;
+
+            document.getElementById('modalField').value = '';
+            document.getElementById('modalAcres').value = '';
+            document.getElementById('modalUnits').value = '';
+            document.getElementById('modalNotes').value = '';
+
+            // Set default rate based on seed type
+            document.getElementById('modalRate').value = seedType === 'corn' ? 32000 : 50000;
+
+            document.getElementById('assignmentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('assignmentModal').classList.remove('active');
+            currentHybrid = null;
+            currentSeedType = null;
+        }
+
+        function confirmAssignment() {
+            const fieldSelect = document.getElementById('modalField');
+            const fieldId = fieldSelect.value;
+            const fieldName = fieldSelect.options[fieldSelect.selectedIndex].text;
+            const acres = parseFloat(document.getElementById('modalAcres').value);
+            const units = parseFloat(document.getElementById('modalUnits').value);
+            const rate = parseInt(document.getElementById('modalRate').value);
+            const notes = document.getElementById('modalNotes').value;
+
+            if (!fieldId || !acres || !units) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Update assigned units
+            const seed = currentSeedType === 'corn' ?
+                seedOrderData.corn[currentHybrid] :
+                seedOrderData.sorghum[currentHybrid];
+
+            if (units > (seed.units - seed.assigned)) {
+                alert('Not enough units available for this assignment');
+                return;
+            }
+
+            seed.assigned += units;
+
+            // Store assignment
+            const assignmentKey = `${currentSeedType}_${currentHybrid}`;
+            if (!seedOrderData.fieldAssignments[assignmentKey]) {
+                seedOrderData.fieldAssignments[assignmentKey] = [];
+            }
+            seedOrderData.fieldAssignments[assignmentKey].push({
+                fieldId,
+                fieldName,
+                acres,
+                units,
+                rate,
+                notes,
+                timestamp: new Date().toISOString()
+            });
+
+            // Refresh tables
+            if (currentSeedType === 'corn') {
+                renderCornTable();
+            } else {
+                renderSorghumTable();
+            }
+
+            closeModal();
+            alert(`Assigned ${units} units of ${seed.hybrid} to ${fieldName}`);
+        }
+
+        function saveAssignments() {
+            // In production, this would save to the API
+            console.log('Saving assignments:', seedOrderData.fieldAssignments);
+            localStorage.setItem('seedOrderAssignments_2026', JSON.stringify(seedOrderData));
+            alert('Assignments saved successfully!');
+        }
+
+        function printOrder() {
+            window.print();
+        }
+
+        function changeYear() {
+            const year = document.getElementById('yearSelect').value;
+            // In production, would load data for selected year
+            alert(`Loading seed order for ${year}...`);
+        }
+    </script>
+</body>
+</html>

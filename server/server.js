@@ -63,6 +63,7 @@ const capitalRoutes = require('./routes/capital');
 const cropInsuranceRoutes = require('./routes/cropInsurance');
 const cropInventoryRoutes = require('./routes/cropInventory');
 const farmingDashboardRoutes = require('./routes/farmingDashboard');
+const seedOrderRoutes = require('./routes/seedOrder');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -92,6 +93,7 @@ app.use('/api/capital', capitalRoutes);
 app.use('/api/crop-insurance', cropInsuranceRoutes);
 app.use('/api/crop-inventory', cropInventoryRoutes);
 app.use('/api/farming-dashboard', farmingDashboardRoutes);
+app.use('/api/seed-orders', seedOrderRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -168,6 +170,10 @@ app.get('/admin/farming', (req, res) => {
 
 app.get('/admin/farming-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
+});
+
+app.get('/admin/farming/seed-orders', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming/seed-orders.html'));
 });
 
 // User routes
