@@ -39,6 +39,7 @@ const equipmentUpdates = [
       make: 'John Deere',
       model: '6145R',
       serialNumber: '1L06145RCNP149997',
+      hours: 496,
       currentValue: 215000,
       amountOwed: 153776.14, // Split of $307,552.28 loan (approx 50%)
       hasLoan: true,
