@@ -55,6 +55,7 @@ const equipmentUpdates = [
       make: 'John Deere',
       model: '8320R',
       serialNumber: '1RW8320REGD113101',
+      hours: 5686,
       currentValue: 199900,
       amountOwed: 153776.14, // Split of $307,552.28 loan (approx 50%)
       hasLoan: true,
