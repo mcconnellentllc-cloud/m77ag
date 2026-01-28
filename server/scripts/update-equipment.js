@@ -197,7 +197,8 @@ const newEquipment = [
 // Equipment to remove (no longer owned)
 const equipmentToRemove = [
   { title: /mac.*don|macd|973/i },
-  { title: /pioneer.*weigh|weigh.*trailer/i }
+  { title: /pioneer.*weigh|weigh.*trailer/i },
+  { title: /green.*truck/i }
 ];
 
 async function updateEquipment() {
