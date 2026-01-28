@@ -671,4 +671,90 @@ router.post('/import/csv', isAdmin, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/cattle/seed/calves-2026
+ * Seed 2026 calving records for cows 2318 and 2206
+ */
+router.post('/seed/calves-2026', isAdmin, async (req, res) => {
+  try {
+    const { force } = req.body;
+
+    // 2026 calving records - cows that calved in 2026
+    const calvingRecords2026 = [
+      {
+        tagNumber: '2318',
+        record: {
+          year: 2026,
+          hadCalf: true,
+          calfSurvived: true,
+          calfTag: '2318-C26',
+          calfSex: 'heifer',
+          calfBirthDate: new Date('2026-03-15'),
+          notes: '2026 spring calf'
+        }
+      },
+      {
+        tagNumber: '2206',
+        record: {
+          year: 2026,
+          hadCalf: true,
+          calfSurvived: true,
+          calfTag: '2206-C26',
+          calfSex: 'heifer',
+          calfBirthDate: new Date('2026-03-10'),
+          notes: '2026 spring calf'
+        }
+      }
+    ];
+
+    let updated = 0;
+    let notFound = 0;
+    const results = [];
+
+    for (const item of calvingRecords2026) {
+      const cattle = await Cattle.findOne({ tagNumber: item.tagNumber });
+
+      if (!cattle) {
+        notFound++;
+        results.push({ tag: item.tagNumber, status: 'not found' });
+        continue;
+      }
+
+      // Initialize annualCalvingRecords if it doesn't exist
+      if (!cattle.annualCalvingRecords) {
+        cattle.annualCalvingRecords = [];
+      }
+
+      // Check if 2026 record already exists
+      const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === 2026);
+
+      if (existingIndex >= 0) {
+        if (force) {
+          cattle.annualCalvingRecords[existingIndex] = item.record;
+          await cattle.save();
+          results.push({ tag: item.tagNumber, status: 'updated' });
+          updated++;
+        } else {
+          results.push({ tag: item.tagNumber, status: 'exists (use force=true to update)' });
+        }
+      } else {
+        cattle.annualCalvingRecords.push(item.record);
+        await cattle.save();
+        results.push({ tag: item.tagNumber, status: 'added' });
+        updated++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `2026 calving records: ${updated} updated, ${notFound} not found`,
+      data: { updated, notFound, results }
+    });
+
+  } catch (error) {
+    console.error('Error seeding 2026 calves:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

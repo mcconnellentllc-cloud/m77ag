@@ -1219,12 +1219,15 @@
         <div class="calving-progress-section">
             <div class="calving-header">
                 <h3>Calving Progress</h3>
-                <select id="calvingProgressYear" onchange="updateCalvingProgress()">
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <select id="calvingProgressYear" onchange="updateCalvingProgress()">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                    <button onclick="seed2026Calves()" style="padding: 6px 12px; background: #2e7d32; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;" title="Add 2026 calving records for cows 2318 and 2206">Seed 2026 Calves</button>
+                </div>
             </div>
             <div class="calving-stats-grid">
                 <div class="calving-stat-box">
@@ -3121,6 +3124,35 @@
             document.getElementById('calvingSteers').textContent = steers;
             document.getElementById('calvingLive').textContent = live;
             document.getElementById('calvingDead').textContent = dead;
+        }
+
+        // Seed 2026 calving records for cows 2318 and 2206
+        async function seed2026Calves() {
+            if (!confirm('This will add/update 2026 calving records for cows 2318 and 2206. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/seed/calves-2026', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ force: true })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`2026 calves seeded: ${data.data.updated} updated`);
+                    // Reload cattle data to reflect changes
+                    await loadCattle();
+                    updateCalvingProgress();
+                } else {
+                    showToast(data.message || 'Error seeding calves', 'error');
+                }
+            } catch (error) {
+                console.error('Error seeding 2026 calves:', error);
+                showToast('Error seeding calves', 'error');
+            }
         }
 
         // Load summary data
