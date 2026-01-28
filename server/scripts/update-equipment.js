@@ -13,7 +13,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag'
 // Equipment to update with correct information
 const equipmentUpdates = [
   {
-    // 2019 JD 8370T Track Tractor
+    // 2019 JD 8370RT Track Tractor
     search: { title: /8370/i },
     update: {
       title: '2019 John Deere 8370RT Track Tractor',
@@ -21,6 +21,7 @@ const equipmentUpdates = [
       make: 'John Deere',
       model: '8370RT',
       serialNumber: '1RW8370REJD920111',
+      hours: 3252,
       currentValue: 277500,
       amountOwed: 222690.85,
       hasLoan: true,
