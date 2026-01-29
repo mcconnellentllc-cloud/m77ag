@@ -1,16 +1,20 @@
 /**
  * Seed script for initial employee data
  * Run with: node server/scripts/seed-employees.js
+ * Use --force to skip confirmation prompt
  */
 
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Employee = require('../models/employee');
 
+const forceMode = process.argv.includes('--force');
+
 const employees = [
   {
     firstName: 'Kyle',
     lastName: 'McConnell',
+    email: 'kyle@m77ag.com',
     position: 'Owner / Operator',
     employmentType: 'contract',
     startDate: new Date('2025-09-15'),
@@ -26,6 +30,7 @@ const employees = [
   {
     firstName: 'Matt',
     lastName: 'Allphin',
+    email: 'matt@m77ag.com',
     position: 'Partner / Operator',
     employmentType: 'contract',
     startDate: new Date('2025-09-15'),
@@ -41,6 +46,7 @@ const employees = [
   {
     firstName: 'Brandi',
     lastName: 'McConnell',
+    email: 'brandi@m77ag.com',
     position: 'Office Manager',
     employmentType: 'contract',
     startDate: new Date('2025-09-15'),
@@ -65,14 +71,19 @@ async function seedEmployees() {
     const existingCount = await Employee.countDocuments();
     if (existingCount > 0) {
       console.log(`Found ${existingCount} existing employees.`);
-      const response = await new Promise(resolve => {
-        process.stdout.write('Do you want to clear and reseed? (y/n): ');
-        process.stdin.once('data', data => resolve(data.toString().trim().toLowerCase()));
-      });
 
-      if (response !== 'y') {
-        console.log('Seeding cancelled.');
-        process.exit(0);
+      if (!forceMode) {
+        const response = await new Promise(resolve => {
+          process.stdout.write('Do you want to clear and reseed? (y/n): ');
+          process.stdin.once('data', data => resolve(data.toString().trim().toLowerCase()));
+        });
+
+        if (response !== 'y') {
+          console.log('Seeding cancelled.');
+          process.exit(0);
+        }
+      } else {
+        console.log('Force mode enabled - clearing existing employees...');
       }
 
       await Employee.deleteMany({});

@@ -97,7 +97,9 @@ router.get('/summary/all', async (req, res) => {
         reimbursementsOwed,
         reimbursementsPaid,
         creditOwed,
-        pendingTimeOff: (emp.timeOffRequests || []).filter(t => t.status === 'pending').length
+        pendingTimeOff: (emp.timeOffRequests || []).filter(t => t.status === 'pending').length,
+        contractSigned: emp.contract?.signed || false,
+        contractSignedDate: emp.contract?.signedDate || null
       };
     });
 
@@ -360,6 +362,70 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting employee:', error);
     res.status(500).json({ success: false, error: 'Failed to delete employee' });
+  }
+});
+
+// Sign contract
+router.post('/:id/sign-contract', async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ success: false, error: 'Employee not found' });
+    }
+
+    // Get client IP
+    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+
+    employee.contract = {
+      signed: true,
+      signedDate: new Date(),
+      signatureData: req.body.signatureData,
+      signedIP: clientIP,
+      contractVersion: req.body.contractVersion || '1.0',
+      contractType: req.body.contractType || 'independent-contractor',
+      agreedTerms: {
+        compensation: req.body.agreedTerms?.compensation || false,
+        workScope: req.body.agreedTerms?.workScope || false,
+        termination: req.body.agreedTerms?.termination || false,
+        confidentiality: req.body.agreedTerms?.confidentiality || false,
+        taxResponsibility: req.body.agreedTerms?.taxResponsibility || false
+      }
+    };
+
+    await employee.save();
+    res.json({ success: true, employee, message: 'Contract signed successfully' });
+  } catch (error) {
+    console.error('Error signing contract:', error);
+    res.status(500).json({ success: false, error: 'Failed to sign contract' });
+  }
+});
+
+// Get contract status
+router.get('/:id/contract', async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ success: false, error: 'Employee not found' });
+    }
+
+    res.json({
+      success: true,
+      contract: employee.contract,
+      employee: {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        position: employee.position,
+        startDate: employee.startDate,
+        payType: employee.payType,
+        annualSalary: employee.annualSalary,
+        monthlyRate: employee.monthlyRate,
+        hasProfitShare: employee.hasProfitShare,
+        profitSharePercent: employee.profitSharePercent
+      }
+    });
+  } catch (error) {
+    console.error('Error getting contract:', error);
+    res.status(500).json({ success: false, error: 'Failed to get contract status' });
   }
 });
 
