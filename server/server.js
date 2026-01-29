@@ -64,6 +64,7 @@ const cropInsuranceRoutes = require('./routes/cropInsurance');
 const cropInventoryRoutes = require('./routes/cropInventory');
 const farmingDashboardRoutes = require('./routes/farmingDashboard');
 const seedOrderRoutes = require('./routes/seedOrder');
+const imageUploadRoutes = require('./routes/imageUpload');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -94,6 +95,7 @@ app.use('/api/crop-insurance', cropInsuranceRoutes);
 app.use('/api/crop-inventory', cropInventoryRoutes);
 app.use('/api/farming-dashboard', farmingDashboardRoutes);
 app.use('/api/seed-orders', seedOrderRoutes);
+app.use('/api/upload', imageUploadRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
