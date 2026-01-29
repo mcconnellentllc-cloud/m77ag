@@ -561,6 +561,18 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
+    title: '2002 Schaben 1600 Gal Chemical Tender',
+    subtitle: '1600 Gal Chem Trailer',
+    category: 'Sprayer Equipment',
+    year: 2002,
+    make: 'Schaben',
+    description: '1600 gallon water tender with chemical eductor',
+    currentValue: 6000,
+    notes: 'Unit #209, Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
     title: 'Mitsubishi FG25N Forklift',
     subtitle: 'Forklift',
     category: 'Other',
