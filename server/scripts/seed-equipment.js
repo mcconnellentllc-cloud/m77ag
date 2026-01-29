@@ -406,8 +406,8 @@ const equipmentData = [
     purchasePrice: 149000,
     currentValue: 90000,
     serialNumber: 'RW8420P037284',
+    currentHours: 7000,
     purchaseDate: new Date('2010-04-01'),
-    specs: new Map([['Hours', '3690']]),
     notes: 'Unit #200, Owner: M77 AG, Insured: Yes',
     forSale: false,
     saleStatus: 'not-for-sale'
