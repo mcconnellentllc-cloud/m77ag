@@ -911,19 +911,65 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
 
+  // Work Trucks
+  {
+    title: '2006 Dodge Ram 2500',
+    subtitle: 'Krogman Bale Bed',
+    category: 'Trucks',
+    year: 2006,
+    make: 'Dodge',
+    model: 'Ram 2500',
+    description: 'Work truck with Krogman bale bed',
+    currentMiles: 140000,
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: '2022 Dodge Ram 3500',
+    subtitle: "9' Flatbed",
+    category: 'Trucks',
+    year: 2022,
+    make: 'Dodge',
+    model: 'Ram 3500',
+    description: "Work truck with 9' flatbed",
+    currentMiles: 30000,
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+
   // ATV/MISC
   {
-    title: '2011 Honda Rancher',
-    subtitle: 'Green ATV',
+    title: 'Honda Rancher #1',
+    subtitle: 'ATV',
     category: 'Other',
-    year: 2011,
     make: 'Honda',
     model: 'Rancher',
-    description: 'Green',
-    purchasePrice: 2900,
-    currentValue: 2500,
-    purchaseDate: new Date('2020-04-01'),
+    currentValue: 1500,
     notes: 'Unit #401, Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Honda Rancher #2',
+    subtitle: 'ATV',
+    category: 'Other',
+    make: 'Honda',
+    model: 'Rancher',
+    currentValue: 1500,
+    notes: 'Unit #404, Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Honda Rancher #3',
+    subtitle: 'ATV',
+    category: 'Other',
+    make: 'Honda',
+    model: 'Rancher',
+    currentValue: 1500,
+    notes: 'Unit #405, Owner: M77 AG, Insured: Yes',
     forSale: false,
     saleStatus: 'not-for-sale'
   },
