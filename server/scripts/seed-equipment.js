@@ -939,6 +939,80 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
 
+  // Yard Equipment
+  {
+    title: '1998 Walker GHS 42"',
+    subtitle: 'Mower with Self Dump',
+    category: 'Other',
+    year: 1998,
+    make: 'Walker',
+    model: 'GHS 42"',
+    description: '42" mower with self dump',
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: '2015 Walker Super Bee 72"',
+    subtitle: 'Commercial Mower',
+    category: 'Other',
+    year: 2015,
+    make: 'Walker',
+    model: 'Super Bee 72"',
+    description: '72" commercial mower',
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Yard Sprayer',
+    subtitle: 'Lawn Sprayer',
+    category: 'Other',
+    description: 'Yard sprayer',
+    notes: 'Owner: M77 AG, Insured: No',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'John Deere Zero Turn 54"',
+    subtitle: 'Zero Turn Mower',
+    category: 'Other',
+    make: 'John Deere',
+    description: '54" zero turn mower',
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Sharpe Box Blade',
+    subtitle: 'Box Blade',
+    category: 'Attachments',
+    make: 'Sharpe',
+    description: 'Box blade',
+    notes: 'Owner: M77 AG, Insured: No',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Cammond Box Blade',
+    subtitle: 'Box Blade',
+    category: 'Attachments',
+    make: 'Cammond',
+    description: 'Box blade',
+    notes: 'Owner: M77 AG, Insured: No',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Grey Box Blade',
+    subtitle: 'Box Blade',
+    category: 'Attachments',
+    description: 'Grey box blade',
+    notes: 'Owner: M77 AG, Insured: No',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+
   // ATV/MISC
   {
     title: 'Honda Rancher #1',
