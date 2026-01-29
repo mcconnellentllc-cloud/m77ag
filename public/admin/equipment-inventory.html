@@ -34,6 +34,7 @@
         .admin-nav {
             display: flex;
             gap: 25px;
+            flex-wrap: wrap;
         }
         .admin-nav a {
             color: rgba(255,255,255,0.7);
@@ -52,6 +53,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .page-title {
             font-family: 'Oswald', sans-serif;
@@ -81,17 +84,31 @@
             color: #fff;
         }
         .btn-secondary:hover { background: #333; }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+        .btn-danger:hover { background: #a93226; }
+        .btn-success {
+            background: #27ae60;
+            color: #fff;
+        }
+        .btn-success:hover { background: #219a52; }
 
         /* Summary Cards */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
             margin-bottom: 30px;
         }
         .summary-card {
             background: #fff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
@@ -99,8 +116,12 @@
             background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
             color: #fff;
         }
+        .summary-card.warning {
+            background: linear-gradient(135deg, #c0392b 0%, #962d22 100%);
+            color: #fff;
+        }
         .summary-label {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
             opacity: 0.7;
@@ -108,11 +129,12 @@
         }
         .summary-value {
             font-family: 'Oswald', sans-serif;
-            font-size: 28px;
+            font-size: 24px;
         }
         .summary-value.positive { color: #27ae60; }
         .summary-value.negative { color: #c0392b; }
-        .summary-card.highlight .summary-value { color: #d4af37; }
+        .summary-card.highlight .summary-value,
+        .summary-card.warning .summary-value { color: #fff; }
 
         /* Tabs */
         .tabs {
@@ -120,23 +142,36 @@
             gap: 0;
             margin-bottom: 25px;
             border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
         }
         .tab {
-            padding: 12px 25px;
+            padding: 12px 20px;
             background: none;
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #666;
             cursor: pointer;
             border-bottom: 2px solid transparent;
             margin-bottom: -2px;
             transition: all 0.3s;
+            white-space: nowrap;
+            position: relative;
         }
         .tab:hover { color: #1a1a1a; }
         .tab.active {
             color: #d4af37;
             border-bottom-color: #d4af37;
+        }
+        .tab .alert-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #c0392b;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -144,7 +179,7 @@
         /* Equipment Grid */
         .equipment-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
         }
         .equipment-card {
@@ -161,8 +196,11 @@
         .equipment-card.for-sale {
             border-left: 4px solid #27ae60;
         }
+        .equipment-card.maintenance-due {
+            border-left: 4px solid #e74c3c;
+        }
         .card-image {
-            height: 180px;
+            height: 160px;
             background: #e0e0e0;
             position: relative;
             overflow: hidden;
@@ -177,12 +215,13 @@
             top: 10px;
             left: 10px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
         .badge {
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -198,75 +237,144 @@
             background: #e74c3c;
             color: #fff;
         }
+        .badge-maintenance {
+            background: #f39c12;
+            color: #fff;
+        }
+        .card-hours {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
         .card-body {
-            padding: 20px;
+            padding: 15px;
         }
         .card-title {
             font-family: 'Oswald', sans-serif;
-            font-size: 18px;
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin-bottom: 4px;
             color: #1a1a1a;
         }
         .card-subtitle {
-            font-size: 13px;
+            font-size: 12px;
             color: #666;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .card-financials {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding-top: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-top: 12px;
             border-top: 1px solid #f0f0f0;
         }
         .financial-item {
             text-align: center;
         }
         .financial-label {
-            font-size: 11px;
+            font-size: 10px;
             color: #999;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .financial-value {
             font-family: 'Oswald', sans-serif;
-            font-size: 18px;
+            font-size: 14px;
         }
         .financial-value.value { color: #27ae60; }
         .financial-value.owed { color: #c0392b; }
         .financial-value.equity { color: #2d5016; }
         .card-actions {
-            display: flex;
-            gap: 10px;
-            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 12px 15px;
             background: #f9f9f9;
             border-top: 1px solid #f0f0f0;
         }
         .card-btn {
-            flex: 1;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border: none;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
         }
         .card-btn.edit {
             background: #e0e0e0;
             color: #333;
         }
         .card-btn.edit:hover { background: #d0d0d0; }
+        .card-btn.maintenance {
+            background: #3498db;
+            color: #fff;
+        }
+        .card-btn.maintenance:hover { background: #2980b9; }
         .card-btn.toggle-sale {
             background: #27ae60;
             color: #fff;
         }
         .card-btn.toggle-sale:hover { background: #219a52; }
         .card-btn.toggle-sale.not-for-sale {
-            background: #666;
+            background: #95a5a6;
         }
 
-        /* Upcoming Payments */
+        /* Maintenance Due Section */
+        .maintenance-alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .maintenance-alert h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .maintenance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #fff;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+        .maintenance-item:last-child { margin-bottom: 0; }
+        .maintenance-item.overdue {
+            border-left-color: #c0392b;
+            background: #fef0ef;
+        }
+        .maintenance-info h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .maintenance-info p {
+            font-size: 12px;
+            color: #666;
+        }
+        .maintenance-status {
+            text-align: right;
+        }
+        .maintenance-status .hours {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #c0392b;
+        }
+        .maintenance-status .label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Payments Section */
         .payments-section {
             background: #fff;
             border-radius: 10px;
@@ -322,6 +430,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-y: auto;
         }
         .modal-overlay.active { display: flex; }
         .modal {
@@ -331,17 +440,23 @@
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            margin: auto;
         }
+        .modal.wide { max-width: 900px; }
         .modal-header {
-            padding: 25px;
+            padding: 20px 25px;
             border-bottom: 1px solid #e0e0e0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 10;
         }
         .modal-title {
             font-family: 'Oswald', sans-serif;
-            font-size: 24px;
+            font-size: 22px;
         }
         .modal-close {
             background: none;
@@ -356,20 +471,20 @@
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 15px;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .form-group.full-width {
             grid-column: 1 / -1;
         }
         .form-label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
         .form-input, .form-select, .form-textarea {
             width: 100%;
@@ -384,17 +499,12 @@
             border-color: #d4af37;
         }
         .form-textarea { min-height: 80px; resize: vertical; }
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-        .form-row .form-group { flex: 1; margin-bottom: 0; }
         .section-title {
             font-family: 'Oswald', sans-serif;
-            font-size: 16px;
+            font-size: 15px;
             color: #2d5016;
-            margin: 25px 0 15px 0;
-            padding-bottom: 10px;
+            margin: 20px 0 12px 0;
+            padding-bottom: 8px;
             border-bottom: 2px solid #e0e0e0;
         }
         .toggle-group {
@@ -441,11 +551,82 @@
             transform: translateX(24px);
         }
         .modal-footer {
-            padding: 20px 25px;
+            padding: 15px 25px;
             border-top: 1px solid #e0e0e0;
             display: flex;
             justify-content: flex-end;
             gap: 15px;
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+        }
+
+        /* Maintenance Log Styles */
+        .maintenance-log {
+            margin-top: 20px;
+        }
+        .log-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #3498db;
+        }
+        .log-entry.oil_change { border-left-color: #9b59b6; }
+        .log-entry.filter_air, .log-entry.filter_fuel, .log-entry.filter_oil { border-left-color: #f39c12; }
+        .log-entry.repair { border-left-color: #e74c3c; }
+        .log-entry .log-info h5 {
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+        .log-entry .log-info p {
+            font-size: 11px;
+            color: #666;
+        }
+        .log-entry .log-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #999;
+        }
+        .log-entry .log-meta .hours {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Quick Add Maintenance */
+        .quick-maintenance {
+            background: #f0f7ff;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .quick-maintenance h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #2980b9;
+        }
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .quick-btn {
+            padding: 8px 12px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover {
+            background: #3498db;
+            color: #fff;
+            border-color: #3498db;
         }
 
         /* Empty State */
@@ -461,6 +642,36 @@
             color: #666;
         }
 
+        /* Report Table */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .report-table th, .report-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .report-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .report-table td.number {
+            text-align: right;
+            font-family: 'Oswald', sans-serif;
+        }
+        .report-totals {
+            background: #2d5016;
+            color: #fff;
+        }
+        .report-totals td {
+            border-bottom: none;
+            font-weight: 600;
+        }
+
         @media (max-width: 1200px) {
             .summary-grid { grid-template-columns: repeat(3, 1fr); }
         }
@@ -469,6 +680,7 @@
             .equipment-grid { grid-template-columns: 1fr; }
             .admin-header { flex-direction: column; gap: 15px; }
             .form-grid { grid-template-columns: 1fr; }
+            .card-actions { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -479,7 +691,7 @@
             <a href="/admin/dashboard.html">Dashboard</a>
             <a href="/admin/hunting-bookings.html">Hunting</a>
             <a href="/admin/equipment.html">Equipment Sales</a>
-            <a href="/admin/equipment-inventory.html" class="active">Equipment Inventory</a>
+            <a href="/admin/equipment-inventory.html" class="active">Equipment</a>
             <a href="/forsale.html">View Public Listings</a>
         </nav>
     </header>
@@ -499,20 +711,24 @@
                 <div class="summary-value" id="totalCount">0</div>
             </div>
             <div class="summary-card">
-                <div class="summary-label">Total Value</div>
+                <div class="summary-label">Market Value</div>
                 <div class="summary-value positive" id="totalValue">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">80% Report Value</div>
+                <div class="summary-value" id="reportingValue">$0</div>
             </div>
             <div class="summary-card">
                 <div class="summary-label">Total Owed</div>
                 <div class="summary-value negative" id="totalOwed">$0</div>
             </div>
             <div class="summary-card highlight">
-                <div class="summary-label">Net Worth</div>
+                <div class="summary-label">Net Equity</div>
                 <div class="summary-value" id="netWorth">$0</div>
             </div>
-            <div class="summary-card">
-                <div class="summary-label">For Sale</div>
-                <div class="summary-value" id="forSaleCount">0</div>
+            <div class="summary-card" id="maintenanceDueCard">
+                <div class="summary-label">Maintenance Due</div>
+                <div class="summary-value" id="maintenanceDueCount">0</div>
             </div>
         </div>
 
@@ -521,14 +737,17 @@
             <button class="tab active" data-tab="all">All Equipment</button>
             <button class="tab" data-tab="forsale">For Sale</button>
             <button class="tab" data-tab="private">Private</button>
-            <button class="tab" data-tab="payments">Upcoming Payments</button>
+            <button class="tab" data-tab="maintenance">
+                Maintenance Due
+                <span class="alert-badge" id="maintenanceAlertBadge" style="display:none;">0</span>
+            </button>
+            <button class="tab" data-tab="payments">Payments</button>
+            <button class="tab" data-tab="report">Report</button>
         </div>
 
         <!-- All Equipment Tab -->
         <div class="tab-content active" id="all-tab">
-            <div class="equipment-grid" id="allEquipmentGrid">
-                <!-- Equipment cards will be rendered here -->
-            </div>
+            <div class="equipment-grid" id="allEquipmentGrid"></div>
             <div class="empty-state" id="emptyAll" style="display: none;">
                 <h3>No Equipment</h3>
                 <p>Add your first piece of equipment to get started.</p>
@@ -537,8 +756,7 @@
 
         <!-- For Sale Tab -->
         <div class="tab-content" id="forsale-tab">
-            <div class="equipment-grid" id="forSaleGrid">
-            </div>
+            <div class="equipment-grid" id="forSaleGrid"></div>
             <div class="empty-state" id="emptyForSale" style="display: none;">
                 <h3>No Equipment For Sale</h3>
                 <p>Toggle equipment to "For Sale" to list it publicly.</p>
@@ -547,11 +765,19 @@
 
         <!-- Private Tab -->
         <div class="tab-content" id="private-tab">
-            <div class="equipment-grid" id="privateGrid">
-            </div>
+            <div class="equipment-grid" id="privateGrid"></div>
             <div class="empty-state" id="emptyPrivate" style="display: none;">
                 <h3>No Private Equipment</h3>
                 <p>Equipment not for sale will appear here.</p>
+            </div>
+        </div>
+
+        <!-- Maintenance Due Tab -->
+        <div class="tab-content" id="maintenance-tab">
+            <div id="maintenanceDueList"></div>
+            <div class="empty-state" id="emptyMaintenance" style="display: none;">
+                <h3>All Caught Up!</h3>
+                <p>No equipment has maintenance due at this time.</p>
             </div>
         </div>
 
@@ -559,13 +785,33 @@
         <div class="tab-content" id="payments-tab">
             <div class="payments-section">
                 <h2 class="payments-title">Upcoming Payments (Next 30 Days)</h2>
-                <div id="paymentsContainer">
-                    <!-- Payments will be rendered here -->
-                </div>
+                <div id="paymentsContainer"></div>
                 <div class="empty-state" id="emptyPayments" style="display: none;">
                     <h3>No Upcoming Payments</h3>
                     <p>No equipment payments due in the next 30 days.</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Report Tab -->
+        <div class="tab-content" id="report-tab">
+            <div class="payments-section">
+                <h2 class="payments-title">Equipment Value Report</h2>
+                <p style="margin-bottom:20px;color:#666;font-size:13px;">For loan renewal and financial reporting purposes. Reporting value is 80% of market value.</p>
+                <table class="report-table" id="reportTable">
+                    <thead>
+                        <tr>
+                            <th>Equipment</th>
+                            <th>Category</th>
+                            <th>Hours</th>
+                            <th style="text-align:right;">Market Value</th>
+                            <th style="text-align:right;">Report Value (80%)</th>
+                            <th style="text-align:right;">Amount Owed</th>
+                            <th style="text-align:right;">Equity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportBody"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -620,6 +866,16 @@
                             <input type="text" class="form-input" id="model" placeholder="8370R">
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">Current Hours</label>
+                            <input type="number" class="form-input" id="currentHours" placeholder="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hours at Purchase</label>
+                            <input type="number" class="form-input" id="hoursAtPurchase" placeholder="0">
+                        </div>
+
                         <div class="form-group full-width">
                             <label class="form-label">Description</label>
                             <textarea class="form-textarea" id="description" placeholder="Brief description..."></textarea>
@@ -636,10 +892,20 @@
                         </div>
                     </div>
 
-                    <h3 class="section-title">Financial Information</h3>
+                    <h3 class="section-title">Market Value & Financial</h3>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Current Value</label>
+                            <label class="form-label">Market Value</label>
+                            <input type="number" class="form-input" id="marketValue" placeholder="0" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Value Source</label>
+                            <input type="text" class="form-input" id="marketValueSource" placeholder="TractorHouse, Local Dealer, etc.">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Current Value (Your Estimate)</label>
                             <input type="number" class="form-input" id="currentValue" placeholder="0" step="0.01">
                         </div>
 
@@ -732,13 +998,120 @@
         </div>
     </div>
 
+    <!-- Maintenance Modal -->
+    <div class="modal-overlay" id="maintenanceModal">
+        <div class="modal wide">
+            <div class="modal-header">
+                <h2 class="modal-title" id="maintenanceTitle">Maintenance Log</h2>
+                <button class="modal-close" onclick="closeMaintenanceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="maintenanceEquipmentId">
+
+                <!-- Current Hours Display -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:15px;background:#f5f5f5;border-radius:8px;">
+                    <div>
+                        <span style="font-size:12px;color:#666;">CURRENT HOURS</span>
+                        <div style="font-family:'Oswald',sans-serif;font-size:28px;" id="maintenanceCurrentHours">0</div>
+                    </div>
+                    <div>
+                        <label class="form-label">Update Hours</label>
+                        <div style="display:flex;gap:10px;">
+                            <input type="number" class="form-input" id="updateHoursInput" style="width:120px;">
+                            <button type="button" class="btn btn-small btn-primary" onclick="updateHours()">Update</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Add Maintenance -->
+                <div class="quick-maintenance">
+                    <h4>Quick Add Service</h4>
+                    <div class="quick-buttons">
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('oil_change', 'Oil Change')">Oil Change</button>
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('filter_air', 'Air Filter')">Air Filter</button>
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('filter_fuel', 'Fuel Filter')">Fuel Filter</button>
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('filter_oil', 'Oil Filter')">Oil Filter</button>
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('grease', 'Greased All Points')">Grease</button>
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('fluid_check', 'Fluid Check')">Fluid Check</button>
+                        <button type="button" class="quick-btn" onclick="quickAddMaintenance('inspection', 'Inspection')">Inspection</button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Maintenance -->
+                <h3 class="section-title">Add Service Record</h3>
+                <form id="maintenanceForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Service Type</label>
+                            <select class="form-select" id="maintType">
+                                <option value="oil_change">Oil Change</option>
+                                <option value="filter_air">Air Filter</option>
+                                <option value="filter_fuel">Fuel Filter</option>
+                                <option value="filter_oil">Oil Filter</option>
+                                <option value="filter_hydraulic">Hydraulic Filter</option>
+                                <option value="grease">Grease</option>
+                                <option value="tire">Tire Service</option>
+                                <option value="belt">Belt Replacement</option>
+                                <option value="repair">Repair</option>
+                                <option value="inspection">Inspection</option>
+                                <option value="overhaul">Overhaul</option>
+                                <option value="preventive">Preventive Maintenance</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hours at Service</label>
+                            <input type="number" class="form-input" id="maintHours" placeholder="Current hours">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Description *</label>
+                            <input type="text" class="form-input" id="maintDescription" required placeholder="e.g., Changed oil, new oil filter, new air filter">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Performed By</label>
+                            <select class="form-select" id="maintPerformedBy">
+                                <option value="self">Self</option>
+                                <option value="employee">Employee</option>
+                                <option value="dealer">Dealer</option>
+                                <option value="mechanic">Mechanic</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Total Cost</label>
+                            <input type="number" class="form-input" id="maintCost" placeholder="0" step="0.01">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-textarea" id="maintNotes" placeholder="Additional notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success" style="width:100%;">Add Service Record</button>
+                </form>
+
+                <!-- Maintenance Log -->
+                <h3 class="section-title">Service History</h3>
+                <div class="maintenance-log" id="maintenanceLog">
+                    <!-- Records will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allEquipment = [];
+        let maintenanceDueItems = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadEquipment();
             loadSummary();
+            loadMaintenanceDue();
             setupTabs();
         });
 
@@ -750,6 +1123,10 @@
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     tab.classList.add('active');
                     document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+
+                    if (tab.dataset.tab === 'report') {
+                        loadReport();
+                    }
                 });
             });
         }
@@ -781,12 +1158,38 @@
                     document.getElementById('totalValue').textContent = '$' + s.totalValue.toLocaleString();
                     document.getElementById('totalOwed').textContent = '$' + s.totalOwed.toLocaleString();
                     document.getElementById('netWorth').textContent = '$' + s.netWorth.toLocaleString();
-                    document.getElementById('forSaleCount').textContent = s.forSaleCount;
+
+                    // Calculate reporting value (80%)
+                    const reportValue = Math.round(s.totalValue * 0.80);
+                    document.getElementById('reportingValue').textContent = '$' + reportValue.toLocaleString();
 
                     renderPayments(s.upcomingPayments);
                 }
             } catch (error) {
                 console.error('Error loading summary:', error);
+            }
+        }
+
+        // Load maintenance due
+        async function loadMaintenanceDue() {
+            try {
+                const response = await fetch('/api/equipment/inventory/maintenance-due');
+                const data = await response.json();
+
+                if (data.success) {
+                    maintenanceDueItems = data.maintenanceDue;
+                    document.getElementById('maintenanceDueCount').textContent = data.count;
+
+                    if (data.count > 0) {
+                        document.getElementById('maintenanceDueCard').classList.add('warning');
+                        document.getElementById('maintenanceAlertBadge').textContent = data.count;
+                        document.getElementById('maintenanceAlertBadge').style.display = 'inline';
+                    }
+
+                    renderMaintenanceDue();
+                }
+            } catch (error) {
+                console.error('Error loading maintenance due:', error);
             }
         }
 
@@ -829,20 +1232,23 @@
 
         // Render single card
         function renderCard(item) {
-            const equity = (item.currentValue || 0) - (item.amountOwed || 0);
+            const equity = (item.currentValue || item.marketValue || 0) - (item.amountOwed || 0);
+            const hasMaintenanceDue = item.maintenanceDue && item.maintenanceDue.length > 0;
             const imageUrl = item.images && item.images.length > 0
                 ? item.images[0]
-                : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180"><rect fill="%23e0e0e0" width="400" height="180"/><text fill="%23999" x="200" y="90" text-anchor="middle" dy=".3em" font-family="sans-serif">No Image</text></svg>';
+                : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160"><rect fill="%23e0e0e0" width="400" height="160"/><text fill="%23999" x="200" y="80" text-anchor="middle" dy=".3em" font-family="sans-serif">No Image</text></svg>';
 
             return `
-                <div class="equipment-card ${item.forSale ? 'for-sale' : ''}">
+                <div class="equipment-card ${item.forSale ? 'for-sale' : ''} ${hasMaintenanceDue ? 'maintenance-due' : ''}">
                     <div class="card-image">
-                        <img src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 180%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22180%22/><text fill=%22%23999%22 x=%22200%22 y=%2290%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>No Image</text></svg>'">
+                        <img src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 160%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22160%22/><text fill=%22%23999%22 x=%22200%22 y=%2280%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>No Image</text></svg>'">
                         <div class="card-badges">
                             <span class="badge badge-category">${item.category || 'Other'}</span>
                             ${item.forSale ? '<span class="badge badge-forsale">For Sale</span>' : ''}
                             ${item.hasLoan ? '<span class="badge badge-loan">Loan</span>' : ''}
+                            ${hasMaintenanceDue ? '<span class="badge badge-maintenance">Service Due</span>' : ''}
                         </div>
+                        ${item.currentHours ? `<div class="card-hours">${item.currentHours.toLocaleString()} hrs</div>` : ''}
                     </div>
                     <div class="card-body">
                         <h3 class="card-title">${item.title}</h3>
@@ -850,7 +1256,7 @@
                         <div class="card-financials">
                             <div class="financial-item">
                                 <div class="financial-label">Value</div>
-                                <div class="financial-value value">$${(item.currentValue || 0).toLocaleString()}</div>
+                                <div class="financial-value value">$${(item.marketValue || item.currentValue || 0).toLocaleString()}</div>
                             </div>
                             <div class="financial-item">
                                 <div class="financial-label">Owed</div>
@@ -860,27 +1266,51 @@
                                 <div class="financial-label">Equity</div>
                                 <div class="financial-value equity">$${equity.toLocaleString()}</div>
                             </div>
-                            ${item.forSale ? `
-                            <div class="financial-item">
-                                <div class="financial-label">Asking</div>
-                                <div class="financial-value">$${(item.askingPrice || 0).toLocaleString()}</div>
-                            </div>
-                            ` : `
-                            <div class="financial-item">
-                                <div class="financial-label">Payment</div>
-                                <div class="financial-value">${item.paymentAmount ? '$' + item.paymentAmount.toLocaleString() + '/' + (item.paymentFrequency || 'mo').substring(0,3) : 'N/A'}</div>
-                            </div>
-                            `}
                         </div>
                     </div>
                     <div class="card-actions">
                         <button class="card-btn edit" onclick="editEquipment('${item._id}')">Edit</button>
+                        <button class="card-btn maintenance" onclick="openMaintenanceModal('${item._id}')">Service</button>
                         <button class="card-btn toggle-sale ${item.forSale ? '' : 'not-for-sale'}" onclick="toggleForSale('${item._id}')">
-                            ${item.forSale ? 'Remove from Sale' : 'List for Sale'}
+                            ${item.forSale ? 'Unlist' : 'Sell'}
                         </button>
                     </div>
                 </div>
             `;
+        }
+
+        // Render maintenance due
+        function renderMaintenanceDue() {
+            const container = document.getElementById('maintenanceDueList');
+
+            if (maintenanceDueItems.length === 0) {
+                container.innerHTML = '';
+                document.getElementById('emptyMaintenance').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('emptyMaintenance').style.display = 'none';
+
+            container.innerHTML = maintenanceDueItems.map(item => `
+                <div class="maintenance-alert" style="margin-bottom:15px;">
+                    <h4 style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>${item.title}</span>
+                        <button class="btn btn-small btn-primary" onclick="openMaintenanceModal('${item.equipmentId}')">Add Service</button>
+                    </h4>
+                    ${item.maintenanceDue.map(m => `
+                        <div class="maintenance-item ${m.hoursOverdue > 0 ? 'overdue' : ''}">
+                            <div class="maintenance-info">
+                                <h4>${m.description}</h4>
+                                <p>Due at ${m.dueAtHours.toLocaleString()} hours | Current: ${item.currentHours.toLocaleString()} hours</p>
+                            </div>
+                            <div class="maintenance-status">
+                                <div class="hours">${m.hoursOverdue > 0 ? '+' : ''}${m.hoursOverdue} hrs</div>
+                                <div class="label">${m.hoursOverdue > 0 ? 'OVERDUE' : 'DUE SOON'}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
         }
 
         // Render payments
@@ -916,6 +1346,41 @@
             }).join('');
         }
 
+        // Load report
+        async function loadReport() {
+            try {
+                const response = await fetch('/api/equipment/inventory/report');
+                const data = await response.json();
+
+                if (data.success) {
+                    const tbody = document.getElementById('reportBody');
+                    tbody.innerHTML = data.equipment.map(item => `
+                        <tr>
+                            <td><strong>${item.title}</strong><br><small>${item.year || ''} ${item.make || ''} ${item.model || ''}</small></td>
+                            <td>${item.category || '-'}</td>
+                            <td>${item.currentHours ? item.currentHours.toLocaleString() : '-'}</td>
+                            <td class="number">$${(item.marketValue || 0).toLocaleString()}</td>
+                            <td class="number">$${(item.reportingValue || 0).toLocaleString()}</td>
+                            <td class="number">$${(item.amountOwed || 0).toLocaleString()}</td>
+                            <td class="number">$${(item.equity || 0).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+
+                    tbody.innerHTML += `
+                        <tr class="report-totals">
+                            <td colspan="3"><strong>TOTALS</strong></td>
+                            <td class="number">$${data.totals.totalMarketValue.toLocaleString()}</td>
+                            <td class="number">$${data.totals.totalReportingValue.toLocaleString()}</td>
+                            <td class="number">$${data.totals.totalOwed.toLocaleString()}</td>
+                            <td class="number">$${data.totals.totalEquity.toLocaleString()}</td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading report:', error);
+            }
+        }
+
         // Open add modal
         function openAddModal() {
             document.getElementById('modalTitle').textContent = 'Add Equipment';
@@ -936,9 +1401,13 @@
             document.getElementById('year').value = item.year || '';
             document.getElementById('make').value = item.make || '';
             document.getElementById('model').value = item.model || '';
+            document.getElementById('currentHours').value = item.currentHours || '';
+            document.getElementById('hoursAtPurchase').value = item.hoursAtPurchase || '';
             document.getElementById('description').value = item.description || '';
             document.getElementById('serialNumber').value = item.serialNumber || item.vin || '';
             document.getElementById('location').value = item.location || 'Phillips County, CO';
+            document.getElementById('marketValue').value = item.marketValue || '';
+            document.getElementById('marketValueSource').value = item.marketValueSource || '';
             document.getElementById('currentValue').value = item.currentValue || '';
             document.getElementById('purchasePrice').value = item.purchasePrice || '';
             document.getElementById('hasLoan').checked = item.hasLoan || false;
@@ -991,9 +1460,13 @@
                 year: parseInt(document.getElementById('year').value) || null,
                 make: document.getElementById('make').value,
                 model: document.getElementById('model').value,
+                currentHours: parseInt(document.getElementById('currentHours').value) || 0,
+                hoursAtPurchase: parseInt(document.getElementById('hoursAtPurchase').value) || 0,
                 description: document.getElementById('description').value,
                 serialNumber: document.getElementById('serialNumber').value,
                 location: document.getElementById('location').value,
+                marketValue: parseFloat(document.getElementById('marketValue').value) || 0,
+                marketValueSource: document.getElementById('marketValueSource').value,
                 currentValue: parseFloat(document.getElementById('currentValue').value) || 0,
                 purchasePrice: parseFloat(document.getElementById('purchasePrice').value) || 0,
                 hasLoan: document.getElementById('hasLoan').checked,
@@ -1028,6 +1501,7 @@
                     closeModal();
                     loadEquipment();
                     loadSummary();
+                    loadMaintenanceDue();
                 } else {
                     alert('Error saving equipment: ' + (data.error || 'Unknown error'));
                 }
@@ -1037,11 +1511,169 @@
             }
         });
 
-        // Close modal on outside click
-        document.getElementById('equipmentModal').addEventListener('click', (e) => {
-            if (e.target.id === 'equipmentModal') {
-                closeModal();
+        // ==========================================
+        // MAINTENANCE MODAL FUNCTIONS
+        // ==========================================
+
+        let currentMaintenanceEquipment = null;
+
+        function openMaintenanceModal(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            currentMaintenanceEquipment = item;
+            document.getElementById('maintenanceEquipmentId').value = id;
+            document.getElementById('maintenanceTitle').textContent = `Service Log: ${item.title}`;
+            document.getElementById('maintenanceCurrentHours').textContent = (item.currentHours || 0).toLocaleString();
+            document.getElementById('updateHoursInput').value = item.currentHours || '';
+            document.getElementById('maintHours').value = item.currentHours || '';
+
+            loadMaintenanceLog(id);
+
+            document.getElementById('maintenanceModal').classList.add('active');
+        }
+
+        function closeMaintenanceModal() {
+            document.getElementById('maintenanceModal').classList.remove('active');
+            document.getElementById('maintenanceForm').reset();
+        }
+
+        async function loadMaintenanceLog(id) {
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}/maintenance`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = document.getElementById('maintenanceLog');
+
+                    if (!data.records || data.records.length === 0) {
+                        container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">No service records yet.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = data.records.map(record => `
+                        <div class="log-entry ${record.type}">
+                            <div class="log-info">
+                                <h5>${record.description}</h5>
+                                <p>${record.type ? record.type.replace(/_/g, ' ').toUpperCase() : ''} ${record.performedBy ? '| By: ' + record.performedBy : ''} ${record.totalCost ? '| Cost: $' + record.totalCost : ''}</p>
+                            </div>
+                            <div class="log-meta">
+                                <div class="hours">${record.hoursAtService ? record.hoursAtService.toLocaleString() + ' hrs' : '-'}</div>
+                                <div>${new Date(record.date).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading maintenance log:', error);
             }
+        }
+
+        async function updateHours() {
+            const id = document.getElementById('maintenanceEquipmentId').value;
+            const hours = parseInt(document.getElementById('updateHoursInput').value);
+
+            if (!hours || hours < 0) {
+                alert('Please enter valid hours');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}/hours`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentHours: hours })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('maintenanceCurrentHours').textContent = hours.toLocaleString();
+                    document.getElementById('maintHours').value = hours;
+                    loadEquipment();
+                    loadMaintenanceDue();
+                }
+            } catch (error) {
+                console.error('Error updating hours:', error);
+            }
+        }
+
+        async function quickAddMaintenance(type, description) {
+            const id = document.getElementById('maintenanceEquipmentId').value;
+            const hours = parseInt(document.getElementById('updateHoursInput').value) ||
+                          parseInt(document.getElementById('maintenanceCurrentHours').textContent.replace(/,/g, '')) || 0;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}/maintenance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type,
+                        description,
+                        hoursAtService: hours,
+                        performedBy: 'self'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadMaintenanceLog(id);
+                    loadEquipment();
+                    loadMaintenanceDue();
+                    alert(`${description} logged at ${hours} hours`);
+                }
+            } catch (error) {
+                console.error('Error adding maintenance:', error);
+            }
+        }
+
+        // Maintenance form submit
+        document.getElementById('maintenanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('maintenanceEquipmentId').value;
+
+            const maintenanceData = {
+                type: document.getElementById('maintType').value,
+                description: document.getElementById('maintDescription').value,
+                hoursAtService: parseInt(document.getElementById('maintHours').value) || 0,
+                performedBy: document.getElementById('maintPerformedBy').value,
+                totalCost: parseFloat(document.getElementById('maintCost').value) || 0,
+                notes: document.getElementById('maintNotes').value
+            };
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}/maintenance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(maintenanceData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('maintenanceForm').reset();
+                    document.getElementById('maintHours').value = document.getElementById('updateHoursInput').value;
+                    loadMaintenanceLog(id);
+                    loadEquipment();
+                    loadMaintenanceDue();
+                    alert('Service record added');
+                } else {
+                    alert('Error adding service: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error adding maintenance:', error);
+                alert('Error adding service record');
+            }
+        });
+
+        // Close modals on outside click
+        document.getElementById('equipmentModal').addEventListener('click', (e) => {
+            if (e.target.id === 'equipmentModal') closeModal();
+        });
+        document.getElementById('maintenanceModal').addEventListener('click', (e) => {
+            if (e.target.id === 'maintenanceModal') closeMaintenanceModal();
         });
     </script>
 </body>

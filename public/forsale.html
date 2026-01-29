@@ -1135,8 +1135,71 @@
     </footer>
 
     <script>
-        // Equipment inventory data
-        const equipment = [
+        // Equipment loaded from API
+        let equipment = [];
+
+        // Load equipment from database
+        async function loadEquipmentFromAPI() {
+            try {
+                const response = await fetch('/api/equipment/inventory/public');
+                const data = await response.json();
+
+                if (data.success && data.equipment.length > 0) {
+                    // Map database format to display format
+                    equipment = data.equipment.map(item => ({
+                        id: item._id,
+                        title: item.title,
+                        subtitle: item.subtitle || item.description?.substring(0, 50) || '',
+                        category: item.category || 'Other',
+                        year: item.year,
+                        buyNowPrice: item.currentValue || item.marketValue || 0, // Public price
+                        floorPrice: 0, // Hidden from public
+                        images: item.images || [],
+                        videos: item.videos || [],
+                        specs: item.specs ? Object.fromEntries(item.specs) : {
+                            'Make': item.make || '-',
+                            'Model': item.model || '-',
+                            'Year': item.year || '-',
+                            'Hours': item.currentHours ? item.currentHours.toLocaleString() : '-',
+                            'Location': item.location || 'Phillips County, CO'
+                        },
+                        marketResearch: item.marketTrends ? {
+                            'Average Sale Price': item.marketTrends.avgSalePrice ? `$${item.marketTrends.avgSalePrice.toLocaleString()}` : '-',
+                            'Price Range': item.marketTrends.priceRangeLow && item.marketTrends.priceRangeHigh
+                                ? `$${item.marketTrends.priceRangeLow.toLocaleString()} - $${item.marketTrends.priceRangeHigh.toLocaleString()}`
+                                : '-',
+                            'Avg Days to Sell': item.marketTrends.avgDaysToSell || '-',
+                            'Market Demand': item.marketTrends.demandLevel?.toUpperCase() || 'MEDIUM'
+                        } : {},
+                        description: item.description || '',
+                        status: item.saleStatus === 'sold' ? 'sold' : 'available'
+                    }));
+
+                    renderEquipmentGrid();
+                } else {
+                    // No equipment from API, show empty state
+                    document.getElementById('equipmentGrid').innerHTML = `
+                        <div style="grid-column: 1/-1; text-align:center; padding:60px; color:#666;">
+                            <h3 style="font-family:'Oswald',sans-serif; font-size:28px; margin-bottom:10px;">No Equipment Currently Listed</h3>
+                            <p>Check back soon for new listings, or contact us directly.</p>
+                            <p style="margin-top:20px;"><a href="tel:9707743276" style="color:#d4af37;">Call: (970) 774-3276</a></p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading equipment:', error);
+                // Show fallback message
+                document.getElementById('equipmentGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align:center; padding:60px; color:#666;">
+                        <h3 style="font-family:'Oswald',sans-serif; font-size:28px; margin-bottom:10px;">Equipment Loading...</h3>
+                        <p>Please refresh the page or contact us directly at (970) 774-3276</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Legacy hardcoded equipment - keeping as fallback
+        const legacyEquipment = [
             {
                 id: 'fk-2450',
                 title: 'Farm King 2450 Round Bale Carrier',
@@ -1497,17 +1560,32 @@
         let offerHistory = [];
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderEquipmentGrid();
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Try to load from database first
+            await loadEquipmentFromAPI();
+
+            // If no equipment loaded from API, use legacy data as fallback
+            if (equipment.length === 0 && legacyEquipment.length > 0) {
+                equipment = legacyEquipment;
+                renderEquipmentGrid();
+            }
+
             checkUrlParams();
         });
 
         // Render equipment cards
         function renderEquipmentGrid() {
-            equipmentGrid.innerHTML = equipment.map(item => `
+            if (equipment.length === 0) return;
+
+            equipmentGrid.innerHTML = equipment.map(item => {
+                const imageUrl = item.images && item.images.length > 0
+                    ? item.images[0]
+                    : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220"><rect fill="%23e0e0e0" width="400" height="220"/><text fill="%23999" x="200" y="110" text-anchor="middle" dy=".3em" font-family="sans-serif">Image Coming Soon</text></svg>';
+
+                return `
                 <div class="equipment-card" onclick="openModal('${item.id}')">
                     <div class="card-image">
-                        <img src="${item.images[0]}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22220%22/><text fill=%22%23999%22 x=%22200%22 y=%22110%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>Image Coming Soon</text></svg>'">
+                        <img src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22220%22/><text fill=%22%23999%22 x=%22200%22 y=%22110%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>Image Coming Soon</text></svg>'">
                         <div class="card-badge ${item.status === 'sold' ? 'sold' : ''}">${item.status === 'sold' ? 'SOLD' : item.category}</div>
                     </div>
                     <div class="card-content">
@@ -1519,7 +1597,8 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Check URL params for direct linking
