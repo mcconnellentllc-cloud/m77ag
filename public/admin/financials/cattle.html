@@ -3830,7 +3830,7 @@
 
             const year = parseInt(document.getElementById('calvingYear').value);
             const hadCalf = document.getElementById('calvingHadCalf').value === 'true';
-            const calfTag = document.getElementById('calvingCalfTag').value;
+            const calfTag = document.getElementById('calvingCalfTag').value.trim();
             const calfSex = document.getElementById('calvingCalfSex').value;
             const calfBirthDate = document.getElementById('calvingBirthDate').value;
             const birthWeight = document.getElementById('calvingBirthWeight').value;
@@ -3846,6 +3846,12 @@
 
             if (!year) {
                 showToast('Year is required', 'error');
+                return;
+            }
+
+            // Warn if trying to add calf to herd without a tag
+            if (createCalf && hadCalf && !calfTag) {
+                showToast('Enter a Calf Tag to add calf to herd inventory', 'error');
                 return;
             }
 
@@ -3871,6 +3877,13 @@
                         comments: comments || undefined
                     })
                 });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    showToast(errorData.message || `Server error: ${response.status}`, 'error');
+                    console.error('Calving record error:', response.status, errorData);
+                    return;
+                }
 
                 const data = await response.json();
                 if (data.success) {
@@ -3916,6 +3929,7 @@
                                 // Add to allCattle array
                                 allCattle.push(calfResult.data);
                                 filteredCattle = [...allCattle];
+                                renderCattleList();
                             } else {
                                 showToast(`Calving saved but calf creation failed: ${calfResult.message}`, 'warning');
                             }
@@ -3947,7 +3961,7 @@
                 }
             } catch (error) {
                 console.error('Error saving calving record:', error);
-                showToast('Error saving calving record', 'error');
+                showToast('Network error - check your connection', 'error');
             }
         }
 
