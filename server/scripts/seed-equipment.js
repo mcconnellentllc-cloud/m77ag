@@ -460,6 +460,8 @@ const equipmentData = [
     year: 2023,
     make: 'John Deere',
     model: '6145R',
+    serialNumber: '1L06145RCNP149997',
+    currentHours: 496,
     notes: 'Owner: M77 AG, Insured: No',
     forSale: false,
     saleStatus: 'not-for-sale'
