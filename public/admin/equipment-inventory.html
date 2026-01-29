@@ -629,6 +629,35 @@
             border-color: #3498db;
         }
 
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #666;
+        }
+        .filter-btn:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+        .filter-btn.active {
+            background: #2d5016;
+            border-color: #2d5016;
+            color: #fff;
+        }
+
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -747,6 +776,16 @@
 
         <!-- All Equipment Tab -->
         <div class="tab-content active" id="all-tab">
+            <!-- Category Filter -->
+            <div class="category-filter" style="margin-bottom:20px;">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="Tractors">Tractors</button>
+                <button class="filter-btn" data-category="Harvest Equipment">Harvest</button>
+                <button class="filter-btn" data-category="Implements">Implements</button>
+                <button class="filter-btn" data-category="Vehicles">Vehicles</button>
+                <button class="filter-btn" data-category="Trucks & Trailers">Trucks & Trailers</button>
+                <button class="filter-btn" data-category="Yard Equipment">Yard Equipment</button>
+            </div>
             <div class="equipment-grid" id="allEquipmentGrid"></div>
             <div class="empty-state" id="emptyAll" style="display: none;">
                 <h3>No Equipment</h3>
@@ -838,15 +877,10 @@
                             <select class="form-select" id="category">
                                 <option value="Tractors">Tractors</option>
                                 <option value="Harvest Equipment">Harvest Equipment</option>
-                                <option value="Hay Equipment">Hay Equipment</option>
-                                <option value="Sprayer Equipment">Sprayer Equipment</option>
-                                <option value="Tillage">Tillage</option>
-                                <option value="Planting">Planting</option>
-                                <option value="Attachments">Attachments</option>
-                                <option value="Trucks">Trucks</option>
-                                <option value="Trailers">Trailers</option>
-                                <option value="Feed Truck">Feed Truck</option>
-                                <option value="Combine Parts">Combine Parts</option>
+                                <option value="Implements">Implements</option>
+                                <option value="Vehicles">Vehicles</option>
+                                <option value="Trucks & Trailers">Trucks & Trailers</option>
+                                <option value="Yard Equipment">Yard Equipment</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -1106,6 +1140,7 @@
     <script>
         let allEquipment = [];
         let maintenanceDueItems = [];
+        let currentCategoryFilter = 'all';
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -1113,7 +1148,20 @@
             loadSummary();
             loadMaintenanceDue();
             setupTabs();
+            setupCategoryFilter();
         });
+
+        // Category filter
+        function setupCategoryFilter() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategoryFilter = btn.dataset.category;
+                    renderEquipment();
+                });
+            });
+        }
 
         // Tab switching
         function setupTabs() {
@@ -1193,22 +1241,37 @@
             }
         }
 
+        // Filter equipment by category
+        function filterByCategory(items) {
+            if (currentCategoryFilter === 'all') return items;
+            return items.filter(e => e.category === currentCategoryFilter);
+        }
+
         // Render equipment cards
         function renderEquipment() {
             const allGrid = document.getElementById('allEquipmentGrid');
             const forSaleGrid = document.getElementById('forSaleGrid');
             const privateGrid = document.getElementById('privateGrid');
 
+            // Apply category filter
+            const filteredEquipment = filterByCategory(allEquipment);
             const forSaleItems = allEquipment.filter(e => e.forSale);
             const privateItems = allEquipment.filter(e => !e.forSale);
 
-            // All equipment
-            if (allEquipment.length === 0) {
+            // All equipment (filtered by category)
+            if (filteredEquipment.length === 0) {
                 allGrid.innerHTML = '';
                 document.getElementById('emptyAll').style.display = 'block';
+                if (currentCategoryFilter !== 'all') {
+                    document.querySelector('#emptyAll h3').textContent = `No ${currentCategoryFilter}`;
+                    document.querySelector('#emptyAll p').textContent = 'No equipment in this category yet.';
+                } else {
+                    document.querySelector('#emptyAll h3').textContent = 'No Equipment';
+                    document.querySelector('#emptyAll p').textContent = 'Add your first piece of equipment to get started.';
+                }
             } else {
                 document.getElementById('emptyAll').style.display = 'none';
-                allGrid.innerHTML = allEquipment.map(item => renderCard(item)).join('');
+                allGrid.innerHTML = filteredEquipment.map(item => renderCard(item)).join('');
             }
 
             // For sale
@@ -1228,6 +1291,28 @@
                 document.getElementById('emptyPrivate').style.display = 'none';
                 privateGrid.innerHTML = privateItems.map(item => renderCard(item)).join('');
             }
+
+            // Update category counts
+            updateCategoryCounts();
+        }
+
+        // Update category filter button counts
+        function updateCategoryCounts() {
+            const counts = {};
+            allEquipment.forEach(e => {
+                const cat = e.category || 'Other';
+                counts[cat] = (counts[cat] || 0) + 1;
+            });
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const cat = btn.dataset.category;
+                if (cat === 'all') {
+                    btn.textContent = `All (${allEquipment.length})`;
+                } else {
+                    const count = counts[cat] || 0;
+                    btn.textContent = `${cat === 'Harvest Equipment' ? 'Harvest' : cat} (${count})`;
+                }
+            });
         }
 
         // Render single card
