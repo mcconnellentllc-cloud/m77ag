@@ -757,4 +757,458 @@ router.post('/seed/calves-2026', isAdmin, async (req, res) => {
   }
 });
 
+// ===========================================
+// FEED & CATTLE LOCATIONS ROUTES
+// ===========================================
+
+// In-memory storage for feed data (TODO: Create models for production)
+let feedLocations = [];
+let feedInventory = [];
+let feedUsage = [];
+let feedPurchases = [];
+
+/**
+ * GET /api/cattle/feed/locations
+ * Get cattle locations by year
+ */
+router.get('/feed/locations', async (req, res) => {
+  try {
+    const { year } = req.query;
+    let data = feedLocations;
+    if (year) {
+      data = data.filter(l => l.year === parseInt(year));
+    }
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('Error fetching feed locations:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/locations
+ * Add cattle location record
+ */
+router.post('/feed/locations', async (req, res) => {
+  try {
+    const location = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    feedLocations.push(location);
+    res.status(201).json({ success: true, data: location });
+  } catch (error) {
+    console.error('Error creating feed location:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/cattle/feed/locations/:id
+ * Delete cattle location record
+ */
+router.delete('/feed/locations/:id', async (req, res) => {
+  try {
+    feedLocations = feedLocations.filter(l => l._id !== req.params.id);
+    res.json({ success: true, message: 'Location deleted' });
+  } catch (error) {
+    console.error('Error deleting feed location:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/feed/inventory
+ * Get feed inventory
+ */
+router.get('/feed/inventory', async (req, res) => {
+  try {
+    res.json({ success: true, data: feedInventory });
+  } catch (error) {
+    console.error('Error fetching feed inventory:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/inventory
+ * Add feed inventory item
+ */
+router.post('/feed/inventory', async (req, res) => {
+  try {
+    const item = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    feedInventory.push(item);
+    res.status(201).json({ success: true, data: item });
+  } catch (error) {
+    console.error('Error creating feed inventory:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/feed/usage
+ * Get feed usage log
+ */
+router.get('/feed/usage', async (req, res) => {
+  try {
+    res.json({ success: true, data: feedUsage });
+  } catch (error) {
+    console.error('Error fetching feed usage:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/usage
+ * Log feed usage and deduct from inventory
+ */
+router.post('/feed/usage', async (req, res) => {
+  try {
+    const { itemId, quantity, date, location, notes } = req.body;
+
+    // Find and update inventory item
+    const item = feedInventory.find(i => i._id === itemId);
+    if (!item) {
+      return res.status(404).json({ success: false, message: 'Feed item not found' });
+    }
+
+    if (item.quantity < quantity) {
+      return res.status(400).json({ success: false, message: 'Not enough inventory' });
+    }
+
+    item.quantity -= quantity;
+
+    const usage = {
+      _id: Date.now().toString(),
+      itemId,
+      itemName: item.name,
+      unit: item.unit,
+      quantity,
+      date: date || new Date(),
+      location,
+      notes,
+      loggedBy: req.user?.name || 'Unknown',
+      createdAt: new Date()
+    };
+    feedUsage.push(usage);
+
+    res.status(201).json({ success: true, data: usage });
+  } catch (error) {
+    console.error('Error logging feed usage:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/feed/purchases
+ * Get feed purchases
+ */
+router.get('/feed/purchases', async (req, res) => {
+  try {
+    res.json({ success: true, data: feedPurchases });
+  } catch (error) {
+    console.error('Error fetching feed purchases:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/purchases
+ * Record feed purchase and optionally add to inventory
+ */
+router.post('/feed/purchases', async (req, res) => {
+  try {
+    const { type, description, quantity, cost, date, vendor, addToInventory, notes } = req.body;
+
+    const purchase = {
+      _id: Date.now().toString(),
+      type,
+      description,
+      quantity,
+      cost,
+      date: date || new Date(),
+      vendor,
+      notes,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    feedPurchases.push(purchase);
+
+    // Optionally add to inventory
+    if (addToInventory) {
+      const inventoryItem = {
+        _id: (Date.now() + 1).toString(),
+        type,
+        name: description,
+        quantity,
+        unit: type === 'hay' ? 'bales' : 'tubs',
+        location: '',
+        notes: `Purchased from ${vendor || 'vendor'}`,
+        createdBy: req.userId,
+        createdAt: new Date()
+      };
+      feedInventory.push(inventoryItem);
+    }
+
+    res.status(201).json({ success: true, data: purchase });
+  } catch (error) {
+    console.error('Error recording feed purchase:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ===========================================
+// VET & SUPPLIES ROUTES
+// ===========================================
+
+// In-memory storage for vet data (TODO: Create models for production)
+let vetVisits = [];
+let vetSupplies = [];
+let vetPurchases = [];
+
+/**
+ * GET /api/cattle/vet/visits
+ * Get vet visits with optional filters
+ */
+router.get('/vet/visits', async (req, res) => {
+  try {
+    const { year, status } = req.query;
+    let data = vetVisits;
+    if (year) {
+      data = data.filter(v => new Date(v.date).getFullYear() === parseInt(year));
+    }
+    if (status) {
+      data = data.filter(v => v.status === status);
+    }
+    // Sort by date descending
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('Error fetching vet visits:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/visits
+ * Add vet visit record
+ */
+router.post('/vet/visits', async (req, res) => {
+  try {
+    const visit = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    vetVisits.push(visit);
+    res.status(201).json({ success: true, data: visit });
+  } catch (error) {
+    console.error('Error creating vet visit:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/cattle/vet/visits/:id
+ * Delete vet visit record
+ */
+router.delete('/vet/visits/:id', async (req, res) => {
+  try {
+    vetVisits = vetVisits.filter(v => v._id !== req.params.id);
+    res.json({ success: true, message: 'Visit deleted' });
+  } catch (error) {
+    console.error('Error deleting vet visit:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/vet/supplies
+ * Get supply inventory
+ */
+router.get('/vet/supplies', async (req, res) => {
+  try {
+    res.json({ success: true, data: vetSupplies });
+  } catch (error) {
+    console.error('Error fetching supplies:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/supplies
+ * Add supply inventory item
+ */
+router.post('/vet/supplies', async (req, res) => {
+  try {
+    const supply = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    vetSupplies.push(supply);
+    res.status(201).json({ success: true, data: supply });
+  } catch (error) {
+    console.error('Error creating supply:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/supplies/:id/use
+ * Deduct from supply inventory
+ */
+router.post('/vet/supplies/:id/use', async (req, res) => {
+  try {
+    const { quantity } = req.body;
+    const supply = vetSupplies.find(s => s._id === req.params.id);
+
+    if (!supply) {
+      return res.status(404).json({ success: false, message: 'Supply not found' });
+    }
+
+    if (supply.quantity < quantity) {
+      return res.status(400).json({ success: false, message: 'Not enough inventory' });
+    }
+
+    supply.quantity -= quantity;
+    res.json({ success: true, data: supply });
+  } catch (error) {
+    console.error('Error using supply:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/vet/purchases
+ * Get supply purchases
+ */
+router.get('/vet/purchases', async (req, res) => {
+  try {
+    // Sort by date descending
+    const sorted = [...vetPurchases].sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json({ success: true, data: sorted });
+  } catch (error) {
+    console.error('Error fetching purchases:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/purchases
+ * Record supply purchase and optionally add to inventory
+ */
+router.post('/vet/purchases', async (req, res) => {
+  try {
+    const { date, category, description, quantity, cost, vendor, addToInventory, supplyItemId, notes } = req.body;
+
+    const purchase = {
+      _id: Date.now().toString(),
+      date: date || new Date(),
+      category,
+      description,
+      quantity,
+      cost,
+      vendor,
+      notes,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    vetPurchases.push(purchase);
+
+    // Update existing inventory or create new item
+    if (addToInventory) {
+      if (supplyItemId) {
+        // Update existing supply item
+        const supply = vetSupplies.find(s => s._id === supplyItemId);
+        if (supply) {
+          supply.quantity += quantity;
+        }
+      } else {
+        // Create new supply item
+        const supply = {
+          _id: (Date.now() + 1).toString(),
+          category,
+          name: description,
+          quantity,
+          unit: 'doses',
+          reorderLevel: 0,
+          location: '',
+          notes: `Purchased from ${vendor || 'vendor'}`,
+          createdBy: req.userId,
+          createdAt: new Date()
+        };
+        vetSupplies.push(supply);
+      }
+    }
+
+    res.status(201).json({ success: true, data: purchase });
+  } catch (error) {
+    console.error('Error recording purchase:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/vet/expenses
+ * Get all vet and supply expenses combined
+ */
+router.get('/vet/expenses', async (req, res) => {
+  try {
+    const { year, category } = req.query;
+    let expenses = [];
+
+    // Add vet visits as expenses
+    for (const visit of vetVisits) {
+      if (visit.status === 'completed') {
+        expenses.push({
+          date: visit.date,
+          description: `Vet Visit - ${visit.vetName || 'Vet'} (${visit.serviceType || 'Service'})`,
+          category: 'vet',
+          amount: (visit.cost || 0) + (visit.mileage || 0),
+          vendor: visit.vetName
+        });
+      }
+    }
+
+    // Add purchases as expenses
+    for (const purchase of vetPurchases) {
+      expenses.push({
+        date: purchase.date,
+        description: purchase.description,
+        category: purchase.category,
+        amount: purchase.cost || 0,
+        vendor: purchase.vendor
+      });
+    }
+
+    // Filter by year
+    if (year) {
+      expenses = expenses.filter(e => new Date(e.date).getFullYear() === parseInt(year));
+    }
+
+    // Filter by category
+    if (category) {
+      expenses = expenses.filter(e => e.category === category);
+    }
+
+    // Sort by date descending
+    expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.json({ success: true, data: expenses });
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;

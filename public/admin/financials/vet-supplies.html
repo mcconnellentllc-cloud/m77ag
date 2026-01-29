@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vet & Supplies - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .header {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .nav {
+            display: flex;
+            gap: 25px;
+        }
+        .nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav a:hover, .nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .breadcrumb {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .breadcrumb a { color: #888; text-decoration: none; }
+        .breadcrumb a:hover { color: #d4af37; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+        .page-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2d5016;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #1f3a0f; }
+        .btn-secondary {
+            background: #8B4513;
+            color: #fff;
+        }
+        .btn-secondary:hover { background: #6d360f; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #ddd;
+            color: #666;
+        }
+        .btn-outline:hover { border-color: #d4af37; color: #d4af37; }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .summary-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+        }
+        .summary-value.warning { color: #e67e22; }
+        .summary-value.expense { color: #c0392b; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: #333; }
+        .tab.active {
+            color: #8B4513;
+            border-bottom-color: #8B4513;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        tr:hover { background: #fafafa; }
+        .amount { font-family: 'Oswald', sans-serif; }
+        .amount.positive { color: #2d5016; }
+        .amount.negative { color: #c0392b; }
+
+        /* Supply Inventory Grid */
+        .supply-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .supply-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #8B4513;
+        }
+        .supply-card.vaccine { border-left-color: #27ae60; }
+        .supply-card.medication { border-left-color: #3498db; }
+        .supply-card.equipment { border-left-color: #9b59b6; }
+        .supply-card.other { border-left-color: #95a5a6; }
+        .supply-card.low-stock { border-left-color: #e74c3c; }
+        .supply-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+        .supply-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin: 8px 0;
+        }
+        .supply-qty {
+            font-size: 24px;
+            font-weight: 700;
+            color: #8B4513;
+        }
+        .supply-qty.low { color: #e74c3c; }
+        .supply-meta {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+        .supply-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        .supply-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.scheduled { background: #e3f2fd; color: #1976d2; }
+        .status-badge.completed { background: #e8f5e9; color: #388e3c; }
+        .status-badge.pending { background: #fff3e0; color: #f57c00; }
+        .status-badge.urgent { background: #ffebee; color: #c62828; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: #333;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 2000;
+            display: none;
+        }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
+        .toast.active { display: block; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        .empty-state h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-bar select {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .summary-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .page-header { flex-direction: column; gap: 15px; }
+            .form-row { grid-template-columns: 1fr; }
+            .nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/admin/dashboard.html" class="logo">M77 AG</a>
+        <nav class="nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/financials.html">Financials</a>
+            <a href="/admin/financials/cattle.html">Cattle</a>
+            <a href="/admin/financials/feed.html">Feed</a>
+            <a href="/admin/financials/vet-supplies.html" class="active">Vet & Supplies</a>
+            <a href="/admin/equipment-inventory.html">Equipment</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin/dashboard.html">Admin</a> / <a href="/admin/financials.html">Financials</a> / Vet & Supplies
+        </div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Vet & Supplies</h1>
+                <p class="page-subtitle">Track veterinary visits, medical supplies, and cattle care expenses</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="openSupplyModal()">+ Add Supply</button>
+                <button class="btn btn-secondary" onclick="openVetVisitModal()">+ Vet Visit</button>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Vet Expenses (YTD)</div>
+                <div class="summary-value expense" id="vetExpenses">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Supply Expenses (YTD)</div>
+                <div class="summary-value expense" id="supplyExpenses">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Expenses (YTD)</div>
+                <div class="summary-value expense" id="totalExpenses">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Upcoming Visits</div>
+                <div class="summary-value" id="upcomingVisits">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Low Stock Items</div>
+                <div class="summary-value warning" id="lowStockItems">0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="vet">Vet Visits</button>
+            <button class="tab" data-tab="supplies">Supply Inventory</button>
+            <button class="tab" data-tab="purchases">Supply Purchases</button>
+            <button class="tab" data-tab="expenses">All Expenses</button>
+        </div>
+
+        <!-- Vet Visits Tab -->
+        <div class="tab-content active" id="vet-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Veterinary Visits</h3>
+                    <div class="filter-bar" style="margin: 0;">
+                        <select id="vetYearFilter" onchange="loadVetVisits()">
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="">All Years</option>
+                        </select>
+                        <select id="vetStatusFilter" onchange="loadVetVisits()">
+                            <option value="">All Status</option>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Vet / Clinic</th>
+                                    <th>Service Type</th>
+                                    <th>Animals</th>
+                                    <th>Cost</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vetTableBody">
+                                <tr>
+                                    <td colspan="7" class="empty-state">No vet visits recorded</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplies Tab -->
+        <div class="tab-content" id="supplies-tab">
+            <div class="filter-bar">
+                <select id="supplyTypeFilter" onchange="filterSupplies()">
+                    <option value="">All Types</option>
+                    <option value="vaccine">Vaccines</option>
+                    <option value="medication">Medications</option>
+                    <option value="equipment">Equipment</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="supplyStockFilter" onchange="filterSupplies()">
+                    <option value="">All Stock Levels</option>
+                    <option value="low">Low Stock</option>
+                    <option value="ok">Adequate Stock</option>
+                </select>
+            </div>
+            <div class="supply-grid" id="supplyGrid">
+                <div class="empty-state">
+                    <h3>No Supplies</h3>
+                    <p>Add vaccines, medications, or other supplies to track inventory.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchases Tab -->
+        <div class="tab-content" id="purchases-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Supply Purchases</h3>
+                    <button class="btn btn-secondary" onclick="openPurchaseModal()">+ Add Purchase</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Cost</th>
+                                    <th>Vendor</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody">
+                                <tr>
+                                    <td colspan="7" class="empty-state">No purchases recorded</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Expenses Tab -->
+        <div class="tab-content" id="expenses-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">All Vet & Supply Expenses</h3>
+                    <div class="filter-bar" style="margin: 0;">
+                        <select id="expenseYearFilter" onchange="loadExpenses()">
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="">All Years</option>
+                        </select>
+                        <select id="expenseCategoryFilter" onchange="loadExpenses()">
+                            <option value="">All Categories</option>
+                            <option value="vet">Vet Visits</option>
+                            <option value="vaccine">Vaccines</option>
+                            <option value="medication">Medications</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Vendor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody">
+                                <tr>
+                                    <td colspan="5" class="empty-state">No expenses recorded</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vet Visit Modal -->
+    <div class="modal-overlay" id="vetVisitModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Vet Visit</h2>
+                <button class="modal-close" onclick="closeModal('vetVisitModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="vetDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="vetStatus">
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending Payment</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vet / Clinic Name</label>
+                    <input type="text" class="form-input" id="vetName" placeholder="e.g., Dr. Smith, Akron Vet Clinic">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Service Type</label>
+                    <select class="form-select" id="vetServiceType">
+                        <option value="preg-check">Pregnancy Check</option>
+                        <option value="vaccination">Vaccination</option>
+                        <option value="treatment">Treatment/Medical</option>
+                        <option value="surgery">Surgery</option>
+                        <option value="calving">Calving Assistance</option>
+                        <option value="routine">Routine Checkup</option>
+                        <option value="emergency">Emergency</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Animals (Tag Numbers or Count)</label>
+                    <input type="text" class="form-input" id="vetAnimals" placeholder="e.g., 45, 67, 89 or 'Whole herd - 150 head'">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cost</label>
+                        <input type="number" class="form-input" id="vetCost" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mileage Charge</label>
+                        <input type="number" class="form-input" id="vetMileage" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes / Diagnosis</label>
+                    <textarea class="form-textarea" id="vetNotes" rows="3" placeholder="Treatment details, diagnosis, follow-up needed..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('vetVisitModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveVetVisit()">Save Visit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Supply Modal -->
+    <div class="modal-overlay" id="supplyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Supply Item</h2>
+                <button class="modal-close" onclick="closeModal('supplyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="supplyCategory">
+                        <option value="vaccine">Vaccine</option>
+                        <option value="medication">Medication</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Item Name</label>
+                    <input type="text" class="form-input" id="supplyName" placeholder="e.g., Blackleg Vaccine, Ivermectin">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quantity On Hand</label>
+                        <input type="number" class="form-input" id="supplyQuantity" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select" id="supplyUnit">
+                            <option value="doses">Doses</option>
+                            <option value="bottles">Bottles</option>
+                            <option value="boxes">Boxes</option>
+                            <option value="tubes">Tubes</option>
+                            <option value="bags">Bags</option>
+                            <option value="each">Each</option>
+                            <option value="ml">mL</option>
+                            <option value="cc">cc</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Reorder Level</label>
+                        <input type="number" class="form-input" id="supplyReorderLevel" placeholder="Alert when below this">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expiration Date</label>
+                        <input type="date" class="form-input" id="supplyExpiration">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Storage Location</label>
+                    <input type="text" class="form-input" id="supplyLocation" placeholder="e.g., Barn Fridge, Shop Cabinet">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="supplyNotes" rows="2" placeholder="Dosage info, usage instructions..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('supplyModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSupply()">Save Supply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Purchase Modal -->
+    <div class="modal-overlay" id="purchaseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Supply Purchase</h2>
+                <button class="modal-close" onclick="closeModal('purchaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="purchaseDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="purchaseCategory">
+                            <option value="vaccine">Vaccine</option>
+                            <option value="medication">Medication</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Item Description</label>
+                    <input type="text" class="form-input" id="purchaseDescription" placeholder="What did you purchase?">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-input" id="purchaseQuantity" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Cost</label>
+                        <input type="number" class="form-input" id="purchaseCost" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vendor</label>
+                    <input type="text" class="form-input" id="purchaseVendor" placeholder="Where did you buy it?">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Add to Inventory?</label>
+                    <select class="form-select" id="purchaseAddInventory">
+                        <option value="yes">Yes - Update inventory</option>
+                        <option value="no">No - Just record expense</option>
+                    </select>
+                </div>
+                <div class="form-group" id="purchaseSupplySelect" style="display: none;">
+                    <label class="form-label">Select Existing Supply Item</label>
+                    <select class="form-select" id="purchaseSupplyItem">
+                        <option value="">Create new item</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="purchaseNotes" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('purchaseModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="savePurchase()">Save Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let vetVisits = [];
+        let supplies = [];
+        let purchases = [];
+
+        // Auth headers
+        function getAuthHeaders() {
+            return {
+                'Authorization': 'Bearer ' + localStorage.getItem('adminToken'),
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupTabs();
+            loadAllData();
+            setDefaultDates();
+            setupInventoryToggle();
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+            }
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('vetDate').value = today;
+            document.getElementById('purchaseDate').value = today;
+        }
+
+        function setupInventoryToggle() {
+            document.getElementById('purchaseAddInventory').addEventListener('change', function() {
+                const supplySelect = document.getElementById('purchaseSupplySelect');
+                supplySelect.style.display = this.value === 'yes' ? 'block' : 'none';
+            });
+        }
+
+        // Tab switching
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+                });
+            });
+        }
+
+        // Load all data
+        async function loadAllData() {
+            await Promise.all([
+                loadVetVisits(),
+                loadSupplies(),
+                loadPurchases(),
+                loadExpenses()
+            ]);
+            updateSummary();
+        }
+
+        // Load vet visits
+        async function loadVetVisits() {
+            try {
+                const year = document.getElementById('vetYearFilter').value;
+                const status = document.getElementById('vetStatusFilter').value;
+                let url = '/api/cattle/vet/visits?';
+                if (year) url += `year=${year}&`;
+                if (status) url += `status=${status}`;
+
+                const response = await fetch(url, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    vetVisits = data.data || [];
+                    renderVetVisits();
+                }
+            } catch (error) {
+                console.error('Error loading vet visits:', error);
+                vetVisits = [];
+                renderVetVisits();
+            }
+        }
+
+        // Load supplies
+        async function loadSupplies() {
+            try {
+                const response = await fetch('/api/cattle/vet/supplies', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    supplies = data.data || [];
+                    renderSupplies();
+                    populateSupplyDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading supplies:', error);
+                supplies = [];
+                renderSupplies();
+            }
+        }
+
+        // Load purchases
+        async function loadPurchases() {
+            try {
+                const response = await fetch('/api/cattle/vet/purchases', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    purchases = data.data || [];
+                    renderPurchases();
+                }
+            } catch (error) {
+                console.error('Error loading purchases:', error);
+                purchases = [];
+                renderPurchases();
+            }
+        }
+
+        // Load expenses
+        async function loadExpenses() {
+            try {
+                const year = document.getElementById('expenseYearFilter').value;
+                const category = document.getElementById('expenseCategoryFilter').value;
+                let url = '/api/cattle/vet/expenses?';
+                if (year) url += `year=${year}&`;
+                if (category) url += `category=${category}`;
+
+                const response = await fetch(url, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    renderExpenses(data.data || []);
+                }
+            } catch (error) {
+                console.error('Error loading expenses:', error);
+                renderExpenses([]);
+            }
+        }
+
+        // Update summary
+        function updateSummary() {
+            const currentYear = new Date().getFullYear();
+            const ytdVet = vetVisits
+                .filter(v => new Date(v.date).getFullYear() === currentYear && v.status === 'completed')
+                .reduce((sum, v) => sum + ((v.cost || 0) + (v.mileage || 0)), 0);
+
+            const ytdSupply = purchases
+                .filter(p => new Date(p.date).getFullYear() === currentYear)
+                .reduce((sum, p) => sum + (p.cost || 0), 0);
+
+            const upcoming = vetVisits.filter(v => v.status === 'scheduled' && new Date(v.date) >= new Date()).length;
+            const lowStock = supplies.filter(s => s.quantity <= (s.reorderLevel || 0)).length;
+
+            document.getElementById('vetExpenses').textContent = '$' + ytdVet.toLocaleString();
+            document.getElementById('supplyExpenses').textContent = '$' + ytdSupply.toLocaleString();
+            document.getElementById('totalExpenses').textContent = '$' + (ytdVet + ytdSupply).toLocaleString();
+            document.getElementById('upcomingVisits').textContent = upcoming;
+            document.getElementById('lowStockItems').textContent = lowStock;
+        }
+
+        // Render vet visits
+        function renderVetVisits() {
+            const tbody = document.getElementById('vetTableBody');
+            if (vetVisits.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No vet visits recorded</td></tr>';
+                return;
+            }
+            tbody.innerHTML = vetVisits.map(v => `
+                <tr>
+                    <td>${formatDate(v.date)}</td>
+                    <td>${v.vetName || '-'}</td>
+                    <td>${formatServiceType(v.serviceType)}</td>
+                    <td>${v.animals || '-'}</td>
+                    <td class="amount negative">$${((v.cost || 0) + (v.mileage || 0)).toLocaleString()}</td>
+                    <td><span class="status-badge ${v.status}">${v.status}</span></td>
+                    <td>
+                        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;" onclick="editVetVisit('${v._id}')">Edit</button>
+                        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px; color: #c0392b; border-color: #c0392b;" onclick="deleteVetVisit('${v._id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render supplies
+        function renderSupplies() {
+            const grid = document.getElementById('supplyGrid');
+            const typeFilter = document.getElementById('supplyTypeFilter').value;
+            const stockFilter = document.getElementById('supplyStockFilter').value;
+
+            let filtered = supplies;
+            if (typeFilter) filtered = filtered.filter(s => s.category === typeFilter);
+            if (stockFilter === 'low') filtered = filtered.filter(s => s.quantity <= (s.reorderLevel || 0));
+            if (stockFilter === 'ok') filtered = filtered.filter(s => s.quantity > (s.reorderLevel || 0));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No Supplies</h3><p>Add vaccines, medications, or other supplies to track inventory.</p></div>';
+                return;
+            }
+            grid.innerHTML = filtered.map(s => {
+                const isLow = s.quantity <= (s.reorderLevel || 0);
+                return `
+                <div class="supply-card ${s.category} ${isLow ? 'low-stock' : ''}">
+                    <div class="supply-type">${s.category}</div>
+                    <div class="supply-name">${s.name}</div>
+                    <div class="supply-qty ${isLow ? 'low' : ''}">${s.quantity} ${s.unit}</div>
+                    <div class="supply-meta">
+                        ${s.location ? `Location: ${s.location}<br>` : ''}
+                        ${s.expiration ? `Expires: ${formatDate(s.expiration)}<br>` : ''}
+                        ${isLow ? '<strong style="color: #e74c3c;">Low Stock - Reorder</strong>' : ''}
+                    </div>
+                    <div class="supply-actions">
+                        <button class="btn btn-outline" onclick="useSupply('${s._id}')">Use</button>
+                        <button class="btn btn-outline" onclick="editSupply('${s._id}')">Edit</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function filterSupplies() {
+            renderSupplies();
+        }
+
+        // Render purchases
+        function renderPurchases() {
+            const tbody = document.getElementById('purchasesTableBody');
+            if (purchases.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No purchases recorded</td></tr>';
+                return;
+            }
+            tbody.innerHTML = purchases.map(p => `
+                <tr>
+                    <td>${formatDate(p.date)}</td>
+                    <td>${p.description}</td>
+                    <td>${p.category || '-'}</td>
+                    <td>${p.quantity || '-'}</td>
+                    <td class="amount negative">$${(p.cost || 0).toLocaleString()}</td>
+                    <td>${p.vendor || '-'}</td>
+                    <td>${p.notes || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Render expenses
+        function renderExpenses(expenses) {
+            const tbody = document.getElementById('expensesTableBody');
+            if (expenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No expenses recorded</td></tr>';
+                return;
+            }
+            tbody.innerHTML = expenses.map(e => `
+                <tr>
+                    <td>${formatDate(e.date)}</td>
+                    <td>${e.description}</td>
+                    <td>${e.category}</td>
+                    <td class="amount negative">$${(e.amount || 0).toLocaleString()}</td>
+                    <td>${e.vendor || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Populate supply dropdown
+        function populateSupplyDropdown() {
+            const select = document.getElementById('purchaseSupplyItem');
+            select.innerHTML = '<option value="">Create new item</option>' +
+                supplies.map(s => `<option value="${s._id}">${s.name} (${s.quantity} ${s.unit})</option>`).join('');
+        }
+
+        // Modal functions
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openVetVisitModal() {
+            clearVetForm();
+            openModal('vetVisitModal');
+        }
+
+        function openSupplyModal() {
+            clearSupplyForm();
+            openModal('supplyModal');
+        }
+
+        function openPurchaseModal() {
+            clearPurchaseForm();
+            populateSupplyDropdown();
+            openModal('purchaseModal');
+        }
+
+        function clearVetForm() {
+            document.getElementById('vetName').value = '';
+            document.getElementById('vetAnimals').value = '';
+            document.getElementById('vetCost').value = '';
+            document.getElementById('vetMileage').value = '';
+            document.getElementById('vetNotes').value = '';
+        }
+
+        function clearSupplyForm() {
+            document.getElementById('supplyName').value = '';
+            document.getElementById('supplyQuantity').value = '';
+            document.getElementById('supplyReorderLevel').value = '';
+            document.getElementById('supplyExpiration').value = '';
+            document.getElementById('supplyLocation').value = '';
+            document.getElementById('supplyNotes').value = '';
+        }
+
+        function clearPurchaseForm() {
+            document.getElementById('purchaseDescription').value = '';
+            document.getElementById('purchaseQuantity').value = '';
+            document.getElementById('purchaseCost').value = '';
+            document.getElementById('purchaseVendor').value = '';
+            document.getElementById('purchaseNotes').value = '';
+        }
+
+        // Save functions
+        async function saveVetVisit() {
+            const data = {
+                date: document.getElementById('vetDate').value,
+                status: document.getElementById('vetStatus').value,
+                vetName: document.getElementById('vetName').value,
+                serviceType: document.getElementById('vetServiceType').value,
+                animals: document.getElementById('vetAnimals').value,
+                cost: parseFloat(document.getElementById('vetCost').value) || 0,
+                mileage: parseFloat(document.getElementById('vetMileage').value) || 0,
+                notes: document.getElementById('vetNotes').value
+            };
+
+            if (!data.vetName || !data.date) {
+                showToast('Date and vet name are required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/vet/visits', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Vet visit saved');
+                    closeModal('vetVisitModal');
+                    loadVetVisits();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving vet visit', 'error');
+            }
+        }
+
+        async function saveSupply() {
+            const data = {
+                category: document.getElementById('supplyCategory').value,
+                name: document.getElementById('supplyName').value,
+                quantity: parseInt(document.getElementById('supplyQuantity').value) || 0,
+                unit: document.getElementById('supplyUnit').value,
+                reorderLevel: parseInt(document.getElementById('supplyReorderLevel').value) || 0,
+                expiration: document.getElementById('supplyExpiration').value || null,
+                location: document.getElementById('supplyLocation').value,
+                notes: document.getElementById('supplyNotes').value
+            };
+
+            if (!data.name) {
+                showToast('Supply name is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/vet/supplies', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Supply saved');
+                    closeModal('supplyModal');
+                    loadSupplies();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving supply', 'error');
+            }
+        }
+
+        async function savePurchase() {
+            const data = {
+                date: document.getElementById('purchaseDate').value,
+                category: document.getElementById('purchaseCategory').value,
+                description: document.getElementById('purchaseDescription').value,
+                quantity: parseInt(document.getElementById('purchaseQuantity').value) || 0,
+                cost: parseFloat(document.getElementById('purchaseCost').value) || 0,
+                vendor: document.getElementById('purchaseVendor').value,
+                addToInventory: document.getElementById('purchaseAddInventory').value === 'yes',
+                supplyItemId: document.getElementById('purchaseSupplyItem').value || null,
+                notes: document.getElementById('purchaseNotes').value
+            };
+
+            if (!data.description) {
+                showToast('Description is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/vet/purchases', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Purchase saved');
+                    closeModal('purchaseModal');
+                    loadPurchases();
+                    if (data.addToInventory) loadSupplies();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving purchase', 'error');
+            }
+        }
+
+        async function deleteVetVisit(id) {
+            if (!confirm('Delete this vet visit record?')) return;
+            try {
+                const response = await fetch(`/api/cattle/vet/visits/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Visit deleted');
+                    loadVetVisits();
+                    updateSummary();
+                }
+            } catch (error) {
+                showToast('Error deleting visit', 'error');
+            }
+        }
+
+        async function useSupply(id) {
+            const qty = prompt('Enter quantity used:');
+            if (!qty || isNaN(qty)) return;
+
+            try {
+                const response = await fetch(`/api/cattle/vet/supplies/${id}/use`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ quantity: parseInt(qty) })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Inventory updated');
+                    loadSupplies();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error updating', 'error');
+                }
+            } catch (error) {
+                showToast('Error updating inventory', 'error');
+            }
+        }
+
+        // Helpers
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return new Date(dateStr).toLocaleDateString();
+        }
+
+        function formatServiceType(type) {
+            const types = {
+                'preg-check': 'Pregnancy Check',
+                'vaccination': 'Vaccination',
+                'treatment': 'Treatment/Medical',
+                'surgery': 'Surgery',
+                'calving': 'Calving Assistance',
+                'routine': 'Routine Checkup',
+                'emergency': 'Emergency',
+                'other': 'Other'
+            };
+            return types[type] || type || '-';
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast active ' + type;
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+    </script>
+</body>
+</html>
