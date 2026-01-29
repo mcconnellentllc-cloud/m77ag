@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Manager | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #3d6b1f;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .summary-card.highlight {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+        }
+        .summary-card.highlight .summary-label {
+            color: rgba(255,255,255,0.8);
+        }
+        .summary-card.warning {
+            border-left: 4px solid #e67e22;
+        }
+        .summary-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+        }
+        .summary-value.green { color: #27ae60; }
+        .summary-value.red { color: #c0392b; }
+        .summary-value.gold { color: #d4af37; }
+        .summary-subtext {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .category-tab {
+            padding: 10px 18px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-tab:hover {
+            border-color: #2d5016;
+            color: #2d5016;
+        }
+        .category-tab.active {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .category-count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        .category-tab.active .category-count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Equipment Table */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .table-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+        }
+        .search-box {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 250px;
+        }
+        .equipment-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .equipment-table th,
+        .equipment-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .equipment-table th {
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .equipment-table th:hover {
+            background: #f0f0f0;
+        }
+        .equipment-table tr:hover {
+            background: #fafafa;
+        }
+        .equipment-title {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .equipment-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+        .value-cell {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+        }
+        .value-cell.positive { color: #27ae60; }
+        .value-cell.negative { color: #c0392b; }
+        .has-loan {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #666;
+        }
+        .category-select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .category-select:hover {
+            border-color: #2d5016;
+        }
+        .category-select:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.2);
+        }
+        .category-select.updating {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .update-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ddd;
+            border-top-color: #2d5016;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .edit-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .edit-btn:hover {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .sold-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #e67e22;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e67e22;
+            margin-left: 5px;
+        }
+        .sold-btn:hover {
+            background: #e67e22;
+            color: white;
+        }
+        .restore-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #27ae60;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #27ae60;
+            margin-left: 5px;
+        }
+        .restore-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .archived-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #f8d7da;
+            color: #721c24;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .category-tab.archived {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+        .category-tab.archived.active {
+            background: #c0392b;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        /* Category Summary Cards */
+        .category-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .cat-sum-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2d5016;
+        }
+        .cat-sum-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .cat-sum-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+        .cat-sum-count {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Upcoming Payments Panel */
+        .payments-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .payments-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .payments-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+        }
+        .payment-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+        .payment-info {
+            flex: 1;
+        }
+        .payment-equipment {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .payment-lender {
+            font-size: 12px;
+            color: #666;
+        }
+        .payment-amount {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #c0392b;
+            text-align: right;
+        }
+        .payment-date {
+            font-size: 12px;
+            color: #666;
+        }
+        .no-payments {
+            padding: 30px;
+            text-align: center;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .equipment-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .admin-nav { display: none; }
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #2d5016;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/hunting-bookings.html">Hunting</a>
+            <a href="/admin/equipment.html">Equipment Sales</a>
+            <a href="/admin/equipment-manager.html" class="active">Equipment Manager</a>
+            <a href="/admin/financials.html">Financials</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Equipment Manager</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
+                <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
+            </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="summary-grid">
+            <div class="summary-card highlight">
+                <div class="summary-label">Total Equipment Value</div>
+                <div class="summary-value" id="totalValue">$0</div>
+                <div class="summary-subtext" id="equipmentCount">0 items</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Debt</div>
+                <div class="summary-value red" id="totalDebt">$0</div>
+                <div class="summary-subtext" id="loanCount">0 loans</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Net Equity</div>
+                <div class="summary-value green" id="netEquity">$0</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="summary-label">Upcoming Payments (30 days)</div>
+                <div class="summary-value gold" id="upcomingPayments">$0</div>
+                <div class="summary-subtext" id="paymentCount">0 payments</div>
+            </div>
+        </div>
+
+        <!-- Upcoming Payments Panel -->
+        <div class="payments-panel" id="paymentsPanel" style="display: none;">
+            <div class="payments-header">
+                <h3 class="payments-title">Upcoming Loan Payments</h3>
+            </div>
+            <div id="paymentsList">
+                <!-- Payments loaded here -->
+            </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs" id="categoryTabs">
+            <button class="category-tab active" data-category="all">
+                All Equipment <span class="category-count" id="count-all">0</span>
+            </button>
+        </div>
+
+        <!-- Category Summary -->
+        <div class="category-summary" id="categorySummary">
+            <!-- Category cards loaded here -->
+        </div>
+
+        <!-- Equipment Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h3 class="table-title" id="tableTitle">All Equipment</h3>
+                <input type="text" class="search-box" placeholder="Search equipment..." id="searchBox" oninput="filterEquipment()">
+            </div>
+            <div id="tableContent">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Edit Equipment</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Equipment Name</label>
+                    <input type="text" id="editTitle" placeholder="Equipment name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="editCategory">
+                            <option value="Tractors">Tractors</option>
+                            <option value="Trucks">Trucks</option>
+                            <option value="Trailers">Trailers</option>
+                            <option value="Harvest Equipment">Harvest Equipment</option>
+                            <option value="Hay Equipment">Hay Equipment</option>
+                            <option value="Planting">Planting</option>
+                            <option value="Tillage">Tillage</option>
+                            <option value="Sprayer Equipment">Sprayer Equipment</option>
+                            <option value="Attachments">Attachments</option>
+                            <option value="Feed Truck">Feed Truck</option>
+                            <option value="Combine Parts">Combine Parts</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Serial Number</label>
+                        <input type="text" id="editSerial" placeholder="Serial number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Current Value ($)</label>
+                        <input type="number" id="editValue" placeholder="Current value">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Hours/Miles</label>
+                        <input type="number" id="editHours" placeholder="Hours or miles">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="editHasLoan"> Has Loan</label>
+                </div>
+                <div id="loanFields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount Owed ($)</label>
+                            <input type="number" id="editOwed" placeholder="Amount owed">
+                        </div>
+                        <div class="form-group">
+                            <label>Lender</label>
+                            <input type="text" id="editLender" placeholder="Lender name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Amount ($)</label>
+                            <input type="number" id="editPayment" placeholder="Payment amount">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Frequency</label>
+                            <select id="editFrequency">
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="semi-annual">Semi-Annual</option>
+                                <option value="annual">Annual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Next Payment Date</label>
+                        <input type="date" id="editNextPayment">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEquipment()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let allEquipment = [];
+        let filteredEquipment = [];
+        let currentCategory = 'all';
+        let showingArchived = false;
+        let summary = {};
+
+        // Categories with display names
+        const categories = [
+            { key: 'Tractors', name: 'Tractors' },
+            { key: 'Trucks', name: 'Trucks' },
+            { key: 'Trailers', name: 'Trailers' },
+            { key: 'Harvest Equipment', name: 'Harvest' },
+            { key: 'Hay Equipment', name: 'Hay Equipment' },
+            { key: 'Planting', name: 'Planting' },
+            { key: 'Tillage', name: 'Tillage' },
+            { key: 'Sprayer Equipment', name: 'Sprayer' },
+            { key: 'Attachments', name: 'Attachments' },
+            { key: 'Combine Parts', name: 'Combine Parts' },
+            { key: 'Feed Truck', name: 'Feed Truck' },
+            { key: 'Other', name: 'Other' }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('editHasLoan').addEventListener('change', (e) => {
+                document.getElementById('loanFields').style.display = e.target.checked ? 'block' : 'none';
+            });
+        }
+
+        async function loadData() {
+            try {
+                // Load equipment and summary in parallel
+                const [equipmentRes, summaryRes] = await Promise.all([
+                    fetch('/api/equipment/inventory'),
+                    fetch('/api/equipment/inventory/summary')
+                ]);
+
+                const equipmentData = await equipmentRes.json();
+                const summaryData = await summaryRes.json();
+
+                if (equipmentData.success) {
+                    allEquipment = equipmentData.equipment;
+                    // Initially show only active (non-sold) equipment
+                    filteredEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+                }
+
+                if (summaryData.success) {
+                    summary = summaryData.summary;
+                    updateSummaryDisplay();
+                }
+
+                renderCategoryTabs();
+                renderCategorySummary();
+                renderTable();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('tableContent').innerHTML = '<div class="no-payments">Error loading equipment data</div>';
+            }
+        }
+
+        function updateSummaryDisplay() {
+            // Calculate totals from active (non-sold) equipment only
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+
+            const totalValue = activeEquipment.reduce((sum, e) => sum + (e.currentValue || 0), 0);
+            const totalOwed = activeEquipment.reduce((sum, e) => sum + (e.amountOwed || 0), 0);
+            const netWorth = totalValue - totalOwed;
+
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('equipmentCount').textContent = `${activeEquipment.length} items`;
+            document.getElementById('totalDebt').textContent = formatCurrency(totalOwed);
+
+            const loansCount = activeEquipment.filter(e => e.hasLoan).length;
+            document.getElementById('loanCount').textContent = `${loansCount} loans`;
+
+            document.getElementById('netEquity').textContent = formatCurrency(netWorth);
+
+            // Upcoming payments (only from active equipment)
+            const upcomingPayments = summary.upcomingPayments || [];
+            const totalUpcoming = upcomingPayments.reduce((sum, p) => sum + (p.paymentAmount || 0), 0);
+            document.getElementById('upcomingPayments').textContent = formatCurrency(totalUpcoming);
+            document.getElementById('paymentCount').textContent = `${upcomingPayments.length} payments`;
+
+            // Show/hide payments panel
+            if (upcomingPayments.length > 0) {
+                document.getElementById('paymentsPanel').style.display = 'block';
+                renderPayments(upcomingPayments);
+            } else {
+                document.getElementById('paymentsPanel').style.display = 'none';
+            }
+        }
+
+        function renderPayments(payments) {
+            const container = document.getElementById('paymentsList');
+            if (payments.length === 0) {
+                container.innerHTML = '<div class="no-payments">No upcoming payments in the next 30 days</div>';
+                return;
+            }
+
+            container.innerHTML = payments.map(p => `
+                <div class="payment-item">
+                    <div class="payment-info">
+                        <div class="payment-equipment">${p.title}</div>
+                        <div class="payment-lender">${p.lender || 'Unknown Lender'}</div>
+                    </div>
+                    <div>
+                        <div class="payment-amount">${formatCurrency(p.paymentAmount)}</div>
+                        <div class="payment-date">Due: ${formatDate(p.dueDate)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCategoryTabs() {
+            const container = document.getElementById('categoryTabs');
+            const counts = getCategoryCounts();
+
+            // Count active vs archived
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+            const archivedEquipment = allEquipment.filter(e => e.saleStatus === 'sold');
+
+            let html = `<button class="category-tab ${currentCategory === 'all' && !showingArchived ? 'active' : ''}" data-category="all" onclick="selectCategory('all')">
+                All Equipment <span class="category-count">${activeEquipment.length}</span>
+            </button>`;
+
+            categories.forEach(cat => {
+                const count = counts[cat.key] || 0;
+                if (count > 0) {
+                    html += `<button class="category-tab ${currentCategory === cat.key && !showingArchived ? 'active' : ''}" data-category="${cat.key}" onclick="selectCategory('${cat.key}')">
+                        ${cat.name} <span class="category-count">${count}</span>
+                    </button>`;
+                }
+            });
+
+            // Add Archived tab
+            html += `<button class="category-tab archived ${showingArchived ? 'active' : ''}" data-category="archived" onclick="showArchived()">
+                Archived/Sold <span class="category-count">${archivedEquipment.length}</span>
+            </button>`;
+
+            container.innerHTML = html;
+        }
+
+        function getCategoryCounts() {
+            const counts = {};
+            // Only count active (non-sold) equipment
+            allEquipment.filter(e => e.saleStatus !== 'sold').forEach(item => {
+                const cat = item.category || 'Other';
+                counts[cat] = (counts[cat] || 0) + 1;
+            });
+            return counts;
+        }
+
+        function getCategoryValues() {
+            const values = {};
+            // Only count active (non-sold) equipment for summary
+            allEquipment.filter(e => e.saleStatus !== 'sold').forEach(item => {
+                const cat = item.category || 'Other';
+                if (!values[cat]) {
+                    values[cat] = { value: 0, count: 0, owed: 0 };
+                }
+                values[cat].value += item.currentValue || 0;
+                values[cat].count++;
+                values[cat].owed += item.amountOwed || 0;
+            });
+            return values;
+        }
+
+        function renderCategorySummary() {
+            const container = document.getElementById('categorySummary');
+            const values = getCategoryValues();
+
+            let html = '';
+            categories.forEach(cat => {
+                if (values[cat.key]) {
+                    const data = values[cat.key];
+                    html += `<div class="cat-sum-card">
+                        <div class="cat-sum-name">${cat.name}</div>
+                        <div class="cat-sum-value">${formatCurrency(data.value)}</div>
+                        <div class="cat-sum-count">${data.count} items${data.owed > 0 ? ` | ${formatCurrency(data.owed)} owed` : ''}</div>
+                    </div>`;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectCategory(category) {
+            currentCategory = category;
+            showingArchived = false;
+
+            // Filter out sold/archived equipment for normal category views
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+
+            if (category === 'all') {
+                filteredEquipment = [...activeEquipment];
+                document.getElementById('tableTitle').textContent = 'All Equipment';
+            } else {
+                filteredEquipment = activeEquipment.filter(e => e.category === category);
+                document.getElementById('tableTitle').textContent = category;
+            }
+
+            // Update tab styles
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.category === category) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Show category summary when not showing archived
+            document.getElementById('categorySummary').style.display = 'grid';
+
+            renderTable();
+        }
+
+        function showArchived() {
+            showingArchived = true;
+            currentCategory = 'archived';
+
+            // Get only sold/archived equipment
+            filteredEquipment = allEquipment.filter(e => e.saleStatus === 'sold');
+            document.getElementById('tableTitle').textContent = 'Archived/Sold Equipment';
+
+            // Update tab styles
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.category === 'archived') {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Hide category summary when showing archived
+            document.getElementById('categorySummary').style.display = 'none';
+
+            renderTable();
+        }
+
+        function filterEquipment() {
+            const search = document.getElementById('searchBox').value.toLowerCase();
+
+            // Determine base list based on archived view or category
+            let base;
+            if (showingArchived) {
+                base = allEquipment.filter(e => e.saleStatus === 'sold');
+            } else {
+                const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+                base = currentCategory === 'all' ? activeEquipment : activeEquipment.filter(e => e.category === currentCategory);
+            }
+
+            if (search) {
+                filteredEquipment = base.filter(e =>
+                    (e.title || '').toLowerCase().includes(search) ||
+                    (e.subtitle || '').toLowerCase().includes(search) ||
+                    (e.make || '').toLowerCase().includes(search) ||
+                    (e.model || '').toLowerCase().includes(search) ||
+                    (e.serialNumber || '').toLowerCase().includes(search)
+                );
+            } else {
+                filteredEquipment = base;
+            }
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const container = document.getElementById('tableContent');
+
+            if (filteredEquipment.length === 0) {
+                container.innerHTML = '<div class="no-payments">No equipment found</div>';
+                return;
+            }
+
+            let html = `<table class="equipment-table">
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Category</th>
+                        <th>Serial/VIN</th>
+                        <th>Hours/Miles</th>
+                        <th>Current Value</th>
+                        <th>Amount Owed</th>
+                        <th>Equity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            filteredEquipment.forEach(item => {
+                const value = item.currentValue || 0;
+                const owed = item.amountOwed || 0;
+                const equity = value - owed;
+
+                // Build category dropdown options
+                const categoryOptions = categories.map(cat =>
+                    `<option value="${cat.key}" ${item.category === cat.key ? 'selected' : ''}>${cat.name}</option>`
+                ).join('');
+
+                html += `<tr data-id="${item._id}">
+                    <td>
+                        <div class="equipment-title">${item.title}</div>
+                        <div class="equipment-subtitle">${item.subtitle || ''}</div>
+                    </td>
+                    <td>
+                        <select class="category-select" id="cat-${item._id}" onchange="changeCategory('${item._id}', this.value, this)">
+                            ${categoryOptions}
+                        </select>
+                    </td>
+                    <td>${item.serialNumber || item.vin || '-'}</td>
+                    <td>${item.currentHours ? item.currentHours.toLocaleString() + ' hrs' : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '-'}</td>
+                    <td class="value-cell positive">${formatCurrency(value)}</td>
+                    <td class="value-cell ${owed > 0 ? 'negative' : ''}">
+                        ${owed > 0 ? formatCurrency(owed) : '-'}
+                        ${item.hasLoan ? '<br><span class="has-loan">LOAN</span>' : ''}
+                    </td>
+                    <td class="value-cell ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editEquipment('${item._id}')">Edit</button>
+                        ${item.saleStatus === 'sold'
+                            ? `<button class="restore-btn" onclick="restoreEquipment('${item._id}')">Restore</button>`
+                            : `<button class="sold-btn" onclick="markAsSold('${item._id}')">Mark Sold</button>`}
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Change equipment category inline
+        async function changeCategory(id, newCategory, selectElement) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            const oldCategory = item.category;
+            if (oldCategory === newCategory) return;
+
+            // Add updating state
+            selectElement.classList.add('updating');
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ category: newCategory })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.category = newCategory;
+
+                    // Show success briefly
+                    selectElement.style.borderColor = '#27ae60';
+                    setTimeout(() => {
+                        selectElement.style.borderColor = '';
+                    }, 1000);
+
+                    // Update category counts and summary
+                    renderCategoryTabs();
+                    renderCategorySummary();
+
+                    // If viewing a specific category and the item no longer belongs, remove it from view
+                    if (currentCategory !== 'all' && currentCategory !== newCategory) {
+                        // Remove the row with animation
+                        const row = selectElement.closest('tr');
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#fff3cd';
+                        row.style.opacity = '0';
+
+                        setTimeout(() => {
+                            // Update filtered list and re-render
+                            filteredEquipment = allEquipment.filter(e => e.category === currentCategory);
+                            renderTable();
+                        }, 400);
+                    }
+                } else {
+                    // Revert on error
+                    selectElement.value = oldCategory;
+                    alert('Error updating category: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error changing category:', error);
+                selectElement.value = oldCategory;
+                alert('Error updating category');
+            } finally {
+                selectElement.classList.remove('updating');
+            }
+        }
+
+        // Mark equipment as sold/archived
+        async function markAsSold(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            if (!confirm(`Mark "${item.title}" as sold and move to archive?`)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        saleStatus: 'sold',
+                        soldDate: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.saleStatus = 'sold';
+                    item.soldDate = new Date().toISOString();
+
+                    // Animate row removal
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#f8d7da';
+                        row.style.opacity = '0';
+                    }
+
+                    setTimeout(() => {
+                        // Update counts and re-render
+                        renderCategoryTabs();
+                        renderCategorySummary();
+
+                        // Remove from current filtered list
+                        if (!showingArchived) {
+                            filteredEquipment = filteredEquipment.filter(e => e._id !== id);
+                            renderTable();
+                        }
+                    }, 400);
+                } else {
+                    alert('Error marking as sold: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error marking as sold:', error);
+                alert('Error marking equipment as sold');
+            }
+        }
+
+        // Restore equipment from archive
+        async function restoreEquipment(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            if (!confirm(`Restore "${item.title}" from archive?`)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        saleStatus: 'not-for-sale',
+                        soldDate: null,
+                        soldPrice: null,
+                        soldTo: null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.saleStatus = 'not-for-sale';
+                    item.soldDate = null;
+
+                    // Animate row removal
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#d4edda';
+                        row.style.opacity = '0';
+                    }
+
+                    setTimeout(() => {
+                        // Update counts and re-render
+                        renderCategoryTabs();
+                        renderCategorySummary();
+
+                        // Remove from archived list if viewing archived
+                        if (showingArchived) {
+                            filteredEquipment = filteredEquipment.filter(e => e._id !== id);
+                            renderTable();
+                        }
+                    }, 400);
+                } else {
+                    alert('Error restoring equipment: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error restoring equipment:', error);
+                alert('Error restoring equipment');
+            }
+        }
+
+        function editEquipment(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            document.getElementById('editId').value = id;
+            document.getElementById('editTitle').value = item.title || '';
+            document.getElementById('editCategory').value = item.category || 'Other';
+            document.getElementById('editSerial').value = item.serialNumber || '';
+            document.getElementById('editValue').value = item.currentValue || '';
+            document.getElementById('editHours').value = item.currentHours || item.currentMiles || '';
+            document.getElementById('editHasLoan').checked = item.hasLoan || false;
+            document.getElementById('editOwed').value = item.amountOwed || '';
+            document.getElementById('editLender').value = item.lender || '';
+            document.getElementById('editPayment').value = item.paymentAmount || '';
+            document.getElementById('editFrequency').value = item.paymentFrequency || 'monthly';
+            document.getElementById('editNextPayment').value = item.nextPaymentDate ? item.nextPaymentDate.split('T')[0] : '';
+
+            document.getElementById('loanFields').style.display = item.hasLoan ? 'block' : 'none';
+            document.getElementById('modalTitle').textContent = 'Edit Equipment';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function openAddModal() {
+            document.getElementById('editId').value = '';
+            document.getElementById('editTitle').value = '';
+            document.getElementById('editCategory').value = 'Other';
+            document.getElementById('editSerial').value = '';
+            document.getElementById('editValue').value = '';
+            document.getElementById('editHours').value = '';
+            document.getElementById('editHasLoan').checked = false;
+            document.getElementById('editOwed').value = '';
+            document.getElementById('editLender').value = '';
+            document.getElementById('editPayment').value = '';
+            document.getElementById('editFrequency').value = 'monthly';
+            document.getElementById('editNextPayment').value = '';
+            document.getElementById('loanFields').style.display = 'none';
+            document.getElementById('modalTitle').textContent = 'Add Equipment';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        async function saveEquipment() {
+            const id = document.getElementById('editId').value;
+            const hasLoan = document.getElementById('editHasLoan').checked;
+
+            const data = {
+                title: document.getElementById('editTitle').value,
+                category: document.getElementById('editCategory').value,
+                serialNumber: document.getElementById('editSerial').value,
+                currentValue: parseFloat(document.getElementById('editValue').value) || 0,
+                currentHours: parseFloat(document.getElementById('editHours').value) || 0,
+                hasLoan: hasLoan,
+                amountOwed: hasLoan ? parseFloat(document.getElementById('editOwed').value) || 0 : 0,
+                lender: hasLoan ? document.getElementById('editLender').value : '',
+                paymentAmount: hasLoan ? parseFloat(document.getElementById('editPayment').value) || 0 : 0,
+                paymentFrequency: hasLoan ? document.getElementById('editFrequency').value : 'none',
+                nextPaymentDate: hasLoan && document.getElementById('editNextPayment').value ? document.getElementById('editNextPayment').value : null
+            };
+
+            try {
+                const url = id ? `/api/equipment/inventory/${id}` : '/api/equipment/inventory';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    closeModal();
+                    loadData(); // Refresh all data
+                } else {
+                    alert('Error saving equipment: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error saving equipment:', error);
+                alert('Error saving equipment');
+            }
+        }
+
+        function refreshData() {
+            document.getElementById('tableContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            loadData();
+        }
+
+        // Utility functions
+        function formatCurrency(amount) {
+            return '$' + (amount || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>
