@@ -16,27 +16,27 @@ const binInventory = [
     binName: 'North East Small Bin',
     binNumber: 'NE-SMALL',
     storageLocation: 'on-farm-bin',
-    cropType: 'wheat', // Assuming wheat - can be changed
+    cropType: 'corn',
     currentQuantity: 10000,
     initialQuantity: 10000,
     year: 2025,
     quality: {
-      moisture: 12.5,
-      testWeight: 60
+      moisture: 14.0,
+      testWeight: 56
     },
     costBasis: {
-      productionCostPerBushel: 4.25,
+      productionCostPerBushel: 3.85,
       storageCostPerBushel: 0.05,
-      totalCostPerBushel: 4.30
+      totalCostPerBushel: 3.90
     },
     slidingScale: {
       enabled: true,
-      minimumPrice: 5.50,
-      targetPrice: 7.00,
+      minimumPrice: 4.25,
+      targetPrice: 5.50,
       tiers: [
-        { pricePerBushel: 6.25, percentToSell: 25, triggerType: 'price-reaches', executed: false },
-        { pricePerBushel: 6.75, percentToSell: 35, triggerType: 'price-reaches', executed: false },
-        { pricePerBushel: 7.00, percentToSell: 40, triggerType: 'price-reaches', executed: false }
+        { pricePerBushel: 4.75, percentToSell: 25, triggerType: 'price-reaches', executed: false },
+        { pricePerBushel: 5.00, percentToSell: 35, triggerType: 'price-reaches', executed: false },
+        { pricePerBushel: 5.50, percentToSell: 40, triggerType: 'price-reaches', executed: false }
       ]
     }
   },
@@ -44,27 +44,27 @@ const binInventory = [
     binName: 'South East Small Bin',
     binNumber: 'SE-SMALL',
     storageLocation: 'on-farm-bin',
-    cropType: 'wheat', // Assuming wheat - can be changed
+    cropType: 'corn',
     currentQuantity: 10000,
     initialQuantity: 10000,
     year: 2025,
     quality: {
-      moisture: 12.3,
-      testWeight: 60
+      moisture: 14.2,
+      testWeight: 56
     },
     costBasis: {
-      productionCostPerBushel: 4.25,
+      productionCostPerBushel: 3.85,
       storageCostPerBushel: 0.05,
-      totalCostPerBushel: 4.30
+      totalCostPerBushel: 3.90
     },
     slidingScale: {
       enabled: true,
-      minimumPrice: 5.50,
-      targetPrice: 7.00,
+      minimumPrice: 4.25,
+      targetPrice: 5.50,
       tiers: [
-        { pricePerBushel: 6.25, percentToSell: 25, triggerType: 'price-reaches', executed: false },
-        { pricePerBushel: 6.75, percentToSell: 35, triggerType: 'price-reaches', executed: false },
-        { pricePerBushel: 7.00, percentToSell: 40, triggerType: 'price-reaches', executed: false }
+        { pricePerBushel: 4.75, percentToSell: 25, triggerType: 'price-reaches', executed: false },
+        { pricePerBushel: 5.00, percentToSell: 35, triggerType: 'price-reaches', executed: false },
+        { pricePerBushel: 5.50, percentToSell: 40, triggerType: 'price-reaches', executed: false }
       ]
     }
   },
