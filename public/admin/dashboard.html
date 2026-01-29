@@ -390,6 +390,33 @@
             </a>
         </div>
 
+        <!-- LIVESTOCK SECTION -->
+        <div class="section-header">Livestock</div>
+        <div class="card-grid">
+            <a href="/farmer/dashboard.html" class="nav-card">
+                <div class="card-icon-bar" style="background: #8B4513;"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Cattle Operations</h3>
+                    <p class="card-desc">Herd inventory, individual animal records, calving, health tracking, and grazing schedules.</p>
+                    <div class="card-meta">
+                        <span>Head Count</span>
+                        <span class="card-meta-value" id="cattleCount">--</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/financials/cattle.html" class="nav-card">
+                <div class="card-icon-bar" style="background: #a0522d;"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Cattle Financials</h3>
+                    <p class="card-desc">Track cattle expenses, sales, feed costs, and profitability by herd.</p>
+                    <div class="card-meta">
+                        <span>Enterprise</span>
+                        <span class="card-meta-value">Cattle P&L</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- FINANCIAL SECTION -->
         <div class="section-header">Financial</div>
         <div class="card-grid">
@@ -527,6 +554,9 @@
                 // Load grain inventory
                 loadGrainStats();
 
+                // Load cattle count
+                loadCattleStats(token);
+
             } catch (error) {
                 console.error('Error loading dashboard:', error);
             }
@@ -574,6 +604,22 @@
                 }
             } catch (e) {
                 document.getElementById('grainInventory').textContent = '--';
+            }
+        }
+
+        async function loadCattleStats(token) {
+            try {
+                const response = await fetch('/api/cattle', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                if (data.success && data.cattle) {
+                    document.getElementById('cattleCount').textContent = data.cattle.length;
+                } else if (Array.isArray(data)) {
+                    document.getElementById('cattleCount').textContent = data.length;
+                }
+            } catch (e) {
+                document.getElementById('cattleCount').textContent = '--';
             }
         }
 
