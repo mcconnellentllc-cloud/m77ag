@@ -1,6 +1,41 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const Equipment = require('../models/equipment');
+
+// Configure multer for equipment image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../../public/uploads/equipment');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `equipment-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB limit (HEIC can be larger)
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|heic|heif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    // HEIC files may have mimetype image/heic or image/heif
+    const isImage = file.mimetype.startsWith('image/') ||
+                   file.mimetype === 'application/octet-stream'; // iOS sometimes sends HEIC as octet-stream
+    if (extname || isImage) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files are allowed'));
+  }
+});
 
 // Get all equipment (admin - includes private)
 router.get('/', async (req, res) => {
@@ -271,6 +306,74 @@ router.post('/bulk-import', async (req, res) => {
   } catch (error) {
     console.error('Error bulk importing equipment:', error);
     res.status(500).json({ success: false, error: 'Failed to import equipment' });
+  }
+});
+
+// ==========================================
+// IMAGE UPLOAD ENDPOINTS
+// ==========================================
+
+// Upload images for equipment
+router.post('/:id/images', upload.array('images', 10), async (req, res) => {
+  try {
+    const equipment = await Equipment.findById(req.params.id);
+
+    if (!equipment) {
+      // Delete uploaded files if equipment not found
+      req.files.forEach(file => fs.unlinkSync(file.path));
+      return res.status(404).json({ success: false, error: 'Equipment not found' });
+    }
+
+    // Get the URLs for uploaded images
+    const imageUrls = req.files.map(file => `/uploads/equipment/${file.filename}`);
+
+    // Add to existing images
+    equipment.images = [...(equipment.images || []), ...imageUrls];
+    await equipment.save();
+
+    res.json({
+      success: true,
+      images: equipment.images,
+      newImages: imageUrls
+    });
+  } catch (error) {
+    console.error('Error uploading images:', error);
+    // Clean up uploaded files on error
+    if (req.files) {
+      req.files.forEach(file => {
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+      });
+    }
+    res.status(500).json({ success: false, error: 'Failed to upload images' });
+  }
+});
+
+// Delete an image from equipment
+router.delete('/:id/images', async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    const equipment = await Equipment.findById(req.params.id);
+
+    if (!equipment) {
+      return res.status(404).json({ success: false, error: 'Equipment not found' });
+    }
+
+    // Remove from array
+    equipment.images = (equipment.images || []).filter(img => img !== imageUrl);
+    await equipment.save();
+
+    // Delete file from disk if it's a local upload
+    if (imageUrl.startsWith('/uploads/equipment/')) {
+      const filePath = path.join(__dirname, '../../public', imageUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    res.json({ success: true, images: equipment.images });
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete image' });
   }
 });
 

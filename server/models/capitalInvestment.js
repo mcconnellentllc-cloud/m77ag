@@ -80,6 +80,24 @@ const capitalInvestmentSchema = new mongoose.Schema({
     storageCapacity: String  // e.g., '50,000 bushels'
   },
 
+  // Vehicle-specific fields
+  vehicleDetails: {
+    year: Number,
+    make: String,
+    model: String,
+    vin: String,
+    mileage: Number,
+    condition: {
+      type: String,
+      enum: ['excellent', 'good', 'fair', 'poor']
+    },
+    color: String,
+    fuelType: String,
+    transmission: String,
+    licensePlate: String,
+    registrationExpires: Date
+  },
+
   // Purchase/Acquisition
   acquisition: {
     date: Date,
