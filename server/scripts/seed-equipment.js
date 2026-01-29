@@ -990,6 +990,36 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
+    title: 'Polaris Snowmobile #1',
+    subtitle: 'Snowmobile',
+    category: 'Other',
+    make: 'Polaris',
+    currentValue: 1500,
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Polaris Snowmobile #2',
+    subtitle: 'Snowmobile',
+    category: 'Other',
+    make: 'Polaris',
+    currentValue: 1500,
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'Ski-Doo Snowmobile',
+    subtitle: 'Snowmobile',
+    category: 'Other',
+    make: 'Ski-Doo',
+    currentValue: 1500,
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
     title: '2007 Honda 4 Wheeler',
     subtitle: 'ATV',
     category: 'Other',
