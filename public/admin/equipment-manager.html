@@ -301,6 +301,55 @@
             color: white;
             border-color: #2d5016;
         }
+        .sold-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #e67e22;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e67e22;
+            margin-left: 5px;
+        }
+        .sold-btn:hover {
+            background: #e67e22;
+            color: white;
+        }
+        .restore-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #27ae60;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #27ae60;
+            margin-left: 5px;
+        }
+        .restore-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .archived-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #f8d7da;
+            color: #721c24;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .category-tab.archived {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+        .category-tab.archived.active {
+            background: #c0392b;
+            color: white;
+            border-color: #c0392b;
+        }
 
         /* Category Summary Cards */
         .category-summary {
@@ -669,6 +718,7 @@
         let allEquipment = [];
         let filteredEquipment = [];
         let currentCategory = 'all';
+        let showingArchived = false;
         let summary = {};
 
         // Categories with display names
@@ -712,7 +762,8 @@
 
                 if (equipmentData.success) {
                     allEquipment = equipmentData.equipment;
-                    filteredEquipment = [...allEquipment];
+                    // Initially show only active (non-sold) equipment
+                    filteredEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
                 }
 
                 if (summaryData.success) {
@@ -730,16 +781,23 @@
         }
 
         function updateSummaryDisplay() {
-            document.getElementById('totalValue').textContent = formatCurrency(summary.totalValue || 0);
-            document.getElementById('equipmentCount').textContent = `${summary.totalEquipment || 0} items`;
-            document.getElementById('totalDebt').textContent = formatCurrency(summary.totalOwed || 0);
+            // Calculate totals from active (non-sold) equipment only
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
 
-            const loansCount = allEquipment.filter(e => e.hasLoan).length;
+            const totalValue = activeEquipment.reduce((sum, e) => sum + (e.currentValue || 0), 0);
+            const totalOwed = activeEquipment.reduce((sum, e) => sum + (e.amountOwed || 0), 0);
+            const netWorth = totalValue - totalOwed;
+
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('equipmentCount').textContent = `${activeEquipment.length} items`;
+            document.getElementById('totalDebt').textContent = formatCurrency(totalOwed);
+
+            const loansCount = activeEquipment.filter(e => e.hasLoan).length;
             document.getElementById('loanCount').textContent = `${loansCount} loans`;
 
-            document.getElementById('netEquity').textContent = formatCurrency(summary.netWorth || 0);
+            document.getElementById('netEquity').textContent = formatCurrency(netWorth);
 
-            // Upcoming payments
+            // Upcoming payments (only from active equipment)
             const upcomingPayments = summary.upcomingPayments || [];
             const totalUpcoming = upcomingPayments.reduce((sum, p) => sum + (p.paymentAmount || 0), 0);
             document.getElementById('upcomingPayments').textContent = formatCurrency(totalUpcoming);
@@ -779,25 +837,35 @@
             const container = document.getElementById('categoryTabs');
             const counts = getCategoryCounts();
 
-            let html = `<button class="category-tab ${currentCategory === 'all' ? 'active' : ''}" data-category="all" onclick="selectCategory('all')">
-                All Equipment <span class="category-count">${allEquipment.length}</span>
+            // Count active vs archived
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+            const archivedEquipment = allEquipment.filter(e => e.saleStatus === 'sold');
+
+            let html = `<button class="category-tab ${currentCategory === 'all' && !showingArchived ? 'active' : ''}" data-category="all" onclick="selectCategory('all')">
+                All Equipment <span class="category-count">${activeEquipment.length}</span>
             </button>`;
 
             categories.forEach(cat => {
                 const count = counts[cat.key] || 0;
                 if (count > 0) {
-                    html += `<button class="category-tab ${currentCategory === cat.key ? 'active' : ''}" data-category="${cat.key}" onclick="selectCategory('${cat.key}')">
+                    html += `<button class="category-tab ${currentCategory === cat.key && !showingArchived ? 'active' : ''}" data-category="${cat.key}" onclick="selectCategory('${cat.key}')">
                         ${cat.name} <span class="category-count">${count}</span>
                     </button>`;
                 }
             });
+
+            // Add Archived tab
+            html += `<button class="category-tab archived ${showingArchived ? 'active' : ''}" data-category="archived" onclick="showArchived()">
+                Archived/Sold <span class="category-count">${archivedEquipment.length}</span>
+            </button>`;
 
             container.innerHTML = html;
         }
 
         function getCategoryCounts() {
             const counts = {};
-            allEquipment.forEach(item => {
+            // Only count active (non-sold) equipment
+            allEquipment.filter(e => e.saleStatus !== 'sold').forEach(item => {
                 const cat = item.category || 'Other';
                 counts[cat] = (counts[cat] || 0) + 1;
             });
@@ -806,7 +874,8 @@
 
         function getCategoryValues() {
             const values = {};
-            allEquipment.forEach(item => {
+            // Only count active (non-sold) equipment for summary
+            allEquipment.filter(e => e.saleStatus !== 'sold').forEach(item => {
                 const cat = item.category || 'Other';
                 if (!values[cat]) {
                     values[cat] = { value: 0, count: 0, owed: 0 };
@@ -839,19 +908,51 @@
 
         function selectCategory(category) {
             currentCategory = category;
+            showingArchived = false;
+
+            // Filter out sold/archived equipment for normal category views
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
 
             if (category === 'all') {
-                filteredEquipment = [...allEquipment];
+                filteredEquipment = [...activeEquipment];
                 document.getElementById('tableTitle').textContent = 'All Equipment';
             } else {
-                filteredEquipment = allEquipment.filter(e => e.category === category);
+                filteredEquipment = activeEquipment.filter(e => e.category === category);
                 document.getElementById('tableTitle').textContent = category;
             }
 
             // Update tab styles
             document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.category === category);
+                tab.classList.remove('active');
+                if (tab.dataset.category === category) {
+                    tab.classList.add('active');
+                }
             });
+
+            // Show category summary when not showing archived
+            document.getElementById('categorySummary').style.display = 'grid';
+
+            renderTable();
+        }
+
+        function showArchived() {
+            showingArchived = true;
+            currentCategory = 'archived';
+
+            // Get only sold/archived equipment
+            filteredEquipment = allEquipment.filter(e => e.saleStatus === 'sold');
+            document.getElementById('tableTitle').textContent = 'Archived/Sold Equipment';
+
+            // Update tab styles
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.category === 'archived') {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Hide category summary when showing archived
+            document.getElementById('categorySummary').style.display = 'none';
 
             renderTable();
         }
@@ -859,7 +960,14 @@
         function filterEquipment() {
             const search = document.getElementById('searchBox').value.toLowerCase();
 
-            let base = currentCategory === 'all' ? allEquipment : allEquipment.filter(e => e.category === currentCategory);
+            // Determine base list based on archived view or category
+            let base;
+            if (showingArchived) {
+                base = allEquipment.filter(e => e.saleStatus === 'sold');
+            } else {
+                const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+                base = currentCategory === 'all' ? activeEquipment : activeEquipment.filter(e => e.category === currentCategory);
+            }
 
             if (search) {
                 filteredEquipment = base.filter(e =>
@@ -927,7 +1035,12 @@
                         ${item.hasLoan ? '<br><span class="has-loan">LOAN</span>' : ''}
                     </td>
                     <td class="value-cell ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</td>
-                    <td><button class="edit-btn" onclick="editEquipment('${item._id}')">Edit</button></td>
+                    <td>
+                        <button class="edit-btn" onclick="editEquipment('${item._id}')">Edit</button>
+                        ${item.saleStatus === 'sold'
+                            ? `<button class="restore-btn" onclick="restoreEquipment('${item._id}')">Restore</button>`
+                            : `<button class="sold-btn" onclick="markAsSold('${item._id}')">Mark Sold</button>`}
+                    </td>
                 </tr>`;
             });
 
@@ -994,6 +1107,112 @@
                 alert('Error updating category');
             } finally {
                 selectElement.classList.remove('updating');
+            }
+        }
+
+        // Mark equipment as sold/archived
+        async function markAsSold(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            if (!confirm(`Mark "${item.title}" as sold and move to archive?`)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        saleStatus: 'sold',
+                        soldDate: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.saleStatus = 'sold';
+                    item.soldDate = new Date().toISOString();
+
+                    // Animate row removal
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#f8d7da';
+                        row.style.opacity = '0';
+                    }
+
+                    setTimeout(() => {
+                        // Update counts and re-render
+                        renderCategoryTabs();
+                        renderCategorySummary();
+
+                        // Remove from current filtered list
+                        if (!showingArchived) {
+                            filteredEquipment = filteredEquipment.filter(e => e._id !== id);
+                            renderTable();
+                        }
+                    }, 400);
+                } else {
+                    alert('Error marking as sold: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error marking as sold:', error);
+                alert('Error marking equipment as sold');
+            }
+        }
+
+        // Restore equipment from archive
+        async function restoreEquipment(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            if (!confirm(`Restore "${item.title}" from archive?`)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        saleStatus: 'not-for-sale',
+                        soldDate: null,
+                        soldPrice: null,
+                        soldTo: null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.saleStatus = 'not-for-sale';
+                    item.soldDate = null;
+
+                    // Animate row removal
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#d4edda';
+                        row.style.opacity = '0';
+                    }
+
+                    setTimeout(() => {
+                        // Update counts and re-render
+                        renderCategoryTabs();
+                        renderCategorySummary();
+
+                        // Remove from archived list if viewing archived
+                        if (showingArchived) {
+                            filteredEquipment = filteredEquipment.filter(e => e._id !== id);
+                            renderTable();
+                        }
+                    }, 400);
+                } else {
+                    alert('Error restoring equipment: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error restoring equipment:', error);
+                alert('Error restoring equipment');
             }
         }
 
