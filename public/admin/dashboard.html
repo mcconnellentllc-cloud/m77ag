@@ -300,6 +300,139 @@
             .stats-bar { grid-template-columns: repeat(2, 1fr); }
             .card-grid { grid-template-columns: 1fr; }
             .feature-card { flex-direction: column; text-align: center; gap: 20px; }
+            .employee-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Employee Cards */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .employee-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        .employee-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .employee-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            padding: 20px;
+            color: white;
+        }
+        .employee-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        .employee-role {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+        .employee-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .employee-status.clocked-in {
+            background: rgba(39, 174, 96, 0.3);
+            color: #27ae60;
+        }
+        .employee-status.clocked-out {
+            background: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8);
+        }
+        .employee-body {
+            padding: 20px;
+        }
+        .employee-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .emp-stat {
+            text-align: center;
+            padding: 12px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+        .emp-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+        .emp-stat-value.negative {
+            color: #c0392b;
+        }
+        .emp-stat-value.positive {
+            color: #27ae60;
+        }
+        .emp-stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .profit-share-banner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .profit-share-label {
+            font-size: 11px;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .profit-share-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: white;
+        }
+        .profit-share-percent {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        .employee-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .emp-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .emp-btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+        .emp-btn-primary:hover {
+            background: #3d6b1f;
+        }
+        .emp-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .emp-btn-secondary:hover {
+            background: #e0e0e0;
         }
     </style>
 </head>
@@ -466,6 +599,18 @@
             </a>
         </div>
 
+        <!-- HR / EMPLOYEES SECTION -->
+        <div class="section-header">HR / Employees</div>
+        <div class="employee-grid" id="employeeCards">
+            <!-- Employee cards will be loaded dynamically -->
+            <div class="employee-card">
+                <div class="employee-header">
+                    <div class="employee-name">Loading...</div>
+                    <div class="employee-role">Please wait</div>
+                </div>
+            </div>
+        </div>
+
         <!-- LAND & PROPERTY SECTION -->
         <div class="section-header">Land & Property</div>
         <div class="card-grid">
@@ -579,6 +724,9 @@
                 // Load cattle count
                 loadCattleStats(token);
 
+                // Load employee cards
+                loadEmployeeCards();
+
             } catch (error) {
                 console.error('Error loading dashboard:', error);
             }
@@ -642,6 +790,118 @@
                 }
             } catch (e) {
                 document.getElementById('cattleCount').textContent = '--';
+            }
+        }
+
+        // Current profit value (this would come from financial calculations)
+        // For now, using placeholder - will be connected to actual profit tracking
+        let currentProfit = -125000; // Starting negative as mentioned
+
+        async function loadEmployeeCards() {
+            try {
+                const response = await fetch('/api/employees/summary/all');
+                const data = await response.json();
+
+                const container = document.getElementById('employeeCards');
+
+                if (!data.success || !data.summary || data.summary.length === 0) {
+                    container.innerHTML = `
+                        <div class="employee-card">
+                            <div class="employee-header">
+                                <div class="employee-name">No Employees Found</div>
+                                <div class="employee-role">Add employees to get started</div>
+                            </div>
+                            <div class="employee-body">
+                                <a href="/admin/employees.html" class="emp-btn emp-btn-primary" style="display: block; text-align: center;">
+                                    Add Employee
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.summary.map(emp => {
+                    const creditClass = emp.creditOwed >= 0 ? 'negative' : 'positive';
+                    const profitShare = emp.hasProfitShare ? (currentProfit * (emp.profitSharePercent / 100)) : 0;
+
+                    return `
+                        <div class="employee-card" data-id="${emp._id}">
+                            <div class="employee-header">
+                                <div class="employee-name">${emp.fullName}</div>
+                                <div class="employee-role">${emp.position || 'Contract Labor'}</div>
+                                <div class="employee-status ${emp.isClockedIn ? 'clocked-in' : 'clocked-out'}">
+                                    ${emp.isClockedIn ? 'Clocked In' : 'Clocked Out'}
+                                </div>
+                            </div>
+                            <div class="employee-body">
+                                ${emp.hasProfitShare ? `
+                                    <div class="profit-share-banner">
+                                        <div class="profit-share-label">Profit Share (${emp.profitSharePercent}%)</div>
+                                        <div class="profit-share-value ${profitShare >= 0 ? '' : 'negative'}">
+                                            $${Math.abs(profitShare).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                        </div>
+                                        <div class="profit-share-percent">${profitShare >= 0 ? 'Earned' : 'Current Deficit'}</div>
+                                    </div>
+                                ` : ''}
+                                <div class="employee-stats">
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value">$${emp.wagesEarned.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">Wages Earned</div>
+                                    </div>
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value">$${emp.totalPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">Total Paid</div>
+                                    </div>
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value ${creditClass}">$${Math.abs(emp.creditOwed).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">${emp.creditOwed >= 0 ? 'Credit Owed' : 'Overpaid'}</div>
+                                    </div>
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value">$${emp.reimbursementsOwed.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">Reimbursements</div>
+                                    </div>
+                                </div>
+                                <div class="employee-actions">
+                                    <a href="/admin/employees.html?id=${emp._id}" class="emp-btn emp-btn-primary">Manage</a>
+                                    <button class="emp-btn emp-btn-secondary" onclick="toggleClock('${emp._id}', ${emp.isClockedIn})">
+                                        ${emp.isClockedIn ? 'Clock Out' : 'Clock In'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (e) {
+                console.error('Error loading employee cards:', e);
+                document.getElementById('employeeCards').innerHTML = `
+                    <div class="employee-card">
+                        <div class="employee-header">
+                            <div class="employee-name">Error Loading Employees</div>
+                            <div class="employee-role">Please refresh the page</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function toggleClock(employeeId, isClockedIn) {
+            try {
+                const endpoint = isClockedIn ? 'clock-out' : 'clock-in';
+                const response = await fetch(`/api/employees/${employeeId}/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadEmployeeCards(); // Refresh the cards
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                console.error('Error toggling clock:', e);
+                alert('Failed to update clock status');
             }
         }
 
