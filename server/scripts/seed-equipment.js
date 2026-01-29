@@ -815,6 +815,26 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
+    title: 'John Deere 24 Row Planter',
+    subtitle: '24 Row Planter',
+    category: 'Planting',
+    make: 'John Deere',
+    description: '24 Row Planter',
+    notes: 'Unit #330, Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
+    title: 'John Deere Cultivator',
+    subtitle: 'Row Crop Cultivator',
+    category: 'Tillage',
+    make: 'John Deere',
+    description: 'Row Crop Cultivator',
+    notes: 'Unit #331, Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
     title: 'AGCO 1435-36 Sunflower Disk',
     subtitle: 'Disk',
     category: 'Tillage',
