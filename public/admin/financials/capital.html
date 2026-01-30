@@ -561,6 +561,43 @@
             color: #d4af37;
             padding: 10px 0;
         }
+
+        /* Asset Class Indicators */
+        .asset-class-badge {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .asset-class-badge.appreciating {
+            background: rgba(45, 80, 22, 0.2);
+            color: #2d5016;
+            border: 1px solid rgba(45, 80, 22, 0.3);
+        }
+
+        .asset-class-badge.depreciating {
+            background: rgba(198, 40, 40, 0.1);
+            color: #c62828;
+            border: 1px solid rgba(198, 40, 40, 0.2);
+        }
+
+        .asset-card-header .asset-class-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 8px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+
+        .asset-card-header {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -635,13 +672,26 @@
         <!-- Filters -->
         <div class="filters">
             <div class="filter-group">
+                <label>Asset Class</label>
+                <select id="filterAssetClass" onchange="filterAssets()">
+                    <option value="">All Classes</option>
+                    <option value="appreciating">Appreciating</option>
+                    <option value="depreciating">Depreciating</option>
+                </select>
+            </div>
+            <div class="filter-group">
                 <label>Type</label>
                 <select id="filterType" onchange="filterAssets()">
                     <option value="">All Types</option>
-                    <option value="land">Land</option>
-                    <option value="building">Building</option>
+                    <option value="real_estate">Real Estate</option>
+                    <option value="personal_vehicle">Personal Vehicles</option>
+                    <option value="personal_property">Personal Property</option>
+                    <option value="farm_equipment">Farm Equipment</option>
+                    <option value="livestock">Livestock</option>
+                    <option value="building">Buildings</option>
                     <option value="infrastructure">Infrastructure</option>
-                    <option value="vehicle">Vehicles</option>
+                    <option value="land">Land (Legacy)</option>
+                    <option value="vehicle">Vehicles (Legacy)</option>
                 </select>
             </div>
             <div class="filter-group">
@@ -686,24 +736,39 @@
                             <input type="text" id="assetName" required placeholder="e.g., Madsen Pasture">
                         </div>
                         <div class="form-group">
-                            <label>Type <span>*</span></label>
-                            <select id="assetType" required onchange="updateCategoryOptions()">
-                                <option value="">Select type...</option>
-                                <option value="land">Land</option>
-                                <option value="building">Building</option>
-                                <option value="infrastructure">Infrastructure</option>
-                                <option value="improvement">Improvement</option>
+                            <label>Asset Class <span>*</span></label>
+                            <select id="assetClass" required>
+                                <option value="">Select class...</option>
+                                <option value="appreciating">Appreciating Asset</option>
+                                <option value="depreciating">Depreciating Asset</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Type <span>*</span></label>
+                            <select id="assetType" required onchange="updateCategoryOptions()">
+                                <option value="">Select type...</option>
+                                <option value="real_estate">Real Estate</option>
+                                <option value="personal_vehicle">Personal Vehicles</option>
+                                <option value="personal_property">Personal Property</option>
+                                <option value="farm_equipment">Farm Equipment</option>
+                                <option value="livestock">Livestock</option>
+                                <option value="building">Building/Structure</option>
+                                <option value="infrastructure">Infrastructure</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Category <span>*</span></label>
                             <select id="assetCategory" required>
                                 <option value="">Select category...</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Associated Farm</label>
                             <select id="assetFarm">
@@ -711,6 +776,9 @@
                                 <option value="KB Farms">KB Farms</option>
                                 <option value="M77 AG">M77 AG</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <!-- Empty for alignment -->
                         </div>
                     </div>
 
@@ -873,13 +941,50 @@
 
         // Category options by type
         const categoryOptions = {
-            land: [
+            real_estate: [
                 { value: 'cropland', label: 'Cropland' },
                 { value: 'pasture', label: 'Pasture' },
                 { value: 'timberland', label: 'Timberland' },
                 { value: 'homestead', label: 'Homestead' },
                 { value: 'hunting_land', label: 'Hunting Land' },
+                { value: 'residential', label: 'Residential' },
+                { value: 'commercial', label: 'Commercial' },
+                { value: 'ranch', label: 'Ranch' },
                 { value: 'development', label: 'Development' }
+            ],
+            personal_vehicle: [
+                { value: 'truck', label: 'Truck' },
+                { value: 'car', label: 'Car' },
+                { value: 'suv', label: 'SUV' },
+                { value: 'rv', label: 'RV/Motorhome' },
+                { value: 'motorcycle', label: 'Motorcycle' },
+                { value: 'atv', label: 'ATV/UTV' },
+                { value: 'classic_car', label: 'Classic/Collector Car' }
+            ],
+            personal_property: [
+                { value: 'furniture', label: 'Furniture' },
+                { value: 'collectibles', label: 'Collectibles' },
+                { value: 'tools', label: 'Tools' },
+                { value: 'electronics', label: 'Electronics' },
+                { value: 'jewelry', label: 'Jewelry' },
+                { value: 'other', label: 'Other Personal Property' }
+            ],
+            farm_equipment: [
+                { value: 'tractor', label: 'Tractor' },
+                { value: 'combine', label: 'Combine' },
+                { value: 'planter', label: 'Planter' },
+                { value: 'sprayer', label: 'Sprayer' },
+                { value: 'tillage', label: 'Tillage Equipment' },
+                { value: 'hay_equipment', label: 'Hay Equipment' },
+                { value: 'grain_handling', label: 'Grain Handling' },
+                { value: 'loader', label: 'Loader' },
+                { value: 'trailer', label: 'Trailer' },
+                { value: 'implement', label: 'Implement' }
+            ],
+            livestock: [
+                { value: 'cattle', label: 'Cattle' },
+                { value: 'horses', label: 'Horses' },
+                { value: 'other_livestock', label: 'Other Livestock' }
             ],
             building: [
                 { value: 'barn', label: 'Barn' },
@@ -887,6 +992,7 @@
                 { value: 'grain_storage', label: 'Grain Storage' },
                 { value: 'equipment_shed', label: 'Equipment Shed' },
                 { value: 'house', label: 'House' },
+                { value: 'outbuilding', label: 'Outbuilding' },
                 { value: 'livestock_facility', label: 'Livestock Facility' }
             ],
             infrastructure: [
@@ -896,6 +1002,23 @@
                 { value: 'road', label: 'Road' },
                 { value: 'utilities', label: 'Utilities' },
                 { value: 'water_system', label: 'Water System' }
+            ],
+            other: [
+                { value: 'other', label: 'Other' }
+            ],
+            // Legacy support
+            land: [
+                { value: 'cropland', label: 'Cropland' },
+                { value: 'pasture', label: 'Pasture' },
+                { value: 'timberland', label: 'Timberland' },
+                { value: 'homestead', label: 'Homestead' },
+                { value: 'hunting_land', label: 'Hunting Land' },
+                { value: 'development', label: 'Development' }
+            ],
+            vehicle: [
+                { value: 'truck', label: 'Truck' },
+                { value: 'car', label: 'Car' },
+                { value: 'rv', label: 'RV' }
             ],
             improvement: [
                 { value: 'other', label: 'General Improvement' }
@@ -1035,11 +1158,13 @@
 
         // Filter assets
         function filterAssets() {
+            const assetClass = document.getElementById('filterAssetClass').value;
             const type = document.getElementById('filterType').value;
             const farm = document.getElementById('filterFarm').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
 
             filteredAssets = allAssets.filter(a => {
+                if (assetClass && a.assetClass !== assetClass) return false;
                 if (type && a.type !== type) return false;
                 if (farm && a.location?.associatedFarm !== farm) return false;
                 if (search && !a.name.toLowerCase().includes(search)) return false;
@@ -1059,7 +1184,8 @@
                 options.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
 
             // Show/hide type-specific fields
-            document.getElementById('landFields').style.display = type === 'land' ? 'block' : 'none';
+            const showLandFields = (type === 'land' || type === 'real_estate');
+            document.getElementById('landFields').style.display = showLandFields ? 'block' : 'none';
             document.getElementById('buildingFields').style.display = type === 'building' ? 'block' : 'none';
         }
 
@@ -1081,14 +1207,15 @@
             document.getElementById('modalTitle').textContent = 'Edit Asset';
             document.getElementById('assetId').value = asset._id;
             document.getElementById('assetName').value = asset.name;
+            document.getElementById('assetClass').value = asset.assetClass || 'depreciating';
             document.getElementById('assetType').value = asset.type;
             updateCategoryOptions();
             document.getElementById('assetCategory').value = asset.category || '';
             document.getElementById('assetFarm').value = asset.location?.associatedFarm || '';
             document.getElementById('assetDescription').value = asset.description || '';
 
-            // Land fields
-            if (asset.type === 'land' && asset.landDetails) {
+            // Land/Real Estate fields
+            if ((asset.type === 'land' || asset.type === 'real_estate') && asset.landDetails) {
                 document.getElementById('totalAcresInput').value = asset.landDetails.totalAcres || '';
                 document.getElementById('tillableAcres').value = asset.landDetails.tillableAcres || '';
                 document.getElementById('pastureAcres').value = asset.landDetails.pastureAcres || '';
@@ -1124,9 +1251,11 @@
         async function saveAsset() {
             const id = document.getElementById('assetId').value;
             const type = document.getElementById('assetType').value;
+            const assetClass = document.getElementById('assetClass').value;
 
             const assetData = {
                 name: document.getElementById('assetName').value,
+                assetClass: assetClass,
                 type: type,
                 category: document.getElementById('assetCategory').value,
                 description: document.getElementById('assetDescription').value,
@@ -1146,8 +1275,8 @@
                 notes: document.getElementById('assetNotes').value
             };
 
-            // Land-specific
-            if (type === 'land') {
+            // Land/Real Estate-specific
+            if (type === 'land' || type === 'real_estate') {
                 assetData.landDetails = {
                     totalAcres: parseFloat(document.getElementById('totalAcresInput').value) || 0,
                     tillableAcres: parseFloat(document.getElementById('tillableAcres').value) || 0,
