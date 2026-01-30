@@ -10,6 +10,8 @@ const CapitalInvestment = require('../models/capitalInvestment');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
+// Market values researched Jan 2026 using KBB, Edmunds, CARFAX, ClassicCars.com
+// Values calculated at 85% of market spread per user directive
 const vehicleData = [
   // Farm Trucks - Combined loan account *9803
   {
@@ -17,11 +19,19 @@ const vehicleData = [
     type: 'vehicle',
     category: 'truck',
     description: 'Grey 2011 Ford F-250 work truck',
+    vehicleDetails: {
+      year: 2011,
+      make: 'Ford',
+      model: 'F-250',
+      color: 'Grey'
+    },
     acquisition: {
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 20000
+      estimatedValue: 14600,  // 85% of KBB $14,650-$19,700 Crew Cab range
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'KBB Crew Cab XL-Lariat range: $14,650-$19,700'
     },
     loans: [
       {
@@ -43,11 +53,18 @@ const vehicleData = [
     type: 'vehicle',
     category: 'truck',
     description: '2011 Dodge Ram 1500 pickup truck',
+    vehicleDetails: {
+      year: 2011,
+      make: 'Dodge',
+      model: 'Ram 1500'
+    },
     acquisition: {
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 20000
+      estimatedValue: 6800,  // 85% of KBB $6,518-$9,525 range
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'KBB Crew Cab ST: $9,525 resale, $4,775 trade-in'
     },
     loans: [
       {
@@ -80,7 +97,9 @@ const vehicleData = [
       notes: 'Personal vehicle'
     },
     currentValue: {
-      estimatedValue: 35000
+      estimatedValue: 20900,  // 85% of 2018 KBB $16,602-$32,622 avg ~$24,600
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: '2018 model range per KBB/CARFAX with high mileage'
     },
     status: 'owned',
     notes: 'Personal vehicle - 104,000 miles'
@@ -99,7 +118,9 @@ const vehicleData = [
       notes: 'Personal vehicle'
     },
     currentValue: {
-      estimatedValue: 15000
+      estimatedValue: 14700,  // 85% of KBB 2020 LE $15,950-$18,700 range
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: '2020-2021 Camry LE range per KBB'
     },
     status: 'owned',
     notes: 'Personal vehicle'
@@ -121,7 +142,9 @@ const vehicleData = [
       notes: 'Classic/Collector vehicle'
     },
     currentValue: {
-      estimatedValue: 7000
+      estimatedValue: 23000,  // 85% of ClassicCars.com $16,900-$37,500 range avg ~$27,000
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'Classic car - ClassicCars.com/Hagerty. BaT sold similar for $37,500 Jan 2026'
     },
     status: 'owned',
     notes: 'Personal vehicle - Unit #57, Title: 37E061442'
@@ -145,7 +168,9 @@ const vehicleData = [
       notes: 'Recreational vehicle'
     },
     currentValue: {
-      estimatedValue: 37500
+      estimatedValue: 34000,  // 85% of $30,000-$50,000 range avg ~$40,000
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'J.D. Power/SmartRVGuide comparable 2001 Diplomat listings'
     },
     loans: [
       {

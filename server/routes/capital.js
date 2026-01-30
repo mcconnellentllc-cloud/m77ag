@@ -204,6 +204,67 @@ router.post('/seed/kbfarms', async (req, res) => {
 });
 
 /**
+ * POST /api/capital/sync/vehicles
+ * Sync vehicle values from seed data to database (updates values only, preserves other data)
+ */
+router.post('/sync/vehicles', async (req, res) => {
+  try {
+    // Clear require cache to get fresh data
+    delete require.cache[require.resolve('../seeds/vehicles-capital')];
+    const { vehicleData } = require('../seeds/vehicles-capital');
+
+    const results = { updated: [], notFound: [], errors: [] };
+
+    for (const seedVehicle of vehicleData) {
+      try {
+        // Find by name (case-insensitive)
+        const existing = await CapitalInvestment.findOne({
+          type: 'vehicle',
+          name: { $regex: new RegExp(`^${seedVehicle.name}$`, 'i') }
+        });
+
+        if (existing) {
+          // Update value fields only
+          existing.currentValue = {
+            ...existing.currentValue,
+            estimatedValue: seedVehicle.currentValue.estimatedValue,
+            lastAppraisalDate: seedVehicle.currentValue.lastAppraisalDate,
+            notes: seedVehicle.currentValue.notes
+          };
+
+          // Update vehicle details if provided
+          if (seedVehicle.vehicleDetails) {
+            existing.vehicleDetails = {
+              ...existing.vehicleDetails,
+              ...seedVehicle.vehicleDetails
+            };
+          }
+
+          await existing.save();
+          results.updated.push({
+            name: existing.name,
+            newValue: seedVehicle.currentValue.estimatedValue
+          });
+        } else {
+          results.notFound.push(seedVehicle.name);
+        }
+      } catch (err) {
+        results.errors.push({ name: seedVehicle.name, error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Synced ${results.updated.length} vehicles. ${results.notFound.length} not found in database.`,
+      ...results
+    });
+  } catch (error) {
+    console.error('Error syncing vehicle values:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
  * POST /api/capital/seed/vehicles
  * Seed vehicle capital investment data - ONLY adds missing, never overwrites
  */
