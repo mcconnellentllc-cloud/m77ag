@@ -689,6 +689,19 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
+    title: 'Brent Avalanche 1196 Grain Cart',
+    subtitle: 'Grain Cart',
+    category: 'Harvest Equipment',
+    make: 'Brent',
+    model: 'Avalanche 1196',
+    description: 'Grain Cart for harvest operations',
+    purchasePrice: 0,
+    currentValue: 0,
+    notes: 'Owner: M77 AG, Insured: Yes',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
     title: 'Ripper',
     subtitle: 'Tillage Ripper',
     category: 'Tillage',
