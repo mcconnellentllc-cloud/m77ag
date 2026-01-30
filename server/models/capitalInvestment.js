@@ -87,6 +87,7 @@ const capitalInvestmentSchema = new mongoose.Schema({
     timberAcres: Number,
     wetlandAcres: Number,
     buildingSites: Number,
+    valuePerAcre: Number,  // Estimated value per acre for easy calculations
     soilTypes: [String],
     csr2Rating: Number,  // Corn Suitability Rating
     floodZone: Boolean,

@@ -795,21 +795,31 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Total Acres</label>
-                                <input type="number" id="totalAcresInput" step="0.1">
+                                <input type="number" id="totalAcresInput" step="0.1" oninput="calculateLandValue()">
                             </div>
                             <div class="form-group">
-                                <label>Tillable Acres</label>
-                                <input type="number" id="tillableAcres" step="0.1">
+                                <label>Value Per Acre ($)</label>
+                                <input type="number" id="valuePerAcre" step="100" placeholder="e.g., 3500" oninput="calculateLandValue()">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
+                                <label>Tillable Acres</label>
+                                <input type="number" id="tillableAcres" step="0.1">
+                            </div>
+                            <div class="form-group">
                                 <label>Pasture Acres</label>
                                 <input type="number" id="pastureAcres" step="0.1">
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>County</label>
                                 <input type="text" id="county" placeholder="e.g., Phillips">
+                            </div>
+                            <div class="form-group">
+                                <label>Calculated Value</label>
+                                <div id="calculatedValueDisplay" style="padding: 12px; background: #f5f3f0; border-radius: 8px; font-family: 'Oswald', sans-serif; font-size: 18px; color: #d4af37;">$0</div>
                             </div>
                         </div>
                         <div class="form-row">
@@ -1098,25 +1108,49 @@
                 const debt = (asset.loans || []).reduce((sum, l) => sum + (l.currentBalance || 0), 0);
                 const equity = value - debt;
                 const acres = asset.landDetails?.totalAcres || null;
-                const isVehicle = asset.type === 'vehicle' || ['truck', 'car', 'rv', 'tractor', 'combine', 'trailer', 'atv'].includes(asset.category);
+                const tillable = asset.landDetails?.tillableAcres || null;
+                const pasture = asset.landDetails?.pastureAcres || null;
+                const valuePerAcre = asset.landDetails?.valuePerAcre || (acres && value ? Math.round(value / acres) : null);
+                const isLand = asset.type === 'land' || asset.type === 'real_estate';
+                const isVehicle = asset.type === 'vehicle' || asset.type === 'personal_vehicle' || ['truck', 'car', 'rv', 'tractor', 'combine', 'trailer', 'atv', 'suv'].includes(asset.category);
                 const mileage = asset.vehicleDetails?.mileage;
                 const condition = asset.vehicleDetails?.condition || asset.buildingDetails?.condition;
+                const assetClassLabel = asset.assetClass === 'appreciating' ? 'Appr' : 'Depr';
 
                 // Get features from improvements or notes
                 const features = (asset.improvements || []).slice(0, 4).map(i => i.description);
 
                 return `
                     <div class="asset-card" onclick="viewAsset('${asset._id}')">
-                        <div class="asset-card-header ${isVehicle ? 'vehicle' : asset.type}">
+                        <div class="asset-card-header ${isVehicle ? 'vehicle' : (isLand ? 'land' : asset.type)}">
                             <span class="asset-name">${asset.name}</span>
                             <span class="asset-type-badge">${asset.category?.replace('_', ' ') || asset.type}</span>
+                            ${asset.assetClass ? `<span class="asset-class-indicator">${assetClassLabel}</span>` : ''}
                         </div>
                         <div class="asset-card-body">
                             <div class="asset-stats">
-                                ${acres ? `
+                                ${isLand && acres ? `
                                 <div class="asset-stat">
-                                    <span class="asset-stat-label">Acres</span>
+                                    <span class="asset-stat-label">Total Acres</span>
                                     <span class="asset-stat-value green">${acres.toLocaleString()}</span>
+                                </div>
+                                ` : ''}
+                                ${isLand && tillable ? `
+                                <div class="asset-stat">
+                                    <span class="asset-stat-label">Tillable</span>
+                                    <span class="asset-stat-value">${tillable.toLocaleString()} ac</span>
+                                </div>
+                                ` : ''}
+                                ${isLand && pasture ? `
+                                <div class="asset-stat">
+                                    <span class="asset-stat-label">Pasture</span>
+                                    <span class="asset-stat-value">${pasture.toLocaleString()} ac</span>
+                                </div>
+                                ` : ''}
+                                ${isLand && valuePerAcre ? `
+                                <div class="asset-stat">
+                                    <span class="asset-stat-label">$/Acre</span>
+                                    <span class="asset-stat-value">$${valuePerAcre.toLocaleString()}</span>
                                 </div>
                                 ` : ''}
                                 ${isVehicle && mileage ? `
@@ -1138,12 +1172,12 @@
                                     <span class="asset-stat-label">Condition</span>
                                     <span class="asset-stat-value" style="text-transform: capitalize;">${condition}</span>
                                 </div>
-                                ` : `
+                                ` : (!isLand ? `
                                 <div class="asset-stat">
                                     <span class="asset-stat-label">Farm</span>
                                     <span class="asset-stat-value">${asset.location?.associatedFarm || '-'}</span>
                                 </div>
-                                `}
+                                ` : '')}
                             </div>
                             ${features.length > 0 ? `
                             <div class="asset-features">
@@ -1189,6 +1223,21 @@
             document.getElementById('buildingFields').style.display = type === 'building' ? 'block' : 'none';
         }
 
+        // Calculate land value from acres and per-acre value
+        function calculateLandValue() {
+            const acres = parseFloat(document.getElementById('totalAcresInput').value) || 0;
+            const perAcre = parseFloat(document.getElementById('valuePerAcre').value) || 0;
+            const calculated = Math.round(acres * perAcre);
+
+            // Update the display
+            document.getElementById('calculatedValueDisplay').textContent = '$' + calculated.toLocaleString();
+
+            // Also update the estimated value field
+            if (acres > 0 && perAcre > 0) {
+                document.getElementById('estimatedValue').value = calculated;
+            }
+        }
+
         // Open add modal
         function openAddModal() {
             document.getElementById('modalTitle').textContent = 'Add New Asset';
@@ -1217,11 +1266,14 @@
             // Land/Real Estate fields
             if ((asset.type === 'land' || asset.type === 'real_estate') && asset.landDetails) {
                 document.getElementById('totalAcresInput').value = asset.landDetails.totalAcres || '';
+                document.getElementById('valuePerAcre').value = asset.landDetails.valuePerAcre || '';
                 document.getElementById('tillableAcres').value = asset.landDetails.tillableAcres || '';
                 document.getElementById('pastureAcres').value = asset.landDetails.pastureAcres || '';
                 document.getElementById('county').value = asset.location?.county || '';
                 document.getElementById('gpsLat').value = asset.location?.gpsCoordinates?.lat || '';
                 document.getElementById('gpsLng').value = asset.location?.gpsCoordinates?.lng || '';
+                // Update calculated value display
+                calculateLandValue();
             }
 
             // Building fields
@@ -1277,11 +1329,18 @@
 
             // Land/Real Estate-specific
             if (type === 'land' || type === 'real_estate') {
+                const totalAcres = parseFloat(document.getElementById('totalAcresInput').value) || 0;
+                const valuePerAcre = parseFloat(document.getElementById('valuePerAcre').value) || 0;
                 assetData.landDetails = {
-                    totalAcres: parseFloat(document.getElementById('totalAcresInput').value) || 0,
+                    totalAcres: totalAcres,
+                    valuePerAcre: valuePerAcre,
                     tillableAcres: parseFloat(document.getElementById('tillableAcres').value) || 0,
                     pastureAcres: parseFloat(document.getElementById('pastureAcres').value) || 0
                 };
+                // Auto-calculate estimated value if acres and per-acre value provided
+                if (totalAcres > 0 && valuePerAcre > 0) {
+                    assetData.currentValue.estimatedValue = Math.round(totalAcres * valuePerAcre);
+                }
                 const lat = parseFloat(document.getElementById('gpsLat').value);
                 const lng = parseFloat(document.getElementById('gpsLng').value);
                 if (lat && lng) {
