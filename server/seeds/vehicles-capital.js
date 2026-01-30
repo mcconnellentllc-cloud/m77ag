@@ -71,42 +71,60 @@ const vehicleData = [
     type: 'vehicle',
     category: 'car',
     description: 'Cadillac Escalade SUV',
+    vehicleDetails: {
+      make: 'Cadillac',
+      model: 'Escalade',
+      mileage: 104000
+    },
     acquisition: {
       notes: 'Personal vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 35000
     },
     status: 'owned',
-    notes: 'Personal vehicle'
+    notes: 'Personal vehicle - 104,000 miles'
   },
   {
     name: 'Toyota Camry',
     type: 'vehicle',
     category: 'car',
-    description: 'Toyota Camry sedan',
+    description: "Brandi's Grey Camry",
+    vehicleDetails: {
+      make: 'Toyota',
+      model: 'Camry',
+      color: 'Grey'
+    },
     acquisition: {
       notes: 'Personal vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 15000
     },
     status: 'owned',
-    notes: 'Personal vehicle - found in master workbook'
+    notes: 'Personal vehicle'
   },
   {
     name: 'Pontiac Trans Am',
     type: 'vehicle',
     category: 'car',
-    description: 'Pontiac Trans Am',
+    description: '1979 Pontiac Trans Am',
+    vehicleDetails: {
+      year: 1979,
+      make: 'Pontiac',
+      model: 'Trans AM',
+      vin: '2W87K9L155721',
+      mileage: 65000
+    },
     acquisition: {
-      notes: 'Personal/Collector vehicle'
+      purchasePrice: 6753,
+      notes: 'Classic/Collector vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 7000
     },
     status: 'owned',
-    notes: 'Personal vehicle'
+    notes: 'Personal vehicle - Unit #57, Title: 37E061442'
   },
 
   // RV
@@ -114,15 +132,30 @@ const vehicleData = [
     name: 'Monaco Diplomat RV',
     type: 'vehicle',
     category: 'rv',
-    description: 'Monaco Diplomat motorhome/RV',
+    description: '2001 Roadmaster Diplomat RV',
+    vehicleDetails: {
+      year: 2001,
+      make: 'Roadmaster',
+      model: 'Diplomat',
+      vin: '1RF12051312013422',
+      mileage: 92000
+    },
     acquisition: {
+      purchasePrice: 37878,
       notes: 'Recreational vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 37500
     },
+    loans: [
+      {
+        lender: 'RV Loan',
+        currentBalance: 28274.95,
+        notes: 'Unit #58'
+      }
+    ],
     status: 'owned',
-    notes: 'Recreational vehicle'
+    notes: 'Recreational vehicle - Unit #58'
   }
 ];
 
