@@ -559,6 +559,243 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        .view-toggle-btn {
+            padding: 10px 16px;
+            background: white;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-toggle-btn:not(:last-child) {
+            border-right: 1px solid #ddd;
+        }
+        .view-toggle-btn:hover {
+            background: #f5f3f0;
+        }
+        .view-toggle-btn.active {
+            background: #2d5016;
+            color: white;
+        }
+        .view-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Equipment Cards Grid */
+        .equipment-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .equipment-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .equipment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        .equipment-card-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .equipment-card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .equipment-card-subtitle {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+        .equipment-card-category {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        .equipment-card-body {
+            padding: 20px;
+        }
+        .equipment-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+        .equipment-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .equipment-card-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .equipment-stat {
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .equipment-stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .equipment-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+        .equipment-stat-value.positive { color: #27ae60; }
+        .equipment-stat-value.negative { color: #c0392b; }
+        .equipment-stat-value.gold { color: #d4af37; }
+        .equipment-card-details {
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .equipment-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #f8f8f8;
+        }
+        .equipment-detail-row:last-child {
+            border-bottom: none;
+        }
+        .equipment-detail-label {
+            color: #888;
+        }
+        .equipment-detail-value {
+            font-weight: 500;
+            color: #333;
+        }
+        .equipment-card-loan {
+            background: #fff8e5;
+            border: 1px solid #ffd96e;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        .equipment-loan-header {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .equipment-loan-lender {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+        .equipment-loan-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+        }
+        .equipment-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .equipment-card-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .card-edit-btn {
+            background: #2d5016;
+            color: white;
+            border: none;
+        }
+        .card-edit-btn:hover {
+            background: #3d6b1f;
+        }
+        .card-sold-btn {
+            background: white;
+            color: #e67e22;
+            border: 1px solid #e67e22;
+        }
+        .card-sold-btn:hover {
+            background: #e67e22;
+            color: white;
+        }
+        .card-restore-btn {
+            background: white;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        .card-restore-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .equipment-card.archived .equipment-card-header {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+        }
+        .equipment-card.archived {
+            opacity: 0.9;
+        }
+        .no-equipment-cards {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .equipment-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .view-toggle {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .header-actions {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
@@ -577,6 +814,25 @@
         <div class="page-header">
             <h1 class="page-title">Equipment Manager</h1>
             <div class="header-actions">
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" id="listViewBtn" onclick="setView('list')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                        List
+                    </button>
+                    <button class="view-toggle-btn" id="cardViewBtn" onclick="setView('cards')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                        </svg>
+                        Cards
+                    </button>
+                </div>
                 <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
                 <button class="btn btn-secondary" onclick="syncAllEquipment()" style="background:#d4a54a;color:#000;">Sync All</button>
                 <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
@@ -750,6 +1006,7 @@
         let currentCategory = 'all';
         let showingArchived = false;
         let summary = {};
+        let currentView = 'list'; // 'list' or 'cards'
 
         // Categories with display names
         const categories = [
@@ -808,10 +1065,31 @@
 
                 renderCategoryTabs();
                 renderCategorySummary();
-                renderTable();
+                renderView();
             } catch (error) {
                 console.error('Error loading data:', error);
                 document.getElementById('tableContent').innerHTML = '<div class="no-payments">Error loading equipment data</div>';
+            }
+        }
+
+        // View toggle function
+        function setView(view) {
+            currentView = view;
+
+            // Update toggle button states
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            document.getElementById('cardViewBtn').classList.toggle('active', view === 'cards');
+
+            // Re-render current view
+            renderView();
+        }
+
+        // Render the appropriate view based on currentView state
+        function renderView() {
+            if (currentView === 'cards') {
+                renderCards();
+            } else {
+                renderView();
             }
         }
 
@@ -967,7 +1245,7 @@
             // Show category summary when not showing archived
             document.getElementById('categorySummary').style.display = 'grid';
 
-            renderTable();
+            renderView();
         }
 
         function showArchived() {
@@ -989,7 +1267,7 @@
             // Hide category summary when showing archived
             document.getElementById('categorySummary').style.display = 'none';
 
-            renderTable();
+            renderView();
         }
 
         function filterEquipment() {
@@ -1016,7 +1294,7 @@
                 filteredEquipment = base;
             }
 
-            renderTable();
+            renderView();
         }
 
         function renderTable() {
@@ -1090,6 +1368,121 @@
             container.innerHTML = html;
         }
 
+        // Render equipment as cards
+        function renderCards() {
+            const container = document.getElementById('tableContent');
+
+            if (filteredEquipment.length === 0) {
+                container.innerHTML = '<div class="equipment-cards-grid"><div class="no-equipment-cards">No equipment found</div></div>';
+                return;
+            }
+
+            let html = '<div class="equipment-cards-grid">';
+
+            filteredEquipment.forEach(item => {
+                const value = item.currentValue || 0;
+                const owed = item.amountOwed || 0;
+                const equity = value - owed;
+                const marketVal = item.marketValue || 0;
+                const isArchived = item.saleStatus === 'sold';
+                const hoursOrMiles = item.currentHours
+                    ? item.currentHours.toLocaleString() + ' hrs'
+                    : item.currentMiles
+                        ? item.currentMiles.toLocaleString() + ' mi'
+                        : '-';
+
+                // Build loan section if applicable
+                let loanHtml = '';
+                if (item.hasLoan && owed > 0) {
+                    loanHtml = `
+                        <div class="equipment-card-loan">
+                            <div class="equipment-loan-header">Loan Information</div>
+                            <div class="equipment-loan-lender">${item.lender || 'Unknown Lender'}</div>
+                            <div class="equipment-loan-details">
+                                <strong>${formatCurrency(owed)}</strong> owed
+                                ${item.paymentAmount ? ` | ${formatCurrency(item.paymentAmount)}/${item.paymentFrequency || 'monthly'}` : ''}
+                                ${item.nextPaymentDate ? ` | Due: ${formatDate(item.nextPaymentDate)}` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Build image section
+                let imageHtml = '';
+                if (item.images && item.images.length > 0) {
+                    imageHtml = `<div class="equipment-card-image"><img src="${item.images[0]}" alt="${item.title}" loading="lazy"></div>`;
+                } else {
+                    imageHtml = `<div class="equipment-card-image">No Image</div>`;
+                }
+
+                html += `
+                    <div class="equipment-card ${isArchived ? 'archived' : ''}" data-id="${item._id}">
+                        <div class="equipment-card-header">
+                            <div>
+                                <div class="equipment-card-title">${item.title}</div>
+                                <div class="equipment-card-subtitle">${item.subtitle || ''}</div>
+                            </div>
+                            <div class="equipment-card-category">${item.category || 'Other'}</div>
+                        </div>
+                        ${imageHtml}
+                        <div class="equipment-card-body">
+                            <div class="equipment-card-stats">
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Current Value</div>
+                                    <div class="equipment-stat-value positive">${formatCurrency(value)}</div>
+                                </div>
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Equity</div>
+                                    <div class="equipment-stat-value ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</div>
+                                </div>
+                                ${marketVal > 0 ? `
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Market Value</div>
+                                    <div class="equipment-stat-value gold">${formatCurrency(marketVal)}</div>
+                                </div>
+                                ` : ''}
+                                ${owed > 0 ? `
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Amount Owed</div>
+                                    <div class="equipment-stat-value negative">${formatCurrency(owed)}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            <div class="equipment-card-details">
+                                <div class="equipment-detail-row">
+                                    <span class="equipment-detail-label">Serial/VIN</span>
+                                    <span class="equipment-detail-value">${item.serialNumber || item.vin || '-'}</span>
+                                </div>
+                                <div class="equipment-detail-row">
+                                    <span class="equipment-detail-label">Hours/Miles</span>
+                                    <span class="equipment-detail-value">${hoursOrMiles}</span>
+                                </div>
+                                ${item.marketValueSource ? `
+                                <div class="equipment-detail-row">
+                                    <span class="equipment-detail-label">Market Source</span>
+                                    <span class="equipment-detail-value">${item.marketValueSource}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            ${loanHtml}
+
+                            <div class="equipment-card-actions">
+                                <button class="card-edit-btn" onclick="editEquipment('${item._id}')">Edit</button>
+                                ${isArchived
+                                    ? `<button class="card-restore-btn" onclick="restoreEquipment('${item._id}')">Restore</button>`
+                                    : `<button class="card-sold-btn" onclick="markAsSold('${item._id}')">Mark Sold</button>`}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
         // Change equipment category inline
         async function changeCategory(id, newCategory, selectElement) {
             const item = allEquipment.find(e => e._id === id);
@@ -1135,7 +1528,7 @@
                         setTimeout(() => {
                             // Update filtered list and re-render
                             filteredEquipment = allEquipment.filter(e => e.category === currentCategory);
-                            renderTable();
+                            renderView();
                         }, 400);
                     }
                 } else {
@@ -1192,7 +1585,7 @@
                         // Remove from current filtered list
                         if (!showingArchived) {
                             filteredEquipment = filteredEquipment.filter(e => e._id !== id);
-                            renderTable();
+                            renderView();
                         }
                     }, 400);
                 } else {
@@ -1246,7 +1639,7 @@
                         // Remove from archived list if viewing archived
                         if (showingArchived) {
                             filteredEquipment = filteredEquipment.filter(e => e._id !== id);
-                            renderTable();
+                            renderView();
                         }
                     }, 400);
                 } else {

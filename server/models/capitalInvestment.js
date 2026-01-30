@@ -314,20 +314,39 @@ capitalInvestmentSchema.statics.getPortfolioSummary = async function() {
     totalDebt: 0,
     totalAcres: 0,
     totalBuildings: 0,
+    totalAnnualPayments: 0,
     byType: {},
+    byAssetClass: {
+      appreciating: { count: 0, value: 0, debt: 0, equity: 0 },
+      depreciating: { count: 0, value: 0, debt: 0, equity: 0 }
+    },
     annualIncome: 0,
     annualExpenses: 0
   };
 
   assets.forEach(asset => {
     const value = asset.currentValue?.estimatedValue || 0;
-    const debt = (asset.loans || []).reduce((sum, loan) => sum + (loan.currentBalance || 0), 0);
+    const loans = asset.loans || [];
+    const debt = loans.reduce((sum, loan) => sum + (loan.currentBalance || 0), 0);
+    const equity = value - debt;
+
+    // Calculate annual loan payments
+    const annualPayments = loans.reduce((sum, loan) => {
+      const payment = loan.paymentAmount || 0;
+      const freq = loan.paymentFrequency || 'annual';
+      if (freq === 'monthly') return sum + (payment * 12);
+      if (freq === 'quarterly') return sum + (payment * 4);
+      if (freq === 'semi-annual') return sum + (payment * 2);
+      return sum + payment;
+    }, 0);
 
     summary.totalValue += value;
     summary.totalDebt += debt;
-    summary.totalEquity += (value - debt);
+    summary.totalEquity += equity;
+    summary.totalAnnualPayments += annualPayments;
 
-    if (asset.type === 'land') {
+    // Count acres for land and real_estate types
+    if (asset.type === 'land' || asset.type === 'real_estate') {
       summary.totalAcres += asset.landDetails?.totalAcres || 0;
     }
     if (asset.type === 'building') {
@@ -337,13 +356,23 @@ capitalInvestmentSchema.statics.getPortfolioSummary = async function() {
     summary.annualIncome += asset.income?.rentalIncome || 0;
     summary.annualExpenses += asset.annualCosts?.total || 0;
 
+    // Group by asset class
+    const assetClass = asset.assetClass || 'depreciating';
+    if (summary.byAssetClass[assetClass]) {
+      summary.byAssetClass[assetClass].count++;
+      summary.byAssetClass[assetClass].value += value;
+      summary.byAssetClass[assetClass].debt += debt;
+      summary.byAssetClass[assetClass].equity += equity;
+    }
+
     // Group by type
     if (!summary.byType[asset.type]) {
-      summary.byType[asset.type] = { count: 0, value: 0, acres: 0 };
+      summary.byType[asset.type] = { count: 0, value: 0, acres: 0, debt: 0 };
     }
     summary.byType[asset.type].count++;
     summary.byType[asset.type].value += value;
-    if (asset.type === 'land') {
+    summary.byType[asset.type].debt += debt;
+    if (asset.type === 'land' || asset.type === 'real_estate') {
       summary.byType[asset.type].acres += asset.landDetails?.totalAcres || 0;
     }
   });
