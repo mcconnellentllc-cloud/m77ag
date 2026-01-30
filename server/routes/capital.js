@@ -204,34 +204,102 @@ router.post('/seed/kbfarms', async (req, res) => {
 });
 
 /**
+ * POST /api/capital/sync/vehicles
+ * Sync vehicle values from seed data to database (updates values only, preserves other data)
+ */
+router.post('/sync/vehicles', async (req, res) => {
+  try {
+    // Clear require cache to get fresh data
+    delete require.cache[require.resolve('../seeds/vehicles-capital')];
+    const { vehicleData } = require('../seeds/vehicles-capital');
+
+    const results = { updated: [], notFound: [], errors: [] };
+
+    for (const seedVehicle of vehicleData) {
+      try {
+        // Find by name (case-insensitive)
+        const existing = await CapitalInvestment.findOne({
+          type: 'vehicle',
+          name: { $regex: new RegExp(`^${seedVehicle.name}$`, 'i') }
+        });
+
+        if (existing) {
+          // Update value fields only
+          existing.currentValue = {
+            ...existing.currentValue,
+            estimatedValue: seedVehicle.currentValue.estimatedValue,
+            lastAppraisalDate: seedVehicle.currentValue.lastAppraisalDate,
+            notes: seedVehicle.currentValue.notes
+          };
+
+          // Update vehicle details if provided
+          if (seedVehicle.vehicleDetails) {
+            existing.vehicleDetails = {
+              ...existing.vehicleDetails,
+              ...seedVehicle.vehicleDetails
+            };
+          }
+
+          await existing.save();
+          results.updated.push({
+            name: existing.name,
+            newValue: seedVehicle.currentValue.estimatedValue
+          });
+        } else {
+          results.notFound.push(seedVehicle.name);
+        }
+      } catch (err) {
+        results.errors.push({ name: seedVehicle.name, error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Synced ${results.updated.length} vehicles. ${results.notFound.length} not found in database.`,
+      ...results
+    });
+  } catch (error) {
+    console.error('Error syncing vehicle values:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
  * POST /api/capital/seed/vehicles
- * Seed vehicle capital investment data (force=true to replace existing)
+ * Seed vehicle capital investment data - ONLY adds missing, never overwrites
  */
 router.post('/seed/vehicles', async (req, res) => {
   try {
-    const { force } = req.body;
-    const existingCount = await CapitalInvestment.countDocuments({ type: 'vehicle' });
+    // Clear require cache to get fresh data
+    delete require.cache[require.resolve('../seeds/vehicles-capital')];
+    const { vehicleData } = require('../seeds/vehicles-capital');
 
-    if (existingCount > 0) {
-      if (!force) {
-        return res.json({
-          success: false,
-          message: 'Vehicle data exists. Click again to replace with updated data.',
-          count: existingCount,
-          needsForce: true
-        });
-      }
-      await CapitalInvestment.deleteMany({ type: 'vehicle' });
+    // Get existing vehicle names
+    const existingVehicles = await CapitalInvestment.find({ type: 'vehicle' }, 'name');
+    const existingNames = new Set(existingVehicles.map(v => v.name.toLowerCase().trim()));
+
+    // Only add vehicles that don't exist
+    const missingVehicles = vehicleData.filter(v =>
+      !existingNames.has(v.name.toLowerCase().trim())
+    );
+
+    if (missingVehicles.length === 0) {
+      return res.json({
+        success: true,
+        message: 'All vehicles already exist. No changes made.',
+        added: 0,
+        existing: existingVehicles.length
+      });
     }
 
-    const { vehicleData } = require('../seeds/vehicles-capital');
-    const result = await CapitalInvestment.insertMany(vehicleData);
+    const result = await CapitalInvestment.insertMany(missingVehicles);
 
     res.status(201).json({
       success: true,
-      message: `Successfully seeded ${result.length} vehicles`,
-      count: result.length,
-      data: result.map(r => ({ name: r.name, category: r.category }))
+      message: `Added ${result.length} missing vehicles. ${existingVehicles.length} existing vehicles unchanged.`,
+      added: result.length,
+      existing: existingVehicles.length,
+      newVehicles: result.map(r => r.name)
     });
   } catch (error) {
     console.error('Error seeding vehicle data:', error);

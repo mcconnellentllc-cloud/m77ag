@@ -10,6 +10,8 @@ const CapitalInvestment = require('../models/capitalInvestment');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
+// Market values researched Jan 2026 using KBB, Edmunds, CARFAX, ClassicCars.com
+// Values calculated at 85% of market spread per user directive
 const vehicleData = [
   // Farm Trucks - Combined loan account *9803
   {
@@ -17,11 +19,19 @@ const vehicleData = [
     type: 'vehicle',
     category: 'truck',
     description: 'Grey 2011 Ford F-250 work truck',
+    vehicleDetails: {
+      year: 2011,
+      make: 'Ford',
+      model: 'F-250',
+      color: 'Grey'
+    },
     acquisition: {
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 20000
+      estimatedValue: 14600,  // 85% of KBB $14,650-$19,700 Crew Cab range
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'KBB Crew Cab XL-Lariat range: $14,650-$19,700'
     },
     loans: [
       {
@@ -43,11 +53,18 @@ const vehicleData = [
     type: 'vehicle',
     category: 'truck',
     description: '2011 Dodge Ram 1500 pickup truck',
+    vehicleDetails: {
+      year: 2011,
+      make: 'Dodge',
+      model: 'Ram 1500'
+    },
     acquisition: {
       notes: 'Farm work truck'
     },
     currentValue: {
-      estimatedValue: 20000
+      estimatedValue: 6800,  // 85% of KBB $6,518-$9,525 range
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'KBB Crew Cab ST: $9,525 resale, $4,775 trade-in'
     },
     loans: [
       {
@@ -71,42 +88,66 @@ const vehicleData = [
     type: 'vehicle',
     category: 'car',
     description: 'Cadillac Escalade SUV',
+    vehicleDetails: {
+      make: 'Cadillac',
+      model: 'Escalade',
+      mileage: 104000
+    },
     acquisition: {
       notes: 'Personal vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 20900,  // 85% of 2018 KBB $16,602-$32,622 avg ~$24,600
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: '2018 model range per KBB/CARFAX with high mileage'
     },
     status: 'owned',
-    notes: 'Personal vehicle'
+    notes: 'Personal vehicle - 104,000 miles'
   },
   {
     name: 'Toyota Camry',
     type: 'vehicle',
     category: 'car',
-    description: 'Toyota Camry sedan',
+    description: "Brandi's Grey Camry",
+    vehicleDetails: {
+      make: 'Toyota',
+      model: 'Camry',
+      color: 'Grey'
+    },
     acquisition: {
       notes: 'Personal vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 14700,  // 85% of KBB 2020 LE $15,950-$18,700 range
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: '2020-2021 Camry LE range per KBB'
     },
     status: 'owned',
-    notes: 'Personal vehicle - found in master workbook'
+    notes: 'Personal vehicle'
   },
   {
     name: 'Pontiac Trans Am',
     type: 'vehicle',
     category: 'car',
-    description: 'Pontiac Trans Am',
+    description: '1979 Pontiac Trans Am',
+    vehicleDetails: {
+      year: 1979,
+      make: 'Pontiac',
+      model: 'Trans AM',
+      vin: '2W87K9L155721',
+      mileage: 65000
+    },
     acquisition: {
-      notes: 'Personal/Collector vehicle'
+      purchasePrice: 6753,
+      notes: 'Classic/Collector vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 23000,  // 85% of ClassicCars.com $16,900-$37,500 range avg ~$27,000
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'Classic car - ClassicCars.com/Hagerty. BaT sold similar for $37,500 Jan 2026'
     },
     status: 'owned',
-    notes: 'Personal vehicle'
+    notes: 'Personal vehicle - Unit #57, Title: 37E061442'
   },
 
   // RV
@@ -114,15 +155,32 @@ const vehicleData = [
     name: 'Monaco Diplomat RV',
     type: 'vehicle',
     category: 'rv',
-    description: 'Monaco Diplomat motorhome/RV',
+    description: '2001 Roadmaster Diplomat RV',
+    vehicleDetails: {
+      year: 2001,
+      make: 'Roadmaster',
+      model: 'Diplomat',
+      vin: '1RF12051312013422',
+      mileage: 92000
+    },
     acquisition: {
+      purchasePrice: 37878,
       notes: 'Recreational vehicle'
     },
     currentValue: {
-      estimatedValue: 0
+      estimatedValue: 34000,  // 85% of $30,000-$50,000 range avg ~$40,000
+      lastAppraisalDate: new Date('2026-01-30'),
+      notes: 'J.D. Power/SmartRVGuide comparable 2001 Diplomat listings'
     },
+    loans: [
+      {
+        lender: 'RV Loan',
+        currentBalance: 28274.95,
+        notes: 'Unit #58'
+      }
+    ],
     status: 'owned',
-    notes: 'Recreational vehicle'
+    notes: 'Recreational vehicle - Unit #58'
   }
 ];
 
