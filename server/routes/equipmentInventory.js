@@ -211,7 +211,9 @@ router.put('/:id', async (req, res) => {
     res.json({ success: true, equipment });
   } catch (error) {
     console.error('Error updating equipment:', error);
-    res.status(500).json({ success: false, error: 'Failed to update equipment' });
+    // Return the actual validation error message
+    const errorMessage = error.message || 'Failed to update equipment';
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
