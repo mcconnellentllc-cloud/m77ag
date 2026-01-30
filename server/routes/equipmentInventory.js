@@ -608,6 +608,54 @@ router.get('/maintenance-due', async (req, res) => {
   }
 });
 
+// Seed missing equipment from seed data
+router.post('/seed-missing', async (req, res) => {
+  try {
+    // Import equipment data from seed file
+    const { equipmentData } = require('../scripts/seed-equipment');
+
+    // Get all existing equipment titles
+    const existingEquipment = await Equipment.find({}, 'title');
+    const existingTitles = new Set(existingEquipment.map(e => e.title.toLowerCase().trim()));
+
+    // Find missing equipment
+    const missingEquipment = equipmentData.filter(item =>
+      !existingTitles.has(item.title.toLowerCase().trim())
+    );
+
+    if (missingEquipment.length === 0) {
+      return res.json({
+        success: true,
+        message: 'All equipment already exists in database',
+        added: 0,
+        items: []
+      });
+    }
+
+    // Add missing equipment
+    const added = [];
+    for (const item of missingEquipment) {
+      try {
+        const equipment = new Equipment(item);
+        await equipment.save();
+        added.push(item.title);
+      } catch (err) {
+        console.error(`Error adding "${item.title}": ${err.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Added ${added.length} missing equipment items`,
+      added: added.length,
+      items: added
+    });
+  } catch (error) {
+    console.error('Error seeding missing equipment:', error);
+    res.status(500).json({ success: false, error: 'Failed to seed missing equipment' });
+  }
+});
+
 // Get equipment report (for landlord/financial reporting)
 router.get('/report', async (req, res) => {
   try {
