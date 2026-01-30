@@ -66,6 +66,7 @@ const farmingDashboardRoutes = require('./routes/farmingDashboard');
 const seedOrderRoutes = require('./routes/seedOrder');
 const imageUploadRoutes = require('./routes/imageUpload');
 const employeeRoutes = require('./routes/employees');
+const croppingFieldRoutes = require('./routes/croppingFields');
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -98,6 +99,7 @@ app.use('/api/farming-dashboard', farmingDashboardRoutes);
 app.use('/api/seed-orders', seedOrderRoutes);
 app.use('/api/upload', imageUploadRoutes);
 app.use('/api/employees', employeeRoutes);
+app.use('/api/cropping-fields', croppingFieldRoutes);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {

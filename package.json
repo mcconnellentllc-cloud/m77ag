@@ -10,6 +10,7 @@
     "seed:equipment": "node server/scripts/seed-equipment.js",
     "seed:real-estate": "node server/scripts/seed-real-estate.js",
     "seed:employees": "node server/scripts/seed-employees.js",
+    "seed:fields": "node server/scripts/seed-fields.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
