@@ -656,6 +656,51 @@ router.post('/seed-missing', async (req, res) => {
   }
 });
 
+// Sync ALL equipment from seed data (updates existing + adds missing)
+router.post('/sync-from-seed', async (req, res) => {
+  try {
+    // Clear require cache to get fresh data
+    delete require.cache[require.resolve('../scripts/seed-equipment')];
+    const { equipmentData } = require('../scripts/seed-equipment');
+
+    const results = { updated: [], added: [], errors: [] };
+
+    for (const seedItem of equipmentData) {
+      try {
+        // Escape special regex characters in title
+        const escapedTitle = seedItem.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const existing = await Equipment.findOne({
+          title: { $regex: new RegExp(`^${escapedTitle}$`, 'i') }
+        });
+
+        if (existing) {
+          // Update existing with seed data
+          const updateData = { ...seedItem };
+          delete updateData._id;
+          await Equipment.findByIdAndUpdate(existing._id, updateData, { runValidators: true });
+          results.updated.push(seedItem.title);
+        } else {
+          // Add new
+          const equipment = new Equipment(seedItem);
+          await equipment.save();
+          results.added.push(seedItem.title);
+        }
+      } catch (err) {
+        results.errors.push({ title: seedItem.title, error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Updated ${results.updated.length}, Added ${results.added.length}, Errors: ${results.errors.length}`,
+      ...results
+    });
+  } catch (error) {
+    console.error('Error syncing from seed:', error);
+    res.status(500).json({ success: false, error: 'Failed to sync from seed data' });
+  }
+});
+
 // Get equipment report (for landlord/financial reporting)
 router.get('/report', async (req, res) => {
   try {

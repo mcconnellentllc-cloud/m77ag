@@ -243,6 +243,15 @@
             color: #888;
             font-style: italic;
         }
+        .loan-lender {
+            font-size: 10px;
+            color: #2d5016;
+            font-weight: 500;
+        }
+        .loan-payment {
+            font-size: 10px;
+            color: #c0392b;
+        }
         .has-loan {
             display: inline-block;
             padding: 3px 8px;
@@ -569,7 +578,7 @@
             <h1 class="page-title">Equipment Manager</h1>
             <div class="header-actions">
                 <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
-                <button class="btn btn-secondary" onclick="seedMissingEquipment()">Seed Missing</button>
+                <button class="btn btn-secondary" onclick="syncAllEquipment()" style="background:#d4a54a;color:#000;">Sync All</button>
                 <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
             </div>
         </div>
@@ -1064,7 +1073,8 @@
                     <td class="value-cell positive">${formatCurrency(value)}</td>
                     <td class="value-cell ${owed > 0 ? 'negative' : ''}">
                         ${owed > 0 ? formatCurrency(owed) : '-'}
-                        ${item.hasLoan ? '<br><span class="has-loan">LOAN</span>' : ''}
+                        ${item.hasLoan && item.lender ? '<br><span class="loan-lender">' + item.lender + '</span>' : ''}
+                        ${item.hasLoan && item.nextPaymentDate ? '<br><span class="loan-payment">' + formatCurrency(item.paymentAmount || 0) + ' due ' + formatDate(item.nextPaymentDate) + '</span>' : ''}
                     </td>
                     <td class="value-cell ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</td>
                     <td>
@@ -1373,6 +1383,35 @@
             } catch (error) {
                 console.error('Error seeding equipment:', error);
                 alert('Error seeding equipment: ' + error.message);
+            }
+        }
+
+        async function syncAllEquipment() {
+            if (!confirm('This will UPDATE all equipment in the database with values from the seed file. This overwrites existing values. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/equipment/inventory/sync-from-seed', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let msg = `Sync Complete!\n\nUpdated: ${data.updated.length}\nAdded: ${data.added.length}`;
+                    if (data.errors.length > 0) {
+                        msg += `\nErrors: ${data.errors.length}`;
+                    }
+                    alert(msg);
+                    refreshData();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to sync equipment'));
+                }
+            } catch (error) {
+                console.error('Error syncing equipment:', error);
+                alert('Error syncing equipment: ' + error.message);
             }
         }
 
