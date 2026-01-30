@@ -243,6 +243,15 @@
             color: #888;
             font-style: italic;
         }
+        .loan-lender {
+            font-size: 10px;
+            color: #2d5016;
+            font-weight: 500;
+        }
+        .loan-payment {
+            font-size: 10px;
+            color: #c0392b;
+        }
         .has-loan {
             display: inline-block;
             padding: 3px 8px;
@@ -1064,7 +1073,8 @@
                     <td class="value-cell positive">${formatCurrency(value)}</td>
                     <td class="value-cell ${owed > 0 ? 'negative' : ''}">
                         ${owed > 0 ? formatCurrency(owed) : '-'}
-                        ${item.hasLoan ? '<br><span class="has-loan">LOAN</span>' : ''}
+                        ${item.hasLoan && item.lender ? '<br><span class="loan-lender">' + item.lender + '</span>' : ''}
+                        ${item.hasLoan && item.nextPaymentDate ? '<br><span class="loan-payment">' + formatCurrency(item.paymentAmount || 0) + ' due ' + formatDate(item.nextPaymentDate) + '</span>' : ''}
                     </td>
                     <td class="value-cell ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</td>
                     <td>
