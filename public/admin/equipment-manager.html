@@ -569,6 +569,7 @@
             <h1 class="page-title">Equipment Manager</h1>
             <div class="header-actions">
                 <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
+                <button class="btn btn-secondary" onclick="seedMissingEquipment()">Seed Missing</button>
                 <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
             </div>
         </div>
@@ -1342,6 +1343,37 @@
         function refreshData() {
             document.getElementById('tableContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             loadData();
+        }
+
+        async function seedMissingEquipment() {
+            if (!confirm('This will add any missing equipment from the seed data. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/equipment/inventory/seed-missing', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.added > 0) {
+                        alert(`Added ${data.added} equipment items:\n\n${data.items.join('\n')}`);
+                        refreshData();
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to seed equipment'));
+                }
+            } catch (error) {
+                console.error('Error seeding equipment:', error);
+                alert('Error seeding equipment: ' + error.message);
+            }
         }
 
         // Utility functions
