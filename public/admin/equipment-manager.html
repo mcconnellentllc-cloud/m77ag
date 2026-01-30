@@ -569,7 +569,7 @@
             <h1 class="page-title">Equipment Manager</h1>
             <div class="header-actions">
                 <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
-                <button class="btn btn-secondary" onclick="seedMissingEquipment()">Seed Missing</button>
+                <button class="btn btn-secondary" onclick="syncAllEquipment()" style="background:#d4a54a;color:#000;">Sync All</button>
                 <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
             </div>
         </div>
@@ -1373,6 +1373,35 @@
             } catch (error) {
                 console.error('Error seeding equipment:', error);
                 alert('Error seeding equipment: ' + error.message);
+            }
+        }
+
+        async function syncAllEquipment() {
+            if (!confirm('This will UPDATE all equipment in the database with values from the seed file. This overwrites existing values. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/equipment/inventory/sync-from-seed', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let msg = `Sync Complete!\n\nUpdated: ${data.updated.length}\nAdded: ${data.added.length}`;
+                    if (data.errors.length > 0) {
+                        msg += `\nErrors: ${data.errors.length}`;
+                    }
+                    alert(msg);
+                    refreshData();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to sync equipment'));
+                }
+            } catch (error) {
+                console.error('Error syncing equipment:', error);
+                alert('Error syncing equipment: ' + error.message);
             }
         }
 
