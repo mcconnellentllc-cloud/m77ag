@@ -11,7 +11,8 @@ const equipmentSchema = new mongoose.Schema({
     type: String,
     enum: ['Hay Equipment', 'Sprayer Equipment', 'Harvest Equipment', 'Attachments',
            'Combine Parts', 'Feed Truck', 'Tractors', 'Trucks', 'Trailers',
-           'Tillage', 'Planting', 'Tech', 'Personal Vehicles', 'Other'],
+           'Tillage', 'Planting', 'Tech', 'Personal Vehicles', 'Shop',
+           'Livestock Equipment', 'Yard Equipment', 'Other'],
     default: 'Other'
   },
   make: String,
