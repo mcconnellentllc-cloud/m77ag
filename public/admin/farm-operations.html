@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Operations | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .summary-card h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .summary-card .value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+        }
+        .summary-card .sub {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Crop Summary */
+        .crop-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .crop-summary h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        .crop-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .crop-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .crop-bar .crop-name {
+            width: 140px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .crop-bar .bar-container {
+            flex: 1;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .crop-bar .bar {
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+        .crop-bar .acres {
+            width: 100px;
+            text-align: right;
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+        }
+        /* Crop colors */
+        .bar.CORN { background: #f4a020; }
+        .bar.WHEAT { background: #d4a54a; }
+        .bar.SORGHUM { background: #8B4513; }
+        .bar.FALLOW { background: #a0a0a0; }
+        .bar.PASTURE { background: #4a7c23; }
+        .bar.TRITICALE { background: #6b8e23; }
+        .bar.PEARL-MILLET, .bar.PEARL_MILLET { background: #9370db; }
+        .bar.SORGHUM-SUDAN, .bar.SORGHUM_SUDAN { background: #cd853f; }
+        .bar.WASTE { background: #808080; }
+        .bar.BUILDING-SITE, .bar.BUILDING_SITE { background: #2c2c2c; }
+
+        /* Farms Section */
+        .farms-section {
+            margin-bottom: 30px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #1a1a1a;
+        }
+        .farm-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .farm-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .farm-tab:hover {
+            border-color: #2d5016;
+        }
+        .farm-tab.active {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .farm-tab .acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-left: 8px;
+        }
+
+        /* Fields Table */
+        .fields-table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .fields-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .fields-table th, .fields-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .fields-table th {
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .fields-table tr:hover {
+            background: #fafafa;
+        }
+        .fields-table .field-name {
+            font-weight: 600;
+            color: #2d5016;
+        }
+        .fields-table .legal {
+            font-size: 12px;
+            color: #666;
+        }
+        .fields-table .acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+        }
+        .crop-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .crop-badge.CORN { background: #fff3e0; color: #e65100; }
+        .crop-badge.WHEAT { background: #fff8e1; color: #ff8f00; }
+        .crop-badge.SORGHUM { background: #efebe9; color: #5d4037; }
+        .crop-badge.FALLOW { background: #f5f5f5; color: #616161; }
+        .crop-badge.PASTURE { background: #e8f5e9; color: #2e7d32; }
+        .crop-badge.TRITICALE { background: #f1f8e9; color: #558b2f; }
+        .crop-badge.PEARL-MILLET, .crop-badge.PEARL_MILLET { background: #f3e5f5; color: #7b1fa2; }
+        .crop-badge.SORGHUM-SUDAN, .crop-badge.SORGHUM_SUDAN { background: #fff3e0; color: #bf360c; }
+        .crop-badge.WASTE { background: #eceff1; color: #455a64; }
+        .crop-badge.BUILDING-SITE, .crop-badge.BUILDING_SITE { background: #263238; color: white; }
+
+        /* Field Card Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+        .field-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .field-detail-row:last-child {
+            border-bottom: none;
+        }
+        .field-detail-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+        .field-detail-value {
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .admin-nav { display: none; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .fields-table { font-size: 12px; }
+            .fields-table th, .fields-table td { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/farming-dashboard.html">Farming</a>
+            <a href="/admin/farm-operations.html" class="active">Farm Operations</a>
+            <a href="/admin/equipment-manager.html">Equipment</a>
+            <a href="/admin/financials.html">Financials</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Farm Operations - 2026 Cropping</h1>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid" id="summaryCards">
+            <div class="summary-card">
+                <h3>Total Acres</h3>
+                <div class="value" id="totalAcres">--</div>
+                <div class="sub" id="totalFields">-- fields</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Farms</h3>
+                <div class="value" id="totalFarms">6</div>
+                <div class="sub">Operating farms</div>
+            </div>
+            <div class="summary-card">
+                <h3>Crop Types</h3>
+                <div class="value" id="cropTypes">--</div>
+                <div class="sub">2026 rotation</div>
+            </div>
+            <div class="summary-card">
+                <h3>Productive Acres</h3>
+                <div class="value" id="productiveAcres">--</div>
+                <div class="sub">Excluding waste/sites</div>
+            </div>
+        </div>
+
+        <!-- Crop Summary -->
+        <div class="crop-summary">
+            <h2>2026 Crop Allocation</h2>
+            <div class="crop-bars" id="cropBars">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Farms Section -->
+        <div class="farms-section">
+            <div class="section-header">
+                <h2 class="section-title">Fields by Farm</h2>
+            </div>
+            <div class="farm-tabs" id="farmTabs">
+                <button class="farm-tab active" data-farm="all">All Farms</button>
+                <!-- Farm tabs populated by JS -->
+            </div>
+        </div>
+
+        <!-- Fields Table -->
+        <div class="fields-table-container">
+            <table class="fields-table">
+                <thead>
+                    <tr>
+                        <th>Farm</th>
+                        <th>Field</th>
+                        <th>Legal</th>
+                        <th>FSA Farm</th>
+                        <th>Tract</th>
+                        <th>Acres</th>
+                        <th>2026 Crop</th>
+                    </tr>
+                </thead>
+                <tbody id="fieldsTable">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Field Detail Modal -->
+    <div class="modal-overlay" id="fieldModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalFieldName">Field Name</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allFields = [];
+        let cropSummary = {};
+        let farmSummary = [];
+        let currentFarm = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
+
+        async function loadData() {
+            try {
+                // Load all fields
+                const fieldsRes = await fetch('/api/cropping-fields');
+                const fieldsData = await fieldsRes.json();
+                if (fieldsData.success) {
+                    allFields = fieldsData.fields;
+                }
+
+                // Load crop summary
+                const cropsRes = await fetch('/api/cropping-fields/summary/crops');
+                const cropsData = await cropsRes.json();
+                if (cropsData.success) {
+                    cropSummary = cropsData;
+                }
+
+                // Load farm summary
+                const farmsRes = await fetch('/api/cropping-fields/summary/farms');
+                const farmsData = await farmsRes.json();
+                if (farmsData.success) {
+                    farmSummary = farmsData.farms;
+                }
+
+                renderSummary();
+                renderCropBars();
+                renderFarmTabs();
+                renderFieldsTable();
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+
+        function renderSummary() {
+            document.getElementById('totalAcres').textContent = cropSummary.totalAcres ? cropSummary.totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '--';
+            document.getElementById('totalFields').textContent = `${allFields.length} fields`;
+            document.getElementById('cropTypes').textContent = cropSummary.crops ? cropSummary.crops.length : '--';
+
+            // Calculate productive acres (exclude WASTE, BUILDING SITE, PASTURE)
+            const nonProductive = ['WASTE', 'BUILDING SITE', 'PASTURE'];
+            const productiveAcres = allFields.reduce((sum, f) => {
+                if (f.acres && !nonProductive.includes(f.crop2026)) {
+                    return sum + f.acres;
+                }
+                return sum;
+            }, 0);
+            document.getElementById('productiveAcres').textContent = productiveAcres.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        function renderCropBars() {
+            const container = document.getElementById('cropBars');
+            if (!cropSummary.crops) {
+                container.innerHTML = '<p>Loading...</p>';
+                return;
+            }
+
+            const maxAcres = Math.max(...cropSummary.crops.map(c => c.totalAcres));
+
+            container.innerHTML = cropSummary.crops.map(crop => {
+                const pct = (crop.totalAcres / maxAcres) * 100;
+                const cropClass = crop.crop.replace(/\s+/g, '-');
+                return `
+                    <div class="crop-bar">
+                        <div class="crop-name">${crop.crop}</div>
+                        <div class="bar-container">
+                            <div class="bar ${cropClass}" style="width: ${pct}%">${crop.fieldCount} fields</div>
+                        </div>
+                        <div class="acres">${crop.totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })} ac</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFarmTabs() {
+            const container = document.getElementById('farmTabs');
+            const totalAcres = farmSummary.reduce((sum, f) => sum + f.totalAcres, 0);
+
+            let html = `<button class="farm-tab active" data-farm="all" onclick="selectFarm('all')">All Farms<span class="acres">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 0 })} ac</span></button>`;
+
+            farmSummary.sort((a, b) => b.totalAcres - a.totalAcres).forEach(farm => {
+                html += `<button class="farm-tab" data-farm="${farm.farm}" onclick="selectFarm('${farm.farm}')">${farm.farm}<span class="acres">${farm.totalAcres.toLocaleString('en-US', { minimumFractionDigits: 0 })} ac</span></button>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectFarm(farm) {
+            currentFarm = farm;
+            document.querySelectorAll('.farm-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.farm === farm);
+            });
+            renderFieldsTable();
+        }
+
+        function renderFieldsTable() {
+            const tbody = document.getElementById('fieldsTable');
+            let fields = allFields;
+
+            if (currentFarm !== 'all') {
+                fields = fields.filter(f => f.farm === currentFarm);
+            }
+
+            if (fields.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = fields.map(f => {
+                const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                return `
+                    <tr onclick="openFieldModal('${f._id}')" style="cursor:pointer">
+                        <td>${f.farm}</td>
+                        <td class="field-name">${f.field}</td>
+                        <td class="legal">${f.legal || '-'}</td>
+                        <td>${f.fsaFarm || '-'}</td>
+                        <td>${f.tract || '-'}</td>
+                        <td class="acres">${f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
+                        <td><span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openFieldModal(id) {
+            const field = allFields.find(f => f._id === id);
+            if (!field) return;
+
+            document.getElementById('modalFieldName').textContent = field.field;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Farm</span>
+                    <span class="field-detail-value">${field.farm}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Field Name</span>
+                    <span class="field-detail-value">${field.field}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Legal Description</span>
+                    <span class="field-detail-value">${field.legal || '-'}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">FSA Farm #</span>
+                    <span class="field-detail-value">${field.fsaFarm || '-'}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Tract #</span>
+                    <span class="field-detail-value">${field.tract || '-'}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Acres</span>
+                    <span class="field-detail-value">${field.acres ? field.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">2026 Crop</span>
+                    <span class="field-detail-value"><span class="crop-badge ${(field.crop2026 || '').replace(/\s+/g, '-')}">${field.crop2026 || '-'}</span></span>
+                </div>
+            `;
+            document.getElementById('fieldModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('fieldModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('fieldModal').addEventListener('click', (e) => {
+            if (e.target.id === 'fieldModal') closeModal();
+        });
+    </script>
+</body>
+</html>
