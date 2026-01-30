@@ -41,7 +41,7 @@ const equipmentUpdates = [
       serialNumber: '1L06145RCNP149997',
       hours: 496,
       currentValue: 220000, // Updated Jan 2025 - TractorHouse/MachineFinder market research
-      amountOwed: 153776.14, // Split of $307,552.28 loan (approx 50%)
+      amountOwed: 153807.97, // Split of $307,615.94 loan (50%)
       hasLoan: true,
       lender: 'John Deere Financial',
       loanAccountNumber: '*9885',
@@ -59,7 +59,7 @@ const equipmentUpdates = [
       serialNumber: '1RW8320REGD113101',
       hours: 5686,
       currentValue: 204000, // Updated Jan 2025 - AuctionTime/TractorHouse market research
-      amountOwed: 153776.14, // Split of $307,552.28 loan (approx 50%)
+      amountOwed: 153807.97, // Split of $307,615.94 loan (50%)
       hasLoan: true,
       lender: 'John Deere Financial',
       loanAccountNumber: '*9885',

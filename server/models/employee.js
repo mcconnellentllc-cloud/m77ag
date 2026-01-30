@@ -155,6 +155,33 @@ const employeeSchema = new mongoose.Schema({
     }
   }],
 
+  // Contract/Agreement
+  contract: {
+    signed: {
+      type: Boolean,
+      default: false
+    },
+    signedDate: Date,
+    signatureData: String, // Base64 encoded signature image
+    signedIP: String,
+    contractVersion: {
+      type: String,
+      default: '1.0'
+    },
+    contractType: {
+      type: String,
+      enum: ['independent-contractor', 'employment', 'seasonal'],
+      default: 'independent-contractor'
+    },
+    agreedTerms: {
+      compensation: Boolean,
+      workScope: Boolean,
+      termination: Boolean,
+      confidentiality: Boolean,
+      taxResponsibility: Boolean
+    }
+  },
+
   // Notes
   notes: String,
 

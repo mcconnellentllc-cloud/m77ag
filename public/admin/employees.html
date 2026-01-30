@@ -283,6 +283,40 @@
             color: #999;
             text-transform: uppercase;
         }
+        .contract-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .contract-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .contract-badge.signed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .contract-badge.unsigned {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .contract-link {
+            font-size: 12px;
+            color: #2d5016;
+            text-decoration: none;
+            margin-left: auto;
+        }
+        .contract-link:hover {
+            text-decoration: underline;
+        }
 
         /* Modal */
         .modal-overlay {
@@ -406,6 +440,7 @@
                 <button class="tab active" data-tab="paychecks">Paychecks</button>
                 <button class="tab" data-tab="reimbursements">Reimbursements</button>
                 <button class="tab" data-tab="timeoff">Time Off</button>
+                <button class="tab" data-tab="contract">Contract</button>
                 <button class="tab" data-tab="info">Employee Info</button>
             </div>
 
@@ -557,6 +592,16 @@
                     </thead>
                     <tbody id="timeoffList"></tbody>
                 </table>
+            </div>
+
+            <!-- Contract Tab -->
+            <div class="tab-content" id="contract-tab">
+                <div class="form-card">
+                    <h3 class="form-title">Independent Contractor Agreement</h3>
+                    <div id="contractStatus">
+                        <p style="color:#666;margin-bottom:20px">Loading contract status...</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Employee Info Tab -->
@@ -727,6 +772,14 @@
                             <div class="list-stat-label">Total Paid</div>
                         </div>
                     </div>
+                    <div class="contract-status">
+                        <span class="contract-badge ${emp.contractSigned ? 'signed' : 'unsigned'}">
+                            ${emp.contractSigned ? 'Contract Signed' : 'Contract Pending'}
+                        </span>
+                        <a href="/admin/employee-contract.html?id=${emp._id}" class="contract-link" onclick="event.stopPropagation()">
+                            ${emp.contractSigned ? 'View Contract' : 'Sign Contract'}
+                        </a>
+                    </div>
                 </div>
             `).join('');
         }
@@ -782,7 +835,82 @@
             renderPaychecks();
             renderReimbursements();
             renderTimeOff();
+            renderContractStatus();
             populateInfoForm();
+        }
+
+        async function renderContractStatus() {
+            const emp = selectedEmployee;
+            const container = document.getElementById('contractStatus');
+
+            try {
+                const response = await fetch(`/api/employees/${emp._id}/contract`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const contract = data.contract;
+
+                    if (contract && contract.signed) {
+                        container.innerHTML = `
+                            <div style="background:#d4edda;padding:20px;border-radius:8px;margin-bottom:20px">
+                                <h4 style="color:#155724;margin-bottom:10px">Contract Signed</h4>
+                                <p style="color:#155724;margin-bottom:5px">
+                                    <strong>Signed on:</strong> ${formatDate(contract.signedDate)}
+                                </p>
+                                <p style="color:#155724;margin-bottom:5px">
+                                    <strong>Contract Type:</strong> ${contract.contractType === 'independent-contractor' ? 'Independent Contractor Agreement' : contract.contractType}
+                                </p>
+                                <p style="color:#155724;margin-bottom:5px">
+                                    <strong>Version:</strong> ${contract.contractVersion || '1.0'}
+                                </p>
+                            </div>
+                            <div style="margin-top:15px">
+                                <h4 style="margin-bottom:10px">Agreed Terms</h4>
+                                <ul style="list-style:none;padding:0">
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Compensation Terms: ${contract.agreedTerms?.compensation ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Work Scope: ${contract.agreedTerms?.workScope ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Termination Policy: ${contract.agreedTerms?.termination ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Confidentiality: ${contract.agreedTerms?.confidentiality ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0">
+                                        Tax Responsibility: ${contract.agreedTerms?.taxResponsibility ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                </ul>
+                            </div>
+                            ${contract.signatureData ? `
+                                <div style="margin-top:20px">
+                                    <h4 style="margin-bottom:10px">Signature</h4>
+                                    <div style="background:#f8f8f8;padding:15px;border-radius:8px;display:inline-block">
+                                        <img src="${contract.signatureData}" alt="Signature" style="max-width:300px;height:auto">
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <div style="margin-top:25px">
+                                <a href="/admin/employee-contract.html?id=${emp._id}" class="btn btn-secondary">View Full Contract</a>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `
+                            <div style="background:#f8d7da;padding:20px;border-radius:8px;margin-bottom:20px">
+                                <h4 style="color:#721c24;margin-bottom:10px">Contract Not Signed</h4>
+                                <p style="color:#721c24">
+                                    This employee has not yet signed their Independent Contractor Agreement.
+                                </p>
+                            </div>
+                            <a href="/admin/employee-contract.html?id=${emp._id}" class="btn btn-primary">Sign Contract Now</a>
+                        `;
+                    }
+                }
+            } catch (e) {
+                container.innerHTML = `<p style="color:#c00">Error loading contract status</p>`;
+            }
         }
 
         function renderPaychecks() {
