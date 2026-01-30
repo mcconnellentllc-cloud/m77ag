@@ -238,6 +238,11 @@
         }
         .value-cell.positive { color: #27ae60; }
         .value-cell.negative { color: #c0392b; }
+        .market-source {
+            font-size: 10px;
+            color: #888;
+            font-style: italic;
+        }
         .has-loan {
             display: inline-block;
             padding: 3px 8px;
@@ -676,6 +681,16 @@
                         <input type="number" id="editHours" placeholder="Hours or miles">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Market Value ($)</label>
+                        <input type="number" id="editMarketValue" placeholder="Comparable market value">
+                    </div>
+                    <div class="form-group">
+                        <label>Market Source</label>
+                        <input type="text" id="editMarketSource" placeholder="e.g., TractorHouse, MachineryPete">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label><input type="checkbox" id="editHasLoan"> Has Loan</label>
                 </div>
@@ -1009,6 +1024,7 @@
                         <th>Category</th>
                         <th>Serial/VIN</th>
                         <th>Hours/Miles</th>
+                        <th>Market Value</th>
                         <th>Current Value</th>
                         <th>Amount Owed</th>
                         <th>Equity</th>
@@ -1021,6 +1037,7 @@
                 const value = item.currentValue || 0;
                 const owed = item.amountOwed || 0;
                 const equity = value - owed;
+                const marketVal = item.marketValue || 0;
 
                 // Build category dropdown options
                 const categoryOptions = categories.map(cat =>
@@ -1039,6 +1056,10 @@
                     </td>
                     <td>${item.serialNumber || item.vin || '-'}</td>
                     <td>${item.currentHours ? item.currentHours.toLocaleString() + ' hrs' : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '-'}</td>
+                    <td class="value-cell ${marketVal > 0 ? 'market-val' : ''}">
+                        ${marketVal > 0 ? formatCurrency(marketVal) : '-'}
+                        ${item.marketValueSource ? '<br><span class="market-source">' + item.marketValueSource + '</span>' : ''}
+                    </td>
                     <td class="value-cell positive">${formatCurrency(value)}</td>
                     <td class="value-cell ${owed > 0 ? 'negative' : ''}">
                         ${owed > 0 ? formatCurrency(owed) : '-'}
@@ -1236,6 +1257,8 @@
             document.getElementById('editSerial').value = item.serialNumber || '';
             document.getElementById('editValue').value = item.currentValue || '';
             document.getElementById('editHours').value = item.currentHours || item.currentMiles || '';
+            document.getElementById('editMarketValue').value = item.marketValue || '';
+            document.getElementById('editMarketSource').value = item.marketValueSource || '';
             document.getElementById('editHasLoan').checked = item.hasLoan || false;
             document.getElementById('editOwed').value = item.amountOwed || '';
             document.getElementById('editLender').value = item.lender || '';
@@ -1255,6 +1278,8 @@
             document.getElementById('editSerial').value = '';
             document.getElementById('editValue').value = '';
             document.getElementById('editHours').value = '';
+            document.getElementById('editMarketValue').value = '';
+            document.getElementById('editMarketSource').value = '';
             document.getElementById('editHasLoan').checked = false;
             document.getElementById('editOwed').value = '';
             document.getElementById('editLender').value = '';
@@ -1280,6 +1305,8 @@
                 serialNumber: document.getElementById('editSerial').value,
                 currentValue: parseFloat(document.getElementById('editValue').value) || 0,
                 currentHours: parseFloat(document.getElementById('editHours').value) || 0,
+                marketValue: parseFloat(document.getElementById('editMarketValue').value) || 0,
+                marketValueSource: document.getElementById('editMarketSource').value || '',
                 hasLoan: hasLoan,
                 amountOwed: hasLoan ? parseFloat(document.getElementById('editOwed').value) || 0 : 0,
                 lender: hasLoan ? document.getElementById('editLender').value : '',
