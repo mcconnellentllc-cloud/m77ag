@@ -598,6 +598,33 @@
         .asset-card-header {
             position: relative;
         }
+
+        /* Loan Info Display */
+        .loan-info {
+            background: #fff8e7;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .loan-lender {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .loan-payment {
+            color: #c62828;
+            font-weight: 500;
+        }
+
+        .loan-due {
+            color: #666;
+            font-size: 11px;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -880,12 +907,48 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Current Loan Balance ($)</label>
-                                <input type="number" id="loanBalance" step="100" value="0">
-                            </div>
-                            <div class="form-group">
                                 <label>Annual Property Tax ($)</label>
                                 <input type="number" id="propertyTax" step="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan Details -->
+                    <div class="form-section">
+                        <h3>Loan Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Lender Name</label>
+                                <input type="text" id="loanLender" placeholder="e.g., Points West Bank">
+                            </div>
+                            <div class="form-group">
+                                <label>Current Balance Owed ($)</label>
+                                <input type="number" id="loanBalance" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Payment Amount ($)</label>
+                                <input type="number" id="loanPayment" step="0.01" placeholder="Annual payment amount">
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Frequency</label>
+                                <select id="loanFrequency">
+                                    <option value="annual">Annual</option>
+                                    <option value="semi-annual">Semi-Annual</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Next Payment Due</label>
+                                <input type="date" id="loanDueDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Interest Rate (%)</label>
+                                <input type="number" id="loanInterestRate" step="0.01" placeholder="e.g., 5.25">
                             </div>
                         </div>
                     </div>
@@ -1105,7 +1168,8 @@
             empty.style.display = 'none';
             grid.innerHTML = filteredAssets.map(asset => {
                 const value = asset.currentValue?.estimatedValue || 0;
-                const debt = (asset.loans || []).reduce((sum, l) => sum + (l.currentBalance || 0), 0);
+                const loans = asset.loans || [];
+                const debt = loans.reduce((sum, l) => sum + (l.currentBalance || 0), 0);
                 const equity = value - debt;
                 const acres = asset.landDetails?.totalAcres || null;
                 const tillable = asset.landDetails?.tillableAcres || null;
@@ -1116,6 +1180,12 @@
                 const mileage = asset.vehicleDetails?.mileage;
                 const condition = asset.vehicleDetails?.condition || asset.buildingDetails?.condition;
                 const assetClassLabel = asset.assetClass === 'appreciating' ? 'Appr' : 'Depr';
+
+                // Get loan info for display
+                const primaryLoan = loans.find(l => l.currentBalance > 0) || loans[0];
+                const loanPayment = primaryLoan?.paymentAmount || 0;
+                const loanDueDate = primaryLoan?.nextPaymentDate ? new Date(primaryLoan.nextPaymentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
+                const lender = primaryLoan?.lender || null;
 
                 // Get features from improvements or notes
                 const features = (asset.improvements || []).slice(0, 4).map(i => i.description);
@@ -1163,22 +1233,24 @@
                                     <span class="asset-stat-label">Value</span>
                                     <span class="asset-stat-value gold">$${value.toLocaleString()}</span>
                                 </div>
+                                ${debt > 0 ? `
+                                <div class="asset-stat">
+                                    <span class="asset-stat-label">Owed</span>
+                                    <span class="asset-stat-value" style="color: #c62828;">$${debt.toLocaleString()}</span>
+                                </div>
+                                ` : ''}
                                 <div class="asset-stat">
                                     <span class="asset-stat-label">Equity</span>
                                     <span class="asset-stat-value">${debt > 0 ? '$' + equity.toLocaleString() : 'Paid Off'}</span>
                                 </div>
-                                ${isVehicle && condition ? `
-                                <div class="asset-stat">
-                                    <span class="asset-stat-label">Condition</span>
-                                    <span class="asset-stat-value" style="text-transform: capitalize;">${condition}</span>
-                                </div>
-                                ` : (!isLand ? `
-                                <div class="asset-stat">
-                                    <span class="asset-stat-label">Farm</span>
-                                    <span class="asset-stat-value">${asset.location?.associatedFarm || '-'}</span>
-                                </div>
-                                ` : '')}
                             </div>
+                            ${debt > 0 && (loanPayment || loanDueDate || lender) ? `
+                            <div class="loan-info">
+                                ${lender ? `<div class="loan-lender">${lender}</div>` : ''}
+                                ${loanPayment ? `<div class="loan-payment">Payment: $${loanPayment.toLocaleString()}</div>` : ''}
+                                ${loanDueDate ? `<div class="loan-due">Due: ${loanDueDate}</div>` : ''}
+                            </div>
+                            ` : ''}
                             ${features.length > 0 ? `
                             <div class="asset-features">
                                 ${features.map(f => `<span class="feature-tag">${f}</span>`).join('')}
@@ -1287,8 +1359,21 @@
             // Valuation
             document.getElementById('estimatedValue').value = asset.currentValue?.estimatedValue || '';
             document.getElementById('purchasePrice').value = asset.acquisition?.purchasePrice || '';
-            document.getElementById('loanBalance').value = (asset.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0);
             document.getElementById('propertyTax').value = asset.annualCosts?.propertyTax || '';
+
+            // Loan details
+            const primaryLoan = (asset.loans || [])[0] || {};
+            document.getElementById('loanLender').value = primaryLoan.lender || '';
+            document.getElementById('loanBalance').value = primaryLoan.currentBalance || '';
+            document.getElementById('loanPayment').value = primaryLoan.paymentAmount || '';
+            document.getElementById('loanFrequency').value = primaryLoan.paymentFrequency || 'annual';
+            document.getElementById('loanInterestRate').value = primaryLoan.interestRate || '';
+            if (primaryLoan.nextPaymentDate) {
+                const dueDate = new Date(primaryLoan.nextPaymentDate);
+                document.getElementById('loanDueDate').value = dueDate.toISOString().split('T')[0];
+            } else {
+                document.getElementById('loanDueDate').value = '';
+            }
 
             // Features
             const features = (asset.improvements || []).map(i => i.description).join('\n');
@@ -1358,10 +1443,23 @@
                 };
             }
 
-            // Loan
+            // Loan details
             const loanBalance = parseFloat(document.getElementById('loanBalance').value) || 0;
-            if (loanBalance > 0) {
-                assetData.loans = [{ currentBalance: loanBalance, lender: 'Unknown' }];
+            const loanLender = document.getElementById('loanLender').value.trim();
+            const loanPayment = parseFloat(document.getElementById('loanPayment').value) || 0;
+            const loanFrequency = document.getElementById('loanFrequency').value;
+            const loanDueDate = document.getElementById('loanDueDate').value;
+            const loanInterestRate = parseFloat(document.getElementById('loanInterestRate').value) || 0;
+
+            if (loanBalance > 0 || loanLender) {
+                assetData.loans = [{
+                    lender: loanLender || 'Unknown',
+                    currentBalance: loanBalance,
+                    paymentAmount: loanPayment,
+                    paymentFrequency: loanFrequency,
+                    nextPaymentDate: loanDueDate ? new Date(loanDueDate) : null,
+                    interestRate: loanInterestRate
+                }];
             }
 
             // Features as improvements
