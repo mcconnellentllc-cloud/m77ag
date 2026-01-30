@@ -12,24 +12,52 @@ const capitalInvestmentSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+
+  // Asset Classification - Depreciating vs Appreciating
+  assetClass: {
+    type: String,
+    enum: ['depreciating', 'appreciating'],
+    required: true,
+    default: 'depreciating'
+  },
+
   type: {
     type: String,
-    enum: ['land', 'building', 'infrastructure', 'improvement', 'vehicle', 'equipment', 'other'],
+    enum: [
+      // Real Estate
+      'real_estate',
+      // Personal Property
+      'personal_property',
+      // Personal Vehicles
+      'personal_vehicle',
+      // Farm Equipment (depreciating, income-producing)
+      'farm_equipment',
+      // Livestock
+      'livestock',
+      // Other/Legacy
+      'land', 'building', 'infrastructure', 'improvement', 'vehicle', 'equipment', 'other'
+    ],
     required: true
   },
   category: {
     type: String,
     enum: [
-      // Land categories
+      // Real Estate categories
       'cropland', 'pasture', 'timberland', 'homestead', 'hunting_land', 'development',
+      'residential', 'commercial', 'ranch',
       // Building categories
       'barn', 'shop', 'grain_storage', 'equipment_shed', 'house', 'outbuilding', 'livestock_facility',
       // Infrastructure
       'fencing', 'irrigation', 'drainage', 'road', 'utilities', 'water_system',
-      // Vehicles
-      'truck', 'tractor', 'combine', 'car', 'rv', 'trailer', 'atv',
-      // Equipment
-      'planter', 'sprayer', 'tillage', 'hay_equipment', 'grain_handling',
+      // Personal Vehicles
+      'truck', 'car', 'rv', 'suv', 'motorcycle', 'atv', 'classic_car',
+      // Farm Equipment
+      'tractor', 'combine', 'planter', 'sprayer', 'tillage', 'hay_equipment', 'grain_handling',
+      'loader', 'trailer', 'implement',
+      // Personal Property
+      'furniture', 'collectibles', 'tools', 'electronics', 'jewelry',
+      // Livestock
+      'cattle', 'horses', 'other_livestock',
       // Other
       'other'
     ],
