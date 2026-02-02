@@ -4115,6 +4115,7 @@
                 });
 
                 const data = await response.json();
+                console.log('Import response:', data);
 
                 if (data.success) {
                     const results = document.getElementById('importResults');
@@ -4128,11 +4129,12 @@
                     showToast(`Imported ${data.data.imported} cows from server`);
                     loadCattle();
                 } else {
-                    showToast(data.message || 'Import failed', 'error');
+                    console.error('Import failed:', data);
+                    showToast(data.message || 'Import failed: ' + JSON.stringify(data), 'error');
                 }
             } catch (error) {
                 console.error('Server import error:', error);
-                showToast('Error importing from server', 'error');
+                showToast('Error: ' + error.message, 'error');
             }
         }
 
