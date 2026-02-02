@@ -730,19 +730,21 @@ const equipmentData = [
     year: 2012,
     make: 'Drago',
     model: 'GT',
-    description: '12 Row corn head',
+    description: '12 Row corn head. Well maintained, field ready.',
     serialNumber: '',
     purchasePrice: 102000,
     currentValue: 25000,
+    askingPrice: 18000,
+    floorPrice: 15000,
     hasLoan: true,
     amountOwed: 34803.59,
     lender: 'Points West Bank',
     loanAccountNumber: '9910',
     paymentAmount: 10046.27,
     nextPaymentDate: new Date('2026-07-01'),
-    notes: 'Unit #304, Owner: M77 AG, Insured: Yes',
-    forSale: false,
-    saleStatus: 'not-for-sale'
+    notes: 'Unit #304, Owner: M77 AG, Insured: Yes. ACCEPT ANY OFFER OVER $15,000 - FIRM FLOOR.',
+    forSale: true,
+    saleStatus: 'available'
   },
   {
     title: 'Brent Avalanche 1196 Grain Cart',
@@ -1017,13 +1019,15 @@ const equipmentData = [
     category: 'Sprayer Equipment',
     make: 'Demco',
     model: 'Sidequest',
-    description: 'Tanks',
+    description: 'Saddle tanks in good condition.',
     purchasePrice: 9500,
     currentValue: 9500,
+    askingPrice: 10500,
+    floorPrice: 9000,
     purchaseDate: new Date('2010-04-01'),
-    notes: 'Unit #318, Owner: M77 AG, Insured: No',
-    forSale: false,
-    saleStatus: 'not-for-sale'
+    notes: 'Unit #318, Owner: M77 AG, Insured: No. ACCEPT ANY OFFER OVER $9,000 - FIRM FLOOR.',
+    forSale: true,
+    saleStatus: 'available'
   },
 
   // Work Trucks
