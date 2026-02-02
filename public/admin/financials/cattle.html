@@ -4108,10 +4108,7 @@
             try {
                 const response = await fetch('/api/cattle/import/csv', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: getAuthHeaders()
                 });
 
                 const data = await response.json();
