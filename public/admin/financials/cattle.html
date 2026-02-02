@@ -1228,7 +1228,6 @@
                         <option value="2024">2024</option>
                         <option value="2023">2023</option>
                     </select>
-                    <button onclick="seed2026Calves()" style="padding: 6px 12px; background: #2e7d32; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;" title="Add 2026 calving records for cows 2318 and 2206">Seed 2026 Calves</button>
                 </div>
             </div>
             <div class="calving-stats-grid">
@@ -2446,6 +2445,12 @@
                 <button class="modal-close" onclick="closeModal('importModal')">&times;</button>
             </div>
             <div class="modal-body">
+                <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <strong>Quick Import</strong>
+                    <p style="margin-top: 5px; font-size: 13px;">Load existing herd data from server (50 cows from cattle.csv)</p>
+                    <button class="btn-primary" onclick="importFromServer()" style="margin-top: 10px;">Load Herd Data</button>
+                </div>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
                 <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                     <strong>CSV Format Required</strong>
                     <p style="margin-top: 5px; font-size: 13px;">Your CSV should have headers. Required: tagNumber, type, birthDate. Optional: name, breed, damTag, sireTag, pasture, status, etc.</p>
@@ -4093,6 +4098,41 @@
             } catch (error) {
                 console.error('Error saving:', error);
                 showToast('Error saving animal', 'error');
+            }
+        }
+
+        // Import from server CSV file
+        async function importFromServer() {
+            if (!confirm('This will load 50 cows from the server CSV file. Continue?')) return;
+
+            try {
+                const response = await fetch('/api/cattle/import/csv', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const results = document.getElementById('importResults');
+                    const content = document.getElementById('importResultsContent');
+                    content.innerHTML = `
+                        <p><strong>Imported:</strong> ${data.data.imported} cows</p>
+                        <p><strong>Skipped:</strong> ${data.data.skipped} (duplicates)</p>
+                        <p><strong>Errors:</strong> ${data.data.errors}</p>
+                    `;
+                    results.style.display = 'block';
+                    showToast(`Imported ${data.data.imported} cows from server`);
+                    loadCattle();
+                } else {
+                    showToast(data.message || 'Import failed', 'error');
+                }
+            } catch (error) {
+                console.error('Server import error:', error);
+                showToast('Error importing from server', 'error');
             }
         }
 
