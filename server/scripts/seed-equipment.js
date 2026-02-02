@@ -1019,13 +1019,15 @@ const equipmentData = [
     category: 'Sprayer Equipment',
     make: 'Demco',
     model: 'Sidequest',
-    description: 'Tanks',
+    description: 'Saddle tanks in good condition.',
     purchasePrice: 9500,
     currentValue: 9500,
+    askingPrice: 10500,
+    floorPrice: 9000,
     purchaseDate: new Date('2010-04-01'),
-    notes: 'Unit #318, Owner: M77 AG, Insured: No',
-    forSale: false,
-    saleStatus: 'not-for-sale'
+    notes: 'Unit #318, Owner: M77 AG, Insured: No. ACCEPT ANY OFFER OVER $9,000 - FIRM FLOOR.',
+    forSale: true,
+    saleStatus: 'available'
   },
 
   // Work Trucks
