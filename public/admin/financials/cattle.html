@@ -2411,7 +2411,7 @@
                         <div class="form-group">
                             <label>
                                 <input type="checkbox" id="calvingCalfSurvived" checked>
-                                Calf survived to weaning
+                                Calf is alive (uncheck only if stillborn or died)
                             </label>
                         </div>
                         <div class="form-group" style="background: #e8f5e9; padding: 12px; border-radius: 6px; margin-top: 10px;">
@@ -2432,7 +2432,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('detailModal')">Cancel</button>
-                <button class="btn-primary" onclick="saveDetailedCattle()">Save Changes</button>
+                <button class="btn-primary" onclick="saveDetailedCattle()">Save Animal Details</button>
             </div>
         </div>
     </div>
@@ -3920,7 +3920,7 @@
                                 sire: sireTag ? { tagNumber: sireTag } : undefined,
                                 owner: currentDetailCattle.owner || 'M77',
                                 calvingGroup: currentDetailCattle.calvingGroup,
-                                status: calfSurvived ? 'active' : 'deceased',
+                                status: 'active',
                                 notes: `Born to ${currentDetailCattle.tagNumber}. ${comments || ''}`
                             };
 
@@ -3933,10 +3933,11 @@
                             const calfResult = await calfResponse.json();
                             if (calfResult.success) {
                                 showToast(`Calf ${calfTag} added to herd!`, 'success');
-                                // Add to allCattle array
+                                // Add to allCattle array and refresh display
                                 allCattle.push(calfResult.data);
-                                filteredCattle = [...allCattle];
-                                renderCattleList();
+                                filterCattle();
+                                updateSummary();
+                                updateHerdValueDisplay();
                             } else {
                                 showToast(`Calving saved but calf creation failed: ${calfResult.message}`, 'warning');
                             }
