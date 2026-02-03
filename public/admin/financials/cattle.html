@@ -3905,14 +3905,11 @@
                     // Create calf as new animal if checkbox is checked
                     if (createCalf && hadCalf && calfTag) {
                         try {
-                            // Determine calf type based on sex
-                            let calfType = 'calf';
-                            if (calfSex === 'heifer') calfType = 'heifer';
-                            if (calfSex === 'bull') calfType = 'steer'; // Most bull calves become steers
-
+                            // Keep as 'calf' type - user can change later when animal matures
                             const calfData = {
                                 tagNumber: calfTag,
-                                type: calfType,
+                                type: 'calf',
+                                sex: calfSex || undefined,
                                 breed: currentDetailCattle.breed || 'Angus',
                                 birthDate: calfBirthDate || new Date().toISOString().split('T')[0],
                                 birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
@@ -3921,7 +3918,7 @@
                                 owner: currentDetailCattle.owner || 'M77',
                                 calvingGroup: currentDetailCattle.calvingGroup,
                                 status: 'active',
-                                notes: `Born to ${currentDetailCattle.tagNumber}. ${comments || ''}`
+                                notes: `Born to ${currentDetailCattle.tagNumber}. Sex: ${calfSex || 'unknown'}. ${comments || ''}`
                             };
 
                             const calfResponse = await fetch('/api/cattle', {
