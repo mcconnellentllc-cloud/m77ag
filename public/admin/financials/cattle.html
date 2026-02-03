@@ -2355,7 +2355,7 @@
                         <div class="form-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
                             <div class="form-group">
                                 <label>Calving Ease (1-5)</label>
-                                <select id="calvingEase">
+                                <select id="prodCalvingEase">
                                     <option value="">--</option>
                                     <option value="1">1 - No Assistance</option>
                                     <option value="2">2 - Easy Pull</option>
@@ -2366,7 +2366,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Calf Vigor (1-5)</label>
-                                <select id="calvingVigor">
+                                <select id="prodCalvingVigor">
                                     <option value="">--</option>
                                     <option value="1">1 - Strong/Alert</option>
                                     <option value="2">2 - Good</option>
@@ -2379,7 +2379,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Cow BCS (1-9)</label>
-                                <select id="calvingBCS">
+                                <select id="prodCalvingBCS">
                                     <option value="">--</option>
                                     <option value="1">1 - Emaciated</option>
                                     <option value="2">2</option>
@@ -2394,7 +2394,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Maternal Score (1-5)</label>
-                                <select id="calvingMaternalScore">
+                                <select id="prodCalvingMaternalScore">
                                     <option value="">--</option>
                                     <option value="1">1 - Excellent (calm, attentive)</option>
                                     <option value="2">2 - Good</option>
@@ -3843,10 +3843,10 @@
             const birthWeight = document.getElementById('calvingBirthWeight').value;
             const weaningWeight = document.getElementById('calvingWW').value;
             const sireTag = document.getElementById('calvingSire').value;
-            const calvingEase = document.getElementById('calvingEase').value;
-            const calfVigor = document.getElementById('calvingVigor').value;
-            const cowBCS = document.getElementById('calvingBCS').value;
-            const maternalScore = document.getElementById('calvingMaternalScore').value;
+            const calvingEase = document.getElementById('prodCalvingEase').value;
+            const calfVigor = document.getElementById('prodCalvingVigor').value;
+            const cowBCS = document.getElementById('prodCalvingBCS').value;
+            const maternalScore = document.getElementById('prodCalvingMaternalScore').value;
             const comments = document.getElementById('calvingComments').value;
             const calfSurvived = document.getElementById('calvingCalfSurvived').checked;
             const createCalf = document.getElementById('calvingCreateCalf').checked;
@@ -3956,10 +3956,10 @@
                     document.getElementById('calvingBirthWeight').value = '';
                     document.getElementById('calvingWW').value = '';
                     document.getElementById('calvingSire').value = '';
-                    document.getElementById('calvingEase').value = '';
-                    document.getElementById('calvingVigor').value = '';
-                    document.getElementById('calvingBCS').value = '';
-                    document.getElementById('calvingMaternalScore').value = '';
+                    document.getElementById('prodCalvingEase').value = '';
+                    document.getElementById('prodCalvingVigor').value = '';
+                    document.getElementById('prodCalvingBCS').value = '';
+                    document.getElementById('prodCalvingMaternalScore').value = '';
                     document.getElementById('calvingComments').value = '';
                     // Also update calving progress and refresh counts
                     updateCalvingProgress();
