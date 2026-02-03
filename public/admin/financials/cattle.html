@@ -1335,6 +1335,19 @@
                     <option value="">All Pastures</option>
                 </select>
             </div>
+            <div class="filter-group">
+                <label>Tag Color</label>
+                <select id="filterTagColor" onchange="filterCattle()">
+                    <option value="">All Colors</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Red">Red</option>
+                    <option value="White">White</option>
+                    <option value="Yellow">Yellow</option>
+                </select>
+            </div>
             <div class="filter-group search-box">
                 <label>Search</label>
                 <input type="text" id="searchInput" placeholder="Search by tag or name..." onkeyup="filterCattle()">
@@ -3233,12 +3246,14 @@
             const type = document.getElementById('filterType').value;
             const status = document.getElementById('filterStatus').value;
             const pasture = document.getElementById('filterPasture').value;
+            const tagColor = document.getElementById('filterTagColor').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
 
             filteredCattle = allCattle.filter(cattle => {
                 if (type && cattle.type !== type) return false;
                 if (status && cattle.status !== status) return false;
                 if (pasture && cattle.currentPasture !== pasture) return false;
+                if (tagColor && cattle.tagColor !== tagColor) return false;
                 if (search) {
                     const searchStr = (cattle.tagNumber + ' ' + (cattle.name || '')).toLowerCase();
                     if (!searchStr.includes(search)) return false;
@@ -3275,7 +3290,7 @@
                     <thead>
                         <tr>
                             <th>Tag</th>
-                            <th>Name</th>
+                            <th>Tag Color</th>
                             <th>Type</th>
                             <th>Age</th>
                             <th>Weight</th>
@@ -3303,7 +3318,7 @@
                     <td>
                         <span class="tag-number" onclick="viewCattle('${cattle._id}')">${cattle.tagNumber}</span>
                     </td>
-                    <td>${cattle.name || '-'}</td>
+                    <td>${cattle.tagColor || '-'}</td>
                     <td>
                         <span class="type-badge ${cattle.type}">${formatType(cattle.type)}</span>
                     </td>
