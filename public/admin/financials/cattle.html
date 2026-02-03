@@ -1846,8 +1846,17 @@
                                 <input type="text" id="detailTag" readonly>
                             </div>
                             <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" id="detailName">
+                                <label>Tag Color</label>
+                                <select id="detailTagColor">
+                                    <option value="">Select color...</option>
+                                    <option value="Blue">Blue</option>
+                                    <option value="Green">Green</option>
+                                    <option value="Orange">Orange</option>
+                                    <option value="Purple">Purple</option>
+                                    <option value="Red">Red</option>
+                                    <option value="White">White</option>
+                                    <option value="Yellow">Yellow</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-row">
@@ -3609,7 +3618,7 @@
             // Basic Info
             document.getElementById('detailTagNumber').textContent = cattle.tagNumber;
             document.getElementById('detailTag').value = cattle.tagNumber;
-            document.getElementById('detailName').value = cattle.name || '';
+            document.getElementById('detailTagColor').value = cattle.tagColor || '';
             document.getElementById('detailType').value = cattle.type;
             document.getElementById('detailBreed').value = cattle.breed || '';
             document.getElementById('detailBirthDate').value = cattle.birthDate ? cattle.birthDate.split('T')[0] : '';
@@ -4002,7 +4011,7 @@
             if (!currentDetailCattle) return;
 
             const updateData = {
-                name: document.getElementById('detailName').value || undefined,
+                tagColor: document.getElementById('detailTagColor').value || undefined,
                 type: document.getElementById('detailType').value,
                 breed: document.getElementById('detailBreed').value || undefined,
                 birthDate: document.getElementById('detailBirthDate').value,
