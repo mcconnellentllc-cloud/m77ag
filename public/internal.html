@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Portal - M77 AG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 56px;
+            font-weight: 700;
+            color: #d4af37;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .portal-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .portal-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #d4af37 0%, #b8962f 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 32px;
+        }
+
+        .portal-card h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .portal-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .back-link a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #d4af37;
+        }
+
+        /* Staff Section */
+        .staff-section {
+            margin-bottom: 50px;
+        }
+
+        /* Partner Section */
+        .partner-section {
+            margin-bottom: 50px;
+        }
+
+        /* Customer Section */
+        .customer-section {
+            margin-bottom: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .logo {
+                font-size: 42px;
+            }
+
+            .portal-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .portal-card {
+                padding: 30px 25px;
+            }
+        }
+
+        /* SVG Icons */
+        .icon-admin { color: #1a1a1a; }
+        .icon-farmer { color: #1a1a1a; }
+        .icon-landlord { color: #1a1a1a; }
+        .icon-tenant { color: #1a1a1a; }
+        .icon-land { color: #1a1a1a; }
+        .icon-customer { color: #1a1a1a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">M77 AG</div>
+            <div class="subtitle">Internal Portal</div>
+        </div>
+
+        <!-- Staff Portals -->
+        <div class="staff-section">
+            <div class="section-title">Staff Access</div>
+            <div class="portal-grid">
+                <a href="/admin/login" class="portal-card">
+                    <div class="portal-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-admin">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3>Admin</h3>
+                    <p>Full system access for administrators. Manage all operations, users, and settings.</p>
+                </a>
+
+                <a href="/farmer/login" class="portal-card">
+                    <div class="portal-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-farmer">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </div>
+                    <h3>Farmer</h3>
+                    <p>Farm operations dashboard. Cattle, crops, equipment, and daily operations management.</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Partner Portals -->
+        <div class="partner-section">
+            <div class="section-title">Partner Access</div>
+            <div class="portal-grid">
+                <a href="/landlord/login" class="portal-card">
+                    <div class="portal-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-landlord">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="9" y1="21" x2="9" y2="9"/>
+                        </svg>
+                    </div>
+                    <h3>Landlord</h3>
+                    <p>Property owner portal. View ROI analytics, field reports, and lease information.</p>
+                </a>
+
+                <a href="/land-management/login" class="portal-card">
+                    <div class="portal-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-land">
+                            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                            <line x1="8" y1="2" x2="8" y2="18"/>
+                            <line x1="16" y1="6" x2="16" y2="22"/>
+                        </svg>
+                    </div>
+                    <h3>Land Management</h3>
+                    <p>Field and acreage management. Track crops, yields, and land utilization data.</p>
+                </a>
+
+                <a href="/tenant/login" class="portal-card">
+                    <div class="portal-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-tenant">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <h3>Tenant</h3>
+                    <p>Rental property tenant portal. Payments, maintenance requests, and lease details.</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Customer Portal -->
+        <div class="customer-section">
+            <div class="section-title">Customer Access</div>
+            <div class="portal-grid">
+                <a href="/user/login" class="portal-card">
+                    <div class="portal-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-customer">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3>Customer Account</h3>
+                    <p>Hunting bookings, waivers, season passes, and service requests.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/">Back to Main Site</a>
+        </div>
+    </div>
+</body>
+</html>

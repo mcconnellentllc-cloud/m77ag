@@ -62,6 +62,75 @@ router.get('/setup-admin', async (req, res) => {
   }
 });
 
+// Setup farmer user (Matt)
+router.get('/setup-farmer', async (req, res) => {
+  try {
+    const User = require('../models/user');
+
+    // Try to find existing user by email
+    let farmer = await User.findOne({ email: 'matt@togoag.com' });
+
+    const farmerData = {
+      name: 'Matt',
+      email: 'matt@togoag.com',
+      phone: '000-000-0000',
+      password: 'm77ag1',
+      role: 'farmer',
+      isActive: true,
+      emailVerified: true,
+      employeePermissions: {
+        canAddCattleRecords: true,
+        canEditCattleRecords: true,
+        canDeleteCattleRecords: false,
+        canAddEquipmentLogs: true,
+        canEditEquipmentLogs: true,
+        canAddTransactions: false,
+        canEditTransactions: false,
+        canViewFinancials: true,
+        canViewReports: true,
+        accessAreas: ['cattle', 'crops', 'equipment']
+      }
+    };
+
+    if (farmer) {
+      // Update existing user
+      farmer.name = farmerData.name;
+      farmer.phone = farmerData.phone;
+      farmer.password = farmerData.password;
+      farmer.role = farmerData.role;
+      farmer.isActive = farmerData.isActive;
+      farmer.emailVerified = farmerData.emailVerified;
+      farmer.employeePermissions = farmerData.employeePermissions;
+      await farmer.save();
+
+      return res.json({
+        success: true,
+        message: 'Farmer user updated successfully',
+        email: farmerData.email,
+        password: farmerData.password
+      });
+    } else {
+      // Create new farmer
+      const newFarmer = new User(farmerData);
+      await newFarmer.save();
+
+      return res.json({
+        success: true,
+        message: 'Farmer user created successfully',
+        email: farmerData.email,
+        password: farmerData.password
+      });
+    }
+  } catch (error) {
+    console.error('Setup farmer error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to setup farmer',
+      error: error.message
+    });
+  }
+});
+
 // Protected routes
 router.get('/verify', authenticate, authController.verifyToken);
 router.get('/me', authenticate, authController.getCurrentUser);
