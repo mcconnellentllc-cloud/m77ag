@@ -113,6 +113,18 @@ exports.isStaff = (req, res, next) => {
   next();
 };
 
+// Middleware to check if user is admin or farmer (for cattle/farm operations)
+exports.isFarmerOrAdmin = (req, res, next) => {
+  if (!req.userRole || !['admin', 'farmer'].includes(req.userRole)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Admin or farmer access required.'
+    });
+  }
+
+  next();
+};
+
 // Middleware to check employee permissions for specific actions
 exports.canPerformAction = (action) => {
   return async (req, res, next) => {
