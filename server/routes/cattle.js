@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Cattle = require('../models/cattle');
-const { authenticate, isAdmin } = require('../middleware/auth');
+const { authenticate, isAdmin, isFarmerOrAdmin } = require('../middleware/auth');
 
 // All routes require authentication
 router.use(authenticate);
@@ -521,7 +521,7 @@ router.post('/:id/link-offspring', async (req, res) => {
  * POST /api/cattle/import/csv
  * Import cattle from the CSV file in /data/imports/cattle.csv
  */
-router.post('/import/csv', isAdmin, async (req, res) => {
+router.post('/import/csv', isFarmerOrAdmin, async (req, res) => {
   const fs = require('fs');
   const path = require('path');
 
@@ -675,7 +675,7 @@ router.post('/import/csv', isAdmin, async (req, res) => {
  * POST /api/cattle/seed/calves-2026
  * Seed 2026 calving records for cows 2318 and 2206
  */
-router.post('/seed/calves-2026', isAdmin, async (req, res) => {
+router.post('/seed/calves-2026', isFarmerOrAdmin, async (req, res) => {
   try {
     const { force } = req.body;
 
