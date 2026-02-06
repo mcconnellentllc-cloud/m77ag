@@ -282,6 +282,10 @@ app.get('/submit-review', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/submit-review.html'));
 });
 
+app.get('/internal', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/internal.html'));
+});
+
 // Main route - must come last among GET routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
