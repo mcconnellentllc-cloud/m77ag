@@ -21,7 +21,7 @@ async function createEmployee() {
       email: 'matt@togoag.com',
       phone: '000-000-0000', // Placeholder - can be updated later
       password: 'm77ag1',
-      role: 'employee',
+      role: 'farmer',
       isActive: true,
       emailVerified: true,
       employeePermissions: {
