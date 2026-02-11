@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landlord Login - M77 AG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -12,172 +17,199 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #2c5f2d 0%, #1a3a1b 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            color: #fff;
         }
 
         .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 60px 50px;
             width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
         .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
             font-family: 'Oswald', sans-serif;
-            font-size: 32px;
-            color: #2c5f2d;
-            margin-bottom: 5px;
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #d4af37;
+            letter-spacing: 3px;
         }
 
-        .logo p {
-            color: #666;
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .form-label {
+        label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #2c5f2d;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: #2c5f2d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
             font-weight: 600;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
 
-        .btn:hover {
-            background: #1a3a1b;
+        .btn-login:hover {
+            background: #f4d03f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
         }
 
-        .btn:disabled {
-            background: #ccc;
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: #666;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        .alert {
-            padding: 12px;
-            border-radius: 4px;
+        .error-message {
+            background: rgba(255, 100, 100, 0.2);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 20px;
             display: none;
+            font-size: 14px;
         }
 
-        .alert-error {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-
-        .alert-success {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
+        .success-message {
+            background: rgba(100, 255, 100, 0.2);
+            border: 1px solid rgba(100, 255, 100, 0.5);
+            color: #6bff6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
         }
 
         .help-text {
             text-align: center;
-            margin-top: 20px;
-            color: #666;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .help-text p {
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
+            margin-bottom: 10px;
         }
 
         .help-text a {
-            color: #2c5f2d;
+            color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
         }
 
         .help-text a:hover {
-            text-decoration: underline;
+            color: #d4af37;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">
-            <h1>M77 AG</h1>
-            <p>Landlord Portal</p>
-        </div>
+        <div class="logo">M77 AG</div>
+        <div class="subtitle">Landlord Portal</div>
 
-        <div id="alert" class="alert"></div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label class="form-label" for="email">Email or Username</label>
-                <input
-                    type="text"
-                    id="email"
-                    class="form-control"
-                    placeholder="your@email.com"
-                    required
-                    autocomplete="username"
-                >
+                <label>Email or Username</label>
+                <input type="text" id="email" placeholder="your@email.com" required autocomplete="username">
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    class="form-control"
-                    placeholder="••••••••"
-                    required
-                    autocomplete="current-password"
-                >
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
             </div>
 
-            <button type="submit" class="btn" id="loginBtn">
-                Sign In
-            </button>
+            <button type="submit" class="btn-login" id="loginBtn">Login</button>
         </form>
 
         <div class="help-text">
             <p>Need help? Contact us at <a href="mailto:office@m77ag.com">office@m77ag.com</a></p>
-            <p style="margin-top: 10px;"><a href="/">← Back to Home</a></p>
+            <p><a href="/">Back to Main Site</a></p>
         </div>
     </div>
 
     <script>
         const loginForm = document.getElementById('loginForm');
-        const alertDiv = document.getElementById('alert');
         const loginBtn = document.getElementById('loginBtn');
 
         loginForm.addEventListener('submit', async (e) => {
@@ -188,7 +220,7 @@
 
             // Disable button
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Signing in...';
+            loginBtn.textContent = 'Logging in...';
 
             try {
                 const response = await fetch('/api/auth/login', {
@@ -209,40 +241,44 @@
                         localStorage.setItem('user', JSON.stringify(data.user));
 
                         // Show success
-                        showAlert('Login successful! Redirecting...', 'success');
+                        showSuccess('Login successful! Redirecting...');
 
                         // Redirect to dashboard
                         setTimeout(() => {
                             window.location.href = '/landlord/dashboard.html';
                         }, 1000);
                     } else {
-                        showAlert('Access denied. Landlord account required.', 'error');
+                        showError('Access denied. Landlord account required.');
                         loginBtn.disabled = false;
-                        loginBtn.textContent = 'Sign In';
+                        loginBtn.textContent = 'Login';
                     }
                 } else {
-                    showAlert(data.message || 'Invalid email or password', 'error');
+                    showError(data.message || 'Invalid email or password');
                     loginBtn.disabled = false;
-                    loginBtn.textContent = 'Sign In';
+                    loginBtn.textContent = 'Login';
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showAlert('Login failed. Please try again.', 'error');
+                showError('Login failed. Please try again.');
                 loginBtn.disabled = false;
-                loginBtn.textContent = 'Sign In';
+                loginBtn.textContent = 'Login';
             }
         });
 
-        function showAlert(message, type) {
-            alertDiv.textContent = message;
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.style.display = 'block';
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            successDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
 
-            if (type === 'success') {
-                setTimeout(() => {
-                    alertDiv.style.display = 'none';
-                }, 3000);
-            }
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            errorDiv.style.display = 'none';
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
         }
 
         // Check if already logged in
