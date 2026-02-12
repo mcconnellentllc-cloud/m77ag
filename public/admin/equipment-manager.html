@@ -364,6 +364,46 @@
             color: white;
             border-color: #c0392b;
         }
+        /* For Sale toggle */
+        .for-sale-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .for-sale-toggle.private {
+            background: #f0f0f0;
+            color: #666;
+            border-color: #ddd;
+        }
+        .for-sale-toggle.private:hover {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+        .for-sale-toggle.for-sale {
+            background: #4caf50;
+            color: white;
+        }
+        .for-sale-toggle.for-sale:hover {
+            background: #43a047;
+        }
+        .for-sale-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #4caf50;
+            color: white;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
 
         /* Category Summary Cards */
         .category-summary {
@@ -860,6 +900,11 @@
                 <div class="summary-value gold" id="upcomingPayments">$0</div>
                 <div class="summary-subtext" id="paymentCount">0 payments</div>
             </div>
+            <div class="summary-card" style="border-left: 4px solid #4caf50;">
+                <div class="summary-label">Listed For Sale</div>
+                <div class="summary-value" style="color: #4caf50;" id="forSaleCount">0</div>
+                <div class="summary-subtext" id="forSaleValue">$0 asking</div>
+            </div>
         </div>
 
         <!-- Upcoming Payments Panel -->
@@ -958,6 +1003,26 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label><input type="checkbox" id="editForSale"> List For Sale (visible on public page)</label>
+                </div>
+                <div id="saleFields" style="display: none; background: #e8f5e9; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #2e7d32; margin-bottom: 12px; font-weight: 600;">Sale Settings</div>
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label>Asking Price ($)</label>
+                            <input type="number" id="editAskingPrice" placeholder="Public asking price">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label>Floor Price ($) - Private</label>
+                            <input type="number" id="editFloorPrice" placeholder="Minimum acceptable price">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Sale Description</label>
+                        <textarea id="editSaleDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; font-family: inherit; resize: vertical;" placeholder="Description shown on public for-sale page..."></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label><input type="checkbox" id="editHasLoan"> Has Loan</label>
                 </div>
                 <div id="loanFields" style="display: none;">
@@ -1038,6 +1103,9 @@
         function setupEventListeners() {
             document.getElementById('editHasLoan').addEventListener('change', (e) => {
                 document.getElementById('loanFields').style.display = e.target.checked ? 'block' : 'none';
+            });
+            document.getElementById('editForSale').addEventListener('change', (e) => {
+                document.getElementById('saleFields').style.display = e.target.checked ? 'block' : 'none';
             });
         }
 
@@ -1123,6 +1191,12 @@
             } else {
                 document.getElementById('paymentsPanel').style.display = 'none';
             }
+
+            // For Sale stats
+            const forSaleEquipment = activeEquipment.filter(e => e.forSale && e.saleStatus === 'available');
+            const forSaleValue = forSaleEquipment.reduce((sum, e) => sum + (e.askingPrice || e.currentValue || 0), 0);
+            document.getElementById('forSaleCount').textContent = forSaleEquipment.length;
+            document.getElementById('forSaleValue').textContent = formatCurrency(forSaleValue) + ' asking';
         }
 
         function renderPayments(payments) {
@@ -1310,9 +1384,8 @@
                     <tr>
                         <th>Equipment</th>
                         <th>Category</th>
-                        <th>Serial/VIN</th>
+                        <th>For Sale</th>
                         <th>Hours/Miles</th>
-                        <th>Market Value</th>
                         <th>Current Value</th>
                         <th>Amount Owed</th>
                         <th>Equity</th>
@@ -1332,9 +1405,10 @@
                     `<option value="${cat.key}" ${item.category === cat.key ? 'selected' : ''}>${cat.name}</option>`
                 ).join('');
 
+                const isForSale = item.forSale && item.saleStatus === 'available';
                 html += `<tr data-id="${item._id}">
                     <td>
-                        <div class="equipment-title">${item.title}</div>
+                        <div class="equipment-title">${item.title}${isForSale ? '<span class="for-sale-badge">FOR SALE</span>' : ''}</div>
                         <div class="equipment-subtitle">${item.subtitle || ''}</div>
                     </td>
                     <td>
@@ -1342,17 +1416,17 @@
                             ${categoryOptions}
                         </select>
                     </td>
-                    <td>${item.serialNumber || item.vin || '-'}</td>
-                    <td>${item.currentHours ? item.currentHours.toLocaleString() + ' hrs' : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '-'}</td>
-                    <td class="value-cell ${marketVal > 0 ? 'market-val' : ''}">
-                        ${marketVal > 0 ? formatCurrency(marketVal) : '-'}
-                        ${item.marketValueSource ? '<br><span class="market-source">' + item.marketValueSource + '</span>' : ''}
+                    <td>
+                        <button class="for-sale-toggle ${isForSale ? 'for-sale' : 'private'}" onclick="toggleForSale('${item._id}', ${!isForSale})">
+                            ${isForSale ? 'Listed' : 'Private'}
+                        </button>
+                        ${isForSale && item.askingPrice ? '<div style="font-size:11px;color:#666;margin-top:4px;">' + formatCurrency(item.askingPrice) + '</div>' : ''}
                     </td>
+                    <td>${item.currentHours ? item.currentHours.toLocaleString() + ' hrs' : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '-'}</td>
                     <td class="value-cell positive">${formatCurrency(value)}</td>
                     <td class="value-cell ${owed > 0 ? 'negative' : ''}">
                         ${owed > 0 ? formatCurrency(owed) : '-'}
                         ${item.hasLoan && item.lender ? '<br><span class="loan-lender">' + item.lender + '</span>' : ''}
-                        ${item.hasLoan && item.nextPaymentDate ? '<br><span class="loan-payment">' + formatCurrency(item.paymentAmount || 0) + ' due ' + formatDate(item.nextPaymentDate) + '</span>' : ''}
                     </td>
                     <td class="value-cell ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</td>
                     <td>
@@ -1385,6 +1459,7 @@
                 const equity = value - owed;
                 const marketVal = item.marketValue || 0;
                 const isArchived = item.saleStatus === 'sold';
+                const isForSale = item.forSale && item.saleStatus === 'available';
                 const hoursOrMiles = item.currentHours
                     ? item.currentHours.toLocaleString() + ' hrs'
                     : item.currentMiles
@@ -1417,9 +1492,9 @@
 
                 html += `
                     <div class="equipment-card ${isArchived ? 'archived' : ''}" data-id="${item._id}">
-                        <div class="equipment-card-header">
+                        <div class="equipment-card-header" ${isForSale ? 'style="background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);"' : ''}>
                             <div>
-                                <div class="equipment-card-title">${item.title}</div>
+                                <div class="equipment-card-title">${item.title}${isForSale ? ' <span style="font-size:11px;background:rgba(255,255,255,0.3);padding:2px 8px;border-radius:10px;">FOR SALE</span>' : ''}</div>
                                 <div class="equipment-card-subtitle">${item.subtitle || ''}</div>
                             </div>
                             <div class="equipment-card-category">${item.category || 'Other'}</div>
@@ -1470,6 +1545,7 @@
 
                             <div class="equipment-card-actions">
                                 <button class="card-edit-btn" onclick="editEquipment('${item._id}')">Edit</button>
+                                ${!isArchived ? `<button class="for-sale-toggle ${isForSale ? 'for-sale' : 'private'}" style="flex:1;" onclick="toggleForSale('${item._id}', ${!isForSale})">${isForSale ? 'Listed' : 'List For Sale'}</button>` : ''}
                                 ${isArchived
                                     ? `<button class="card-restore-btn" onclick="restoreEquipment('${item._id}')">Restore</button>`
                                     : `<button class="card-sold-btn" onclick="markAsSold('${item._id}')">Mark Sold</button>`}
@@ -1597,6 +1673,37 @@
             }
         }
 
+        // Toggle equipment for-sale status
+        async function toggleForSale(id, makeForSale) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}/toggle-sale`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.forSale = result.equipment.forSale;
+                    item.saleStatus = result.equipment.saleStatus;
+
+                    // Re-render view and update stats
+                    renderView();
+                    updateSummaryDisplay();
+                    renderCategoryTabs();
+                } else {
+                    alert('Error toggling sale status: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error toggling sale status:', error);
+                alert('Error toggling sale status');
+            }
+        }
+
         // Restore equipment from archive
         async function restoreEquipment(id) {
             const item = allEquipment.find(e => e._id === id);
@@ -1663,6 +1770,16 @@
             document.getElementById('editHours').value = item.currentHours || item.currentMiles || '';
             document.getElementById('editMarketValue').value = item.marketValue || '';
             document.getElementById('editMarketSource').value = item.marketValueSource || '';
+
+            // Sale fields
+            const isForSale = item.forSale && item.saleStatus === 'available';
+            document.getElementById('editForSale').checked = isForSale;
+            document.getElementById('editAskingPrice').value = item.askingPrice || '';
+            document.getElementById('editFloorPrice').value = item.floorPrice || '';
+            document.getElementById('editSaleDescription').value = item.description || '';
+            document.getElementById('saleFields').style.display = isForSale ? 'block' : 'none';
+
+            // Loan fields
             document.getElementById('editHasLoan').checked = item.hasLoan || false;
             document.getElementById('editOwed').value = item.amountOwed || '';
             document.getElementById('editLender').value = item.lender || '';
@@ -1684,6 +1801,13 @@
             document.getElementById('editHours').value = '';
             document.getElementById('editMarketValue').value = '';
             document.getElementById('editMarketSource').value = '';
+            // Sale fields
+            document.getElementById('editForSale').checked = false;
+            document.getElementById('editAskingPrice').value = '';
+            document.getElementById('editFloorPrice').value = '';
+            document.getElementById('editSaleDescription').value = '';
+            document.getElementById('saleFields').style.display = 'none';
+            // Loan fields
             document.getElementById('editHasLoan').checked = false;
             document.getElementById('editOwed').value = '';
             document.getElementById('editLender').value = '';
@@ -1701,6 +1825,7 @@
 
         async function saveEquipment() {
             const id = document.getElementById('editId').value;
+            const forSale = document.getElementById('editForSale').checked;
             const hasLoan = document.getElementById('editHasLoan').checked;
 
             const data = {
@@ -1711,6 +1836,13 @@
                 currentHours: parseFloat(document.getElementById('editHours').value) || 0,
                 marketValue: parseFloat(document.getElementById('editMarketValue').value) || 0,
                 marketValueSource: document.getElementById('editMarketSource').value || '',
+                // Sale fields
+                forSale: forSale,
+                saleStatus: forSale ? 'available' : 'not-for-sale',
+                askingPrice: forSale ? parseFloat(document.getElementById('editAskingPrice').value) || 0 : 0,
+                floorPrice: forSale ? parseFloat(document.getElementById('editFloorPrice').value) || 0 : 0,
+                description: document.getElementById('editSaleDescription').value || '',
+                // Loan fields
                 hasLoan: hasLoan,
                 amountOwed: hasLoan ? parseFloat(document.getElementById('editOwed').value) || 0 : 0,
                 lender: hasLoan ? document.getElementById('editLender').value : '',
