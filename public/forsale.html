@@ -1153,7 +1153,7 @@
                         category: item.category || 'Other',
                         year: item.year,
                         buyNowPrice: item.currentValue || item.marketValue || 0, // Public price
-                        floorPrice: 0, // Hidden from public
+                        floorPrice: item.floorPrice || item.currentValue || 10000, // Used for negotiation
                         images: item.images || [],
                         videos: item.videos || [],
                         specs: item.specs ? Object.fromEntries(item.specs) : {

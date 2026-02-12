@@ -744,7 +744,15 @@ const equipmentData = [
     nextPaymentDate: new Date('2026-07-01'),
     notes: 'Unit #304, Owner: M77 AG, Insured: Yes. ACCEPT ANY OFFER OVER $15,000 - FIRM FLOOR.',
     forSale: true,
-    saleStatus: 'available'
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/Drago 1.JPEG',
+      '/assets/equipment/fk-2450/Drago 2.JPEG',
+      '/assets/equipment/fk-2450/Drago 3.JPEG',
+      '/assets/equipment/fk-2450/Drago 4.JPEG',
+      '/assets/equipment/fk-2450/Drago 5.JPEG',
+      '/assets/equipment/fk-2450/Drago 6.JPEG'
+    ]
   },
   {
     title: 'Brent Avalanche 1196 Grain Cart',
@@ -1027,7 +1035,12 @@ const equipmentData = [
     purchaseDate: new Date('2010-04-01'),
     notes: 'Unit #318, Owner: M77 AG, Insured: No. ACCEPT ANY OFFER OVER $9,000 - FIRM FLOOR.',
     forSale: true,
-    saleStatus: 'available'
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/Demco SideQuest 1.JPEG',
+      '/assets/equipment/fk-2450/Demco SideQuest 2.JPEG',
+      '/assets/equipment/fk-2450/Demco SideQuest 3.JPEG'
+    ]
   },
 
   // Work Trucks
