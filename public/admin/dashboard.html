@@ -114,6 +114,76 @@
             gap: 20px;
         }
 
+        .card-header.banking {
+            background: linear-gradient(135deg, #0d3b66 0%, #1a6fb5 100%);
+        }
+
+        .card-tagline {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .card-title-section {
+            flex: 1;
+        }
+
+        .card-metrics-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f7f5;
+            border-radius: 10px;
+        }
+
+        .card-metrics-row .metric {
+            text-align: center;
+        }
+
+        .card-metrics-row .metric-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .card-metrics-row .metric-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 3px;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .feature-tag {
+            font-size: 11px;
+            padding: 5px 12px;
+            background: #e3edf7;
+            color: #0d3b66;
+            border-radius: 20px;
+        }
+
+        .dscr-rating {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .dscr-rating.excellent { background: #d4edda; color: #155724; }
+        .dscr-rating.good { background: #d1ecf1; color: #0c5460; }
+        .dscr-rating.adequate { background: #fff3cd; color: #856404; }
+        .dscr-rating.below { background: #f8d7da; color: #721c24; }
+
         .card-icon {
             font-size: 48px;
             width: 80px;
@@ -408,6 +478,55 @@
                 </div>
             </a>
 
+            <!-- BANKING & FINANCE Card - Full Width Banker's View -->
+            <a href="/admin/financials/banking" class="business-card" style="grid-column: span 2;">
+                <div class="card-header banking">
+                    <div class="card-icon">Bank</div>
+                    <div class="card-title-section">
+                        <div class="card-title">Banking & Finance</div>
+                        <div class="card-tagline">Complete financial position - Banker's view</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Full financial overview designed for banking relationships. Debt service coverage, debt-to-asset ratios, cash reserves, collateral coverage, 12-month cash flow projections, and complete asset/liability schedules. Everything your banker needs at a glance.
+                    </p>
+                    <div class="card-metrics-row">
+                        <div class="metric">
+                            <div class="metric-value" id="bankNetWorth">--</div>
+                            <div class="metric-label">Net Worth</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankDSCR">--</div>
+                            <div class="metric-label">DSCR</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankDebtToAsset">--</div>
+                            <div class="metric-label">Debt/Asset</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankTotalDebt">--</div>
+                            <div class="metric-label">Total Debt</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankCashReserve">--</div>
+                            <div class="metric-label">Cash Reserves</div>
+                        </div>
+                    </div>
+                    <div class="card-features">
+                        <span class="feature-tag">Debt Service Coverage</span>
+                        <span class="feature-tag">Balance Sheet</span>
+                        <span class="feature-tag">Cash Flow by Month</span>
+                        <span class="feature-tag">Collateral Schedule</span>
+                        <span class="feature-tag">Revenue Projections</span>
+                        <span class="feature-tag">Payment History</span>
+                        <span class="feature-tag">Loan Schedule</span>
+                        <span class="feature-tag">Working Capital</span>
+                    </div>
+                    <div class="view-dashboard-btn">Open Banker's Dashboard</div>
+                </div>
+            </a>
+
             <a href="/admin/hunting-bookings" class="business-card">
                 <div class="card-header">
                     <div class="card-icon">Hunting</div>
@@ -508,6 +627,15 @@
     </div>
 
     <script>
+        function formatCurrency(amount) {
+            if (amount >= 1000000) {
+                return '$' + (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return '$' + (amount / 1000).toFixed(1) + 'K';
+            }
+            return '$' + Math.abs(amount).toLocaleString();
+        }
+
         async function loadDashboardData() {
             try {
                 const token = localStorage.getItem('adminToken');
@@ -516,17 +644,57 @@
                     return;
                 }
 
-                const response = await fetch('/api/bookings', {
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    }
-                });
+                const headers = { 'Authorization': 'Bearer ' + token };
 
-                if (response.ok) {
-                    const data = await response.json();
+                // Fetch bookings and banker overview in parallel
+                const [bookingsRes, bankingRes] = await Promise.all([
+                    fetch('/api/bookings', { headers }).catch(() => null),
+                    fetch('/api/banking/bankers-overview', { headers }).catch(() => null)
+                ]);
+
+                if (bookingsRes && bookingsRes.ok) {
+                    const data = await bookingsRes.json();
                     if (data.success) {
                         document.getElementById('huntingBookings').textContent = data.count || 0;
                         document.getElementById('activeBookings').textContent = data.count || 0;
+                    }
+                }
+
+                if (bankingRes && bankingRes.ok) {
+                    const result = await bankingRes.json();
+                    if (result.success && result.data) {
+                        const d = result.data;
+
+                        // Quick overview stats
+                        document.getElementById('totalRevenue').textContent = formatCurrency(d.incomeStatement.ytdIncome);
+                        document.getElementById('assetValue').textContent = formatCurrency(d.balanceSheet.assets.totalAssets);
+
+                        if (d.operationOverview) {
+                            document.getElementById('acresManaged').textContent = (d.operationOverview.totalAcres || 2710).toLocaleString();
+                            document.getElementById('headCount').textContent = d.operationOverview.cattleHead || '--';
+                            document.getElementById('cropAcres').textContent = d.operationOverview.totalAcres ? d.operationOverview.totalAcres.toLocaleString() : '--';
+                        }
+
+                        const noi = d.incomeStatement.netOperatingIncome;
+                        document.getElementById('ytdProfit').textContent = (noi < 0 ? '-' : '') + formatCurrency(Math.abs(noi));
+
+                        // Banking card KPIs
+                        document.getElementById('bankNetWorth').textContent = formatCurrency(d.balanceSheet.netWorth);
+                        document.getElementById('bankTotalDebt').textContent = formatCurrency(d.balanceSheet.liabilities.totalLiabilities);
+                        document.getElementById('bankCashReserve').textContent = formatCurrency(d.balanceSheet.assets.current.cash);
+                        document.getElementById('bankDebtToAsset').textContent = d.keyRatios.debtToAsset.toFixed(1) + '%';
+
+                        if (d.keyRatios.dscr !== null) {
+                            const dscr = d.keyRatios.dscr;
+                            let rating = 'below';
+                            let ratingText = 'Below Standard';
+                            if (dscr >= 1.5) { rating = 'excellent'; ratingText = 'Excellent'; }
+                            else if (dscr >= 1.25) { rating = 'good'; ratingText = 'Good'; }
+                            else if (dscr >= 1.0) { rating = 'adequate'; ratingText = 'Adequate'; }
+                            document.getElementById('bankDSCR').innerHTML = dscr.toFixed(2) + 'x <span class="dscr-rating ' + rating + '">' + ratingText + '</span>';
+                        } else {
+                            document.getElementById('bankDSCR').textContent = 'N/A';
+                        }
                     }
                 }
             } catch (error) {
