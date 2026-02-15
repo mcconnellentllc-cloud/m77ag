@@ -743,8 +743,8 @@ const equipmentData = [
     paymentAmount: 10046.27,
     nextPaymentDate: new Date('2026-07-01'),
     notes: 'Unit #304, Owner: M77 AG, Insured: Yes. ACCEPT ANY OFFER OVER $15,000 - FIRM FLOOR.',
-    forSale: true,
-    saleStatus: 'available',
+    forSale: false,
+    saleStatus: 'not-for-sale',
     images: [
       '/assets/equipment/fk-2450/Drago 1.JPEG',
       '/assets/equipment/fk-2450/Drago 2.JPEG',
@@ -1034,8 +1034,8 @@ const equipmentData = [
     floorPrice: 9000,
     purchaseDate: new Date('2010-04-01'),
     notes: 'Unit #318, Owner: M77 AG, Insured: No. ACCEPT ANY OFFER OVER $9,000 - FIRM FLOOR.',
-    forSale: true,
-    saleStatus: 'available',
+    forSale: false,
+    saleStatus: 'not-for-sale',
     images: [
       '/assets/equipment/fk-2450/Demco SideQuest 1.JPEG',
       '/assets/equipment/fk-2450/Demco SideQuest 2.JPEG',
@@ -1207,8 +1207,8 @@ const equipmentData = [
     vin: '1GBL7D1B7CV112841',
     serialNumber: '1GBL7D1B7CV112841',
     notes: 'Owner: M77 AG. V8 Gas, 5-speed manual, 27500 GVWR. Digital scale system.',
-    forSale: true,
-    saleStatus: 'available',
+    forSale: false,
+    saleStatus: 'not-for-sale',
     images: []
   },
 
