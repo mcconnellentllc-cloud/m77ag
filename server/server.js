@@ -67,6 +67,11 @@ const seedOrderRoutes = require('./routes/seedOrder');
 const imageUploadRoutes = require('./routes/imageUpload');
 const employeeRoutes = require('./routes/employees');
 const croppingFieldRoutes = require('./routes/croppingFields');
+const stripeRoutes = require('./routes/stripe');
+const stripeController = require('./controllers/stripeController');
+
+// Stripe webhook needs raw body - must be before express.json()
+// This is handled separately below after static files
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -100,6 +105,13 @@ app.use('/api/seed-orders', seedOrderRoutes);
 app.use('/api/upload', imageUploadRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/cropping-fields', croppingFieldRoutes);
+app.use('/api/stripe', stripeRoutes);
+
+// Stripe webhook endpoint (needs raw body)
+app.post('/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeController.handleWebhook
+);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {

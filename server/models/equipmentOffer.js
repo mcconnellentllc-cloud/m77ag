@@ -59,6 +59,39 @@ const equipmentOfferSchema = new mongoose.Schema({
   finalPrice: Number,
   acceptedAt: Date,
 
+  // Payment Information
+  paymentMethod: {
+    type: String,
+    enum: ['ach', 'check', 'wire', 'cash', 'other'],
+    default: 'ach'
+  },
+  stripePaymentIntentId: String,
+  stripeCustomerId: String,
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'processing', 'succeeded', 'failed', 'requires_action'],
+    default: 'pending'
+  },
+  paymentCompletedAt: Date,
+  paymentFailureReason: String,
+
+  // Buyer Address
+  buyerAddress: String,
+  buyerCity: String,
+  buyerState: String,
+  buyerZip: String,
+
+  // Contract/Agreement
+  signature: String,
+  agreedToTerms: {
+    type: Boolean,
+    default: false
+  },
+  agreedToAsIs: {
+    type: Boolean,
+    default: false
+  },
+
   // Tracking
   source: {
     type: String,
