@@ -59,6 +59,8 @@ const financialReportsRoutes = require('./routes/financialReports');
 const realEstateRoutes = require('./routes/realEstate');
 const netWorthRoutes = require('./routes/netWorth');
 const cattleRoutes = require('./routes/cattle');
+const invoiceRoutes = require('./routes/invoices');
+const bankingRoutes = require('./routes/banking');
 const capitalRoutes = require('./routes/capital');
 const cropInsuranceRoutes = require('./routes/cropInsurance');
 const cropInventoryRoutes = require('./routes/cropInventory');
@@ -97,6 +99,8 @@ app.use('/api/financial-reports', financialReportsRoutes);
 app.use('/api/real-estate', realEstateRoutes);
 app.use('/api/net-worth', netWorthRoutes);
 app.use('/api/cattle', cattleRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/banking', bankingRoutes);
 app.use('/api/capital', capitalRoutes);
 app.use('/api/crop-insurance', cropInsuranceRoutes);
 app.use('/api/crop-inventory', cropInventoryRoutes);
@@ -181,6 +185,19 @@ app.get('/admin/financials/capital', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/financials/capital.html'));
 });
 
+app.get('/admin/financials/banking', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/banking.html'));
+});
+
+app.get('/admin/financials/net-worth', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/net-worth.html'));
+});
+
+// Banking Dashboard route
+app.get('/admin/banking', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/banking.html'));
+});
+
 // Farming Dashboard routes
 app.get('/admin/farming', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
@@ -201,6 +218,10 @@ app.get('/user/dashboard', (req, res) => {
 
 app.get('/user/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/user/login.html'));
+});
+
+app.get('/user/payments', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/payments.html'));
 });
 
 // Farmer routes
@@ -231,6 +252,10 @@ app.get('/services', (req, res) => {
 
 app.get('/custom-farming', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/custom-farming.html'));
+});
+
+app.get('/banking', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/banking.html'));
 });
 
 // Land management routes

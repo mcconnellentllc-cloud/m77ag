@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M77 AG Banking & Financial Services - Secure payment options, financing for custom farming, equipment purchases, and land management in Northeast Colorado.">
+    <title>Banking & Financial Services - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar { padding: 20px 0; }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active { color: #d4af37; }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 180px 0 100px;
+            background: linear-gradient(135deg, #1a2f0d 0%, #2d5016 50%, #1a1a1a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.08) 100%);
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 8vw, 90px);
+            line-height: 0.95;
+            color: #fff;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.85);
+            max-width: 650px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-gold {
+            background: #d4af37;
+            color: #1a1a1a;
+            border-color: #d4af37;
+        }
+
+        .btn-gold:hover {
+            background: transparent;
+            color: #d4af37;
+        }
+
+        .btn-outline {
+            border-color: #fff;
+            color: #fff;
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: #fff;
+            color: #1a1a1a;
+        }
+
+        /* Financial Stats Bar */
+        .stats-bar {
+            max-width: 1400px;
+            margin: -60px auto 0;
+            padding: 0 40px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .stat-card {
+            padding: 35px 30px;
+            text-align: center;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .stat-card:last-child { border-right: none; }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #2d5016;
+            font-weight: 700;
+        }
+
+        .stat-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .stat-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 120px 0;
+            background: #fff;
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px;
+        }
+
+        .section-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            font-size: 17px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .service-card {
+            background: #f8f7f5;
+            border-radius: 12px;
+            padding: 40px 30px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .service-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2d5016, #4a7c28);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .service-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .service-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .service-features {
+            list-style: none;
+        }
+
+        .service-features li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: #444;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .service-features li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 8px;
+            height: 8px;
+            background: #d4af37;
+            border-radius: 50%;
+        }
+
+        /* Payment Methods */
+        .payment-section {
+            padding: 100px 0;
+            background: #f5f3f0;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+            align-items: center;
+        }
+
+        .payment-info h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .payment-info p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .payment-method {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #e5e5e5;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #d4af37;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .method-icon {
+            width: 45px;
+            height: 45px;
+            background: #f8f7f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d5016;
+        }
+
+        .method-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        .method-detail {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .payment-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border-radius: 16px;
+            padding: 50px 40px;
+            color: #fff;
+        }
+
+        .card-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #d4af37;
+            margin-bottom: 30px;
+        }
+
+        .card-amount {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 30px;
+        }
+
+        .card-features {
+            list-style: none;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-features li:last-child { border: none; }
+
+        /* Financing Section */
+        .financing-section {
+            padding: 100px 0;
+            background: #fff;
+        }
+
+        .financing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .financing-card {
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .financing-card:hover {
+            border-color: #2d5016;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .financing-card.featured {
+            border-color: #d4af37;
+            position: relative;
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #d4af37;
+            color: #1a1a1a;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 16px;
+            border-radius: 20px;
+        }
+
+        .financing-type {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .financing-rate {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            color: #2d5016;
+            margin-bottom: 5px;
+        }
+
+        .financing-term {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 25px;
+        }
+
+        .financing-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .financing-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: #444;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .btn-green {
+            background: #2d5016;
+            color: #fff;
+            border-color: #2d5016;
+        }
+
+        .btn-green:hover {
+            background: #4a7c28;
+            border-color: #4a7c28;
+        }
+
+        /* Landlord Section */
+        .landlord-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: #fff;
+        }
+
+        .landlord-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .landlord-content h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 38px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .landlord-content p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .landlord-features {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .landlord-features li {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .feature-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+            line-height: 1;
+            min-width: 30px;
+        }
+
+        .feature-text {
+            font-size: 15px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+        }
+
+        .landlord-cta {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 50px;
+        }
+
+        .cta-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .cta-desc {
+            font-size: 15px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .cta-stat {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .cta-stat-item {
+            text-align: center;
+        }
+
+        .cta-stat-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            color: #d4af37;
+        }
+
+        .cta-stat-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #2d5016 0%, #1a2f0d 100%);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 64px;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            padding: 60px 0 30px;
+            color: #fff;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+
+        .footer-brand p {
+            color: rgba(255,255,255,0.5);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .footer-section h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 18px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li { margin-bottom: 10px; }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: #d4af37; }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 30px;
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .services-grid, .financing-grid { grid-template-columns: repeat(2, 1fr); }
+            .payment-grid, .landlord-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.95);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+            }
+            .nav-menu.active { display: flex; }
+            .services-grid, .financing-grid, .stats-grid { grid-template-columns: 1fr; }
+            .payment-methods { grid-template-columns: 1fr; }
+            .hero-title { font-size: 48px; }
+            .cta-section h2 { font-size: 42px; }
+            .footer-content { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="logo">M77 AG</a>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
+                    <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/rentals" class="nav-link">Rentals</a></li>
+                    <li><a href="/banking" class="nav-link active">Banking</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-label">Financial Services</div>
+            <h1 class="hero-title">BANKING &<br>FINANCIAL<br>SERVICES</h1>
+            <p class="hero-subtitle">
+                Transparent financial management for our agricultural operations.
+                Secure payment processing, competitive financing options, and
+                real-time financial tracking for landlords and partners.
+            </p>
+            <div class="hero-cta">
+                <a href="#payment-options" class="btn btn-gold">Payment Options</a>
+                <a href="#financing" class="btn btn-outline">Financing</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">$</div>
+                <div class="stat-title">Secure Payments</div>
+                <div class="stat-desc">ACH, wire, check, and digital payment processing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">%</div>
+                <div class="stat-title">Competitive Rates</div>
+                <div class="stat-desc">Equipment and operating loan financing options</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">NET</div>
+                <div class="stat-title">Flexible Terms</div>
+                <div class="stat-desc">Net 30, Net 60, and custom payment plans</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">24/7</div>
+                <div class="stat-title">Online Access</div>
+                <div class="stat-desc">Real-time account access and financial reporting</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Services -->
+    <section class="services-section">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">What We Offer</div>
+                <h2 class="section-title">Complete Financial Management</h2>
+                <p class="section-subtitle">From invoicing to loan management, we provide comprehensive financial services tailored to agricultural operations in Northeast Colorado.</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">INV</div>
+                    <div class="service-name">Invoicing & Billing</div>
+                    <p class="service-desc">Professional invoicing for custom farming services, hunting leases, and equipment sales with automated payment tracking.</p>
+                    <ul class="service-features">
+                        <li>Automated invoice generation</li>
+                        <li>Multiple payment methods accepted</li>
+                        <li>Automatic payment reminders</li>
+                        <li>Detailed billing history</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">ACH</div>
+                    <div class="service-name">Payment Processing</div>
+                    <p class="service-desc">Fast and secure payment processing through ACH transfers, wire payments, checks, and digital payment platforms.</p>
+                    <ul class="service-features">
+                        <li>ACH direct deposit and debit</li>
+                        <li>Wire transfer capability</li>
+                        <li>Check processing</li>
+                        <li>Digital wallet support</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">ROI</div>
+                    <div class="service-name">Financial Reporting</div>
+                    <p class="service-desc">Detailed financial reports including profit and loss statements, cash flow projections, and per-acre cost analysis.</p>
+                    <ul class="service-features">
+                        <li>Profit & loss by field</li>
+                        <li>Cash flow projections</li>
+                        <li>Cost-per-bushel analysis</li>
+                        <li>Year-over-year comparisons</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">LND</div>
+                    <div class="service-name">Landlord Settlements</div>
+                    <p class="service-desc">Transparent crop share and cash rent settlements with real-time access to field-level financial data for landowners.</p>
+                    <ul class="service-features">
+                        <li>Crop share calculations</li>
+                        <li>Cash rent payment tracking</li>
+                        <li>Landlord portal access</li>
+                        <li>Annual settlement reports</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">TAX</div>
+                    <div class="service-name">Tax Preparation Support</div>
+                    <p class="service-desc">Organized financial data and Schedule F reporting to simplify tax filing for farming operations.</p>
+                    <ul class="service-features">
+                        <li>Schedule F data export</li>
+                        <li>Expense categorization</li>
+                        <li>Depreciation schedules</li>
+                        <li>1099 preparation</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">INS</div>
+                    <div class="service-name">Insurance & Risk</div>
+                    <p class="service-desc">Crop insurance tracking, equipment coverage, and liability management integrated with our financial systems.</p>
+                    <ul class="service-features">
+                        <li>Crop insurance tracking</li>
+                        <li>Equipment coverage records</li>
+                        <li>Claims management</li>
+                        <li>Premium payment tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Options -->
+    <section class="payment-section" id="payment-options">
+        <div class="section-container">
+            <div class="payment-grid">
+                <div class="payment-info">
+                    <div class="section-label">How To Pay</div>
+                    <h3>Flexible Payment Options</h3>
+                    <p>We accept a variety of payment methods to make transactions simple and convenient. All payments are securely processed and immediately reflected in your account.</p>
+
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <div class="method-icon">ACH</div>
+                            <div>
+                                <div class="method-name">ACH Transfer</div>
+                                <div class="method-detail">Direct bank transfer</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon">CHK</div>
+                            <div>
+                                <div class="method-name">Check</div>
+                                <div class="method-detail">Business or personal</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon">WR</div>
+                            <div>
+                                <div class="method-name">Wire Transfer</div>
+                                <div class="method-detail">Domestic wire</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon">GS</div>
+                            <div>
+                                <div class="method-name">Grain Settlement</div>
+                                <div class="method-detail">Direct from elevator</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon">CC</div>
+                            <div>
+                                <div class="method-name">Credit Card</div>
+                                <div class="method-detail">Visa, MC, Amex</div>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="method-icon">CS</div>
+                            <div>
+                                <div class="method-name">Crop Share</div>
+                                <div class="method-detail">Shared crop proceeds</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-card">
+                    <div class="card-label">Account Features</div>
+                    <div class="card-amount">ONLINE ACCESS</div>
+                    <div class="card-desc">Manage your account 24/7 through our secure portals</div>
+                    <ul class="card-features">
+                        <li>View invoices and statements</li>
+                        <li>Track payment history</li>
+                        <li>Download financial reports</li>
+                        <li>Real-time balance updates</li>
+                        <li>Field-level cost breakdowns</li>
+                        <li>Crop year comparisons</li>
+                    </ul>
+                    <div style="margin-top: 30px;">
+                        <a href="/my-account" class="btn btn-gold">Access Your Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financing Section -->
+    <section class="financing-section" id="financing">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Financing Options</div>
+                <h2 class="section-title">Equipment & Operating Financing</h2>
+                <p class="section-subtitle">Competitive financing through our agricultural lending partners. Contact us for current rates and terms.</p>
+            </div>
+
+            <div class="financing-grid">
+                <div class="financing-card">
+                    <div class="financing-type">Equipment Loans</div>
+                    <div class="financing-rate">5-7%</div>
+                    <div class="financing-term">APR* / Up to 84 months</div>
+                    <ul class="financing-features">
+                        <li>New and used equipment</li>
+                        <li>Flexible down payment options</li>
+                        <li>Seasonal payment schedules</li>
+                        <li>Quick approval process</li>
+                        <li>No prepayment penalties</li>
+                    </ul>
+                    <a href="tel:970-774-3276" class="btn btn-green">Call for Rates</a>
+                </div>
+
+                <div class="financing-card featured">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="financing-type">Operating Lines</div>
+                    <div class="financing-rate">PRIME+</div>
+                    <div class="financing-term">Variable Rate / Annual Renewal</div>
+                    <ul class="financing-features">
+                        <li>Seed, fertilizer, chemicals</li>
+                        <li>Draw as needed during season</li>
+                        <li>Interest-only during growing</li>
+                        <li>Repay at harvest</li>
+                        <li>Crop insurance assignment</li>
+                    </ul>
+                    <a href="tel:970-774-3276" class="btn btn-gold">Get Started</a>
+                </div>
+
+                <div class="financing-card">
+                    <div class="financing-type">Land Loans</div>
+                    <div class="financing-rate">6-8%</div>
+                    <div class="financing-term">APR* / Up to 30 years</div>
+                    <ul class="financing-features">
+                        <li>Farmland and ranch purchases</li>
+                        <li>Building and improvement loans</li>
+                        <li>FSA guaranteed programs</li>
+                        <li>Flexible amortization</li>
+                        <li>Refinancing available</li>
+                    </ul>
+                    <a href="tel:970-774-3276" class="btn btn-green">Call for Rates</a>
+                </div>
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 13px; color: #999;">
+                *APR = Annual Percentage Rate. Rates shown are estimates and subject to credit approval.
+                Actual rates may vary based on creditworthiness and loan terms. Contact us for current rates.
+            </p>
+        </div>
+    </section>
+
+    <!-- Landlord Section -->
+    <section class="landlord-section">
+        <div class="section-container">
+            <div class="landlord-grid">
+                <div class="landlord-content">
+                    <div class="section-label">For Landowners</div>
+                    <h3>Landlord Financial Portal</h3>
+                    <p>Complete financial transparency for our landlord partners. Access real-time data on your fields, crop performance, and settlements through our dedicated landlord portal.</p>
+
+                    <ul class="landlord-features">
+                        <li>
+                            <span class="feature-num">01</span>
+                            <span class="feature-text">Real-time access to field-level financial data including per-acre costs, yields, and revenue</span>
+                        </li>
+                        <li>
+                            <span class="feature-num">02</span>
+                            <span class="feature-text">Automated crop share calculations with transparent settlement breakdowns</span>
+                        </li>
+                        <li>
+                            <span class="feature-num">03</span>
+                            <span class="feature-text">7-year crop rotation plans with projected yields and income forecasts</span>
+                        </li>
+                        <li>
+                            <span class="feature-num">04</span>
+                            <span class="feature-text">Direct deposit payments via ACH with email notifications and receipts</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="landlord-cta">
+                    <div class="cta-title">Landlord Portal</div>
+                    <div class="cta-desc">Access your financial data, field reports, and settlement information through our secure landlord portal.</div>
+
+                    <div class="cta-stat">
+                        <div class="cta-stat-item">
+                            <div class="cta-stat-value">11,900+</div>
+                            <div class="cta-stat-label">Acres Managed</div>
+                        </div>
+                        <div class="cta-stat-item">
+                            <div class="cta-stat-value">7</div>
+                            <div class="cta-stat-label">Landlord Partners</div>
+                        </div>
+                        <div class="cta-stat-item">
+                            <div class="cta-stat-value">4</div>
+                            <div class="cta-stat-label">Generations</div>
+                        </div>
+                    </div>
+
+                    <a href="/landlord/login" class="btn btn-gold">Access Landlord Portal</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2>READY TO GET STARTED?</h2>
+        <p>Contact our team for questions about payments, financing, or to set up your online account access.</p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="tel:970-774-3276" class="btn btn-gold">Call 970-774-3276</a>
+            <a href="/my-account" class="btn btn-outline">My Account</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>M77 AG</h3>
+                <p>Professional agricultural services and financial management serving Northeast Colorado since 1920.</p>
+                <p style="color: #d4af37; margin-top: 10px;">
+                    970-774-3276<br>office@m77ag.com
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="/services">Custom Farming</a></li>
+                    <li><a href="/hunting">Hunting Leases</a></li>
+                    <li><a href="/forsale">Equipment Sales</a></li>
+                    <li><a href="/rentals">Rentals</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Financial</h4>
+                <ul class="footer-links">
+                    <li><a href="/banking">Banking Services</a></li>
+                    <li><a href="/my-account">My Account</a></li>
+                    <li><a href="/landlord/login">Landlord Portal</a></li>
+                    <li><a href="/farmer/login">Farmer Portal</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/land-management">Land Management</a></li>
+                    <li><a href="/admin">Admin Portal</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>2025 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => navMenu.classList.remove('active'));
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

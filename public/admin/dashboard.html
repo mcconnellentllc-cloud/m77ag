@@ -145,6 +145,224 @@
             color: inherit;
             display: block;
         }
+
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .card-header.banking {
+            background: linear-gradient(135deg, #0d3b66 0%, #1a6fb5 100%);
+        }
+
+        .card-tagline {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .card-title-section {
+            flex: 1;
+        }
+
+        .card-metrics-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f7f5;
+            border-radius: 10px;
+        }
+
+        .card-metrics-row .metric {
+            text-align: center;
+        }
+
+        .card-metrics-row .metric-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .card-metrics-row .metric-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 3px;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .feature-tag {
+            font-size: 11px;
+            padding: 5px 12px;
+            background: #e3edf7;
+            color: #0d3b66;
+            border-radius: 20px;
+        }
+
+        .dscr-rating {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .dscr-rating.excellent { background: #d4edda; color: #155724; }
+        .dscr-rating.good { background: #d1ecf1; color: #0c5460; }
+        .dscr-rating.adequate { background: #fff3cd; color: #856404; }
+        .dscr-rating.below { background: #f8d7da; color: #721c24; }
+
+        .card-icon {
+            font-size: 48px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .card-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .card-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card-stats.four-col {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d5016;
+        }
+
+        .view-dashboard-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #d4af37;
+            color: #1a1a1a;
+            font-weight: 600;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .business-card:hover .view-dashboard-btn {
+            background: #c49d2e;
+        }
+
+        .overview-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .overview-card {
+            background: #f8f7f5;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .overview-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .overview-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .payment-accounts-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .payment-account-card {
+            background: linear-gradient(135deg, #f8f7f5 0%, #fff 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .payment-account-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
         .nav-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
@@ -641,6 +859,82 @@
                     </div>
                 </div>
             </a>
+
+            <!-- BANKING & FINANCE Card - Full Width Banker's View -->
+            <a href="/admin/financials/banking" class="business-card" style="grid-column: span 2;">
+                <div class="card-header banking">
+                    <div class="card-icon">Bank</div>
+                    <div class="card-title-section">
+                        <div class="card-title">Banking & Finance</div>
+                        <div class="card-tagline">Complete financial position - Banker's view</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Full financial overview designed for banking relationships. Debt service coverage, debt-to-asset ratios, cash reserves, collateral coverage, 12-month cash flow projections, and complete asset/liability schedules. Everything your banker needs at a glance.
+                    </p>
+                    <div class="card-metrics-row">
+                        <div class="metric">
+                            <div class="metric-value" id="bankNetWorth">--</div>
+                            <div class="metric-label">Net Worth</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankDSCR">--</div>
+                            <div class="metric-label">DSCR</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankDebtToAsset">--</div>
+                            <div class="metric-label">Debt/Asset</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankTotalDebt">--</div>
+                            <div class="metric-label">Total Debt</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="bankCashReserve">--</div>
+                            <div class="metric-label">Cash Reserves</div>
+                        </div>
+                    </div>
+                    <div class="card-features">
+                        <span class="feature-tag">Debt Service Coverage</span>
+                        <span class="feature-tag">Balance Sheet</span>
+                        <span class="feature-tag">Cash Flow by Month</span>
+                        <span class="feature-tag">Collateral Schedule</span>
+                        <span class="feature-tag">Revenue Projections</span>
+                        <span class="feature-tag">Payment History</span>
+                        <span class="feature-tag">Loan Schedule</span>
+                        <span class="feature-tag">Working Capital</span>
+                    </div>
+                    <div class="view-dashboard-btn">Open Banker's Dashboard</div>
+                </div>
+            </a>
+
+            <a href="/admin/hunting-bookings" class="business-card">
+                <div class="card-header">
+                    <div class="card-icon">Hunting</div>
+                    <div class="card-title">Hunting Reservations</div>
+                </div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Manage hunting bookings, view reservations calendar, process payments, and handle liability waivers for Heritage Farm and Prairie Peace properties.
+                    </p>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="huntingBookings2">0</div>
+                            <div class="stat-label">Bookings</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="huntingRevenue">$0</div>
+                            <div class="stat-label">Revenue</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">2,710</div>
+                            <div class="stat-label">Acres</div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
             <a href="/admin/equipment.html" class="nav-card">
                 <div class="card-icon-bar dark"></div>
                 <div class="card-content">
@@ -692,6 +986,15 @@
     </div>
 
     <script>
+        function formatCurrency(amount) {
+            if (amount >= 1000000) {
+                return '$' + (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return '$' + (amount / 1000).toFixed(1) + 'K';
+            }
+            return '$' + Math.abs(amount).toLocaleString();
+        }
+
         // Load dashboard data
         async function loadDashboardData() {
             try {
@@ -700,6 +1003,8 @@
                     window.location.href = '/admin/login';
                     return;
                 }
+
+                const headers = { 'Authorization': 'Bearer ' + token };
 
                 // Load equipment stats
                 loadEquipmentStats();
@@ -715,6 +1020,38 @@
 
                 // Load employee cards
                 loadEmployeeCards();
+
+                // Fetch banker overview for banking card KPIs
+                try {
+                    const bankingRes = await fetch('/api/banking/bankers-overview', { headers }).catch(() => null);
+
+                    if (bankingRes && bankingRes.ok) {
+                        const result = await bankingRes.json();
+                        if (result.success && result.data) {
+                            const d = result.data;
+
+                            // Banking card KPIs
+                            document.getElementById('bankNetWorth').textContent = formatCurrency(d.balanceSheet.netWorth);
+                            document.getElementById('bankTotalDebt').textContent = formatCurrency(d.balanceSheet.liabilities.totalLiabilities);
+                            document.getElementById('bankCashReserve').textContent = formatCurrency(d.balanceSheet.assets.current.cash);
+                            document.getElementById('bankDebtToAsset').textContent = d.keyRatios.debtToAsset.toFixed(1) + '%';
+
+                            if (d.keyRatios.dscr !== null) {
+                                const dscr = d.keyRatios.dscr;
+                                let rating = 'below';
+                                let ratingText = 'Below Standard';
+                                if (dscr >= 1.5) { rating = 'excellent'; ratingText = 'Excellent'; }
+                                else if (dscr >= 1.25) { rating = 'good'; ratingText = 'Good'; }
+                                else if (dscr >= 1.0) { rating = 'adequate'; ratingText = 'Adequate'; }
+                                document.getElementById('bankDSCR').innerHTML = dscr.toFixed(2) + 'x <span class="dscr-rating ' + rating + '">' + ratingText + '</span>';
+                            } else {
+                                document.getElementById('bankDSCR').textContent = 'N/A';
+                            }
+                        }
+                    }
+                } catch (bankErr) {
+                    console.error('Error loading banking data:', bankErr);
+                }
 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
