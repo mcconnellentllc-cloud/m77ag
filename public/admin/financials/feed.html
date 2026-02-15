@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed & Locations - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .header {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .nav {
+            display: flex;
+            gap: 25px;
+        }
+        .nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav a:hover, .nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .breadcrumb {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .breadcrumb a { color: #888; text-decoration: none; }
+        .breadcrumb a:hover { color: #d4af37; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+        .page-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2d5016;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #1f3a0f; }
+        .btn-secondary {
+            background: #8B4513;
+            color: #fff;
+        }
+        .btn-secondary:hover { background: #6d360f; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #ddd;
+            color: #666;
+        }
+        .btn-outline:hover { border-color: #d4af37; color: #d4af37; }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .summary-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+        }
+        .summary-value.warning { color: #e67e22; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: #333; }
+        .tab.active {
+            color: #8B4513;
+            border-bottom-color: #8B4513;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        tr:hover { background: #fafafa; }
+        .amount { font-family: 'Oswald', sans-serif; }
+        .amount.positive { color: #2d5016; }
+        .amount.negative { color: #c0392b; }
+
+        /* Feed Inventory Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .inventory-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #8B4513;
+        }
+        .inventory-card.hay { border-left-color: #d4af37; }
+        .inventory-card.mineral { border-left-color: #3498db; }
+        .inventory-card.protein { border-left-color: #27ae60; }
+        .inventory-card.other { border-left-color: #9b59b6; }
+        .inventory-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+        .inventory-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin: 8px 0;
+        }
+        .inventory-qty {
+            font-size: 24px;
+            font-weight: 700;
+            color: #8B4513;
+        }
+        .inventory-meta {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+        .inventory-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        .inventory-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        /* Location Cards */
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .location-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .location-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+        .location-count {
+            background: #8B4513;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .location-details {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .location-details strong {
+            color: #333;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: #333;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 2000;
+            display: none;
+        }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
+        .toast.active { display: block; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        .empty-state h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .summary-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .page-header { flex-direction: column; gap: 15px; }
+            .form-row { grid-template-columns: 1fr; }
+            .nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/admin/dashboard.html" class="logo">M77 AG</a>
+        <nav class="nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/financials/cattle.html">Cattle</a>
+            <a href="/admin/financials/feed.html" class="active">Feed</a>
+            <a href="/admin/financials/vet-supplies.html">Vet & Supplies</a>
+            <a href="/admin/equipment-manager.html">Equipment</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin/dashboard.html">Admin</a> / <a href="/admin/financials/cattle.html">Cattle</a> / Feed & Locations
+        </div>
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Feed & Cattle Locations</h1>
+                <p class="page-subtitle">Track pasture locations, hay inventory, mineral, and protein tubs</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="openLocationModal()">+ Add Location</button>
+                <button class="btn btn-secondary" onclick="openFeedModal()">+ Add Feed</button>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Hay Bales</div>
+                <div class="summary-value" id="totalBales">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Mineral Tubs</div>
+                <div class="summary-value" id="totalMineral">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Protein Tubs</div>
+                <div class="summary-value" id="totalProtein">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Feed Expenses (YTD)</div>
+                <div class="summary-value" id="totalExpenses">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Active Locations</div>
+                <div class="summary-value" id="activeLocations">0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="locations">Cattle Locations</button>
+            <button class="tab" data-tab="inventory">Feed Inventory</button>
+            <button class="tab" data-tab="usage">Feed Usage Log</button>
+            <button class="tab" data-tab="purchases">Purchases</button>
+        </div>
+
+        <!-- Locations Tab -->
+        <div class="tab-content active" id="locations-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Current Cattle Locations (2026)</h3>
+                    <select class="form-select" style="width: auto;" id="locationYear" onchange="loadLocations()">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="location-grid" id="locationGrid">
+                        <div class="empty-state">
+                            <h3>No Locations Set</h3>
+                            <p>Add cattle locations to track where your herd is throughout the year.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Tab -->
+        <div class="tab-content" id="inventory-tab">
+            <div class="inventory-grid" id="inventoryGrid">
+                <div class="empty-state">
+                    <h3>No Feed Inventory</h3>
+                    <p>Add hay bales, mineral, protein tubs, or other feed items.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Log Tab -->
+        <div class="tab-content" id="usage-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Feed Usage Log</h3>
+                    <button class="btn btn-secondary" onclick="openUsageModal()">+ Log Usage</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Location</th>
+                                    <th>Logged By</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usageTableBody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">No usage records yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchases Tab -->
+        <div class="tab-content" id="purchases-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Feed Purchases</h3>
+                    <button class="btn btn-secondary" onclick="openPurchaseModal()">+ Add Purchase</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Cost</th>
+                                    <th>Vendor</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">No purchases recorded</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Location Modal -->
+    <div class="modal-overlay" id="locationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Cattle Location</h2>
+                <button class="modal-close" onclick="closeModal('locationModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Location/Pasture Name</label>
+                    <input type="text" class="form-input" id="locationName" placeholder="e.g., North Pasture, Home Place">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Head Count</label>
+                        <input type="number" class="form-input" id="locationHeadCount" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year</label>
+                        <input type="number" class="form-input" id="locationYearInput" value="2026">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-input" id="locationStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date (optional)</label>
+                        <input type="date" class="form-input" id="locationEndDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cattle Type</label>
+                    <select class="form-select" id="locationType">
+                        <option value="cows">Cows</option>
+                        <option value="bulls">Bulls</option>
+                        <option value="heifers">Heifers</option>
+                        <option value="calves">Calves</option>
+                        <option value="steers">Steers</option>
+                        <option value="mixed">Mixed Herd</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="locationNotes" rows="2" placeholder="Any additional details..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('locationModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveLocation()">Save Location</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Feed Modal -->
+    <div class="modal-overlay" id="feedModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Feed Item</h2>
+                <button class="modal-close" onclick="closeModal('feedModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Feed Type</label>
+                    <select class="form-select" id="feedType" onchange="updateFeedFields()">
+                        <option value="hay">Hay Bales</option>
+                        <option value="mineral">Mineral Tubs</option>
+                        <option value="protein">Protein Tubs</option>
+                        <option value="supplement">Supplement</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Name/Description</label>
+                    <input type="text" class="form-input" id="feedName" placeholder="e.g., Grass Hay, Purina Wind & Rain">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-input" id="feedQuantity" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select" id="feedUnit">
+                            <option value="bales">Bales</option>
+                            <option value="tubs">Tubs</option>
+                            <option value="bags">Bags</option>
+                            <option value="tons">Tons</option>
+                            <option value="lbs">Pounds</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Storage Location</label>
+                    <input type="text" class="form-input" id="feedLocation" placeholder="e.g., Hay Shed, Barn">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="feedNotes" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('feedModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveFeed()">Save Feed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Usage Modal -->
+    <div class="modal-overlay" id="usageModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Log Feed Usage</h2>
+                <button class="modal-close" onclick="closeModal('usageModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Feed Item</label>
+                    <select class="form-select" id="usageItem">
+                        <option value="">Select feed item...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quantity Used</label>
+                        <input type="number" class="form-input" id="usageQuantity" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="usageDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location/Pasture</label>
+                    <select class="form-select" id="usageLocation">
+                        <option value="">Select location...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="usageNotes" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('usageModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveUsage()">Log Usage</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Purchase Modal -->
+    <div class="modal-overlay" id="purchaseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Feed Purchase</h2>
+                <button class="modal-close" onclick="closeModal('purchaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Feed Type</label>
+                    <select class="form-select" id="purchaseType">
+                        <option value="hay">Hay</option>
+                        <option value="mineral">Mineral</option>
+                        <option value="protein">Protein Tubs</option>
+                        <option value="supplement">Supplement</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Item Description</label>
+                    <input type="text" class="form-input" id="purchaseDescription" placeholder="e.g., 100 Grass Hay Bales">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-input" id="purchaseQuantity" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Cost</label>
+                        <input type="number" class="form-input" id="purchaseCost" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="purchaseDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vendor</label>
+                        <input type="text" class="form-input" id="purchaseVendor" placeholder="Vendor name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Add to Inventory?</label>
+                    <select class="form-select" id="purchaseAddInventory">
+                        <option value="yes">Yes - Add to feed inventory</option>
+                        <option value="no">No - Just record expense</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="purchaseNotes" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('purchaseModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="savePurchase()">Save Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let feedInventory = [];
+        let cattleLocations = [];
+        let feedUsage = [];
+        let feedPurchases = [];
+
+        // Auth headers
+        function getAuthHeaders() {
+            return {
+                'Authorization': 'Bearer ' + localStorage.getItem('adminToken'),
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupTabs();
+            loadAllData();
+            setDefaultDates();
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+            }
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('locationStartDate').value = today;
+            document.getElementById('usageDate').value = today;
+            document.getElementById('purchaseDate').value = today;
+        }
+
+        // Tab switching
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+                });
+            });
+        }
+
+        // Load all data
+        async function loadAllData() {
+            await Promise.all([
+                loadLocations(),
+                loadInventory(),
+                loadUsage(),
+                loadPurchases()
+            ]);
+            updateSummary();
+        }
+
+        // Load cattle locations
+        async function loadLocations() {
+            try {
+                const year = document.getElementById('locationYear').value;
+                const response = await fetch(`/api/cattle/feed/locations?year=${year}`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    cattleLocations = data.data || [];
+                    renderLocations();
+                }
+            } catch (error) {
+                console.error('Error loading locations:', error);
+                cattleLocations = [];
+                renderLocations();
+            }
+        }
+
+        // Load feed inventory
+        async function loadInventory() {
+            try {
+                const response = await fetch('/api/cattle/feed/inventory', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    feedInventory = data.data || [];
+                    renderInventory();
+                }
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+                feedInventory = [];
+                renderInventory();
+            }
+        }
+
+        // Load usage log
+        async function loadUsage() {
+            try {
+                const response = await fetch('/api/cattle/feed/usage', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    feedUsage = data.data || [];
+                    renderUsage();
+                }
+            } catch (error) {
+                console.error('Error loading usage:', error);
+                feedUsage = [];
+                renderUsage();
+            }
+        }
+
+        // Load purchases
+        async function loadPurchases() {
+            try {
+                const response = await fetch('/api/cattle/feed/purchases', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                if (data.success) {
+                    feedPurchases = data.data || [];
+                    renderPurchases();
+                }
+            } catch (error) {
+                console.error('Error loading purchases:', error);
+                feedPurchases = [];
+                renderPurchases();
+            }
+        }
+
+        // Update summary
+        function updateSummary() {
+            const bales = feedInventory.filter(f => f.type === 'hay').reduce((sum, f) => sum + (f.quantity || 0), 0);
+            const mineral = feedInventory.filter(f => f.type === 'mineral').reduce((sum, f) => sum + (f.quantity || 0), 0);
+            const protein = feedInventory.filter(f => f.type === 'protein').reduce((sum, f) => sum + (f.quantity || 0), 0);
+            const expenses = feedPurchases.reduce((sum, p) => sum + (p.cost || 0), 0);
+
+            document.getElementById('totalBales').textContent = bales.toLocaleString();
+            document.getElementById('totalMineral').textContent = mineral.toLocaleString();
+            document.getElementById('totalProtein').textContent = protein.toLocaleString();
+            document.getElementById('totalExpenses').textContent = '$' + expenses.toLocaleString();
+            document.getElementById('activeLocations').textContent = cattleLocations.filter(l => !l.endDate || new Date(l.endDate) >= new Date()).length;
+        }
+
+        // Render locations
+        function renderLocations() {
+            const grid = document.getElementById('locationGrid');
+            if (cattleLocations.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No Locations Set</h3><p>Add cattle locations to track where your herd is throughout the year.</p></div>';
+                return;
+            }
+            grid.innerHTML = cattleLocations.map(loc => `
+                <div class="location-card">
+                    <div class="location-header">
+                        <span class="location-name">${loc.name}</span>
+                        <span class="location-count">${loc.headCount || 0} head</span>
+                    </div>
+                    <div class="location-details">
+                        <strong>Type:</strong> ${loc.cattleType || 'Mixed'}<br>
+                        <strong>Start:</strong> ${formatDate(loc.startDate)}<br>
+                        ${loc.endDate ? `<strong>End:</strong> ${formatDate(loc.endDate)}<br>` : ''}
+                        ${loc.notes ? `<strong>Notes:</strong> ${loc.notes}` : ''}
+                    </div>
+                    <div class="inventory-actions">
+                        <button class="btn btn-outline" onclick="editLocation('${loc._id}')">Edit</button>
+                        <button class="btn btn-outline" onclick="deleteLocation('${loc._id}')" style="color: #c0392b; border-color: #c0392b;">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render inventory
+        function renderInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            if (feedInventory.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No Feed Inventory</h3><p>Add hay bales, mineral, protein tubs, or other feed items.</p></div>';
+                return;
+            }
+            grid.innerHTML = feedInventory.map(item => `
+                <div class="inventory-card ${item.type}">
+                    <div class="inventory-type">${item.type}</div>
+                    <div class="inventory-name">${item.name}</div>
+                    <div class="inventory-qty">${item.quantity} ${item.unit}</div>
+                    <div class="inventory-meta">
+                        ${item.location ? `Stored at: ${item.location}` : ''}
+                    </div>
+                    <div class="inventory-actions">
+                        <button class="btn btn-outline" onclick="useInventory('${item._id}')">Use</button>
+                        <button class="btn btn-outline" onclick="editInventory('${item._id}')">Edit</button>
+                    </div>
+                </div>
+            `).join('');
+            populateUsageItemDropdown();
+        }
+
+        // Render usage
+        function renderUsage() {
+            const tbody = document.getElementById('usageTableBody');
+            if (feedUsage.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No usage records yet</td></tr>';
+                return;
+            }
+            tbody.innerHTML = feedUsage.map(u => `
+                <tr>
+                    <td>${formatDate(u.date)}</td>
+                    <td>${u.itemName || 'Unknown'}</td>
+                    <td>${u.quantity} ${u.unit || ''}</td>
+                    <td>${u.location || '-'}</td>
+                    <td>${u.loggedBy || '-'}</td>
+                    <td>${u.notes || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Render purchases
+        function renderPurchases() {
+            const tbody = document.getElementById('purchasesTableBody');
+            if (feedPurchases.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No purchases recorded</td></tr>';
+                return;
+            }
+            tbody.innerHTML = feedPurchases.map(p => `
+                <tr>
+                    <td>${formatDate(p.date)}</td>
+                    <td>${p.description}</td>
+                    <td>${p.quantity}</td>
+                    <td class="amount negative">$${(p.cost || 0).toLocaleString()}</td>
+                    <td>${p.vendor || '-'}</td>
+                    <td>${p.notes || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Populate dropdowns
+        function populateUsageItemDropdown() {
+            const select = document.getElementById('usageItem');
+            select.innerHTML = '<option value="">Select feed item...</option>' +
+                feedInventory.map(item => `<option value="${item._id}">${item.name} (${item.quantity} ${item.unit})</option>`).join('');
+        }
+
+        function populateLocationDropdown() {
+            const select = document.getElementById('usageLocation');
+            select.innerHTML = '<option value="">Select location...</option>' +
+                cattleLocations.map(loc => `<option value="${loc.name}">${loc.name}</option>`).join('');
+        }
+
+        // Modal functions
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openLocationModal() {
+            document.getElementById('locationName').value = '';
+            document.getElementById('locationHeadCount').value = '';
+            document.getElementById('locationNotes').value = '';
+            openModal('locationModal');
+        }
+
+        function openFeedModal() {
+            document.getElementById('feedName').value = '';
+            document.getElementById('feedQuantity').value = '';
+            document.getElementById('feedNotes').value = '';
+            openModal('feedModal');
+        }
+
+        function openUsageModal() {
+            populateUsageItemDropdown();
+            populateLocationDropdown();
+            openModal('usageModal');
+        }
+
+        function openPurchaseModal() {
+            document.getElementById('purchaseDescription').value = '';
+            document.getElementById('purchaseQuantity').value = '';
+            document.getElementById('purchaseCost').value = '';
+            document.getElementById('purchaseVendor').value = '';
+            document.getElementById('purchaseNotes').value = '';
+            openModal('purchaseModal');
+        }
+
+        // Save functions
+        async function saveLocation() {
+            const data = {
+                name: document.getElementById('locationName').value,
+                headCount: parseInt(document.getElementById('locationHeadCount').value) || 0,
+                year: parseInt(document.getElementById('locationYearInput').value),
+                startDate: document.getElementById('locationStartDate').value,
+                endDate: document.getElementById('locationEndDate').value || null,
+                cattleType: document.getElementById('locationType').value,
+                notes: document.getElementById('locationNotes').value
+            };
+
+            if (!data.name) {
+                showToast('Location name is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/feed/locations', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Location saved');
+                    closeModal('locationModal');
+                    loadLocations();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving location', 'error');
+            }
+        }
+
+        async function saveFeed() {
+            const data = {
+                type: document.getElementById('feedType').value,
+                name: document.getElementById('feedName').value,
+                quantity: parseInt(document.getElementById('feedQuantity').value) || 0,
+                unit: document.getElementById('feedUnit').value,
+                location: document.getElementById('feedLocation').value,
+                notes: document.getElementById('feedNotes').value
+            };
+
+            if (!data.name) {
+                showToast('Feed name is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/feed/inventory', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Feed item saved');
+                    closeModal('feedModal');
+                    loadInventory();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving feed item', 'error');
+            }
+        }
+
+        async function saveUsage() {
+            const data = {
+                itemId: document.getElementById('usageItem').value,
+                quantity: parseInt(document.getElementById('usageQuantity').value) || 0,
+                date: document.getElementById('usageDate').value,
+                location: document.getElementById('usageLocation').value,
+                notes: document.getElementById('usageNotes').value
+            };
+
+            if (!data.itemId || !data.quantity) {
+                showToast('Select item and quantity', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/feed/usage', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Usage logged');
+                    closeModal('usageModal');
+                    loadUsage();
+                    loadInventory();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error logging', 'error');
+                }
+            } catch (error) {
+                showToast('Error logging usage', 'error');
+            }
+        }
+
+        async function savePurchase() {
+            const data = {
+                type: document.getElementById('purchaseType').value,
+                description: document.getElementById('purchaseDescription').value,
+                quantity: parseInt(document.getElementById('purchaseQuantity').value) || 0,
+                cost: parseFloat(document.getElementById('purchaseCost').value) || 0,
+                date: document.getElementById('purchaseDate').value,
+                vendor: document.getElementById('purchaseVendor').value,
+                addToInventory: document.getElementById('purchaseAddInventory').value === 'yes',
+                notes: document.getElementById('purchaseNotes').value
+            };
+
+            if (!data.description) {
+                showToast('Description is required', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cattle/feed/purchases', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Purchase saved');
+                    closeModal('purchaseModal');
+                    loadPurchases();
+                    if (data.addToInventory) loadInventory();
+                    updateSummary();
+                } else {
+                    showToast(result.message || 'Error saving', 'error');
+                }
+            } catch (error) {
+                showToast('Error saving purchase', 'error');
+            }
+        }
+
+        async function deleteLocation(id) {
+            if (!confirm('Delete this location record?')) return;
+            try {
+                const response = await fetch(`/api/cattle/feed/locations/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Location deleted');
+                    loadLocations();
+                    updateSummary();
+                }
+            } catch (error) {
+                showToast('Error deleting location', 'error');
+            }
+        }
+
+        function useInventory(id) {
+            document.getElementById('usageItem').value = id;
+            openUsageModal();
+        }
+
+        // Helpers
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return new Date(dateStr).toLocaleDateString();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast active ' + type;
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        function updateFeedFields() {
+            const type = document.getElementById('feedType').value;
+            const unitSelect = document.getElementById('feedUnit');
+            if (type === 'hay') {
+                unitSelect.value = 'bales';
+            } else if (type === 'mineral' || type === 'protein') {
+                unitSelect.value = 'tubs';
+            }
+        }
+    </script>
+</body>
+</html>

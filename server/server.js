@@ -49,15 +49,31 @@ const chemicalRoutes = require('./routes/chemicals');
 const landManagementRoutes = require('./routes/landManagement');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
+const equipmentInventoryRoutes = require('./routes/equipmentInventory');
 const rentalRoutes = require('./routes/rentals');
 const seasonPassRoutes = require('./routes/seasonPass');
 const landlordRoutes = require('./routes/landlord');
 const farmerRoutes = require('./routes/farmer');
 const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
+const realEstateRoutes = require('./routes/realEstate');
+const netWorthRoutes = require('./routes/netWorth');
 const cattleRoutes = require('./routes/cattle');
 const invoiceRoutes = require('./routes/invoices');
 const bankingRoutes = require('./routes/banking');
+const capitalRoutes = require('./routes/capital');
+const cropInsuranceRoutes = require('./routes/cropInsurance');
+const cropInventoryRoutes = require('./routes/cropInventory');
+const farmingDashboardRoutes = require('./routes/farmingDashboard');
+const seedOrderRoutes = require('./routes/seedOrder');
+const imageUploadRoutes = require('./routes/imageUpload');
+const employeeRoutes = require('./routes/employees');
+const croppingFieldRoutes = require('./routes/croppingFields');
+const stripeRoutes = require('./routes/stripe');
+const stripeController = require('./controllers/stripeController');
+
+// Stripe webhook needs raw body - must be before express.json()
+// This is handled separately below after static files
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -73,15 +89,33 @@ app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/land-management', landManagementRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
+app.use('/api/equipment/inventory', equipmentInventoryRoutes);
 app.use('/api/rentals', rentalRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
 app.use('/api/landlord', landlordRoutes);
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
+app.use('/api/real-estate', realEstateRoutes);
+app.use('/api/net-worth', netWorthRoutes);
 app.use('/api/cattle', cattleRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/banking', bankingRoutes);
+app.use('/api/capital', capitalRoutes);
+app.use('/api/crop-insurance', cropInsuranceRoutes);
+app.use('/api/crop-inventory', cropInventoryRoutes);
+app.use('/api/farming-dashboard', farmingDashboardRoutes);
+app.use('/api/seed-orders', seedOrderRoutes);
+app.use('/api/upload', imageUploadRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/cropping-fields', croppingFieldRoutes);
+app.use('/api/stripe', stripeRoutes);
+
+// Stripe webhook endpoint (needs raw body)
+app.post('/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeController.handleWebhook
+);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -162,6 +196,19 @@ app.get('/admin/financials/net-worth', (req, res) => {
 // Banking Dashboard route
 app.get('/admin/banking', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/banking.html'));
+});
+
+// Farming Dashboard routes
+app.get('/admin/farming', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
+});
+
+app.get('/admin/farming-dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
+});
+
+app.get('/admin/farming/seed-orders', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming/seed-orders.html'));
 });
 
 // User routes
@@ -270,6 +317,10 @@ app.get('/my-account', (req, res) => {
 
 app.get('/submit-review', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/submit-review.html'));
+});
+
+app.get('/internal', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/internal.html'));
 });
 
 // Main route - must come last among GET routes

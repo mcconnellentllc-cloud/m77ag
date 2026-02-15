@@ -3,98 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - M77 AG</title>
+    <title>M77 AG - Farm Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #f5f3f0;
             color: #2c2c2c;
+            min-height: 100vh;
         }
-
         .header {
             background: #1a1a1a;
             color: white;
-            padding: 20px 40px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-
         .logo {
-            font-size: 28px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
             font-weight: 700;
-            letter-spacing: 2px;
             color: #d4af37;
         }
-
         .header-right {
             display: flex;
             gap: 20px;
             align-items: center;
         }
-
         .user-name {
             font-size: 14px;
-            color: #d4af37;
+            color: rgba(255,255,255,0.8);
         }
-
         .logout-btn {
-            padding: 10px 20px;
-            background: #d4af37;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 5px;
+            padding: 8px 16px;
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
-
         .logout-btn:hover {
-            background: #c49d2e;
+            background: #d4af37;
+            color: #1a1a1a;
         }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px;
+            padding: 30px;
         }
-
-        .welcome-section {
-            margin-bottom: 40px;
+        .page-header {
+            margin-bottom: 30px;
         }
-
         .page-title {
-            font-size: 42px;
-            margin-bottom: 10px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
             color: #1a1a1a;
+            margin-bottom: 5px;
         }
-
         .page-subtitle {
-            font-size: 18px;
+            font-size: 14px;
             color: #666;
         }
 
-        .business-grid {
+        /* Quick Stats Bar */
+        .stats-bar {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
             margin-bottom: 40px;
         }
+        .stat-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-        .business-card {
-            background: white;
-            border-radius: 15px;
+        /* Section Headers */
+        .section-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-header::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #2d5016;
+            border-radius: 2px;
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card-grid.two-col {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        /* Navigation Cards */
+        .nav-card {
+            background: #fff;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
             text-decoration: none;
             color: inherit;
             display: block;
@@ -195,11 +241,6 @@
             justify-content: center;
         }
 
-        .card-title {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
         .card-body {
             padding: 30px;
         }
@@ -229,14 +270,6 @@
             font-size: 24px;
             font-weight: 700;
             color: #2d5016;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
         }
 
         .view-dashboard-btn {
@@ -327,154 +360,503 @@
 
         .payment-account-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-            border-color: #d4af37;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
-        .payment-logo {
-            width: 120px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 700;
-            border-radius: 8px;
-            padding: 10px;
+        .nav-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
-
-        .paypal-logo {
-            background: #0070ba;
-            color: white;
+        .card-icon-bar {
+            height: 8px;
+            background: #2d5016;
         }
+        .card-icon-bar.gold { background: #d4af37; }
+        .card-icon-bar.blue { background: #3498db; }
+        .card-icon-bar.green { background: #27ae60; }
+        .card-icon-bar.orange { background: #e67e22; }
+        .card-icon-bar.red { background: #c0392b; }
+        .card-icon-bar.dark { background: #1a1a1a; }
 
-        .venmo-logo {
-            background: #3d95ce;
-            color: white;
+        .card-content {
+            padding: 20px;
         }
-
-        .payment-title {
-            font-size: 20px;
-            font-weight: 600;
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
             color: #1a1a1a;
+            margin-bottom: 6px;
         }
-
-        .payment-description {
-            font-size: 14px;
+        .card-desc {
+            font-size: 13px;
             color: #666;
             line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .card-meta-value {
+            font-weight: 600;
+            color: #2d5016;
         }
 
-        .access-btn {
+        /* Big Feature Card */
+        .feature-card {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            border-radius: 12px;
+            padding: 30px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+        .feature-content h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .feature-content p {
+            font-size: 14px;
+            opacity: 0.85;
+            max-width: 500px;
+        }
+        .feature-btn {
             background: #d4af37;
             color: #1a1a1a;
-            padding: 12px 35px;
+            padding: 12px 24px;
             border-radius: 6px;
             font-weight: 600;
             font-size: 14px;
-            transition: background 0.3s;
-            border: none;
-            cursor: pointer;
+            white-space: nowrap;
         }
 
-        .payment-account-card:hover .access-btn {
-            background: #c49d2e;
+        /* External Links Section */
+        .external-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .external-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .external-link:hover {
+            border-color: #d4af37;
+            background: #fffdf5;
+        }
+        .external-link .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .external-link .icon.paypal { background: #0070ba; color: #fff; }
+        .external-link .icon.venmo { background: #3d95ce; color: #fff; }
+        .external-link .icon.bank { background: #2d5016; color: #fff; }
+
+        /* Coming Soon */
+        .coming-soon {
+            opacity: 0.5;
+            pointer-events: none;
+            position: relative;
+        }
+        .coming-soon::after {
+            content: 'COMING SOON';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
+        /* Footer */
         .footer {
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             color: #999;
-            font-size: 14px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+            .card-grid.two-col { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .card-grid { grid-template-columns: 1fr; }
+            .feature-card { flex-direction: column; text-align: center; gap: 20px; }
+            .employee-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Employee Cards */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .employee-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        .employee-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .employee-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            padding: 20px;
+            color: white;
+        }
+        .employee-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        .employee-role {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+        .employee-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .employee-status.clocked-in {
+            background: rgba(39, 174, 96, 0.3);
+            color: #27ae60;
+        }
+        .employee-status.clocked-out {
+            background: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8);
+        }
+        .employee-body {
+            padding: 20px;
+        }
+        .employee-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .emp-stat {
+            text-align: center;
+            padding: 12px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+        .emp-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+        .emp-stat-value.negative {
+            color: #c0392b;
+        }
+        .emp-stat-value.positive {
+            color: #27ae60;
+        }
+        .emp-stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .profit-share-banner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .profit-share-label {
+            font-size: 11px;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .profit-share-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: white;
+        }
+        .profit-share-percent {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        .employee-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .emp-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .emp-btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+        .emp-btn-primary:hover {
+            background: #3d6b1f;
+        }
+        .emp-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .emp-btn-secondary:hover {
+            background: #e0e0e0;
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <div class="logo">M77 AG</div>
         <div class="header-right">
             <span class="user-name">Welcome, Admin</span>
             <button class="logout-btn" onclick="logout()">LOGOUT</button>
         </div>
-    </div>
+    </header>
 
     <div class="container">
-        <div class="welcome-section">
-            <h1 class="page-title">Admin Dashboard</h1>
-            <p class="page-subtitle">Manage all aspects of M77 AG operations</p>
+        <div class="page-header">
+            <h1 class="page-title">Farm Management</h1>
+            <p class="page-subtitle">Your central hub for M77 AG operations</p>
         </div>
 
-        <div class="overview-section">
-            <h2 class="section-title">Quick Overview</h2>
-            <div class="overview-grid">
-                <div class="overview-card">
-                    <div class="overview-value" id="totalRevenue">$0</div>
-                    <div class="overview-label">Total Revenue YTD</div>
-                </div>
-                <div class="overview-card">
-                    <div class="overview-value" id="activeBookings">0</div>
-                    <div class="overview-label">Active Bookings</div>
-                </div>
-                <div class="overview-card">
-                    <div class="overview-value" id="acresManaged">2,710</div>
-                    <div class="overview-label">Total Acres</div>
-                </div>
-                <div class="overview-card">
-                    <div class="overview-value" id="activeCustomers">0</div>
-                    <div class="overview-label">Active Customers</div>
-                </div>
+        <!-- Quick Stats -->
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-value" id="equipmentCount">--</div>
+                <div class="stat-label">Equipment</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="equipmentValue">--</div>
+                <div class="stat-label">Equipment Value</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="totalAcres">2,710</div>
+                <div class="stat-label">Acres</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="grainInventory">--</div>
+                <div class="stat-label">Bushels Stored</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="netEquity">--</div>
+                <div class="stat-label">Net Equity</div>
             </div>
         </div>
 
-        <div class="payment-accounts-section">
-            <h2 class="section-title">Payment Accounts</h2>
-            <div class="payment-grid">
-                <a href="https://www.paypal.com/businessmanage/account/revenue" target="_blank" class="payment-account-card">
-                    <div class="payment-logo paypal-logo">PayPal</div>
-                    <div class="payment-title">PayPal Business</div>
-                    <div class="payment-description">View payments, manage transactions, and access your PayPal business account revenue</div>
-                    <button class="access-btn">Access PayPal Account</button>
-                </a>
-
-                <a href="https://venmo.com/" target="_blank" class="payment-account-card">
-                    <div class="payment-logo venmo-logo">Venmo</div>
-                    <div class="payment-title">Venmo Business</div>
-                    <div class="payment-description">Check Venmo payments, view transaction history, and manage your Venmo business account</div>
-                    <button class="access-btn">Access Venmo Account</button>
-                </a>
+        <!-- EQUIPMENT SECTION -->
+        <div class="section-header">Equipment</div>
+        <a href="/admin/equipment-manager.html" class="feature-card">
+            <div class="feature-content">
+                <h2>Equipment Manager</h2>
+                <p>All tractors, harvesters, implements, vehicles, and trailers. View by category, track values, debt, payments, and update equipment data.</p>
             </div>
-        </div>
+            <div class="feature-btn">Open Equipment</div>
+        </a>
 
-        <div class="business-grid">
-            <!-- FINANCIALS - Primary Card -->
-            <a href="/admin/financials" class="business-card" style="grid-column: span 2;">
-                <div class="card-header" style="background: linear-gradient(135deg, #1a5f2a 0%, #2d8f4a 100%);">
-                    <div class="card-icon">$</div>
-                    <div class="card-title">Financial Command Center</div>
-                </div>
-                <div class="card-body">
-                    <p class="card-description">
-                        Complete farm financial management - track profitability by enterprise, manage expenses, monitor cash flow, and generate reports. Your all-in-one dashboard for Crops, Cattle, Equipment, and Capital Investments.
-                    </p>
-                    <div class="card-stats four-col">
-                        <div class="stat-item">
-                            <div class="stat-number" id="ytdProfit">--</div>
-                            <div class="stat-label">YTD Profit</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="headCount">--</div>
-                            <div class="stat-label">Head Count</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="cropAcres">--</div>
-                            <div class="stat-label">Crop Acres</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="assetValue">--</div>
-                            <div class="stat-label">Asset Value</div>
-                        </div>
+        <!-- CROPS & GRAIN SECTION -->
+        <div class="section-header">Crops & Grain</div>
+        <div class="card-grid">
+            <a href="/admin/farming/inventory.html" class="nav-card">
+                <div class="card-icon-bar gold"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Grain Inventory</h3>
+                    <p class="card-desc">Track grain in bins, elevator storage, contracts, and sales. Monitor storage by location.</p>
+                    <div class="card-meta">
+                        <span>Bushels Stored</span>
+                        <span class="card-meta-value" id="grainBushels">--</span>
                     </div>
-                    <div class="view-dashboard-btn">Enter Financial Dashboard</div>
+                </div>
+            </a>
+            <a href="/admin/farming/seed-orders.html" class="nav-card">
+                <div class="card-icon-bar green"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Seed Orders</h3>
+                    <p class="card-desc">Manage seed purchases, varieties, and planting allocations for upcoming seasons.</p>
+                    <div class="card-meta">
+                        <span>2026 Season</span>
+                        <span class="card-meta-value">Pioneer Hybrids</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/farm-operations.html" class="nav-card">
+                <div class="card-icon-bar"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Farm Operations</h3>
+                    <p class="card-desc">All fields by farm with List/Cards view. Crop rotations, acres, and field details.</p>
+                    <div class="card-meta">
+                        <span>Fields</span>
+                        <span class="card-meta-value">73 Active</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- LIVESTOCK SECTION -->
+        <div class="section-header">Livestock</div>
+        <div class="card-grid">
+            <a href="/admin/financials/cattle.html" class="nav-card">
+                <div class="card-icon-bar" style="background: #8B4513;"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Cattle Management</h3>
+                    <p class="card-desc">Complete herd management - individual records, calving, weights, health, breeding, and herd value.</p>
+                    <div class="card-meta">
+                        <span>Head Count</span>
+                        <span class="card-meta-value" id="cattleCount">--</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/financials/feed.html" class="nav-card">
+                <div class="card-icon-bar" style="background: #d4a54a;"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Feed & Locations</h3>
+                    <p class="card-desc">Cattle locations by pasture, hay inventory, mineral tubs, protein, and feed usage tracking.</p>
+                    <div class="card-meta">
+                        <span>Feed Inventory</span>
+                        <span class="card-meta-value">Track</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/financials/vet-supplies.html" class="nav-card">
+                <div class="card-icon-bar" style="background: #27ae60;"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Vet & Supplies</h3>
+                    <p class="card-desc">Veterinary visits, vaccines, medications, and supply inventory with expense tracking.</p>
+                    <div class="card-meta">
+                        <span>Medical Records</span>
+                        <span class="card-meta-value">Track</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- FINANCIAL SECTION -->
+        <div class="section-header">Financial</div>
+        <div class="card-grid">
+            <a href="/admin/financials/capital.html" class="nav-card">
+                <div class="card-icon-bar" style="background: #2d5016;"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Capital & Land</h3>
+                    <p class="card-desc">Real estate, vehicles, buildings, and major assets. Track values, loans, and equity.</p>
+                    <div class="card-meta">
+                        <span>Total Assets</span>
+                        <span class="card-meta-value" id="capitalValue">--</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/net-worth.html" class="nav-card">
+                <div class="card-icon-bar blue"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Net Worth Statement</h3>
+                    <p class="card-desc">Complete financial snapshot - assets, liabilities, and equity calculations for reporting.</p>
+                    <div class="card-meta">
+                        <span>Net Equity</span>
+                        <span class="card-meta-value" id="netWorthValue">--</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- HR / EMPLOYEES SECTION -->
+        <div class="section-header">HR / Employees</div>
+        <div class="employee-grid" id="employeeCards">
+            <!-- Employee cards will be loaded dynamically -->
+            <div class="employee-card">
+                <div class="employee-header">
+                    <div class="employee-name">Loading...</div>
+                    <div class="employee-role">Please wait</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAND & PROPERTY SECTION -->
+        <div class="section-header">Land & Property</div>
+        <div class="card-grid">
+            <a href="/admin/real-estate.html" class="nav-card">
+                <div class="card-icon-bar orange"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Real Estate</h3>
+                    <p class="card-desc">Owned land, leased acres, property values, and landlord information.</p>
+                    <div class="card-meta">
+                        <span>Total Acres</span>
+                        <span class="card-meta-value">2,710</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/rentals.html" class="nav-card">
+                <div class="card-icon-bar"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Rental Properties</h3>
+                    <p class="card-desc">Manage rental applications, tenants, lease agreements, and property showings.</p>
+                    <div class="card-meta">
+                        <span>Properties</span>
+                        <span class="card-meta-value">1 Active</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- OTHER INCOME SECTION -->
+        <div class="section-header">Other Income</div>
+        <div class="card-grid">
+            <a href="/admin/hunting-bookings.html" class="nav-card">
+                <div class="card-icon-bar red"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Hunting Reservations</h3>
+                    <p class="card-desc">Manage hunting bookings, view calendar, process payments, and liability waivers.</p>
+                    <div class="card-meta">
+                        <span>Bookings</span>
+                        <span class="card-meta-value" id="huntingBookings">--</span>
+                    </div>
                 </div>
             </a>
 
@@ -538,7 +920,7 @@
                     </p>
                     <div class="card-stats">
                         <div class="stat-item">
-                            <div class="stat-number" id="huntingBookings">0</div>
+                            <div class="stat-number" id="huntingBookings2">0</div>
                             <div class="stat-label">Bookings</div>
                         </div>
                         <div class="stat-item">
@@ -550,80 +932,57 @@
                             <div class="stat-label">Acres</div>
                         </div>
                     </div>
-                    <div class="view-dashboard-btn">View Dashboard</div>
                 </div>
             </a>
 
-            <a href="/admin/equipment" class="business-card">
-                <div class="card-header" style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);">
-                    <div class="card-icon">Sales</div>
-                    <div class="card-title">Equipment Sales</div>
-                </div>
-                <div class="card-body">
-                    <p class="card-description">
-                        Manage equipment listings, view buyer offers, track negotiations, and see marketplace advertising suggestions.
-                    </p>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <div class="stat-number" id="equipmentListings">1</div>
-                            <div class="stat-label">Listings</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="equipmentOffers">0</div>
-                            <div class="stat-label">Offers</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="equipmentValue">$34.5K</div>
-                            <div class="stat-label">Value</div>
-                        </div>
+            <a href="/admin/equipment.html" class="nav-card">
+                <div class="card-icon-bar dark"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Equipment Sales</h3>
+                    <p class="card-desc">View buyer offers, track negotiations, and manage for-sale listings.</p>
+                    <div class="card-meta">
+                        <span>Active Offers</span>
+                        <span class="card-meta-value" id="equipmentOffers">--</span>
                     </div>
-                    <div class="view-dashboard-btn">View Dashboard</div>
                 </div>
             </a>
+        </div>
 
-            <a href="/admin/rentals" class="business-card">
-                <div class="card-header" style="background: linear-gradient(135deg, #2d5016 0%, #3d6520 100%);">
-                    <div class="card-icon">🏠</div>
-                    <div class="card-title">Rental Properties</div>
-                </div>
-                <div class="card-body">
-                    <p class="card-description">
-                        View rental applications, showing requests, manage tenants, and track lease agreements.
-                    </p>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <div class="stat-number" id="rentalApplications">-</div>
-                            <div class="stat-label">Applications</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="rentalShowings">-</div>
-                            <div class="stat-label">Showings</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="rentalProperties">1</div>
-                            <div class="stat-label">Properties</div>
-                        </div>
-                    </div>
-                    <div class="view-dashboard-btn">View Dashboard</div>
+        <!-- PUBLIC SITE -->
+        <div class="section-header">Public Website</div>
+        <div class="card-grid two-col">
+            <a href="/forsale.html" class="nav-card">
+                <div class="card-icon-bar gold"></div>
+                <div class="card-content">
+                    <h3 class="card-title">View For Sale Page</h3>
+                    <p class="card-desc">See the public equipment listings as customers see them.</p>
                 </div>
             </a>
+            <a href="/" class="nav-card">
+                <div class="card-icon-bar"></div>
+                <div class="card-content">
+                    <h3 class="card-title">View Main Website</h3>
+                    <p class="card-desc">View the public M77 AG website homepage.</p>
+                </div>
+            </a>
+        </div>
 
-            <div class="business-card" style="opacity: 0.5; cursor: not-allowed;">
-                <div class="card-header" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
-                    <div class="card-icon">Chemical</div>
-                    <div class="card-title">Chemical Sales</div>
-                </div>
-                <div class="card-body">
-                    <p class="card-description">
-                        Coming soon - Manage chemical inventory, track sales, and maintain spray records.
-                    </p>
-                </div>
-            </div>
+        <!-- External Links -->
+        <div class="section-header">Quick Links</div>
+        <div class="external-links">
+            <a href="https://www.paypal.com/businessmanage/account/revenue" target="_blank" class="external-link">
+                <span class="icon paypal">PP</span>
+                PayPal Business
+            </a>
+            <a href="https://venmo.com/" target="_blank" class="external-link">
+                <span class="icon venmo">V</span>
+                Venmo
+            </a>
         </div>
     </div>
 
     <div class="footer">
-        2025 M77 AG. All rights reserved. McConnell Enterprises LLC.
+        2025 M77 AG - McConnell Enterprises LLC
     </div>
 
     <script>
@@ -636,6 +995,7 @@
             return '$' + Math.abs(amount).toLocaleString();
         }
 
+        // Load dashboard data
         async function loadDashboardData() {
             try {
                 const token = localStorage.getItem('adminToken');
@@ -646,59 +1006,228 @@
 
                 const headers = { 'Authorization': 'Bearer ' + token };
 
-                // Fetch bookings and banker overview in parallel
-                const [bookingsRes, bankingRes] = await Promise.all([
-                    fetch('/api/bookings', { headers }).catch(() => null),
-                    fetch('/api/banking/bankers-overview', { headers }).catch(() => null)
-                ]);
+                // Load equipment stats
+                loadEquipmentStats();
 
-                if (bookingsRes && bookingsRes.ok) {
-                    const data = await bookingsRes.json();
-                    if (data.success) {
-                        document.getElementById('huntingBookings').textContent = data.count || 0;
-                        document.getElementById('activeBookings').textContent = data.count || 0;
-                    }
-                }
+                // Load hunting bookings
+                loadHuntingStats(token);
 
-                if (bankingRes && bankingRes.ok) {
-                    const result = await bankingRes.json();
-                    if (result.success && result.data) {
-                        const d = result.data;
+                // Load grain inventory
+                loadGrainStats();
 
-                        // Quick overview stats
-                        document.getElementById('totalRevenue').textContent = formatCurrency(d.incomeStatement.ytdIncome);
-                        document.getElementById('assetValue').textContent = formatCurrency(d.balanceSheet.assets.totalAssets);
+                // Load cattle count
+                loadCattleStats(token);
 
-                        if (d.operationOverview) {
-                            document.getElementById('acresManaged').textContent = (d.operationOverview.totalAcres || 2710).toLocaleString();
-                            document.getElementById('headCount').textContent = d.operationOverview.cattleHead || '--';
-                            document.getElementById('cropAcres').textContent = d.operationOverview.totalAcres ? d.operationOverview.totalAcres.toLocaleString() : '--';
-                        }
+                // Load employee cards
+                loadEmployeeCards();
 
-                        const noi = d.incomeStatement.netOperatingIncome;
-                        document.getElementById('ytdProfit').textContent = (noi < 0 ? '-' : '') + formatCurrency(Math.abs(noi));
+                // Fetch banker overview for banking card KPIs
+                try {
+                    const bankingRes = await fetch('/api/banking/bankers-overview', { headers }).catch(() => null);
 
-                        // Banking card KPIs
-                        document.getElementById('bankNetWorth').textContent = formatCurrency(d.balanceSheet.netWorth);
-                        document.getElementById('bankTotalDebt').textContent = formatCurrency(d.balanceSheet.liabilities.totalLiabilities);
-                        document.getElementById('bankCashReserve').textContent = formatCurrency(d.balanceSheet.assets.current.cash);
-                        document.getElementById('bankDebtToAsset').textContent = d.keyRatios.debtToAsset.toFixed(1) + '%';
+                    if (bankingRes && bankingRes.ok) {
+                        const result = await bankingRes.json();
+                        if (result.success && result.data) {
+                            const d = result.data;
 
-                        if (d.keyRatios.dscr !== null) {
-                            const dscr = d.keyRatios.dscr;
-                            let rating = 'below';
-                            let ratingText = 'Below Standard';
-                            if (dscr >= 1.5) { rating = 'excellent'; ratingText = 'Excellent'; }
-                            else if (dscr >= 1.25) { rating = 'good'; ratingText = 'Good'; }
-                            else if (dscr >= 1.0) { rating = 'adequate'; ratingText = 'Adequate'; }
-                            document.getElementById('bankDSCR').innerHTML = dscr.toFixed(2) + 'x <span class="dscr-rating ' + rating + '">' + ratingText + '</span>';
-                        } else {
-                            document.getElementById('bankDSCR').textContent = 'N/A';
+                            // Banking card KPIs
+                            document.getElementById('bankNetWorth').textContent = formatCurrency(d.balanceSheet.netWorth);
+                            document.getElementById('bankTotalDebt').textContent = formatCurrency(d.balanceSheet.liabilities.totalLiabilities);
+                            document.getElementById('bankCashReserve').textContent = formatCurrency(d.balanceSheet.assets.current.cash);
+                            document.getElementById('bankDebtToAsset').textContent = d.keyRatios.debtToAsset.toFixed(1) + '%';
+
+                            if (d.keyRatios.dscr !== null) {
+                                const dscr = d.keyRatios.dscr;
+                                let rating = 'below';
+                                let ratingText = 'Below Standard';
+                                if (dscr >= 1.5) { rating = 'excellent'; ratingText = 'Excellent'; }
+                                else if (dscr >= 1.25) { rating = 'good'; ratingText = 'Good'; }
+                                else if (dscr >= 1.0) { rating = 'adequate'; ratingText = 'Adequate'; }
+                                document.getElementById('bankDSCR').innerHTML = dscr.toFixed(2) + 'x <span class="dscr-rating ' + rating + '">' + ratingText + '</span>';
+                            } else {
+                                document.getElementById('bankDSCR').textContent = 'N/A';
+                            }
                         }
                     }
+                } catch (bankErr) {
+                    console.error('Error loading banking data:', bankErr);
                 }
+
             } catch (error) {
-                console.error('Error loading dashboard data:', error);
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        async function loadEquipmentStats() {
+            try {
+                const response = await fetch('/api/equipment/inventory/summary');
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('equipmentCount').textContent = data.summary.totalEquipment || 0;
+                    document.getElementById('equipmentValue').textContent = '$' + (data.summary.totalValue || 0).toLocaleString();
+                    document.getElementById('netEquity').textContent = '$' + (data.summary.netWorth || 0).toLocaleString();
+                }
+            } catch (e) {
+                console.error('Error loading equipment stats:', e);
+            }
+        }
+
+        async function loadHuntingStats(token) {
+            try {
+                const response = await fetch('/api/bookings', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('huntingBookings').textContent = data.count || 0;
+                }
+            } catch (e) {
+                document.getElementById('huntingBookings').textContent = '0';
+            }
+        }
+
+        async function loadGrainStats() {
+            try {
+                const response = await fetch('/api/grain-inventory');
+                const data = await response.json();
+                if (data.success && data.bins) {
+                    let totalBushels = 0;
+                    data.bins.forEach(bin => {
+                        totalBushels += bin.currentBushels || 0;
+                    });
+                    document.getElementById('grainInventory').textContent = totalBushels.toLocaleString();
+                    document.getElementById('grainBushels').textContent = totalBushels.toLocaleString() + ' bu';
+                }
+            } catch (e) {
+                document.getElementById('grainInventory').textContent = '--';
+            }
+        }
+
+        async function loadCattleStats(token) {
+            try {
+                const response = await fetch('/api/cattle', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                if (data.success && data.cattle) {
+                    document.getElementById('cattleCount').textContent = data.cattle.length;
+                } else if (Array.isArray(data)) {
+                    document.getElementById('cattleCount').textContent = data.length;
+                }
+            } catch (e) {
+                document.getElementById('cattleCount').textContent = '--';
+            }
+        }
+
+        // Current profit value (this would come from financial calculations)
+        // For now, using placeholder - will be connected to actual profit tracking
+        let currentProfit = -125000; // Starting negative as mentioned
+
+        async function loadEmployeeCards() {
+            try {
+                const response = await fetch('/api/employees/summary/all');
+                const data = await response.json();
+
+                const container = document.getElementById('employeeCards');
+
+                if (!data.success || !data.summary || data.summary.length === 0) {
+                    container.innerHTML = `
+                        <div class="employee-card">
+                            <div class="employee-header">
+                                <div class="employee-name">No Employees Found</div>
+                                <div class="employee-role">Add employees to get started</div>
+                            </div>
+                            <div class="employee-body">
+                                <a href="/admin/employees.html" class="emp-btn emp-btn-primary" style="display: block; text-align: center;">
+                                    Add Employee
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.summary.map(emp => {
+                    const creditClass = emp.creditOwed >= 0 ? 'negative' : 'positive';
+                    const profitShare = emp.hasProfitShare ? (currentProfit * (emp.profitSharePercent / 100)) : 0;
+
+                    return `
+                        <div class="employee-card" data-id="${emp._id}">
+                            <div class="employee-header">
+                                <div class="employee-name">${emp.fullName}</div>
+                                <div class="employee-role">${emp.position || 'Contract Labor'}</div>
+                                <div class="employee-status ${emp.isClockedIn ? 'clocked-in' : 'clocked-out'}">
+                                    ${emp.isClockedIn ? 'Clocked In' : 'Clocked Out'}
+                                </div>
+                            </div>
+                            <div class="employee-body">
+                                ${emp.hasProfitShare ? `
+                                    <div class="profit-share-banner">
+                                        <div class="profit-share-label">Profit Share (${emp.profitSharePercent}%)</div>
+                                        <div class="profit-share-value ${profitShare >= 0 ? '' : 'negative'}">
+                                            $${Math.abs(profitShare).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                        </div>
+                                        <div class="profit-share-percent">${profitShare >= 0 ? 'Earned' : 'Current Deficit'}</div>
+                                    </div>
+                                ` : ''}
+                                <div class="employee-stats">
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value">$${emp.wagesEarned.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">Wages Earned</div>
+                                    </div>
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value">$${emp.totalPaid.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">Total Paid</div>
+                                    </div>
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value ${creditClass}">$${Math.abs(emp.creditOwed).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">${emp.creditOwed >= 0 ? 'Credit Owed' : 'Overpaid'}</div>
+                                    </div>
+                                    <div class="emp-stat">
+                                        <div class="emp-stat-value">$${emp.reimbursementsOwed.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                        <div class="emp-stat-label">Reimbursements</div>
+                                    </div>
+                                </div>
+                                <div class="employee-actions">
+                                    <a href="/admin/employees.html?id=${emp._id}" class="emp-btn emp-btn-primary">Manage</a>
+                                    <button class="emp-btn emp-btn-secondary" onclick="toggleClock('${emp._id}', ${emp.isClockedIn})">
+                                        ${emp.isClockedIn ? 'Clock Out' : 'Clock In'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (e) {
+                console.error('Error loading employee cards:', e);
+                document.getElementById('employeeCards').innerHTML = `
+                    <div class="employee-card">
+                        <div class="employee-header">
+                            <div class="employee-name">Error Loading Employees</div>
+                            <div class="employee-role">Please refresh the page</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function toggleClock(employeeId, isClockedIn) {
+            try {
+                const endpoint = isClockedIn ? 'clock-out' : 'clock-in';
+                const response = await fetch(`/api/employees/${employeeId}/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadEmployeeCards(); // Refresh the cards
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                console.error('Error toggling clock:', e);
+                alert('Failed to update clock status');
             }
         }
 

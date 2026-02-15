@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Net Worth Dashboard - M77 AG Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --m77-green: #2d5a27;
+      --m77-gold: #d4a84b;
+      --m77-dark: #1a1a1a;
+      --enterprise-blue: #1a5276;
+      --personal-purple: #6c3483;
+    }
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar {
+      background: linear-gradient(135deg, var(--m77-dark) 0%, var(--m77-green) 100%);
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--m77-gold) !important;
+    }
+
+    /* Grand Total Card */
+    .grand-total-card {
+      background: linear-gradient(135deg, var(--m77-green) 0%, var(--m77-dark) 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .grand-total-card .total-label {
+      font-size: 1rem;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .grand-total-card .total-value {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--m77-gold);
+    }
+    .grand-total-card .breakdown {
+      margin-top: 20px;
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .grand-total-card .breakdown-item {
+      text-align: center;
+    }
+    .grand-total-card .breakdown-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .grand-total-card .breakdown-label {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    /* Entity Cards */
+    .entity-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      border-left: 5px solid var(--m77-green);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .entity-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .entity-card.m77-ag {
+      border-left-color: var(--m77-green);
+    }
+    .entity-card.mcconnell-enterprises {
+      border-left-color: var(--enterprise-blue);
+    }
+    .entity-card.personal {
+      border-left-color: var(--personal-purple);
+    }
+    .entity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .entity-name {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--m77-dark);
+    }
+    .entity-net-worth {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--m77-green);
+    }
+    .entity-net-worth.negative {
+      color: #dc3545;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+    }
+    .stat-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+    .stat-box.assets {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    }
+    .stat-box.liabilities {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    }
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--m77-dark);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Asset/Liability Breakdown */
+    .breakdown-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .breakdown-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .breakdown-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Upcoming Payments */
+    .payments-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .payment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .payment-item:last-child {
+      border-bottom: none;
+    }
+    .payment-item.overdue {
+      background: #fff5f5;
+      margin: 0 -15px;
+      padding: 12px 15px;
+      border-radius: 8px;
+    }
+    .payment-info {
+      flex: 1;
+    }
+    .payment-name {
+      font-weight: 600;
+      color: var(--m77-dark);
+    }
+    .payment-entity {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .payment-amount {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--m77-green);
+    }
+    .payment-date {
+      font-size: 0.85rem;
+      color: #666;
+      text-align: right;
+    }
+    .payment-date.overdue {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    /* Add Asset/Liability Modal */
+    .btn-m77 {
+      background-color: var(--m77-green);
+      border-color: var(--m77-green);
+      color: white;
+    }
+    .btn-m77:hover {
+      background-color: #1e3d1a;
+      border-color: #1e3d1a;
+      color: white;
+    }
+
+    /* Quick Links */
+    .quick-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .quick-link {
+      font-size: 0.85rem;
+      color: var(--m77-green);
+      text-decoration: none;
+    }
+    .quick-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/dashboard">
+        <i class="bi bi-building"></i> M77 AG Admin
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/equipment-manager.html">Equipment</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/real-estate.html">Real Estate</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/net-worth.html">Net Worth</a>
+          </li>
+        </ul>
+        <button class="btn btn-outline-light btn-sm" onclick="logout()">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2><i class="bi bi-graph-up-arrow text-success"></i> Net Worth Dashboard</h2>
+        <p class="text-muted mb-0">Complete financial overview across all entities</p>
+      </div>
+      <div>
+        <button class="btn btn-outline-secondary me-2" onclick="loadData()">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Grand Total -->
+    <div class="grand-total-card">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <div class="total-label">Combined Net Worth</div>
+          <div class="total-value" id="grandNetWorth">$0</div>
+        </div>
+        <div class="col-md-8">
+          <div class="breakdown">
+            <div class="breakdown-item">
+              <div class="breakdown-value text-success" id="grandAssets">$0</div>
+              <div class="breakdown-label">Total Assets</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-value text-danger" id="grandLiabilities">$0</div>
+              <div class="breakdown-label">Total Liabilities</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-value" id="grandEquipment">0</div>
+              <div class="breakdown-label">Equipment Items</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-value" id="grandProperties">0</div>
+              <div class="breakdown-label">Properties</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-value" id="grandAcres">0</div>
+              <div class="breakdown-label">Total Acres</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Entity Cards Column -->
+      <div class="col-lg-8">
+        <h4 class="mb-3">Net Worth by Entity</h4>
+        <div id="entityCards">
+          <div class="text-center py-5">
+            <div class="spinner-border text-success" role="status"></div>
+            <p class="mt-2 text-muted">Loading...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments Column -->
+      <div class="col-lg-4">
+        <h4 class="mb-3">Upcoming Payments</h4>
+        <div class="payments-card">
+          <div id="paymentsList">
+            <div class="text-center py-4 text-muted">Loading payments...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Asset Modal -->
+  <div class="modal fade" id="addAssetModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Additional Asset</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="assetForm">
+            <input type="hidden" id="assetEntity">
+            <div class="mb-3">
+              <label class="form-label">Asset Name</label>
+              <input type="text" class="form-control" id="assetName" required placeholder="e.g., Checking Account">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="assetCategory">
+                <option value="Cash">Cash</option>
+                <option value="Investments">Investments</option>
+                <option value="Accounts Receivable">Accounts Receivable</option>
+                <option value="Inventory">Inventory</option>
+                <option value="Other Assets">Other Assets</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Value</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="assetValue" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Notes</label>
+              <textarea class="form-control" id="assetNotes" rows="2"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-m77" onclick="saveAsset()">Add Asset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Liability Modal -->
+  <div class="modal fade" id="addLiabilityModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Additional Liability</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="liabilityForm">
+            <input type="hidden" id="liabilityEntity">
+            <div class="mb-3">
+              <label class="form-label">Liability Name</label>
+              <input type="text" class="form-control" id="liabilityName" required placeholder="e.g., Credit Card">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="liabilityCategory">
+                <option value="Credit Cards">Credit Cards</option>
+                <option value="Lines of Credit">Lines of Credit</option>
+                <option value="Accounts Payable">Accounts Payable</option>
+                <option value="Other Liabilities">Other Liabilities</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="liabilityAmount" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Notes</label>
+              <textarea class="form-control" id="liabilityNotes" rows="2"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="saveLiability()">Add Liability</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = '/api/net-worth';
+    let netWorthData = null;
+
+    document.addEventListener('DOMContentLoaded', loadData);
+
+    async function loadData() {
+      await Promise.all([loadSummary(), loadPayments()]);
+    }
+
+    async function loadSummary() {
+      try {
+        const response = await fetch(`${API_BASE}/summary`);
+        netWorthData = await response.json();
+        renderGrandTotal();
+        renderEntityCards();
+      } catch (error) {
+        console.error('Error loading summary:', error);
+      }
+    }
+
+    function renderGrandTotal() {
+      const gt = netWorthData.grandTotal;
+      document.getElementById('grandNetWorth').textContent = formatCurrency(gt.netWorth);
+      document.getElementById('grandAssets').textContent = formatCurrency(gt.totalAssets);
+      document.getElementById('grandLiabilities').textContent = formatCurrency(gt.totalLiabilities);
+      document.getElementById('grandEquipment').textContent = gt.equipment.count;
+      document.getElementById('grandProperties').textContent = gt.realEstate.count;
+      document.getElementById('grandAcres').textContent = gt.realEstate.acres.toLocaleString();
+    }
+
+    function renderEntityCards() {
+      const entities = netWorthData.entities;
+      const entityOrder = ['M77 AG', 'McConnell Enterprises', 'Kyle & Brandi McConnell'];
+
+      const html = entityOrder.map(name => {
+        const entity = entities[name];
+        if (!entity) return '';
+
+        const cardClass = name === 'M77 AG' ? 'm77-ag' :
+                         name === 'McConnell Enterprises' ? 'mcconnell-enterprises' : 'personal';
+
+        return `
+          <div class="entity-card ${cardClass}">
+            <div class="entity-header">
+              <div>
+                <div class="entity-name">${name}</div>
+                <div class="quick-links">
+                  <a href="/admin/equipment-manager.html?entity=${encodeURIComponent(name)}" class="quick-link">
+                    <i class="bi bi-truck"></i> ${entity.equipment.count} Equipment
+                  </a>
+                  <a href="/admin/real-estate.html?entity=${encodeURIComponent(name)}" class="quick-link">
+                    <i class="bi bi-geo-alt"></i> ${entity.realEstate.count} Properties
+                  </a>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="entity-net-worth ${entity.netWorth < 0 ? 'negative' : ''}">
+                  ${formatCurrency(entity.netWorth)}
+                </div>
+                <small class="text-muted">Net Worth</small>
+              </div>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-box assets">
+                <div class="stat-value">${formatCurrency(entity.totalAssets)}</div>
+                <div class="stat-label">Total Assets</div>
+              </div>
+              <div class="stat-box liabilities">
+                <div class="stat-value">${formatCurrency(entity.totalLiabilities)}</div>
+                <div class="stat-label">Total Liabilities</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${formatCurrency(entity.equipment.value)}</div>
+                <div class="stat-label">Equipment Value</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${formatCurrency(entity.realEstate.value)}</div>
+                <div class="stat-label">Real Estate Value</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${entity.realEstate.acres.toLocaleString()}</div>
+                <div class="stat-label">Acres</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${formatCurrency(entity.realEstate.annualTaxes)}</div>
+                <div class="stat-label">Annual Taxes</div>
+              </div>
+            </div>
+
+            <div class="breakdown-section">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="breakdown-title">
+                    Assets Breakdown
+                    <button class="btn btn-sm btn-outline-success float-end" onclick="openAddAssetModal('${name}')">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>Equipment</span>
+                    <strong>${formatCurrency(entity.equipment.value)}</strong>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>Real Estate</span>
+                    <strong>${formatCurrency(entity.realEstate.value)}</strong>
+                  </div>
+                  ${entity.additionalAssets.value > 0 ? `
+                  <div class="breakdown-row">
+                    <span>Other Assets</span>
+                    <strong>${formatCurrency(entity.additionalAssets.value)}</strong>
+                  </div>
+                  ` : ''}
+                </div>
+                <div class="col-md-6">
+                  <div class="breakdown-title">
+                    Liabilities Breakdown
+                    <button class="btn btn-sm btn-outline-danger float-end" onclick="openAddLiabilityModal('${name}')">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>Equipment Loans</span>
+                    <strong class="text-danger">${formatCurrency(entity.equipment.owed)}</strong>
+                  </div>
+                  <div class="breakdown-row">
+                    <span>Real Estate Loans</span>
+                    <strong class="text-danger">${formatCurrency(entity.realEstate.owed)}</strong>
+                  </div>
+                  ${entity.additionalLiabilities.amount > 0 ? `
+                  <div class="breakdown-row">
+                    <span>Other Liabilities</span>
+                    <strong class="text-danger">${formatCurrency(entity.additionalLiabilities.amount)}</strong>
+                  </div>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('entityCards').innerHTML = html || '<p class="text-muted">No entity data available</p>';
+    }
+
+    async function loadPayments() {
+      try {
+        const response = await fetch(`${API_BASE}/payments`);
+        const payments = await response.json();
+        renderPayments(payments);
+      } catch (error) {
+        console.error('Error loading payments:', error);
+      }
+    }
+
+    function renderPayments(payments) {
+      if (payments.length === 0) {
+        document.getElementById('paymentsList').innerHTML = `
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+            <p class="mt-2">No upcoming payments</p>
+          </div>
+        `;
+        return;
+      }
+
+      const html = payments.slice(0, 10).map(payment => `
+        <div class="payment-item ${payment.isOverdue ? 'overdue' : ''}">
+          <div class="payment-info">
+            <div class="payment-name">
+              ${payment.name}
+              ${payment.isOverdue ? '<span class="badge bg-danger ms-2">OVERDUE</span>' : ''}
+            </div>
+            <div class="payment-entity">
+              <i class="bi bi-${payment.type === 'Equipment' ? 'truck' : 'geo-alt'}"></i>
+              ${payment.type} • ${payment.entity}
+            </div>
+          </div>
+          <div class="text-end">
+            <div class="payment-amount">${formatCurrency(payment.amount)}</div>
+            <div class="payment-date ${payment.isOverdue ? 'overdue' : ''}">
+              ${new Date(payment.dueDate).toLocaleDateString()}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('paymentsList').innerHTML = html;
+    }
+
+    function openAddAssetModal(entityName) {
+      document.getElementById('assetEntity').value = entityName;
+      document.getElementById('assetForm').reset();
+      new bootstrap.Modal(document.getElementById('addAssetModal')).show();
+    }
+
+    function openAddLiabilityModal(entityName) {
+      document.getElementById('liabilityEntity').value = entityName;
+      document.getElementById('liabilityForm').reset();
+      new bootstrap.Modal(document.getElementById('addLiabilityModal')).show();
+    }
+
+    async function saveAsset() {
+      const entityName = document.getElementById('assetEntity').value;
+      const data = {
+        name: document.getElementById('assetName').value,
+        category: document.getElementById('assetCategory').value,
+        value: parseFloat(document.getElementById('assetValue').value) || 0,
+        notes: document.getElementById('assetNotes').value
+      };
+
+      try {
+        const response = await fetch(`${API_BASE}/entity/${encodeURIComponent(entityName)}/asset`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          bootstrap.Modal.getInstance(document.getElementById('addAssetModal')).hide();
+          loadData();
+        }
+      } catch (error) {
+        console.error('Error saving asset:', error);
+        alert('Error saving asset');
+      }
+    }
+
+    async function saveLiability() {
+      const entityName = document.getElementById('liabilityEntity').value;
+      const data = {
+        name: document.getElementById('liabilityName').value,
+        category: document.getElementById('liabilityCategory').value,
+        amount: parseFloat(document.getElementById('liabilityAmount').value) || 0,
+        notes: document.getElementById('liabilityNotes').value
+      };
+
+      try {
+        const response = await fetch(`${API_BASE}/entity/${encodeURIComponent(entityName)}/liability`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          bootstrap.Modal.getInstance(document.getElementById('addLiabilityModal')).hide();
+          loadData();
+        }
+      } catch (error) {
+        console.error('Error saving liability:', error);
+        alert('Error saving liability');
+      }
+    }
+
+    function formatCurrency(amount) {
+      return '$' + (amount || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin/login';
+    }
+  </script>
+</body>
+</html>

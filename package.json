@@ -7,6 +7,10 @@
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
     "seed": "node server/data/seedDatabase.js",
+    "seed:equipment": "node server/scripts/seed-equipment.js",
+    "seed:real-estate": "node server/scripts/seed-real-estate.js",
+    "seed:employees": "node server/scripts/seed-employees.js",
+    "seed:fields": "node server/scripts/seed-fields.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -21,6 +25,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
@@ -31,9 +36,11 @@
     "mongoose": "^8.18.0",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^6.10.1",
     "path-to-regexp": "^6.2.0",
     "sqlite3": "^5.1.7",
+    "stripe": "^20.3.1",
     "validator": "^13.15.15",
     "xlsx": "^0.18.5"
   },

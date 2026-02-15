@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+        .btn-primary:hover { background: #3d6b1f; }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover { background: #d0d0d0; }
+
+        /* Employee Detail Card */
+        .employee-detail-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        .detail-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            padding: 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .detail-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        .detail-role {
+            font-size: 16px;
+            opacity: 0.85;
+        }
+        .detail-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .detail-stat {
+            text-align: center;
+        }
+        .detail-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+        }
+        .detail-stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+        .detail-stat-value.negative { color: #ffcccc; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+        }
+        .tab:hover { color: #2d5016; }
+        .tab.active {
+            color: #2d5016;
+            border-bottom-color: #2d5016;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .data-table th, .data-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .data-table th {
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+        }
+        .data-table tr:hover { background: #fafafa; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-badge.paid { background: #d4edda; color: #155724; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        .status-badge.approved { background: #cce5ff; color: #004085; }
+        .amount-cell {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+        }
+        .amount-cell.positive { color: #27ae60; }
+        .amount-cell.negative { color: #c0392b; }
+
+        /* Form Styles */
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .form-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* Employee List */
+        .employee-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .employee-list-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .employee-list-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .employee-list-card.selected {
+            border-color: #2d5016;
+        }
+        .list-card-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .list-card-role {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .list-card-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .list-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+        }
+        .list-stat-label {
+            font-size: 10px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .contract-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .contract-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .contract-badge.signed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .contract-badge.unsigned {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .contract-link {
+            font-size: 12px;
+            color: #2d5016;
+            text-decoration: none;
+            margin-left: auto;
+        }
+        .contract-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .detail-header { flex-direction: column; }
+            .detail-stats { width: 100%; justify-content: space-around; }
+            .admin-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/equipment-manager.html">Equipment</a>
+            <a href="/admin/employees.html" class="active">Employees</a>
+            <a href="/admin/dashboard.html">Home</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Employee Management</h1>
+            <button class="btn btn-primary" onclick="openAddEmployeeModal()">Add Employee</button>
+        </div>
+
+        <!-- Employee List -->
+        <div class="employee-list" id="employeeList">
+            <!-- Cards loaded dynamically -->
+        </div>
+
+        <!-- Selected Employee Detail -->
+        <div id="employeeDetail" style="display: none;">
+            <div class="employee-detail-card">
+                <div class="detail-header">
+                    <div>
+                        <h2 class="detail-name" id="detailName">--</h2>
+                        <div class="detail-role" id="detailRole">--</div>
+                    </div>
+                    <div class="detail-stats">
+                        <div class="detail-stat">
+                            <div class="detail-stat-value" id="detailWagesEarned">$0</div>
+                            <div class="detail-stat-label">Wages Earned</div>
+                        </div>
+                        <div class="detail-stat">
+                            <div class="detail-stat-value" id="detailTotalPaid">$0</div>
+                            <div class="detail-stat-label">Total Paid</div>
+                        </div>
+                        <div class="detail-stat">
+                            <div class="detail-stat-value" id="detailCreditOwed">$0</div>
+                            <div class="detail-stat-label">Credit Owed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="paychecks">Paychecks</button>
+                <button class="tab" data-tab="reimbursements">Reimbursements</button>
+                <button class="tab" data-tab="timeoff">Time Off</button>
+                <button class="tab" data-tab="contract">Contract</button>
+                <button class="tab" data-tab="info">Employee Info</button>
+            </div>
+
+            <!-- Paychecks Tab -->
+            <div class="tab-content active" id="paychecks-tab">
+                <div class="form-card">
+                    <h3 class="form-title">Add Paycheck</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Pay Period Start</label>
+                            <input type="date" id="paycheckStart">
+                        </div>
+                        <div class="form-group">
+                            <label>Pay Period End</label>
+                            <input type="date" id="paycheckEnd">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Pay Date</label>
+                            <input type="date" id="paycheckDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Gross Amount ($)</label>
+                            <input type="number" id="paycheckGross" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Net Amount ($)</label>
+                            <input type="number" id="paycheckNet" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Check Number</label>
+                            <input type="text" id="paycheckCheck" placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="paycheckPaid"> Mark as Paid</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="addPaycheck()">Add Paycheck</button>
+                </div>
+
+                <table class="data-table" id="paychecksTable">
+                    <thead>
+                        <tr>
+                            <th>Pay Period</th>
+                            <th>Pay Date</th>
+                            <th>Gross</th>
+                            <th>Net</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paychecksList"></tbody>
+                </table>
+            </div>
+
+            <!-- Reimbursements Tab -->
+            <div class="tab-content" id="reimbursements-tab">
+                <div class="form-card">
+                    <h3 class="form-title">Add Reimbursement</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="reimbDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" id="reimbAmount" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="reimbCategory">
+                                <option value="fuel">Fuel</option>
+                                <option value="supplies">Supplies</option>
+                                <option value="equipment">Equipment</option>
+                                <option value="travel">Travel</option>
+                                <option value="meals">Meals</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="reimbDescription" placeholder="Brief description">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addReimbursement()">Submit Reimbursement</button>
+                </div>
+
+                <table class="data-table" id="reimbursementsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reimbursementsList"></tbody>
+                </table>
+            </div>
+
+            <!-- Time Off Tab -->
+            <div class="tab-content" id="timeoff-tab">
+                <div class="form-card">
+                    <h3 class="form-title">Request Time Off</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="timeoffStart">
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="timeoffEnd">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="timeoffType">
+                                <option value="vacation">Vacation</option>
+                                <option value="sick">Sick</option>
+                                <option value="personal">Personal</option>
+                                <option value="unpaid">Unpaid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input type="text" id="timeoffNotes" placeholder="Optional notes">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="requestTimeOff()">Submit Request</button>
+                </div>
+
+                <table class="data-table" id="timeoffTable">
+                    <thead>
+                        <tr>
+                            <th>Dates</th>
+                            <th>Type</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeoffList"></tbody>
+                </table>
+            </div>
+
+            <!-- Contract Tab -->
+            <div class="tab-content" id="contract-tab">
+                <div class="form-card">
+                    <h3 class="form-title">Independent Contractor Agreement</h3>
+                    <div id="contractStatus">
+                        <p style="color:#666;margin-bottom:20px">Loading contract status...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Info Tab -->
+            <div class="tab-content" id="info-tab">
+                <div class="form-card">
+                    <h3 class="form-title">Employee Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="infoFirstName">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="infoLastName">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Position</label>
+                            <input type="text" id="infoPosition">
+                        </div>
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="infoStartDate">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Pay Type</label>
+                            <select id="infoPayType">
+                                <option value="salary">Annual Salary</option>
+                                <option value="monthly">Monthly Rate</option>
+                                <option value="hourly">Hourly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Annual Salary / Monthly Rate ($)</label>
+                            <input type="number" id="infoSalary" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><input type="checkbox" id="infoProfitShare"> Has Profit Share</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Profit Share %</label>
+                            <input type="number" id="infoProfitPercent" step="0.01" max="100">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="updateEmployeeInfo()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div class="modal-overlay" id="addEmployeeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Employee</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="newFirstName">
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" id="newLastName">
+                </div>
+                <div class="form-group">
+                    <label>Position</label>
+                    <input type="text" id="newPosition" placeholder="e.g., Contract Labor">
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" id="newStartDate">
+                </div>
+                <div class="form-group">
+                    <label>Pay Type</label>
+                    <select id="newPayType">
+                        <option value="salary">Annual Salary</option>
+                        <option value="monthly">Monthly Rate</option>
+                        <option value="hourly">Hourly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount ($)</label>
+                    <input type="number" id="newSalary" step="0.01" placeholder="Annual salary or monthly rate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createEmployee()">Add Employee</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let employees = [];
+        let selectedEmployee = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEmployees();
+            setupTabs();
+
+            // Check for employee ID in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const employeeId = urlParams.get('id');
+            if (employeeId) {
+                setTimeout(() => selectEmployee(employeeId), 500);
+            }
+        });
+
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+                });
+            });
+        }
+
+        async function loadEmployees() {
+            try {
+                const response = await fetch('/api/employees/summary/all');
+                const data = await response.json();
+
+                if (data.success) {
+                    employees = data.summary;
+                    renderEmployeeList();
+                }
+            } catch (e) {
+                console.error('Error loading employees:', e);
+            }
+        }
+
+        function renderEmployeeList() {
+            const container = document.getElementById('employeeList');
+
+            if (employees.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Employees Found</h3>
+                        <p>Click "Add Employee" to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = employees.map(emp => `
+                <div class="employee-list-card ${selectedEmployee && selectedEmployee._id === emp._id ? 'selected' : ''}"
+                     onclick="selectEmployee('${emp._id}')">
+                    <div class="list-card-name">${emp.fullName}</div>
+                    <div class="list-card-role">${emp.position || 'Contract Labor'}</div>
+                    <div class="list-card-stats">
+                        <div>
+                            <div class="list-stat-value">$${emp.creditOwed.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                            <div class="list-stat-label">Credit Owed</div>
+                        </div>
+                        <div>
+                            <div class="list-stat-value">$${emp.totalPaid.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                            <div class="list-stat-label">Total Paid</div>
+                        </div>
+                    </div>
+                    <div class="contract-status">
+                        <span class="contract-badge ${emp.contractSigned ? 'signed' : 'unsigned'}">
+                            ${emp.contractSigned ? 'Contract Signed' : 'Contract Pending'}
+                        </span>
+                        <a href="/admin/employee-contract.html?id=${emp._id}" class="contract-link" onclick="event.stopPropagation()">
+                            ${emp.contractSigned ? 'View Contract' : 'Sign Contract'}
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function selectEmployee(id) {
+            try {
+                const response = await fetch(`/api/employees/${id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    selectedEmployee = data.employee;
+                    renderEmployeeList();
+                    showEmployeeDetail();
+                }
+            } catch (e) {
+                console.error('Error loading employee:', e);
+            }
+        }
+
+        function showEmployeeDetail() {
+            const emp = selectedEmployee;
+            if (!emp) return;
+
+            document.getElementById('employeeDetail').style.display = 'block';
+
+            // Calculate wages earned
+            const now = new Date();
+            const start = new Date(emp.startDate);
+            const monthsWorked = Math.max(0,
+                (now.getFullYear() - start.getFullYear()) * 12 +
+                (now.getMonth() - start.getMonth())
+            );
+            let wagesEarned = 0;
+            if (emp.payType === 'salary') {
+                wagesEarned = (emp.annualSalary / 12) * monthsWorked;
+            } else if (emp.payType === 'monthly') {
+                wagesEarned = emp.monthlyRate * monthsWorked;
+            }
+
+            const totalPaid = (emp.paychecks || []).filter(p => p.paid).reduce((sum, p) => sum + (p.netAmount || 0), 0);
+            const reimbOwed = (emp.reimbursements || []).filter(r => r.status === 'approved').reduce((sum, r) => sum + (r.amount || 0), 0);
+            const creditOwed = wagesEarned - totalPaid + reimbOwed;
+
+            // Update header
+            document.getElementById('detailName').textContent = `${emp.firstName} ${emp.lastName}`;
+            document.getElementById('detailRole').textContent = emp.position || 'Contract Labor';
+            document.getElementById('detailWagesEarned').textContent = formatCurrency(wagesEarned);
+            document.getElementById('detailTotalPaid').textContent = formatCurrency(totalPaid);
+            document.getElementById('detailCreditOwed').textContent = formatCurrency(creditOwed);
+            document.getElementById('detailCreditOwed').className = 'detail-stat-value' + (creditOwed > 0 ? ' negative' : '');
+
+            // Render lists
+            renderPaychecks();
+            renderReimbursements();
+            renderTimeOff();
+            renderContractStatus();
+            populateInfoForm();
+        }
+
+        async function renderContractStatus() {
+            const emp = selectedEmployee;
+            const container = document.getElementById('contractStatus');
+
+            try {
+                const response = await fetch(`/api/employees/${emp._id}/contract`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const contract = data.contract;
+
+                    if (contract && contract.signed) {
+                        container.innerHTML = `
+                            <div style="background:#d4edda;padding:20px;border-radius:8px;margin-bottom:20px">
+                                <h4 style="color:#155724;margin-bottom:10px">Contract Signed</h4>
+                                <p style="color:#155724;margin-bottom:5px">
+                                    <strong>Signed on:</strong> ${formatDate(contract.signedDate)}
+                                </p>
+                                <p style="color:#155724;margin-bottom:5px">
+                                    <strong>Contract Type:</strong> ${contract.contractType === 'independent-contractor' ? 'Independent Contractor Agreement' : contract.contractType}
+                                </p>
+                                <p style="color:#155724;margin-bottom:5px">
+                                    <strong>Version:</strong> ${contract.contractVersion || '1.0'}
+                                </p>
+                            </div>
+                            <div style="margin-top:15px">
+                                <h4 style="margin-bottom:10px">Agreed Terms</h4>
+                                <ul style="list-style:none;padding:0">
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Compensation Terms: ${contract.agreedTerms?.compensation ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Work Scope: ${contract.agreedTerms?.workScope ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Termination Policy: ${contract.agreedTerms?.termination ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0;border-bottom:1px solid #f0f0f0">
+                                        Confidentiality: ${contract.agreedTerms?.confidentiality ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                    <li style="padding:8px 0">
+                                        Tax Responsibility: ${contract.agreedTerms?.taxResponsibility ? 'Agreed' : 'Not Agreed'}
+                                    </li>
+                                </ul>
+                            </div>
+                            ${contract.signatureData ? `
+                                <div style="margin-top:20px">
+                                    <h4 style="margin-bottom:10px">Signature</h4>
+                                    <div style="background:#f8f8f8;padding:15px;border-radius:8px;display:inline-block">
+                                        <img src="${contract.signatureData}" alt="Signature" style="max-width:300px;height:auto">
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <div style="margin-top:25px">
+                                <a href="/admin/employee-contract.html?id=${emp._id}" class="btn btn-secondary">View Full Contract</a>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `
+                            <div style="background:#f8d7da;padding:20px;border-radius:8px;margin-bottom:20px">
+                                <h4 style="color:#721c24;margin-bottom:10px">Contract Not Signed</h4>
+                                <p style="color:#721c24">
+                                    This employee has not yet signed their Independent Contractor Agreement.
+                                </p>
+                            </div>
+                            <a href="/admin/employee-contract.html?id=${emp._id}" class="btn btn-primary">Sign Contract Now</a>
+                        `;
+                    }
+                }
+            } catch (e) {
+                container.innerHTML = `<p style="color:#c00">Error loading contract status</p>`;
+            }
+        }
+
+        function renderPaychecks() {
+            const tbody = document.getElementById('paychecksList');
+            const paychecks = selectedEmployee.paychecks || [];
+
+            if (paychecks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999">No paychecks recorded</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = paychecks.sort((a, b) => new Date(b.payDate) - new Date(a.payDate)).map(p => `
+                <tr>
+                    <td>${formatDate(p.payPeriodStart)} - ${formatDate(p.payPeriodEnd)}</td>
+                    <td>${formatDate(p.payDate)}</td>
+                    <td class="amount-cell">${formatCurrency(p.grossAmount)}</td>
+                    <td class="amount-cell">${formatCurrency(p.netAmount)}</td>
+                    <td><span class="status-badge ${p.paid ? 'paid' : 'pending'}">${p.paid ? 'Paid' : 'Pending'}</span></td>
+                    <td>
+                        ${!p.paid ? `<button class="btn btn-secondary" style="padding:5px 10px;font-size:12px" onclick="markPaycheckPaid('${p._id}')">Mark Paid</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderReimbursements() {
+            const tbody = document.getElementById('reimbursementsList');
+            const reimbs = selectedEmployee.reimbursements || [];
+
+            if (reimbs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999">No reimbursements</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = reimbs.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => `
+                <tr>
+                    <td>${formatDate(r.date)}</td>
+                    <td>${r.category}</td>
+                    <td>${r.description || '-'}</td>
+                    <td class="amount-cell">${formatCurrency(r.amount)}</td>
+                    <td><span class="status-badge ${r.status}">${r.status}</span></td>
+                    <td>
+                        ${r.status === 'pending' ? `
+                            <button class="btn btn-secondary" style="padding:5px 10px;font-size:12px" onclick="updateReimbursement('${r._id}', 'approved')">Approve</button>
+                        ` : ''}
+                        ${r.status === 'approved' ? `
+                            <button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="updateReimbursement('${r._id}', 'paid')">Mark Paid</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTimeOff() {
+            const tbody = document.getElementById('timeoffList');
+            const requests = selectedEmployee.timeOffRequests || [];
+
+            if (requests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999">No time off requests</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = requests.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)).map(t => `
+                <tr>
+                    <td>${formatDate(t.startDate)} - ${formatDate(t.endDate)}</td>
+                    <td>${t.type}</td>
+                    <td>${t.notes || '-'}</td>
+                    <td><span class="status-badge ${t.status}">${t.status}</span></td>
+                    <td>
+                        ${t.status === 'pending' ? `
+                            <button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="reviewTimeOff('${t._id}', 'approved')">Approve</button>
+                            <button class="btn btn-secondary" style="padding:5px 10px;font-size:12px" onclick="reviewTimeOff('${t._id}', 'denied')">Deny</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function populateInfoForm() {
+            const emp = selectedEmployee;
+            document.getElementById('infoFirstName').value = emp.firstName || '';
+            document.getElementById('infoLastName').value = emp.lastName || '';
+            document.getElementById('infoPosition').value = emp.position || '';
+            document.getElementById('infoStartDate').value = emp.startDate ? emp.startDate.split('T')[0] : '';
+            document.getElementById('infoPayType').value = emp.payType || 'salary';
+            document.getElementById('infoSalary').value = emp.payType === 'salary' ? emp.annualSalary : emp.monthlyRate;
+            document.getElementById('infoProfitShare').checked = emp.hasProfitShare || false;
+            document.getElementById('infoProfitPercent').value = emp.profitSharePercent || 0;
+        }
+
+        // API Functions
+        async function addPaycheck() {
+            if (!selectedEmployee) return;
+
+            const data = {
+                payPeriodStart: document.getElementById('paycheckStart').value,
+                payPeriodEnd: document.getElementById('paycheckEnd').value,
+                payDate: document.getElementById('paycheckDate').value,
+                grossAmount: parseFloat(document.getElementById('paycheckGross').value) || 0,
+                netAmount: parseFloat(document.getElementById('paycheckNet').value) || 0,
+                checkNumber: document.getElementById('paycheckCheck').value,
+                paid: document.getElementById('paycheckPaid').checked
+            };
+
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/paycheck`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                    loadEmployees();
+                    // Clear form
+                    document.getElementById('paycheckStart').value = '';
+                    document.getElementById('paycheckEnd').value = '';
+                    document.getElementById('paycheckDate').value = '';
+                    document.getElementById('paycheckGross').value = '';
+                    document.getElementById('paycheckNet').value = '';
+                    document.getElementById('paycheckCheck').value = '';
+                    document.getElementById('paycheckPaid').checked = false;
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (e) {
+                alert('Failed to add paycheck');
+            }
+        }
+
+        async function markPaycheckPaid(paycheckId) {
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/paycheck/${paycheckId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paid: true })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                    loadEmployees();
+                }
+            } catch (e) {
+                alert('Failed to update paycheck');
+            }
+        }
+
+        async function addReimbursement() {
+            if (!selectedEmployee) return;
+
+            const data = {
+                date: document.getElementById('reimbDate').value,
+                amount: parseFloat(document.getElementById('reimbAmount').value) || 0,
+                category: document.getElementById('reimbCategory').value,
+                description: document.getElementById('reimbDescription').value
+            };
+
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/reimbursement`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                    loadEmployees();
+                    // Clear form
+                    document.getElementById('reimbDate').value = '';
+                    document.getElementById('reimbAmount').value = '';
+                    document.getElementById('reimbDescription').value = '';
+                }
+            } catch (e) {
+                alert('Failed to add reimbursement');
+            }
+        }
+
+        async function updateReimbursement(reimbId, status) {
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/reimbursement/${reimbId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                    loadEmployees();
+                }
+            } catch (e) {
+                alert('Failed to update reimbursement');
+            }
+        }
+
+        async function requestTimeOff() {
+            if (!selectedEmployee) return;
+
+            const data = {
+                startDate: document.getElementById('timeoffStart').value,
+                endDate: document.getElementById('timeoffEnd').value,
+                type: document.getElementById('timeoffType').value,
+                notes: document.getElementById('timeoffNotes').value
+            };
+
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/time-off`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                    // Clear form
+                    document.getElementById('timeoffStart').value = '';
+                    document.getElementById('timeoffEnd').value = '';
+                    document.getElementById('timeoffNotes').value = '';
+                }
+            } catch (e) {
+                alert('Failed to request time off');
+            }
+        }
+
+        async function reviewTimeOff(requestId, status) {
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/time-off/${requestId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                }
+            } catch (e) {
+                alert('Failed to review time off');
+            }
+        }
+
+        async function updateEmployeeInfo() {
+            if (!selectedEmployee) return;
+
+            const payType = document.getElementById('infoPayType').value;
+            const salaryValue = parseFloat(document.getElementById('infoSalary').value) || 0;
+
+            const data = {
+                firstName: document.getElementById('infoFirstName').value,
+                lastName: document.getElementById('infoLastName').value,
+                position: document.getElementById('infoPosition').value,
+                startDate: document.getElementById('infoStartDate').value,
+                payType: payType,
+                annualSalary: payType === 'salary' ? salaryValue : salaryValue * 12,
+                monthlyRate: payType === 'monthly' ? salaryValue : salaryValue / 12,
+                hasProfitShare: document.getElementById('infoProfitShare').checked,
+                profitSharePercent: parseFloat(document.getElementById('infoProfitPercent').value) || 0
+            };
+
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    selectedEmployee = result.employee;
+                    showEmployeeDetail();
+                    loadEmployees();
+                    alert('Employee information updated');
+                }
+            } catch (e) {
+                alert('Failed to update employee');
+            }
+        }
+
+        function openAddEmployeeModal() {
+            document.getElementById('addEmployeeModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('addEmployeeModal').classList.remove('active');
+        }
+
+        async function createEmployee() {
+            const payType = document.getElementById('newPayType').value;
+            const salaryValue = parseFloat(document.getElementById('newSalary').value) || 0;
+
+            const data = {
+                firstName: document.getElementById('newFirstName').value,
+                lastName: document.getElementById('newLastName').value,
+                position: document.getElementById('newPosition').value || 'Contract Labor',
+                startDate: document.getElementById('newStartDate').value,
+                employmentType: 'contract',
+                payType: payType,
+                annualSalary: payType === 'salary' ? salaryValue : salaryValue * 12,
+                monthlyRate: payType === 'monthly' ? salaryValue : salaryValue / 12,
+                payFrequency: 'monthly',
+                isActive: true
+            };
+
+            try {
+                const response = await fetch('/api/employees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    closeModal();
+                    loadEmployees();
+                    // Clear form
+                    document.getElementById('newFirstName').value = '';
+                    document.getElementById('newLastName').value = '';
+                    document.getElementById('newPosition').value = '';
+                    document.getElementById('newStartDate').value = '';
+                    document.getElementById('newSalary').value = '';
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (e) {
+                alert('Failed to create employee');
+            }
+        }
+
+        // Utility functions
+        function formatCurrency(amount) {
+            return '$' + (amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>
