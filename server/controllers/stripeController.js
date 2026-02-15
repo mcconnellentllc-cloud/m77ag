@@ -1,10 +1,34 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const EquipmentOffer = require('../models/equipmentOffer');
 const { sendEquipmentPurchaseConfirmation } = require('../utils/emailservice');
+
+// Lazy initialization of Stripe to prevent crash if API key not configured
+let stripe = null;
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripe;
+}
+
+// Middleware to check if Stripe is configured
+function requireStripe(res) {
+  const stripeInstance = getStripe();
+  if (!stripeInstance) {
+    res.status(503).json({
+      success: false,
+      error: 'Payment processing is not configured. Please contact support.'
+    });
+    return null;
+  }
+  return stripeInstance;
+}
 
 // Create a PaymentIntent for ACH Direct Debit
 exports.createPaymentIntent = async (req, res) => {
   try {
+    const stripe = requireStripe(res);
+    if (!stripe) return;
+
     const { amount, offerId, customerEmail, customerName } = req.body;
 
     if (!amount || amount <= 0) {
@@ -82,6 +106,9 @@ exports.createPaymentIntent = async (req, res) => {
 // Check payment status
 exports.checkPaymentStatus = async (req, res) => {
   try {
+    const stripe = requireStripe(res);
+    if (!stripe) return;
+
     const { paymentIntentId } = req.params;
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -104,6 +131,11 @@ exports.checkPaymentStatus = async (req, res) => {
 
 // Handle Stripe webhooks
 exports.handleWebhook = async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) {
+    return res.status(503).send('Payment processing not configured');
+  }
+
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
