@@ -725,12 +725,12 @@ const equipmentData = [
   },
   {
     title: 'Drago GT 12 Row Corn Head',
-    subtitle: '12 Row Corn Head',
+    subtitle: '30" spacing, New Holland adapter, Headsight',
     category: 'Harvest Equipment',
     year: 2012,
     make: 'Drago',
     model: 'GT',
-    description: '12 Row corn head. Well maintained, field ready.',
+    description: '12 Row corn head with 30-inch spacing. Set up for New Holland large frame combines. Includes Headsight auto-height control system. Low acres - great dryland corn head. Note: Flighting bent in 2 places, can be repaired. Priced accordingly and ready to deal.',
     serialNumber: '',
     purchasePrice: 102000,
     currentValue: 25000,
@@ -1023,11 +1023,11 @@ const equipmentData = [
   },
   {
     title: 'Demco Sidequest Tanks',
-    subtitle: 'Saddle Tanks',
+    subtitle: 'Case Magnum mounts, hydraulic agitation',
     category: 'Sprayer Equipment',
     make: 'Demco',
     model: 'Sidequest',
-    description: 'Saddle tanks in good condition.',
+    description: 'Demco SideQuest 1000 gallon saddle tank system with Case Magnum mounting brackets. Includes hydraulic agitation system with pumps. Great for adding sprayer capacity to your tractor. Clean tanks, ready to work.',
     purchasePrice: 9500,
     currentValue: 9500,
     askingPrice: 10500,
@@ -1041,6 +1041,175 @@ const equipmentData = [
       '/assets/equipment/fk-2450/Demco SideQuest 2.JPEG',
       '/assets/equipment/fk-2450/Demco SideQuest 3.JPEG'
     ]
+  },
+
+  // Additional Equipment For Sale
+  {
+    title: 'Farm King 2450 Round Bale Carrier',
+    subtitle: 'Excellent condition, field ready',
+    category: 'Hay Equipment',
+    year: 2018,
+    make: 'Farm King',
+    model: '2450',
+    description: 'This Farm King 2450 is in excellent working condition. Hydraulics are tight, tires are good, and it is ready to go to work. We have used this carrier for 3 seasons and it has been reliable. Selling because we upgraded to a larger capacity unit.',
+    currentValue: 34500,
+    askingPrice: 34500,
+    floorPrice: 32700,
+    notes: 'Owner: M77 AG. 14 round bale capacity, up to 6ft diameter. Transport width 12ft.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/IMG_1644.JPEG',
+      '/assets/equipment/fk-2450/IMG_1645.JPEG',
+      '/assets/equipment/fk-2450/IMG_1646.JPEG',
+      '/assets/equipment/fk-2450/IMG_1647.JPEG',
+      '/assets/equipment/fk-2450/IMG_1648.JPEG',
+      '/assets/equipment/fk-2450/IMG_1649.JPEG',
+      '/assets/equipment/fk-2450/IMG_1650.JPEG',
+      '/assets/equipment/fk-2450/IMG_1651.JPEG',
+      '/assets/equipment/fk-2450/IMG_1652.JPEG'
+    ],
+    videos: [
+      '/assets/equipment/fk-2450/IMG_1653.MP4'
+    ]
+  },
+  {
+    title: "Schaben 90' 3-Point Sprayer Boom",
+    subtitle: '5 sections with Raven control',
+    category: 'Sprayer Equipment',
+    year: 2003,
+    make: 'Schaben',
+    description: "Schaben 90-foot 3-point mounted sprayer boom with 5-section Raven control for precision application. 30-inch nozzle spacing. Boom only - pump not included. As authorized JD Skiles dealers, we can set up a pump system to your exact specifications. Option to re-nozzle and install all new hoses for an additional agreed-upon cost. Priced to sell.",
+    currentValue: 12500,
+    askingPrice: 12500,
+    floorPrice: 10700,
+    notes: 'Owner: M77 AG. Boom only, pump not included. JD Skiles setup available.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/Schaben 1.JPEG',
+      '/assets/equipment/fk-2450/Schaben 4.JPEG'
+    ],
+    videos: [
+      '/assets/equipment/fk-2450/Schaben 2.MP4'
+    ]
+  },
+  {
+    title: 'Danuser Post Hole Digger - Skid Steer',
+    subtitle: 'Includes 14" and 8" auger bits',
+    category: 'Attachments',
+    year: 2012,
+    make: 'Danuser',
+    description: 'Danuser hydraulic post hole digger with universal skid steer quick-attach mount. Includes both 14-inch and 8-inch auger bits. Good working condition, ready to dig. Great for fence posts, tree planting, and more.',
+    currentValue: 3000,
+    askingPrice: 3000,
+    floorPrice: 2777,
+    notes: 'Owner: M77 AG. Universal skid steer mount.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/Danuser Post Hole Digger.JPEG',
+      '/assets/equipment/fk-2450/Danuser Post 2.JPEG'
+    ]
+  },
+  {
+    title: 'Stout 84" Grapple Bucket - Skid Steer',
+    subtitle: 'Heavy duty, universal quick-attach',
+    category: 'Attachments',
+    year: 2012,
+    make: 'Stout',
+    model: 'SSG 114',
+    description: 'Stout 84-inch grapple bucket with universal skid steer quick-attach mount. Heavy duty construction with dual hydraulic cylinders. Good working condition. Great for moving brush, logs, debris, and more.',
+    currentValue: 2500,
+    askingPrice: 2500,
+    floorPrice: 2277,
+    notes: 'Owner: M77 AG. Dual cylinder grapple.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/STOUT 84.JPEG',
+      '/assets/equipment/fk-2450/Stout 84 back.JPEG',
+      '/assets/equipment/fk-2450/Stout 84 side.JPEG'
+    ]
+  },
+  {
+    title: 'EquipAll 860 Backhoe - Skid Steer',
+    subtitle: 'Swing arm backhoe attachment',
+    category: 'Attachments',
+    year: 2012,
+    make: 'EquipAll',
+    model: '860',
+    description: 'EquipAll 860 skid steer backhoe attachment with swing arm. Very handy for digging trenches, footings, and general excavation work. Universal skid steer quick-attach mount. Fair-good working condition. Selling because we no longer own a skid steer.',
+    currentValue: 3700,
+    askingPrice: 3700,
+    floorPrice: 3377,
+    notes: 'Owner: M77 AG. Universal skid steer mount.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/EquipAll 860 1.JPEG',
+      '/assets/equipment/fk-2450/EquipAll 860 2.JPEG'
+    ]
+  },
+  {
+    title: 'New Holland Round Bar Concaves',
+    subtitle: 'Large frame CR series, good condition',
+    category: 'Harvest Equipment',
+    year: 2015,
+    make: 'New Holland',
+    description: 'New Holland round bar concaves for large frame CR series combines. Good condition - not bent. Save big over new prices. Great spare or replacement set.',
+    currentValue: 750,
+    askingPrice: 750,
+    floorPrice: 700,
+    notes: 'Owner: M77 AG. Fits Large Frame CR Series.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/NH Round .JPEG'
+    ]
+  },
+  {
+    title: 'Haybuster Big Bite Tub Grinder',
+    subtitle: 'H-1100 PTO driven, good screens, newer conveyor',
+    category: 'Hay Equipment',
+    make: 'Haybuster',
+    model: 'H-1100',
+    description: 'Haybuster Big Bite H-1100 tub grinder in good working condition. PTO driven - requires large 1000 PTO. Good screens and newer folding discharge conveyor. Great for grinding hay, corn stalks, and roughage. Consignment sale.',
+    currentValue: 15700,
+    askingPrice: 15700,
+    floorPrice: 13200,
+    notes: 'Owner: M77 AG. 108" I.D. tub. Consignment sale.',
+    forSale: true,
+    saleStatus: 'available',
+    images: [
+      '/assets/equipment/fk-2450/haybuster 1.JPEG',
+      '/assets/equipment/fk-2450/haybuster 2.JPEG',
+      '/assets/equipment/fk-2450/haybuster 3.JPEG',
+      '/assets/equipment/fk-2450/haybuster 4.JPEG',
+      '/assets/equipment/fk-2450/haybuster 5.JPEG',
+      '/assets/equipment/fk-2450/haybuster 6.JPEG',
+      '/assets/equipment/fk-2450/haybuster 7.JPEG',
+      '/assets/equipment/fk-2450/haybuster 8.JPEG',
+      '/assets/equipment/fk-2450/haybuster 9.JPEG'
+    ]
+  },
+  {
+    title: '1982 Chevrolet C70 Feed Truck',
+    subtitle: 'Gas motor, 5-speed, digital scale system',
+    category: 'Feed Truck',
+    year: 1982,
+    make: 'Chevrolet',
+    model: 'C70',
+    description: '1982 Chevrolet C70 feed truck with gas V8 motor and 5-speed manual transmission. Features a digital scale system with in-cab controller and external display - great for precise feed measurement. 27,500 GVWR. Solid working truck for ranch feed operations. Ready to haul.',
+    currentValue: 7500,
+    askingPrice: 7500,
+    floorPrice: 5500,
+    vin: '1GBL7D1B7CV112841',
+    serialNumber: '1GBL7D1B7CV112841',
+    notes: 'Owner: M77 AG. V8 Gas, 5-speed manual, 27500 GVWR. Digital scale system.',
+    forSale: true,
+    saleStatus: 'available',
+    images: []
   },
 
   // Work Trucks

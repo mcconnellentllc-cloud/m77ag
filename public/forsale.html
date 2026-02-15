@@ -569,7 +569,7 @@
         }
 
         .research-title::before {
-            content: '📊';
+            content: '';
         }
 
         .research-item {
@@ -1130,7 +1130,7 @@
             <li><a href="about.html">About</a></li>
         </ul>
         <div class="footer-copyright">
-            &copy; 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.
+            &copy; 2026 M77 AG. All rights reserved. McConnell Enterprises LLC.
         </div>
     </footer>
 
@@ -1561,15 +1561,50 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
-            // Try to load from database first
-            await loadEquipmentFromAPI();
+            // Start with legacy data as the reliable base (has full specs, market research, etc.)
+            equipment = [...legacyEquipment];
 
-            // If no equipment loaded from API, use legacy data as fallback
-            if (equipment.length === 0 && legacyEquipment.length > 0) {
-                equipment = legacyEquipment;
-                renderEquipmentGrid();
+            // Try to load from database and merge any additional items
+            try {
+                const response = await fetch('/api/equipment/inventory/public');
+                const data = await response.json();
+
+                if (data.success && data.equipment.length > 0) {
+                    const legacyTitles = new Set(legacyEquipment.map(e => e.title.toLowerCase().trim()));
+
+                    // Add any API items not already in legacy data
+                    data.equipment.forEach(item => {
+                        const titleLower = item.title.toLowerCase().trim();
+                        if (!legacyTitles.has(titleLower)) {
+                            equipment.push({
+                                id: item._id,
+                                title: item.title,
+                                subtitle: item.subtitle || item.description?.substring(0, 50) || '',
+                                category: item.category || 'Other',
+                                year: item.year,
+                                buyNowPrice: item.currentValue || item.marketValue || 0,
+                                floorPrice: item.floorPrice || item.currentValue || 10000,
+                                images: item.images || [],
+                                videos: item.videos || [],
+                                specs: item.specs ? Object.fromEntries(item.specs) : {
+                                    'Make': item.make || '-',
+                                    'Model': item.model || '-',
+                                    'Year': item.year || '-',
+                                    'Hours': item.currentHours ? item.currentHours.toLocaleString() : '-',
+                                    'Location': item.location || 'Phillips County, CO'
+                                },
+                                marketResearch: {},
+                                description: item.description || '',
+                                status: item.saleStatus === 'sold' ? 'sold' : 'available'
+                            });
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading from API, using local data:', error);
             }
 
+            renderEquipmentGrid();
             checkUrlParams();
         });
 
@@ -1940,14 +1975,12 @@
                 // Update UI
                 const priceBox = document.querySelector('.price-box');
                 priceBox.classList.add('offer-accepted');
-                document.getElementById('itemPrice').textContent = '$' + amount.toLocaleString();
+                document.querySelector('.price-value').textContent = '$' + amount.toLocaleString();
                 document.querySelector('.price-label').textContent = 'ACCEPTED PRICE';
 
                 // Disable further offers
                 document.getElementById('offerBtn').disabled = true;
                 document.getElementById('offerInput').disabled = true;
-                document.getElementById('buyNowBtn').textContent = 'SOLD!';
-                document.getElementById('buyNowBtn').disabled = true;
 
                 // Add confirmation message
                 addChatMessage('bot', `Thank you ${buyerInfo.name}! Your offer has been accepted! Check below for payment details.`);
@@ -2181,15 +2214,6 @@
 
             document.body.insertAdjacentHTML('beforeend', bannerHtml);
         }
-
-        // Buy Now button
-        document.getElementById('buyNowBtn').addEventListener('click', () => {
-            if (confirm(`Buy Now for $${currentItem.buyNowPrice.toLocaleString()}?`)) {
-                addChatMessage('bot', `Excellent choice! Let's get your information to complete this purchase at $${currentItem.buyNowPrice.toLocaleString()}.`);
-                document.getElementById('chatBox').classList.add('active');
-                showBuyerInfoForm(currentItem.buyNowPrice);
-            }
-        });
 
         // Share functionality
         document.getElementById('shareFacebook').addEventListener('click', () => {
