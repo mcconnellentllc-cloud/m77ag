@@ -288,6 +288,7 @@
         .card-header.cows { background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%); }
         .card-header.equipment { background: linear-gradient(135deg, #1a1a1a 0%, #444 100%); }
         .card-header.capital { background: linear-gradient(135deg, #1a5f2a 0%, #2d8f4a 100%); }
+        .card-header.banking { background: linear-gradient(135deg, #0d3b66 0%, #1a6fb5 100%); }
 
         .card-icon {
             font-size: 48px;
@@ -744,6 +745,55 @@
                         <div class="view-btn">View Capital Dashboard</div>
                     </div>
                 </a>
+
+                <!-- BANKING & FINANCE Card - Full Width Banker's View -->
+                <a href="/admin/financials/banking" class="enterprise-card" style="grid-column: 1 / -1;">
+                    <div class="card-header banking">
+                        <div class="card-icon">Bank</div>
+                        <div class="card-title-section">
+                            <div class="card-title">Banking & Finance</div>
+                            <div class="card-tagline">Complete financial position - Banker's view</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">
+                            Full financial overview designed for banking relationships. Debt service coverage, debt-to-asset ratios, cash reserves, collateral coverage, 12-month cash flow projections, and complete asset/liability schedules. Everything your banker needs at a glance.
+                        </p>
+                        <div class="card-metrics" style="grid-template-columns: repeat(5, 1fr);">
+                            <div class="metric">
+                                <div class="metric-value" id="bankNetWorth">--</div>
+                                <div class="metric-label">Net Worth</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="bankDSCR">--</div>
+                                <div class="metric-label">DSCR</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="bankDebtToAsset">--</div>
+                                <div class="metric-label">Debt/Asset</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="bankTotalDebt">--</div>
+                                <div class="metric-label">Total Debt</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="bankCashReserve">--</div>
+                                <div class="metric-label">Cash Reserves</div>
+                            </div>
+                        </div>
+                        <div class="card-features">
+                            <span class="feature-tag">Debt Service Coverage</span>
+                            <span class="feature-tag">Balance Sheet</span>
+                            <span class="feature-tag">Cash Flow by Month</span>
+                            <span class="feature-tag">Collateral Schedule</span>
+                            <span class="feature-tag">Revenue Projections</span>
+                            <span class="feature-tag">Payment History</span>
+                            <span class="feature-tag">Loan Schedule</span>
+                            <span class="feature-tag">Working Capital</span>
+                        </div>
+                        <div class="view-btn">Open Banker's Dashboard</div>
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -879,32 +929,78 @@
         async function loadFinancialSummary() {
             try {
                 const token = localStorage.getItem('adminToken');
+                const headers = { 'Authorization': 'Bearer ' + token };
 
-                // For now, we'll set placeholder data
-                // This will be connected to real API endpoints
-                document.getElementById('totalIncome').textContent = '--';
-                document.getElementById('totalExpenses').textContent = '--';
-                document.getElementById('netProfit').textContent = '--';
-                document.getElementById('totalAssets').textContent = '--';
-                document.getElementById('workingCapital').textContent = '--';
+                // Fetch banker's overview for comprehensive financial data
+                const response = await fetch('/api/banking/bankers-overview', { headers });
 
-                // Enterprise metrics
-                document.getElementById('cropFarms').textContent = '--';
-                document.getElementById('cropAcresTotal').textContent = '--';
-                document.getElementById('cropRevenue').textContent = '--';
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.data) {
+                        const d = result.data;
 
-                document.getElementById('cattleCount').textContent = '--';
-                document.getElementById('cattleBirths').textContent = '--';
-                document.getElementById('cattleValue').textContent = '--';
+                        // Quick stats bar
+                        document.getElementById('totalIncome').textContent = formatCurrency(d.incomeStatement.ytdIncome);
+                        document.getElementById('totalExpenses').textContent = formatCurrency(d.incomeStatement.ytdExpenses);
 
-                document.getElementById('equipmentCount').textContent = '--';
-                document.getElementById('equipmentHours').textContent = '--';
-                document.getElementById('equipmentValue').textContent = '--';
+                        const noi = d.incomeStatement.netOperatingIncome;
+                        const profitEl = document.getElementById('netProfit');
+                        profitEl.textContent = formatCurrency(Math.abs(noi));
+                        profitEl.className = 'stat-value ' + (noi >= 0 ? 'positive' : 'negative');
+                        if (noi < 0) profitEl.textContent = '-' + profitEl.textContent;
 
-                document.getElementById('capitalLand').textContent = '--';
-                document.getElementById('capitalBuildings').textContent = '--';
-                document.getElementById('capitalTotal').textContent = '--';
+                        if (d.incomeStatement.ytdIncome > 0) {
+                            const margin = ((noi / d.incomeStatement.ytdIncome) * 100).toFixed(1);
+                            document.getElementById('profitMargin').textContent = margin + '% margin';
+                        }
 
+                        document.getElementById('totalAssets').textContent = formatCurrency(d.balanceSheet.assets.totalAssets);
+                        document.getElementById('workingCapital').textContent = formatCurrency(d.keyRatios.workingCapital);
+
+                        // Banking card KPIs
+                        document.getElementById('bankNetWorth').textContent = formatCurrency(d.balanceSheet.netWorth);
+                        document.getElementById('bankDSCR').textContent = d.keyRatios.dscr !== null ? d.keyRatios.dscr.toFixed(2) + 'x' : 'N/A';
+                        document.getElementById('bankDebtToAsset').textContent = d.keyRatios.debtToAsset.toFixed(1) + '%';
+                        document.getElementById('bankTotalDebt').textContent = formatCurrency(d.balanceSheet.liabilities.totalLiabilities);
+                        document.getElementById('bankCashReserve').textContent = formatCurrency(d.balanceSheet.assets.current.cash);
+
+                        // Operation overview for enterprise cards
+                        if (d.operationOverview) {
+                            document.getElementById('cropFarms').textContent = d.operationOverview.farms || '--';
+                            document.getElementById('cropAcresTotal').textContent = d.operationOverview.totalAcres ? formatNumber(d.operationOverview.totalAcres) : '--';
+                        }
+
+                        // Cattle card
+                        if (d.assetSchedule && d.assetSchedule.livestock) {
+                            document.getElementById('cattleCount').textContent = d.assetSchedule.livestock.totalHead || '--';
+                            document.getElementById('cattleValue').textContent = d.assetSchedule.livestock.value ? formatCurrency(d.assetSchedule.livestock.value) : '--';
+                        }
+
+                        // Equipment card
+                        if (d.operationOverview) {
+                            document.getElementById('equipmentCount').textContent = d.operationOverview.equipmentUnits || '--';
+                        }
+                        if (d.balanceSheet.assets.fixed.equipment) {
+                            document.getElementById('equipmentValue').textContent = formatCurrency(d.balanceSheet.assets.fixed.equipment);
+                        }
+
+                        // Capital card
+                        if (d.assetSchedule && d.assetSchedule.land) {
+                            const totalLandAcres = d.assetSchedule.land.reduce((sum, l) => sum + (l.totalAcres || 0), 0);
+                            document.getElementById('capitalLand').textContent = totalLandAcres ? formatNumber(totalLandAcres) : '--';
+                        }
+                        if (d.assetSchedule && d.assetSchedule.buildings) {
+                            document.getElementById('capitalBuildings').textContent = d.assetSchedule.buildings.length || '--';
+                        }
+                        const capitalTotal = (d.balanceSheet.assets.fixed.land || 0) + (d.balanceSheet.assets.fixed.buildings || 0) + (d.balanceSheet.assets.fixed.infrastructure || 0);
+                        document.getElementById('capitalTotal').textContent = capitalTotal ? formatCurrency(capitalTotal) : '--';
+
+                        // Crop revenue from projections
+                        if (d.projectedRevenue && d.projectedRevenue.expected) {
+                            document.getElementById('cropRevenue').textContent = d.projectedRevenue.expected.revenue ? formatCurrency(d.projectedRevenue.expected.revenue) : '--';
+                        }
+                    }
+                }
             } catch (error) {
                 console.error('Error loading financial summary:', error);
             }

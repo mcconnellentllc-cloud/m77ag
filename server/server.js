@@ -151,6 +151,10 @@ app.get('/admin/financials/capital', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/financials/capital.html'));
 });
 
+app.get('/admin/financials/banking', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/banking.html'));
+});
+
 // Banking Dashboard route
 app.get('/admin/banking', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/banking.html'));

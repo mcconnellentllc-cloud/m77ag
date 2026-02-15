@@ -1,13 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const bankingController = require('../controllers/bankingController');
-const { authenticate, isStaff, isAdmin } = require('../middleware/auth');
+const bankersOverviewController = require('../controllers/bankersOverviewController');
+const { authenticate, isStaff, isAdmin, isBankerOrStaff } = require('../middleware/auth');
 
 // All routes require authentication
 router.use(authenticate);
 
 // Banking dashboard
 router.get('/dashboard', isStaff, bankingController.getBankingDashboard);
+
+// Banker's overview - full financial position (read-only for banker role)
+router.get('/bankers-overview', isBankerOrStaff, bankersOverviewController.getBankersOverview);
+router.get('/bankers-comments', isBankerOrStaff, bankersOverviewController.getBankerComments);
+router.post('/bankers-comments', isBankerOrStaff, bankersOverviewController.addBankerComment);
 
 // Bank accounts
 router.get('/accounts', isStaff, bankingController.getAccounts);

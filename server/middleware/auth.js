@@ -113,6 +113,18 @@ exports.isStaff = (req, res, next) => {
   next();
 };
 
+// Middleware to check if user is banker, admin, or employee (for banking features)
+exports.isBankerOrStaff = (req, res, next) => {
+  if (!req.userRole || !['admin', 'employee', 'banker'].includes(req.userRole)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Banker or staff account required.'
+    });
+  }
+
+  next();
+};
+
 // Middleware to check employee permissions for specific actions
 exports.canPerformAction = (action) => {
   return async (req, res, next) => {
