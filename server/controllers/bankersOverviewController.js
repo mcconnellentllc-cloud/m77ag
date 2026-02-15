@@ -8,6 +8,7 @@ const ProductionProjection = require('../models/productionProjection');
 const Cattle = require('../models/cattle');
 const Farm = require('../models/farm');
 const Field = require('../models/field');
+const HarvestData = require('../models/harvestData');
 
 // Banker's Overview - All real data, no assumptions
 exports.getBankersOverview = async (req, res) => {
@@ -479,6 +480,292 @@ exports.getBankerComments = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to get comments',
+      error: error.message
+    });
+  }
+};
+
+// Net Worth by Entity - Aggregated view of all assets/liabilities by entity
+exports.getNetWorthByEntity = async (req, res) => {
+  try {
+    const [
+      equipment,
+      activeLoans,
+      capitalAssets,
+      cattle,
+      productionProjections,
+      harvestData
+    ] = await Promise.all([
+      FarmEquipment.find({ status: 'active' }),
+      Loan.find({ status: 'active' }),
+      CapitalInvestment.find({ status: 'owned' }),
+      Cattle.find({ status: { $ne: 'sold' } }),
+      ProductionProjection.find({ projectionYear: new Date().getFullYear(), status: { $ne: 'cancelled' } }),
+      HarvestData.find({ cropYear: new Date().getFullYear() })
+    ]);
+
+    // ===== M77 AG ENTITY =====
+
+    // Equipment
+    const m77Equipment = equipment.filter(e => !e.entity || e.entity === 'm77ag');
+    const equipmentValue = m77Equipment.reduce((sum, e) => sum + (e.valuation?.currentValue || 0), 0);
+    const equipmentLoans = activeLoans.filter(l => l.type === 'equipment');
+    const equipmentDebt = equipmentLoans.reduce((sum, l) => sum + (l.currentBalance || 0), 0);
+
+    // Cattle
+    const cattleValue = cattle.reduce((sum, c) => sum + (c.valuation?.currentMarketValue || c.valuation?.estimatedValue || 0), 0);
+    const cattleByType = {};
+    cattle.forEach(c => {
+      const type = c.type || 'unknown';
+      if (!cattleByType[type]) cattleByType[type] = { count: 0, value: 0 };
+      cattleByType[type].count++;
+      cattleByType[type].value += (c.valuation?.currentMarketValue || c.valuation?.estimatedValue || 0);
+    });
+
+    // Crops (grain inventory value from harvest data + production projections)
+    let cropValue = 0;
+    let cropDetails = [];
+    // Use harvest data for actual grain in storage
+    const harvestByCrop = {};
+    harvestData.forEach(h => {
+      if (!harvestByCrop[h.cropType]) harvestByCrop[h.cropType] = { bushels: 0, acres: 0 };
+      harvestByCrop[h.cropType].bushels += h.totalBushels || 0;
+      harvestByCrop[h.cropType].acres += h.acresHarvested || 0;
+    });
+    // Use production projections for estimated crop value
+    productionProjections.forEach(p => {
+      const expectedValue = p.profitability?.expected?.grossRevenue ||
+                           (p.priceProjections?.expected?.totalRevenue) || 0;
+      cropValue += expectedValue;
+      cropDetails.push({
+        crop: p.cropType,
+        acres: p.projectedAcres || 0,
+        projectedBushels: p.totalProjectedBushels || 0,
+        estimatedValue: expectedValue
+      });
+    });
+
+    // Real Estate (owned land/buildings from CapitalInvestment)
+    const landAssets = capitalAssets.filter(a => a.type === 'land');
+    const buildingAssets = capitalAssets.filter(a => a.type === 'building');
+    const realEstateValue = capitalAssets.reduce((sum, a) => sum + (a.currentValue?.estimatedValue || 0), 0);
+    const realEstateDebt = capitalAssets.reduce((sum, a) => {
+      return sum + (a.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0);
+    }, 0);
+    const landLoans = activeLoans.filter(l => l.type === 'land');
+    const landLoanDebt = landLoans.reduce((sum, l) => sum + (l.currentBalance || 0), 0);
+    // Use whichever is larger (loans in capital investments or loan model)
+    const totalRealEstateDebt = Math.max(realEstateDebt, landLoanDebt);
+    const totalAcres = landAssets.reduce((sum, a) => sum + (a.landDetails?.totalAcres || 0), 0);
+    const annualTaxes = capitalAssets.reduce((sum, a) => sum + (a.annualCosts?.propertyTax || 0), 0);
+
+    // M77 AG totals
+    const m77TotalAssets = equipmentValue + cattleValue + cropValue + realEstateValue;
+    const m77TotalLiabilities = equipmentDebt + totalRealEstateDebt;
+    const m77NetWorth = m77TotalAssets - m77TotalLiabilities;
+
+    const m77ag = {
+      name: 'M77 AG',
+      type: 'business',
+      description: 'McConnell Enterprises LLC - Farm & Ranch Operations',
+      summary: {
+        equipmentCount: m77Equipment.length,
+        propertyCount: landAssets.length,
+        cattleHead: cattle.length,
+        totalAssets: m77TotalAssets,
+        totalLiabilities: m77TotalLiabilities,
+        netWorth: m77NetWorth
+      },
+      assets: {
+        equipment: {
+          value: equipmentValue,
+          count: m77Equipment.length,
+          items: m77Equipment.map(e => ({
+            name: e.name,
+            type: e.type,
+            make: e.make,
+            model: e.model,
+            year: e.year,
+            currentValue: e.valuation?.currentValue || 0
+          }))
+        },
+        cattle: {
+          value: cattleValue,
+          totalHead: cattle.length,
+          byType: cattleByType
+        },
+        crops: {
+          value: cropValue,
+          details: cropDetails,
+          harvestData: harvestByCrop
+        },
+        realEstate: {
+          value: realEstateValue,
+          totalAcres: totalAcres,
+          annualTaxes: annualTaxes,
+          properties: landAssets.map(a => ({
+            name: a.name,
+            category: a.category,
+            totalAcres: a.landDetails?.totalAcres || 0,
+            estimatedValue: a.currentValue?.estimatedValue || 0,
+            loanBalance: (a.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0)
+          })),
+          buildings: buildingAssets.map(a => ({
+            name: a.name,
+            category: a.category,
+            estimatedValue: a.currentValue?.estimatedValue || 0
+          }))
+        }
+      },
+      liabilities: {
+        equipmentLoans: {
+          total: equipmentDebt,
+          count: equipmentLoans.length,
+          loans: equipmentLoans.map(l => ({
+            name: l.name,
+            lender: l.lender?.name,
+            currentBalance: l.currentBalance,
+            interestRate: l.interestRate,
+            paymentAmount: l.paymentAmount
+          }))
+        },
+        realEstateLoans: {
+          total: totalRealEstateDebt,
+          count: landLoans.length + landAssets.reduce((sum, a) => sum + (a.loans || []).length, 0)
+        }
+      }
+    };
+
+    // ===== MCCONNELL ENTERPRISES ENTITY =====
+    // McConnell Enterprises owns forklifts and commercial equipment
+    const mceAssets = capitalAssets.filter(a => a.location?.associatedFarm === 'MCE');
+    const mceEquipment = equipment.filter(e => e.entity === 'mce' || e.type === 'loader' || e.type === 'other');
+    // Filter forklifts from equipment (name contains 'forklift')
+    const forklifts = equipment.filter(e => e.name && e.name.toLowerCase().includes('forklift'));
+    const mceEquipmentAll = [...new Set([...mceEquipment, ...forklifts])]; // deduplicate
+
+    const mceEquipmentValue = mceEquipmentAll.reduce((sum, e) => sum + (e.valuation?.currentValue || 0), 0);
+    const mceAssetValue = mceAssets.reduce((sum, a) => sum + (a.currentValue?.estimatedValue || 0), 0);
+    const mceTotalAssets = mceEquipmentValue + mceAssetValue;
+    const mceDebt = mceAssets.reduce((sum, a) => {
+      return sum + (a.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0);
+    }, 0);
+
+    const mcconnellEnterprises = {
+      name: 'McConnell Enterprises LLC',
+      type: 'enterprise',
+      description: 'Commercial Equipment & Operations',
+      summary: {
+        equipmentCount: mceEquipmentAll.length,
+        propertyCount: mceAssets.filter(a => a.type === 'land').length,
+        totalAssets: mceTotalAssets,
+        totalLiabilities: mceDebt,
+        netWorth: mceTotalAssets - mceDebt
+      },
+      assets: {
+        equipment: {
+          value: mceEquipmentValue,
+          count: mceEquipmentAll.length,
+          items: mceEquipmentAll.map(e => ({
+            name: e.name,
+            type: e.type,
+            make: e.make,
+            model: e.model,
+            year: e.year,
+            currentValue: e.valuation?.currentValue || 0
+          }))
+        },
+        realEstate: {
+          value: mceAssetValue,
+          totalAcres: mceAssets.reduce((sum, a) => sum + (a.landDetails?.totalAcres || 0), 0),
+          properties: mceAssets.filter(a => a.type === 'land').map(a => ({
+            name: a.name,
+            totalAcres: a.landDetails?.totalAcres || 0,
+            estimatedValue: a.currentValue?.estimatedValue || 0
+          }))
+        }
+      },
+      liabilities: {
+        equipmentLoans: {
+          total: mceDebt,
+          count: mceAssets.reduce((sum, a) => sum + (a.loans || []).length, 0)
+        }
+      }
+    };
+
+    // ===== KYLE & BRANDI ENTITY =====
+    // Personal assets stored as CapitalInvestment with associatedFarm='PERSONAL'
+    const personalAssets = capitalAssets.filter(a => a.location?.associatedFarm === 'PERSONAL');
+    const personalEquipment = equipment.filter(e => e.entity === 'personal');
+
+    const personalValue = personalAssets.reduce((sum, a) => sum + (a.currentValue?.estimatedValue || 0), 0) +
+                          personalEquipment.reduce((sum, e) => sum + (e.valuation?.currentValue || 0), 0);
+    const personalDebt = personalAssets.reduce((sum, a) => {
+      return sum + (a.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0);
+    }, 0);
+    const personalLoans = activeLoans.filter(l => l.type === 'vehicle' || (l.collateral?.type === 'other' && l.notes?.includes('personal')));
+    const personalLoanDebt = personalLoans.reduce((sum, l) => sum + (l.currentBalance || 0), 0);
+    const totalPersonalDebt = personalDebt + personalLoanDebt;
+
+    const kyleBrandi = {
+      name: 'Kyle & Brandi McConnell',
+      type: 'personal',
+      description: 'Personal Assets',
+      summary: {
+        vehicleCount: personalAssets.filter(a => a.category === 'other' || a.type === 'other').length + personalEquipment.length,
+        propertyCount: personalAssets.filter(a => a.type === 'land').length,
+        totalAssets: personalValue,
+        totalLiabilities: totalPersonalDebt,
+        netWorth: personalValue - totalPersonalDebt
+      },
+      assets: {
+        vehicles: [...personalAssets.filter(a => a.category === 'other' || a.type === 'other').map(a => ({
+          name: a.name,
+          description: a.description,
+          estimatedValue: a.currentValue?.estimatedValue || 0
+        })), ...personalEquipment.map(e => ({
+          name: e.name,
+          description: [e.year, e.make, e.model].filter(Boolean).join(' '),
+          estimatedValue: e.valuation?.currentValue || 0
+        }))],
+        realEstate: {
+          value: personalAssets.filter(a => a.type === 'land').reduce((sum, a) => sum + (a.currentValue?.estimatedValue || 0), 0),
+          properties: personalAssets.filter(a => a.type === 'land').map(a => ({
+            name: a.name,
+            totalAcres: a.landDetails?.totalAcres || 0,
+            estimatedValue: a.currentValue?.estimatedValue || 0
+          }))
+        }
+      },
+      liabilities: {
+        vehicleLoans: {
+          total: totalPersonalDebt,
+          count: personalLoans.length
+        }
+      }
+    };
+
+    // ===== COMBINED =====
+    const combinedAssets = m77TotalAssets + mceTotalAssets + personalValue;
+    const combinedLiabilities = m77TotalLiabilities + mceDebt + totalPersonalDebt;
+
+    res.json({
+      success: true,
+      data: {
+        generatedAt: new Date().toISOString(),
+        combined: {
+          totalAssets: combinedAssets,
+          totalLiabilities: combinedLiabilities,
+          netWorth: combinedAssets - combinedLiabilities
+        },
+        entities: [m77ag, mcconnellEnterprises, kyleBrandi]
+      }
+    });
+  } catch (error) {
+    console.error('Net worth by entity error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate net worth by entity',
       error: error.message
     });
   }

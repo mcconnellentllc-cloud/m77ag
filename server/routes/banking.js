@@ -15,6 +15,9 @@ router.get('/bankers-overview', isBankerOrStaff, bankersOverviewController.getBa
 router.get('/bankers-comments', isBankerOrStaff, bankersOverviewController.getBankerComments);
 router.post('/bankers-comments', isBankerOrStaff, bankersOverviewController.addBankerComment);
 
+// Net Worth by Entity
+router.get('/net-worth-by-entity', isBankerOrStaff, bankersOverviewController.getNetWorthByEntity);
+
 // Bank accounts
 router.get('/accounts', isStaff, bankingController.getAccounts);
 router.get('/accounts/summary', isStaff, bankingController.getAccountsSummary);

@@ -155,6 +155,10 @@ app.get('/admin/financials/banking', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/financials/banking.html'));
 });
 
+app.get('/admin/financials/net-worth', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/net-worth.html'));
+});
+
 // Banking Dashboard route
 app.get('/admin/banking', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/banking.html'));
