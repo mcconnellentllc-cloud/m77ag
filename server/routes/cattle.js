@@ -673,86 +673,183 @@ router.post('/import/csv', isFarmerOrAdmin, async (req, res) => {
 
 /**
  * POST /api/cattle/seed/calves-2026
- * Seed 2026 calving records for cows 2318 and 2206
+ * Update all 50 cattle records with 2026 spring calving season data
+ * Data from M77 Angus calving spreadsheet (Feb 2026)
+ * Summary: 50 head, 23 calves (6 heifers, 17 bulls), 0 dead, 27 left to calve
  */
 router.post('/seed/calves-2026', isFarmerOrAdmin, async (req, res) => {
   try {
     const { force } = req.body;
 
-    // 2026 calving records - cows that calved in 2026
-    const calvingRecords2026 = [
-      {
-        tagNumber: '2318',
-        record: {
-          year: 2026,
-          hadCalf: true,
-          calfSurvived: true,
-          calfTag: '2318-C26',
-          calfSex: 'heifer',
-          calfBirthDate: new Date('2026-03-15'),
-          notes: '2026 spring calf'
-        }
-      },
-      {
-        tagNumber: '2206',
-        record: {
-          year: 2026,
-          hadCalf: true,
-          calfSurvived: true,
-          calfTag: '2206-C26',
-          calfSex: 'heifer',
-          calfBirthDate: new Date('2026-03-10'),
-          notes: '2026 spring calf'
-        }
-      }
+    // All 50 cattle records from the calving spreadsheet
+    const cattleRecords = [
+      { tagNumber: '1', owner: 'M77', tagColor: 'Yellow', calfSex: 'bull', calfBirthDate: '2026-02-25', cowBCS: null, maternalScore: null },
+      { tagNumber: '2', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '7', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '12', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '13', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '24', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '28', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: '2026-02-05', cowBCS: 6, maternalScore: 5 },
+      { tagNumber: '36', owner: 'M77', tagColor: 'Blue', calfSex: 'bull', calfBirthDate: '2026-02-15', cowBCS: 7, maternalScore: 2 },
+      { tagNumber: '39', owner: 'GAGE', tagColor: 'White', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '45', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '55', owner: 'M77', tagColor: 'Blue', calfSex: 'bull', calfBirthDate: '2026-02-27', cowBCS: 6, maternalScore: 3 },
+      { tagNumber: '75', owner: 'M77', tagColor: 'Blue', calfSex: 'heifer', calfBirthDate: '2026-02-05', cowBCS: 6, maternalScore: 5 },
+      { tagNumber: '84', owner: 'M77', tagColor: 'Purple', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '88', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 6, maternalScore: 3 },
+      { tagNumber: '94', owner: 'M77', tagColor: 'Purple', calfSex: 'heifer', calfBirthDate: '2026-02-28', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '95', owner: 'M77', tagColor: 'Purple', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '104', owner: 'M77', tagColor: 'Purple', calfSex: 'bull', calfBirthDate: '2026-02-08', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '110', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: null, maternalScore: null },
+      { tagNumber: '1113', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-17', cowBCS: null, maternalScore: null },
+      { tagNumber: '1032', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-13', cowBCS: null, maternalScore: null },
+      { tagNumber: '2201', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2203', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 6, maternalScore: null },
+      { tagNumber: '2206', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 5, maternalScore: null },
+      { tagNumber: '2210', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2214', owner: 'M77', tagColor: 'Red', calfSex: 'bull', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '2215', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2316', owner: 'M77', tagColor: 'Orange', calfSex: 'bull', calfBirthDate: '2026-02-10', cowBCS: 6, maternalScore: 3 },
+      { tagNumber: '2317', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2318', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: null, maternalScore: null },
+      { tagNumber: '2319', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2321', owner: 'M77', tagColor: 'Orange', calfSex: 'heifer', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '2322', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: '2026-02-01', cowBCS: null, maternalScore: null },
+      { tagNumber: '2324', owner: 'M77', tagColor: 'Orange', calfSex: 'heifer', calfBirthDate: '2026-02-12', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '2325', owner: 'M77', tagColor: 'Orange', calfSex: 'heifer', calfBirthDate: '2026-02-12', cowBCS: null, maternalScore: null },
+      { tagNumber: '2426', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2427', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2428', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2429', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2430', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: null, maternalScore: null },
+      { tagNumber: '2431', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2432', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6059', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-15', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '6064', owner: 'M77', tagColor: 'Purple', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6069', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '6070', owner: 'M77', tagColor: 'Yellow', calfSex: 'bull', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '6072', owner: 'M77', tagColor: 'Green', calfSex: 'heifer', calfBirthDate: '2026-02-14', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '6078', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6084', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6085', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6086', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null }
     ];
 
     let updated = 0;
-    let notFound = 0;
+    let created = 0;
+    let notChanged = 0;
+    let errorCount = 0;
     const results = [];
 
-    for (const item of calvingRecords2026) {
-      const cattle = await Cattle.findOne({ tagNumber: item.tagNumber });
+    for (const record of cattleRecords) {
+      try {
+        let cattle = await Cattle.findOne({ tagNumber: record.tagNumber });
+        const hadCalf = !!(record.calfBirthDate || record.calfSex || record.cowBCS);
 
-      if (!cattle) {
-        notFound++;
-        results.push({ tag: item.tagNumber, status: 'not found' });
-        continue;
-      }
+        if (!cattle) {
+          // Create new record
+          let birthDate;
+          const tag = parseInt(record.tagNumber);
+          if (tag >= 6000 && tag < 7000) birthDate = new Date('2016-03-01');
+          else if (tag >= 2316 && tag <= 2325) birthDate = new Date('2023-03-01');
+          else if (tag >= 2426 && tag <= 2432) birthDate = new Date('2024-03-01');
+          else if (tag >= 2201 && tag <= 2215) birthDate = new Date('2022-03-01');
+          else if (tag >= 1000 && tag < 2000) birthDate = new Date('2019-03-01');
+          else birthDate = new Date('2018-03-01');
 
-      // Initialize annualCalvingRecords if it doesn't exist
-      if (!cattle.annualCalvingRecords) {
-        cattle.annualCalvingRecords = [];
-      }
+          cattle = new Cattle({
+            tagNumber: record.tagNumber,
+            type: 'cow',
+            breed: 'Angus',
+            owner: record.owner,
+            tagColor: record.tagColor,
+            calvingGroup: 'SPRING',
+            birthDate: birthDate,
+            status: 'active',
+            annualCalvingRecords: []
+          });
+          created++;
+        }
 
-      // Check if 2026 record already exists
-      const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === 2026);
+        // Update owner and tag color
+        cattle.owner = record.owner;
+        cattle.tagColor = record.tagColor;
 
-      if (existingIndex >= 0) {
-        if (force) {
-          cattle.annualCalvingRecords[existingIndex] = item.record;
-          await cattle.save();
-          results.push({ tag: item.tagNumber, status: 'updated' });
+        if (hadCalf) {
+          if (!cattle.annualCalvingRecords) {
+            cattle.annualCalvingRecords = [];
+          }
+
+          const calvingRecord = {
+            year: 2026,
+            hadCalf: true,
+            calfSurvived: true,
+            calfSex: record.calfSex || undefined,
+            calfBirthDate: record.calfBirthDate ? new Date(record.calfBirthDate) : undefined,
+            cowBCS: record.cowBCS || undefined,
+            maternalScore: record.maternalScore || undefined,
+            notes: '2026 spring calving season'
+          };
+
+          const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === 2026);
+          if (existingIndex >= 0) {
+            if (force) {
+              cattle.annualCalvingRecords[existingIndex] = calvingRecord;
+            } else {
+              results.push({ tag: record.tagNumber, status: 'exists (use force=true to overwrite)' });
+              continue;
+            }
+          } else {
+            cattle.annualCalvingRecords.push(calvingRecord);
+          }
           updated++;
         } else {
-          results.push({ tag: item.tagNumber, status: 'exists (use force=true to update)' });
+          notChanged++;
         }
-      } else {
-        cattle.annualCalvingRecords.push(item.record);
+
         await cattle.save();
-        results.push({ tag: item.tagNumber, status: 'added' });
-        updated++;
+        results.push({
+          tag: record.tagNumber,
+          owner: record.owner,
+          tagColor: record.tagColor,
+          status: hadCalf ? (created > 0 ? 'created with calf' : 'calf recorded') : 'no calf yet',
+          calfSex: record.calfSex || null,
+          calfBirthDate: record.calfBirthDate || null,
+          cowBCS: record.cowBCS || null,
+          maternalScore: record.maternalScore || null
+        });
+      } catch (err) {
+        errorCount++;
+        results.push({ tag: record.tagNumber, status: 'error', error: err.message });
       }
     }
 
     res.json({
       success: true,
-      message: `2026 calving records: ${updated} updated, ${notFound} not found`,
-      data: { updated, notFound, results }
+      message: `2026 calving update: ${updated} calves recorded, ${created} new records created, ${notChanged} still waiting to calve, ${errorCount} errors`,
+      data: {
+        updated,
+        created,
+        notChanged,
+        errors: errorCount,
+        totalProcessed: cattleRecords.length,
+        summary: {
+          totalHead: 50,
+          m77Owned: 49,
+          totalCalves: 23,
+          liveCalves: 23,
+          deadCalves: 0,
+          percentCalved: '46%',
+          heifers: 6,
+          bulls: 17,
+          leftToCalve: 27
+        },
+        results
+      }
     });
 
   } catch (error) {
-    console.error('Error seeding 2026 calves:', error);
+    console.error('Error updating 2026 calves:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
