@@ -244,5 +244,42 @@ async function createDefaultAdmin() {
   }
 }
 
+// Create default farmer user if none exists
+async function createDefaultFarmer() {
+  try {
+    const farmerExists = await User.findOne({ email: 'matt@togoag.com' });
+
+    if (!farmerExists) {
+      const defaultFarmer = new User({
+        name: 'Matt',
+        email: 'matt@togoag.com',
+        phone: '000-000-0000',
+        password: 'm77ag1',
+        role: 'farmer',
+        isActive: true,
+        emailVerified: true,
+        employeePermissions: {
+          canAddCattleRecords: true,
+          canEditCattleRecords: true,
+          canDeleteCattleRecords: false,
+          canAddEquipmentLogs: true,
+          canEditEquipmentLogs: true,
+          canAddTransactions: false,
+          canEditTransactions: false,
+          canViewFinancials: true,
+          canViewReports: true,
+          accessAreas: ['cattle', 'crops', 'equipment']
+        }
+      });
+
+      await defaultFarmer.save();
+      console.log('Default farmer user created: matt@togoag.com');
+    }
+  } catch (error) {
+    console.error('Error creating default farmer:', error.message);
+  }
+}
+
 module.exports = User;
 module.exports.createDefaultAdmin = createDefaultAdmin;
+module.exports.createDefaultFarmer = createDefaultFarmer;
