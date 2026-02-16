@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Employee = require('../models/employee');
+const User = require('../models/user');
 
 // Get all employees
 router.get('/', async (req, res) => {
@@ -426,6 +427,134 @@ router.get('/:id/contract', async (req, res) => {
   } catch (error) {
     console.error('Error getting contract:', error);
     res.status(500).json({ success: false, error: 'Failed to get contract status' });
+  }
+});
+
+// Check if employee has a login account
+router.get('/:id/login-status', async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ success: false, error: 'Employee not found' });
+    }
+
+    // Look for a User account with matching email
+    const email = employee.email;
+    if (!email) {
+      return res.json({ success: true, hasAccount: false, message: 'No email set for employee' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (user) {
+      res.json({
+        success: true,
+        hasAccount: true,
+        email: user.email,
+        role: user.role,
+        lastLogin: user.lastLogin || null,
+        isActive: user.isActive
+      });
+    } else {
+      res.json({ success: true, hasAccount: false });
+    }
+  } catch (error) {
+    console.error('Error checking login status:', error);
+    res.status(500).json({ success: false, error: 'Failed to check login status' });
+  }
+});
+
+// Create or reset employee login credentials
+router.post('/:id/create-login', async (req, res) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ success: false, error: 'Employee not found' });
+    }
+
+    const { email, password, role } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ success: false, error: 'Email and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters' });
+    }
+
+    // Update employee email if different
+    if (employee.email !== email) {
+      employee.email = email;
+      await employee.save();
+    }
+
+    // Check if user already exists
+    let user = await User.findOne({ email: email.toLowerCase() });
+    let created = false;
+
+    if (user) {
+      // Update existing user
+      user.password = password; // Will be hashed by pre-save hook
+      user.role = role || 'farmer';
+      user.name = `${employee.firstName} ${employee.lastName}`;
+      user.isActive = true;
+      user.emailVerified = true;
+      if (role === 'farmer') {
+        user.employeePermissions = {
+          canAddCattleRecords: true,
+          canEditCattleRecords: true,
+          canDeleteCattleRecords: false,
+          canAddEquipmentLogs: true,
+          canEditEquipmentLogs: true,
+          canAddTransactions: false,
+          canEditTransactions: false,
+          canViewFinancials: true,
+          canViewReports: true,
+          accessAreas: ['cattle', 'crops', 'equipment']
+        };
+      }
+      await user.save();
+    } else {
+      // Create new user
+      created = true;
+      const userData = {
+        name: `${employee.firstName} ${employee.lastName}`,
+        email: email.toLowerCase(),
+        password: password, // Will be hashed by pre-save hook
+        phone: employee.phone || '',
+        role: role || 'farmer',
+        isActive: true,
+        emailVerified: true
+      };
+
+      if (role === 'farmer') {
+        userData.employeePermissions = {
+          canAddCattleRecords: true,
+          canEditCattleRecords: true,
+          canDeleteCattleRecords: false,
+          canAddEquipmentLogs: true,
+          canEditEquipmentLogs: true,
+          canAddTransactions: false,
+          canEditTransactions: false,
+          canViewFinancials: true,
+          canViewReports: true,
+          accessAreas: ['cattle', 'crops', 'equipment']
+        };
+      }
+
+      user = new User(userData);
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+      created,
+      message: created ? 'Login account created' : 'Login credentials reset',
+      email: user.email,
+      role: user.role
+    });
+  } catch (error) {
+    console.error('Error creating/resetting login:', error);
+    res.status(500).json({ success: false, error: 'Failed to create login credentials' });
   }
 });
 

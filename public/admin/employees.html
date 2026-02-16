@@ -620,6 +620,16 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="infoEmail" placeholder="employee@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="infoPhone" placeholder="000-000-0000">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Position</label>
                             <input type="text" id="infoPosition">
                         </div>
@@ -652,6 +662,39 @@
                         </div>
                     </div>
                     <button class="btn btn-primary" onclick="updateEmployeeInfo()">Save Changes</button>
+                </div>
+
+                <!-- Portal Login Credentials -->
+                <div class="form-card" style="margin-top: 20px;">
+                    <h3 class="form-title">Portal Login Credentials</h3>
+                    <div id="loginCredentialsStatus" style="margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #f8f8f8;">
+                        <p style="color: #666;">Loading account status...</p>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Login Email</label>
+                            <input type="email" id="loginEmail" placeholder="Used to sign in to farmer portal">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="text" id="loginPassword" placeholder="Enter new password">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Portal Role</label>
+                            <select id="loginRole">
+                                <option value="farmer">Farmer (Cattle, Crops, Equipment)</option>
+                                <option value="employee">Employee (Limited Access)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: flex-end;">
+                            <button class="btn btn-primary" onclick="createOrResetLogin()">Create / Reset Login</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        This creates or resets login credentials for the Farmer Portal at /farmer/login.html
+                    </p>
                 </div>
             </div>
         </div>
@@ -993,12 +1036,111 @@
             const emp = selectedEmployee;
             document.getElementById('infoFirstName').value = emp.firstName || '';
             document.getElementById('infoLastName').value = emp.lastName || '';
+            document.getElementById('infoEmail').value = emp.email || '';
+            document.getElementById('infoPhone').value = emp.phone || '';
             document.getElementById('infoPosition').value = emp.position || '';
             document.getElementById('infoStartDate').value = emp.startDate ? emp.startDate.split('T')[0] : '';
             document.getElementById('infoPayType').value = emp.payType || 'salary';
             document.getElementById('infoSalary').value = emp.payType === 'salary' ? emp.annualSalary : emp.monthlyRate;
             document.getElementById('infoProfitShare').checked = emp.hasProfitShare || false;
             document.getElementById('infoProfitPercent').value = emp.profitSharePercent || 0;
+
+            // Set login email default from employee email
+            document.getElementById('loginEmail').value = emp.email || '';
+
+            // Load login status
+            loadLoginStatus();
+        }
+
+        async function loadLoginStatus() {
+            const emp = selectedEmployee;
+            const statusContainer = document.getElementById('loginCredentialsStatus');
+            const email = emp.email;
+
+            if (!email) {
+                statusContainer.innerHTML = `
+                    <div style="color: #856404; background: #fff3cd; padding: 12px; border-radius: 6px;">
+                        <strong>No email set</strong><br>
+                        Add an email address above and save, then you can create login credentials.
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/employees/${emp._id}/login-status`);
+                const data = await response.json();
+
+                if (data.success && data.hasAccount) {
+                    statusContainer.innerHTML = `
+                        <div style="color: #155724; background: #d4edda; padding: 12px; border-radius: 6px;">
+                            <strong>Account Active</strong><br>
+                            Email: ${data.email}<br>
+                            Role: ${data.role}<br>
+                            Last login: ${data.lastLogin ? formatDate(data.lastLogin) : 'Never'}
+                        </div>
+                    `;
+                    document.getElementById('loginEmail').value = data.email;
+                    document.getElementById('loginRole').value = data.role;
+                } else {
+                    statusContainer.innerHTML = `
+                        <div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 6px;">
+                            <strong>No Login Account</strong><br>
+                            Create login credentials to allow this employee to access the portal.
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                statusContainer.innerHTML = `
+                    <div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 6px;">
+                        <strong>No Login Account</strong><br>
+                        Create login credentials to allow this employee to access the portal.
+                    </div>
+                `;
+            }
+        }
+
+        async function createOrResetLogin() {
+            if (!selectedEmployee) return;
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const role = document.getElementById('loginRole').value;
+
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+
+            if (!password) {
+                alert('Please enter a password');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/employees/${selectedEmployee._id}/create-login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, role })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Login ${result.created ? 'created' : 'reset'} successfully!\n\nEmail: ${email}\nPassword: ${password}\n\nPortal: /farmer/login.html`);
+                    document.getElementById('loginPassword').value = '';
+                    loadLoginStatus();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to create login'));
+                }
+            } catch (e) {
+                alert('Failed to create login credentials');
+                console.error(e);
+            }
         }
 
         // API Functions
@@ -1165,6 +1307,8 @@
             const data = {
                 firstName: document.getElementById('infoFirstName').value,
                 lastName: document.getElementById('infoLastName').value,
+                email: document.getElementById('infoEmail').value,
+                phone: document.getElementById('infoPhone').value,
                 position: document.getElementById('infoPosition').value,
                 startDate: document.getElementById('infoStartDate').value,
                 payType: payType,
