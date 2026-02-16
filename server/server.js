@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 // Connect to MongoDB
 const mongoose = require('mongoose');
-const { createDefaultAdmin } = require('./models/user');
+const { createDefaultAdmin, createDefaultFarmer } = require('./models/user');
 const { createDefaultFarm } = require('./controllers/landManagementAuthController');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
@@ -28,6 +28,8 @@ mongoose.connect(MONGODB_URI)
     console.log('Database:', MONGODB_URI.split('@')[1] || 'localhost');
     // Create default admin user
     createDefaultAdmin();
+    // Create default farmer user
+    createDefaultFarmer();
     // Create default farm and super admin for land management
     createDefaultFarm();
   })
@@ -233,8 +235,17 @@ app.get('/farmer/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
 });
 
+app.get('/farmer/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/signup.html'));
+});
+
 app.get('/farmer', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
+// Admin partner management
+app.get('/admin/partners', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/partners.html'));
 });
 
 // Public page routes

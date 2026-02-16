@@ -818,6 +818,22 @@
             </div>
         </div>
 
+        <!-- PARTNERS SECTION -->
+        <div class="section-header">Partners</div>
+        <div class="card-grid">
+            <a href="/admin/partners.html" class="nav-card">
+                <div class="card-icon-bar gold"></div>
+                <div class="card-content">
+                    <h3 class="card-title">Partner Accounts</h3>
+                    <p class="card-desc">Create, approve, and manage partner portal accounts. Review pending registrations.</p>
+                    <div class="card-meta">
+                        <span>Pending Approval</span>
+                        <span class="card-meta-value" id="pendingPartners">--</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- LAND & PROPERTY SECTION -->
         <div class="section-header">Land & Property</div>
         <div class="card-grid">
@@ -1021,6 +1037,9 @@
                 // Load employee cards
                 loadEmployeeCards();
 
+                // Load pending partner count
+                loadPendingPartners(token);
+
                 // Fetch banker overview for banking card KPIs
                 try {
                     const bankingRes = await fetch('/api/banking/bankers-overview', { headers }).catch(() => null);
@@ -1069,6 +1088,21 @@
                 }
             } catch (e) {
                 console.error('Error loading equipment stats:', e);
+            }
+        }
+
+        async function loadPendingPartners(token) {
+            try {
+                const response = await fetch('/api/auth/partners', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const pending = data.partners.filter(p => !p.isActive).length;
+                    document.getElementById('pendingPartners').textContent = pending;
+                }
+            } catch (e) {
+                document.getElementById('pendingPartners').textContent = '0';
             }
         }
 

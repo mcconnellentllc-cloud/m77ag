@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner Login - M77 AG</title>
+    <title>Partner Registration - M77 AG</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,16 +24,17 @@
             align-items: center;
             justify-content: center;
             color: #fff;
+            padding: 20px;
         }
 
-        .login-container {
+        .signup-container {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            padding: 60px 50px;
+            padding: 50px;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
@@ -50,14 +51,14 @@
         .subtitle {
             text-align: center;
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         label {
@@ -89,7 +90,13 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
-        .btn-login {
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-signup {
             width: 100%;
             padding: 15px;
             background: #d4af37;
@@ -105,17 +112,17 @@
             margin-top: 10px;
         }
 
-        .btn-login:hover {
+        .btn-signup:hover {
             background: #f4d03f;
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
         }
 
-        .btn-login:active {
+        .btn-signup:active {
             transform: translateY(0);
         }
 
-        .btn-login:disabled {
+        .btn-signup:disabled {
             background: #666;
             cursor: not-allowed;
             transform: none;
@@ -144,20 +151,29 @@
             font-size: 14px;
         }
 
-        .back-link {
+        .links {
             text-align: center;
             margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
         }
 
-        .back-link a {
+        .links a {
             color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
             font-size: 14px;
             transition: color 0.3s;
         }
 
-        .back-link a:hover {
+        .links a:hover {
             color: #d4af37;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 6px;
         }
 
         .spinner {
@@ -177,56 +193,79 @@
         }
 
         @media (max-width: 480px) {
-            .login-container {
-                padding: 40px 30px;
-                margin: 20px;
+            .signup-container {
+                padding: 40px 25px;
             }
 
             .logo {
                 font-size: 36px;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="signup-container">
         <div class="logo">M77 AG</div>
-        <div class="subtitle">Partner Portal</div>
+        <div class="subtitle">Partner Registration</div>
 
         <div id="errorMessage" class="error-message"></div>
         <div id="successMessage" class="success-message"></div>
 
-        <form id="loginForm">
+        <form id="signupForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="firstName" placeholder="First name" required autocomplete="given-name">
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" id="lastName" placeholder="Last name" required autocomplete="family-name">
+                </div>
+            </div>
+
             <div class="form-group">
-                <label>Email or Username</label>
-                <input type="text" id="email" placeholder="Enter your email or username" required autocomplete="username">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Enter your email" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="phone" placeholder="Enter your phone number" required autocomplete="tel">
             </div>
 
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                <input type="password" id="password" placeholder="Create a password" required autocomplete="new-password">
+                <div class="password-requirements">Minimum 6 characters</div>
             </div>
 
-            <button type="submit" class="btn-login" id="loginBtn">Login</button>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn-signup" id="signupBtn">Create Account</button>
         </form>
 
-        <div class="back-link" style="display: flex; justify-content: center; gap: 25px;">
-            <a href="/farmer/signup">Create an Account</a>
+        <div class="links">
+            <a href="/farmer/login">Already have an account? Login</a>
             <a href="/">Back to Main Site</a>
         </div>
     </div>
 
     <script>
-        const API_URL = window.location.origin + '/api';
+        const API_URL = window.location.origin;
 
         // Check if already logged in
         const token = localStorage.getItem('token');
         if (token) {
-            // Verify token is still valid
-            fetch(`${API_URL}/auth/me`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            fetch(`${API_URL}/api/auth/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
             })
             .then(res => res.json())
             .then(data => {
@@ -235,71 +274,67 @@
                 }
             })
             .catch(() => {
-                // Token invalid, stay on login page
                 localStorage.removeItem('token');
             });
         }
 
-        // Handle login form
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
             const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const signupBtn = document.getElementById('signupBtn');
 
-            // Validate
-            if (!email || !password) {
-                showError('Please enter both email and password');
+            // Validation
+            if (!firstName || !lastName || !email || !phone || !password) {
+                showError('All fields are required.');
                 return;
             }
 
-            // Disable button
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = 'Logging in...<span class="spinner"></span>';
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match.');
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.innerHTML = 'Creating Account...<span class="spinner"></span>';
 
             try {
-                const response = await fetch(`${API_URL}/auth/login`, {
+                const response = await fetch(`${API_URL}/api/auth/register-partner`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: `${firstName} ${lastName}`,
+                        email,
+                        phone,
+                        password
+                    })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    // Check if user has farmer or admin role
-                    if (data.user.role !== 'farmer' && data.user.role !== 'admin') {
-                        showError('Access denied. This login is for partners only.');
-                        loginBtn.disabled = false;
-                        loginBtn.textContent = 'Login';
-                        return;
-                    }
-
-                    // Store token
-                    localStorage.setItem('token', data.token);
-
-                    // Show success
-                    showSuccess('Login successful! Redirecting...');
-
-                    // Redirect to dashboard
-                    setTimeout(() => {
-                        window.location.href = '/farmer/dashboard';
-                    }, 1000);
+                    showSuccess('Account created successfully. Your account is pending admin approval. You will be able to log in once approved.');
+                    document.getElementById('signupForm').style.display = 'none';
                 } else {
-                    showError(data.message || 'Login failed');
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Login';
+                    showError(data.message || 'Registration failed. Please try again.');
+                    signupBtn.disabled = false;
+                    signupBtn.textContent = 'Create Account';
                 }
             } catch (error) {
-                console.error('Login error:', error);
+                console.error('Signup error:', error);
                 showError('An error occurred. Please try again.');
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Login';
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Create Account';
             }
         });
 
