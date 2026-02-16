@@ -92,9 +92,12 @@ const authController = {
 
       // Check if account is active
       if (!user.isActive) {
+        const message = user.role === 'farmer'
+          ? 'Your account is pending admin approval. Please check back later.'
+          : 'Account is deactivated. Please contact support.';
         return res.status(403).json({
           success: false,
-          message: 'Account is deactivated'
+          message
         });
       }
 

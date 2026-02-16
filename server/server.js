@@ -235,8 +235,17 @@ app.get('/farmer/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
 });
 
+app.get('/farmer/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/signup.html'));
+});
+
 app.get('/farmer', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
+// Admin partner management
+app.get('/admin/partners', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/partners.html'));
 });
 
 // Public page routes
