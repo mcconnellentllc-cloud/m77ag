@@ -254,10 +254,6 @@ app.get('/custom-farming', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/custom-farming.html'));
 });
 
-app.get('/banking', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/banking.html'));
-});
-
 // Land management routes
 app.get('/land-management', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/land-management/index.html'));
