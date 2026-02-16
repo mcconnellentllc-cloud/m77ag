@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmer Login - M77 AG</title>
+    <title>Partner Login - M77 AG</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,7 +191,7 @@
 <body>
     <div class="login-container">
         <div class="logo">M77 AG</div>
-        <div class="subtitle">Farmer Portal</div>
+        <div class="subtitle">Partner Portal</div>
 
         <div id="errorMessage" class="error-message"></div>
         <div id="successMessage" class="success-message"></div>
@@ -273,7 +273,7 @@
                 if (data.success) {
                     // Check if user has farmer or admin role
                     if (data.user.role !== 'farmer' && data.user.role !== 'admin') {
-                        showError('Access denied. This login is for farmers only.');
+                        showError('Access denied. This login is for partners only.');
                         loginBtn.disabled = false;
                         loginBtn.textContent = 'Login';
                         return;

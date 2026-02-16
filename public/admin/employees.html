@@ -673,7 +673,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Login Email</label>
-                            <input type="email" id="loginEmail" placeholder="Used to sign in to farmer portal">
+                            <input type="email" id="loginEmail" placeholder="Used to sign in to partner portal">
                         </div>
                         <div class="form-group">
                             <label>New Password</label>
@@ -684,7 +684,7 @@
                         <div class="form-group">
                             <label>Portal Role</label>
                             <select id="loginRole">
-                                <option value="farmer">Farmer (Cattle, Crops, Equipment)</option>
+                                <option value="farmer">Partner (Cattle, Crops, Equipment)</option>
                                 <option value="employee">Employee (Limited Access)</option>
                             </select>
                         </div>
@@ -693,7 +693,7 @@
                         </div>
                     </div>
                     <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                        This creates or resets login credentials for the Farmer Portal at /farmer/login.html
+                        This creates or resets login credentials for the Partner Portal at /farmer/login.html
                     </p>
                 </div>
             </div>
@@ -1131,7 +1131,7 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert(`Login ${result.created ? 'created' : 'reset'} successfully!\n\nEmail: ${email}\nPassword: ${password}\n\nPortal: /farmer/login.html`);
+                    alert(`Login ${result.created ? 'created' : 'reset'} successfully!\n\nEmail: ${email}\nPassword: ${password}\n\nPartner Portal: /farmer/login.html`);
                     document.getElementById('loginPassword').value = '';
                     loadLoginStatus();
                 } else {
