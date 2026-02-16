@@ -520,7 +520,7 @@ router.post('/:id/create-login', async (req, res) => {
         name: `${employee.firstName} ${employee.lastName}`,
         email: email.toLowerCase(),
         password: password, // Will be hashed by pre-save hook
-        phone: employee.phone || '',
+        phone: employee.phone || 'Not provided',
         role: role || 'farmer',
         isActive: true,
         emailVerified: true
@@ -554,7 +554,18 @@ router.post('/:id/create-login', async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating/resetting login:', error);
-    res.status(500).json({ success: false, error: 'Failed to create login credentials' });
+    // Return specific error message for better debugging
+    let errorMessage = 'Failed to create login credentials';
+    if (error.code === 11000) {
+      errorMessage = 'An account with this email already exists';
+    } else if (error.errors) {
+      // Mongoose validation error
+      const fieldErrors = Object.keys(error.errors).map(key => error.errors[key].message);
+      errorMessage = fieldErrors.join(', ');
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    res.status(500).json({ success: false, error: errorMessage });
   }
 });
 
