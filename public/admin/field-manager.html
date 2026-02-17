@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Manager | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+
+        /* Header */
+        .admin-header { background: #1a1a1a; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 22px; color: #d4af37; text-decoration: none; }
+        .admin-nav { display: flex; gap: 25px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 30px; }
+
+        /* Page Header */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 32px; color: #1a1a1a; }
+        .page-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+        /* Farm Tabs */
+        .farm-tabs { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; }
+        .farm-tab { padding: 10px 20px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .farm-tab:hover { border-color: #2d5016; }
+        .farm-tab.active { background: #2d5016; color: white; border-color: #2d5016; }
+        .farm-tab .tab-count { font-family: 'Oswald', sans-serif; margin-left: 6px; opacity: 0.7; }
+
+        /* Farm Summary Banner */
+        .farm-banner { background: white; border-radius: 10px; padding: 20px 25px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; }
+        .banner-stat { text-align: center; }
+        .banner-stat .bv { font-family: 'Oswald', sans-serif; font-size: 22px; color: #2d5016; }
+        .banner-stat .bv.warn { color: #e67e22; }
+        .banner-stat .bv.neg { color: #c0392b; }
+        .banner-stat .bl { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-top: 2px; }
+
+        /* Field Cards Grid */
+        .fields-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+
+        /* Field Card */
+        .field-card { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; transition: box-shadow 0.3s; }
+        .field-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+        .fc-header { padding: 16px 18px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        .fc-title { font-family: 'Oswald', sans-serif; font-size: 17px; color: #1a1a1a; }
+        .fc-farm-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-top: 2px; }
+        .fc-right { text-align: right; }
+        .fc-acres { font-family: 'Oswald', sans-serif; font-size: 18px; color: #2d5016; }
+        .fc-crop { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 3px; }
+
+        /* Crop tag colors */
+        .fc-crop.CORN { background: rgba(244,160,32,0.15); color: #b87800; }
+        .fc-crop.WHEAT { background: rgba(212,165,74,0.15); color: #8a6d2e; }
+        .fc-crop.SORGHUM { background: rgba(139,69,19,0.15); color: #8B4513; }
+        .fc-crop.FALLOW { background: rgba(160,160,160,0.15); color: #666; }
+        .fc-crop.PASTURE { background: rgba(74,124,35,0.15); color: #3d6520; }
+        .fc-crop.TRITICALE { background: rgba(107,142,35,0.15); color: #556b1a; }
+        .fc-crop.PEARL { background: rgba(147,112,219,0.15); color: #6a3db0; }
+        .fc-crop.SORGHUM-SUDAN { background: rgba(205,133,63,0.15); color: #996633; }
+        .fc-crop.WASTE { background: rgba(128,128,128,0.15); color: #666; }
+        .fc-crop.BUILDING { background: rgba(44,44,44,0.15); color: #333; }
+
+        /* Field quick stats */
+        .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #f0f0f0; }
+        .fc-stat { background: white; padding: 10px 12px; text-align: center; }
+        .fc-stat .sv { font-family: 'Oswald', sans-serif; font-size: 15px; color: #2d5016; }
+        .fc-stat .sv.pos { color: #27ae60; }
+        .fc-stat .sv.neg { color: #c0392b; }
+        .fc-stat .sv.na { color: #ccc; }
+        .fc-stat .sl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #999; }
+
+        /* Expand indicator */
+        .fc-expand { text-align: center; padding: 6px; font-size: 10px; color: #bbb; cursor: pointer; transition: color 0.3s; }
+        .fc-expand:hover { color: #2d5016; }
+
+        /* Expanded detail */
+        .fc-detail { display: none; border-top: 2px solid #f0f0f0; }
+        .fc-detail.open { display: block; }
+
+        /* Detail tabs */
+        .detail-tabs { display: flex; border-bottom: 1px solid #eee; overflow-x: auto; }
+        .detail-tab { padding: 10px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; white-space: nowrap; }
+        .detail-tab.active { color: #2d5016; border-bottom-color: #2d5016; }
+        .detail-tab:hover:not(.active) { color: #666; }
+
+        .detail-panel { display: none; padding: 16px 18px; }
+        .detail-panel.active { display: block; }
+
+        /* Detail content styles */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-item { }
+        .info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 2px; }
+        .info-value { font-size: 14px; font-weight: 500; color: #333; }
+        .info-value.empty { color: #ccc; font-style: italic; font-weight: 400; }
+
+        /* History table */
+        .hist-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .hist-table th { text-align: left; padding: 8px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; background: #fafafa; border-bottom: 1px solid #eee; }
+        .hist-table td { padding: 8px 10px; border-bottom: 1px solid #f5f5f5; }
+        .hist-table tr:hover { background: #fafaf8; }
+        .hist-table .right { text-align: right; }
+
+        /* Action buttons */
+        .btn { padding: 8px 16px; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #2d5016; color: white; }
+        .btn-primary:hover { background: #3d6b1f; }
+        .btn-sm { padding: 5px 10px; font-size: 11px; }
+        .btn-outline { background: transparent; border: 1px solid #ddd; color: #666; }
+        .btn-outline:hover { border-color: #2d5016; color: #2d5016; }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+
+        .detail-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .empty-state { text-align: center; padding: 20px; color: #bbb; font-size: 13px; }
+
+        /* Soil sample cards */
+        .soil-card { background: #fafafa; border-radius: 6px; padding: 12px; margin-bottom: 8px; }
+        .soil-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .soil-card-date { font-weight: 600; font-size: 13px; }
+        .soil-card-depth { font-size: 11px; color: #888; }
+        .soil-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px; }
+        .soil-val { text-align: center; }
+        .soil-val .sv-num { font-family: 'Oswald', sans-serif; font-size: 15px; color: #2d5016; }
+        .soil-val .sv-lbl { font-size: 9px; color: #999; text-transform: uppercase; }
+
+        /* === MODALS === */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 12px; width: 100%; max-width: 640px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .modal-header { background: #1a1a1a; color: white; padding: 18px 22px; }
+        .modal-header h2 { font-family: 'Oswald', sans-serif; font-size: 20px; color: #d4af37; }
+        .modal-header p { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+        .modal-body { padding: 22px; max-height: 65vh; overflow-y: auto; }
+        .modal-footer { padding: 14px 22px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eee; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+        .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2d5016; }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+        .form-section { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
+
+        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; display: none; }
+        .alert-success { background: rgba(45,80,22,0.1); color: #2d5016; }
+        .alert-error { background: rgba(192,57,43,0.1); color: #c0392b; }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .fields-grid { grid-template-columns: 1fr; }
+            .farm-banner { grid-template-columns: repeat(3, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .form-row.three { grid-template-columns: 1fr; }
+            .admin-nav { gap: 12px; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/farm-operations">Farm Ops</a>
+            <a href="/admin/field-manager" class="active">Field Manager</a>
+            <a href="/admin/farm-projections">Projections</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="alertSuccess" class="alert alert-success"></div>
+        <div id="alertError" class="alert alert-error"></div>
+
+        <div class="page-header">
+            <h1 class="page-title">Field Manager</h1>
+            <div class="page-controls">
+                <select id="yearSelect" style="padding:8px 14px;border:2px solid #e0e0e0;border-radius:5px;font-size:14px;font-weight:600;cursor:pointer;">
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Farm Tabs -->
+        <div class="farm-tabs" id="farmTabs"></div>
+
+        <!-- Farm Summary Banner -->
+        <div class="farm-banner" id="farmBanner" style="display:none;"></div>
+
+        <!-- Field Cards -->
+        <div class="fields-grid" id="fieldsGrid">
+            <div class="empty-state" style="grid-column:1/-1;padding:60px;">Loading fields...</div>
+        </div>
+    </div>
+
+    <!-- Add Crop History Modal -->
+    <div class="modal-overlay" id="cropHistoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add / Edit Crop Year</h2>
+                <p id="chModalSub"></p>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="chFieldId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="chYear" min="2015" max="2030" placeholder="2025">
+                    </div>
+                    <div class="form-group">
+                        <label>Crop</label>
+                        <input type="text" id="chCrop" placeholder="CORN, WHEAT, etc.">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Variety</label>
+                        <input type="text" id="chVariety" placeholder="Pioneer P1185">
+                    </div>
+                    <div class="form-group">
+                        <label>Yield (bu/acre)</label>
+                        <input type="number" id="chYield" step="0.1" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price ($/bushel)</label>
+                        <input type="number" id="chPrice" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <input type="text" id="chNotes" placeholder="Optional notes">
+                    </div>
+                </div>
+
+                <div class="form-section">Costs (per acre)</div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Seed</label><input type="number" id="chSeed" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Fertilizer</label><input type="number" id="chFertilizer" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Chemicals</label><input type="number" id="chChemicals" step="0.01" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Crop Insurance</label><input type="number" id="chInsurance" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Fuel & Oil</label><input type="number" id="chFuel" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Repairs</label><input type="number" id="chRepairs" step="0.01" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Custom Hire</label><input type="number" id="chCustom" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Land Rent</label><input type="number" id="chRent" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Taxes</label><input type="number" id="chTaxes" step="0.01" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Drying/Hauling</label><input type="number" id="chDrying" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Misc</label><input type="number" id="chMisc" step="0.01" placeholder="0"></div>
+                    <div class="form-group"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('cropHistoryModal')">Cancel</button>
+                <button class="btn btn-primary" id="chSaveBtn" onclick="saveCropHistory()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Soil Sample Modal -->
+    <div class="modal-overlay" id="soilModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Soil Sample</h2>
+                <p id="soilModalSub"></p>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="soilFieldId">
+                <div class="form-row three">
+                    <div class="form-group"><label>Sample Date</label><input type="date" id="soilDate"></div>
+                    <div class="form-group"><label>Depth</label><input type="text" id="soilDepth" placeholder="0-6 in"></div>
+                    <div class="form-group"><label>pH</label><input type="number" id="soilPh" step="0.1" placeholder="7.0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Nitrogen (ppm)</label><input type="number" id="soilN" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Phosphorus (ppm)</label><input type="number" id="soilP" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Potassium (ppm)</label><input type="number" id="soilK" step="0.1" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Sulfur (ppm)</label><input type="number" id="soilS" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Zinc (ppm)</label><input type="number" id="soilZn" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Iron (ppm)</label><input type="number" id="soilFe" step="0.1" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Organic Matter %</label><input type="number" id="soilOM" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>CEC</label><input type="number" id="soilCEC" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Salts (mmhos)</label><input type="number" id="soilSalts" step="0.01" placeholder="0"></div>
+                </div>
+                <div class="form-group"><label>Notes</label><textarea id="soilNotes" rows="2" placeholder="Optional notes"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('soilModal')">Cancel</button>
+                <button class="btn btn-primary" id="soilSaveBtn" onclick="saveSoilSample()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Field Details Modal -->
+    <div class="modal-overlay" id="detailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Field Details</h2>
+                <p id="detailsModalSub"></p>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="detFieldId">
+
+                <div class="form-section">Location</div>
+                <div class="form-row">
+                    <div class="form-group"><label>County</label><input type="text" id="detCounty" placeholder="Logan"></div>
+                    <div class="form-group"><label>Legal Description</label><input type="text" id="detLegal" placeholder="NE4 2-6-47"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Section</label><input type="text" id="detSection" placeholder="2"></div>
+                    <div class="form-group"><label>Township</label><input type="text" id="detTownship" placeholder="6N"></div>
+                    <div class="form-group"><label>Range</label><input type="text" id="detRange" placeholder="47W"></div>
+                </div>
+
+                <div class="form-section">Soil</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Soil Type</label><input type="text" id="detSoilType" placeholder="Weld Loam"></div>
+                    <div class="form-group"><label>Soil Class</label>
+                        <select id="detSoilClass"><option value="">--</option><option>I</option><option>II</option><option>III</option><option>IV</option></select>
+                    </div>
+                </div>
+
+                <div class="form-section">Lease / Ownership</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Lease Type</label>
+                        <select id="detLeaseType"><option value="">--</option><option value="owned">Owned</option><option value="cash-rent">Cash Rent</option><option value="crop-share">Crop Share</option><option value="flex-lease">Flex Lease</option></select>
+                    </div>
+                    <div class="form-group"><label>Landlord</label><input type="text" id="detLandlord" placeholder="Landlord name"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Rent / Acre</label><input type="number" id="detRent" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Share %</label><input type="number" id="detShare" step="0.1" placeholder="0"></div>
+                </div>
+
+                <div class="form-section">Crop Insurance (Current Year)</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Provider</label><input type="text" id="detInsProvider" placeholder="Rain & Hail"></div>
+                    <div class="form-group"><label>Type</label><input type="text" id="detInsType" placeholder="Revenue Protection"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Coverage Level %</label><input type="number" id="detInsLevel" step="1" placeholder="75"></div>
+                    <div class="form-group"><label>Guar. Yield</label><input type="number" id="detInsYield" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Guar. Price</label><input type="number" id="detInsPrice" step="0.01" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Premium / Acre</label><input type="number" id="detInsPremium" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Subsidy</label><input type="number" id="detInsSubsidy" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Net Premium</label><input type="number" id="detInsNet" step="0.01" placeholder="0"></div>
+                </div>
+
+                <div class="form-section">Taxes</div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Property Tax / Acre</label><input type="number" id="detTaxPerAcre" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Assessed Value</label><input type="number" id="detTaxValue" step="1" placeholder="0"></div>
+                    <div class="form-group"><label>Authority</label><input type="text" id="detTaxAuth" placeholder="Logan County"></div>
+                </div>
+
+                <div class="form-section">Notes</div>
+                <div class="form-group"><textarea id="detNotes" rows="3" placeholder="Field notes..."></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('detailsModal')">Cancel</button>
+                <button class="btn btn-primary" id="detSaveBtn" onclick="saveDetails()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = window.location.origin;
+        let allFields = [];
+        let activeFarm = 'ALL';
+        let selectedYear = 2026;
+
+        function fmt(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n); }
+        function fmt2(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n); }
+        function fmtAcres(n) { return n ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n) : '--'; }
+        function getCropClass(crop) {
+            if (!crop) return '';
+            if (crop.includes('SORGHUM') && crop.includes('SUDAN')) return 'SORGHUM-SUDAN';
+            if (crop.includes('PEARL')) return 'PEARL';
+            if (crop.includes('BUILDING')) return 'BUILDING';
+            return crop;
+        }
+
+        // === DATA LOADING ===
+        async function loadFields() {
+            try {
+                const res = await fetch(`${API}/api/cropping-fields`);
+                const data = await res.json();
+                if (data.success) {
+                    allFields = data.fields;
+                    renderFarmTabs();
+                    renderFields();
+                }
+            } catch (e) {
+                console.error('Error loading fields:', e);
+            }
+        }
+
+        function renderFarmTabs() {
+            const farms = {};
+            allFields.forEach(f => {
+                if (!farms[f.farm]) farms[f.farm] = 0;
+                farms[f.farm]++;
+            });
+
+            const tabs = document.getElementById('farmTabs');
+            let html = `<div class="farm-tab ${activeFarm === 'ALL' ? 'active' : ''}" onclick="setFarm('ALL')">ALL FARMS<span class="tab-count">${allFields.length}</span></div>`;
+            Object.entries(farms).sort().forEach(([farm, count]) => {
+                html += `<div class="farm-tab ${activeFarm === farm ? 'active' : ''}" onclick="setFarm('${farm}')">${farm}<span class="tab-count">${count}</span></div>`;
+            });
+            tabs.innerHTML = html;
+        }
+
+        function setFarm(farm) {
+            activeFarm = farm;
+            renderFarmTabs();
+            renderFields();
+        }
+
+        function getFieldsFiltered() {
+            if (activeFarm === 'ALL') return allFields;
+            return allFields.filter(f => f.farm === activeFarm);
+        }
+
+        function renderFields() {
+            const fields = getFieldsFiltered();
+            const grid = document.getElementById('fieldsGrid');
+            const banner = document.getElementById('farmBanner');
+            const nonProd = ['PASTURE', 'FALLOW', 'WASTE', 'BUILDING SITE'];
+
+            // Banner
+            let totalAcres = 0, prodAcres = 0, totalCost = 0, totalRev = 0;
+            fields.forEach(f => {
+                const ac = f.acres || 0;
+                totalAcres += ac;
+                if (!nonProd.includes(f.crop2026)) prodAcres += ac;
+                totalCost += (f.totalCost || 0);
+                totalRev += (f.totalRevenue || 0);
+            });
+            const net = totalRev - totalCost;
+            const hasBudget = totalCost > 0 || totalRev > 0;
+
+            banner.style.display = '';
+            banner.innerHTML = `
+                <div class="banner-stat"><div class="bv">${activeFarm === 'ALL' ? 'M77 AG' : activeFarm}</div><div class="bl">${activeFarm === 'ALL' ? 'All Operations' : 'Farm'}</div></div>
+                <div class="banner-stat"><div class="bv">${fields.length}</div><div class="bl">Fields</div></div>
+                <div class="banner-stat"><div class="bv">${fmtAcres(totalAcres)}</div><div class="bl">Total Acres</div></div>
+                <div class="banner-stat"><div class="bv">${fmtAcres(prodAcres)}</div><div class="bl">Productive</div></div>
+                <div class="banner-stat"><div class="bv ${hasBudget ? '' : ''}">${hasBudget ? fmt(totalCost) : '--'}</div><div class="bl">Total Cost</div></div>
+                <div class="banner-stat"><div class="bv">${hasBudget ? fmt(totalRev) : '--'}</div><div class="bl">Total Revenue</div></div>
+                <div class="banner-stat"><div class="bv ${net >= 0 ? '' : 'neg'}">${hasBudget ? fmt(net) : '--'}</div><div class="bl">Net Income</div></div>
+            `;
+
+            if (fields.length === 0) {
+                grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:60px;">No fields found.</div>';
+                return;
+            }
+
+            grid.innerHTML = fields.map(f => {
+                const crop = f.crop2026 || '--';
+                const history = f.cropHistory || [];
+                const avgProfit = f.avgProfitPerAcre;
+                const avgYield = f.avgYield;
+                const hasBgt = (f.totalCostPerAcre || 0) > 0 || (f.revenuePerAcre || 0) > 0;
+                const netPA = f.netPerAcre || 0;
+                const leaseType = f.lease && f.lease.type ? f.lease.type : '';
+
+                return `
+                <div class="field-card" id="card-${f._id}">
+                    <div class="fc-header" onclick="toggleCard('${f._id}')">
+                        <div>
+                            <div class="fc-title">${f.field}</div>
+                            <div class="fc-farm-tag">${f.farm}${leaseType ? ' | ' + leaseType.replace('-', ' ') : ''}</div>
+                        </div>
+                        <div class="fc-right">
+                            <div class="fc-acres">${fmtAcres(f.acres)} ac</div>
+                            <span class="fc-crop ${getCropClass(crop)}">${crop}</span>
+                        </div>
+                    </div>
+                    <div class="fc-stats">
+                        <div class="fc-stat">
+                            <div class="sv ${avgProfit !== null && avgProfit !== undefined ? (avgProfit >= 0 ? 'pos' : 'neg') : 'na'}">${avgProfit !== null && avgProfit !== undefined ? fmt2(avgProfit) : '--'}</div>
+                            <div class="sl">Avg P/L per Ac</div>
+                        </div>
+                        <div class="fc-stat">
+                            <div class="sv ${avgYield > 0 ? '' : 'na'}">${avgYield > 0 ? avgYield.toFixed(1) : '--'}</div>
+                            <div class="sl">Avg Yield bu/ac</div>
+                        </div>
+                        <div class="fc-stat">
+                            <div class="sv">${history.length}</div>
+                            <div class="sl">Years of Data</div>
+                        </div>
+                    </div>
+                    <div class="fc-expand" onclick="toggleCard('${f._id}')">Click to expand</div>
+                    <div class="fc-detail" id="detail-${f._id}">
+                        ${renderDetailTabs(f)}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderDetailTabs(f) {
+            const id = f._id;
+            return `
+                <div class="detail-tabs">
+                    <div class="detail-tab active" onclick="switchTab('${id}', 'info')">Info</div>
+                    <div class="detail-tab" onclick="switchTab('${id}', 'history')">Crop History</div>
+                    <div class="detail-tab" onclick="switchTab('${id}', 'soil')">Soil</div>
+                    <div class="detail-tab" onclick="switchTab('${id}', 'insurance')">Insurance</div>
+                </div>
+                <div class="detail-panel active" id="panel-info-${id}">
+                    ${renderInfoPanel(f)}
+                </div>
+                <div class="detail-panel" id="panel-history-${id}">
+                    ${renderHistoryPanel(f)}
+                </div>
+                <div class="detail-panel" id="panel-soil-${id}">
+                    ${renderSoilPanel(f)}
+                </div>
+                <div class="detail-panel" id="panel-insurance-${id}">
+                    ${renderInsurancePanel(f)}
+                </div>
+            `;
+        }
+
+        function renderInfoPanel(f) {
+            const lease = f.lease || {};
+            const taxes = f.taxes || {};
+            const v = (val) => val ? val : '<span class="empty">--</span>';
+            return `
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">Legal Description</div><div class="info-value">${v(f.legal)}</div></div>
+                    <div class="info-item"><div class="info-label">FSA Farm / Tract</div><div class="info-value">${v(f.fsaFarm)} / ${v(f.tract)}</div></div>
+                    <div class="info-item"><div class="info-label">County</div><div class="info-value">${v(f.county)}</div></div>
+                    <div class="info-item"><div class="info-label">Section / Twp / Rng</div><div class="info-value">${v(f.section)} / ${v(f.township)} / ${v(f.range)}</div></div>
+                    <div class="info-item"><div class="info-label">Soil Type</div><div class="info-value">${v(f.soil && f.soil.type)}</div></div>
+                    <div class="info-item"><div class="info-label">Soil Class</div><div class="info-value">${v(f.soil && f.soil.class)}</div></div>
+                    <div class="info-item"><div class="info-label">Lease Type</div><div class="info-value">${v(lease.type)}</div></div>
+                    <div class="info-item"><div class="info-label">Landlord</div><div class="info-value">${v(lease.landlord)}</div></div>
+                    <div class="info-item"><div class="info-label">Rent / Acre</div><div class="info-value">${lease.rentPerAcre ? fmt2(lease.rentPerAcre) : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Property Tax / Acre</div><div class="info-value">${taxes.propertyTaxPerAcre ? fmt2(taxes.propertyTaxPerAcre) : '<span class="empty">--</span>'}</div></div>
+                </div>
+                <div class="detail-actions">
+                    <button class="btn btn-outline btn-sm" onclick="openDetailsModal('${f._id}')">Edit Details</button>
+                </div>
+            `;
+        }
+
+        function renderHistoryPanel(f) {
+            const history = f.cropHistory || [];
+            if (history.length === 0) {
+                return `
+                    <div class="empty-state">No crop history recorded yet.</div>
+                    <div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openCropHistoryModal('${f._id}')">Add Crop Year</button></div>
+                `;
+            }
+
+            const rows = history.map(h => {
+                const tc = h.totalCost || 0;
+                const gr = h.grossRevenue || 0;
+                const ppa = h.profitPerAcre;
+                return `<tr>
+                    <td><strong>${h.year}</strong></td>
+                    <td>${h.crop || '--'}</td>
+                    <td>${h.variety || '--'}</td>
+                    <td class="right">${h.yieldPerAcre ? h.yieldPerAcre.toFixed(1) : '--'}</td>
+                    <td class="right">${h.pricePerBushel ? '$' + h.pricePerBushel.toFixed(2) : '--'}</td>
+                    <td class="right">${tc > 0 ? fmt2(tc) : '--'}</td>
+                    <td class="right" style="color:${ppa >= 0 ? '#27ae60' : '#c0392b'};font-weight:600">${typeof ppa === 'number' ? fmt2(ppa) : '--'}</td>
+                </tr>`;
+            }).join('');
+
+            return `
+                <div style="overflow-x:auto;">
+                <table class="hist-table">
+                    <thead><tr><th>Year</th><th>Crop</th><th>Variety</th><th class="right">Yield</th><th class="right">Price</th><th class="right">Cost/Ac</th><th class="right">P/L per Ac</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                </div>
+                <div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openCropHistoryModal('${f._id}')">Add Crop Year</button></div>
+            `;
+        }
+
+        function renderSoilPanel(f) {
+            const samples = (f.soil && f.soil.samples) || [];
+            if (samples.length === 0) {
+                return `
+                    <div class="empty-state">No soil samples recorded yet.</div>
+                    <div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal('${f._id}')">Add Soil Sample</button></div>
+                `;
+            }
+
+            const cards = samples.map(s => {
+                const date = s.date ? new Date(s.date).toLocaleDateString() : 'No date';
+                return `
+                <div class="soil-card">
+                    <div class="soil-card-header">
+                        <span class="soil-card-date">${date}</span>
+                        <span class="soil-card-depth">${s.depth || ''}</span>
+                    </div>
+                    <div class="soil-grid">
+                        ${s.ph ? `<div class="soil-val"><div class="sv-num">${s.ph}</div><div class="sv-lbl">pH</div></div>` : ''}
+                        ${s.nitrogen ? `<div class="soil-val"><div class="sv-num">${s.nitrogen}</div><div class="sv-lbl">N ppm</div></div>` : ''}
+                        ${s.phosphorus ? `<div class="soil-val"><div class="sv-num">${s.phosphorus}</div><div class="sv-lbl">P ppm</div></div>` : ''}
+                        ${s.potassium ? `<div class="soil-val"><div class="sv-num">${s.potassium}</div><div class="sv-lbl">K ppm</div></div>` : ''}
+                        ${s.sulfur ? `<div class="soil-val"><div class="sv-num">${s.sulfur}</div><div class="sv-lbl">S ppm</div></div>` : ''}
+                        ${s.zinc ? `<div class="soil-val"><div class="sv-num">${s.zinc}</div><div class="sv-lbl">Zn ppm</div></div>` : ''}
+                        ${s.organicMatter ? `<div class="soil-val"><div class="sv-num">${s.organicMatter}%</div><div class="sv-lbl">O.M.</div></div>` : ''}
+                        ${s.cec ? `<div class="soil-val"><div class="sv-num">${s.cec}</div><div class="sv-lbl">CEC</div></div>` : ''}
+                    </div>
+                    ${s.notes ? `<div style="font-size:12px;color:#888;margin-top:8px;">${s.notes}</div>` : ''}
+                </div>`;
+            }).join('');
+
+            return `${cards}<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal('${f._id}')">Add Soil Sample</button></div>`;
+        }
+
+        function renderInsurancePanel(f) {
+            const ins = f.insurance || {};
+            const hasIns = ins.provider || ins.type || ins.level;
+            const v = (val) => val ? val : '<span class="empty">--</span>';
+
+            return `
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">Provider</div><div class="info-value">${v(ins.provider)}</div></div>
+                    <div class="info-item"><div class="info-label">Type</div><div class="info-value">${v(ins.type)}</div></div>
+                    <div class="info-item"><div class="info-label">Coverage Level</div><div class="info-value">${ins.level ? ins.level + '%' : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Guaranteed Yield</div><div class="info-value">${ins.guaranteedYield ? ins.guaranteedYield + ' bu/ac' : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Guaranteed Price</div><div class="info-value">${ins.guaranteedPrice ? '$' + ins.guaranteedPrice.toFixed(2) : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Premium / Acre</div><div class="info-value">${ins.premiumPerAcre ? fmt2(ins.premiumPerAcre) : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Subsidy</div><div class="info-value">${ins.subsidy ? fmt2(ins.subsidy) : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Net Premium</div><div class="info-value">${ins.netPremium ? fmt2(ins.netPremium) : '<span class="empty">--</span>'}</div></div>
+                </div>
+                <div class="detail-actions">
+                    <button class="btn btn-outline btn-sm" onclick="openDetailsModal('${f._id}')">Edit Insurance</button>
+                </div>
+            `;
+        }
+
+        // === CARD EXPAND/COLLAPSE ===
+        function toggleCard(id) {
+            const detail = document.getElementById(`detail-${id}`);
+            detail.classList.toggle('open');
+        }
+
+        function switchTab(fieldId, tabName) {
+            const card = document.getElementById(`card-${fieldId}`);
+            card.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+            card.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('active'));
+            card.querySelector(`.detail-tab:nth-child(${tabName === 'info' ? 1 : tabName === 'history' ? 2 : tabName === 'soil' ? 3 : 4})`).classList.add('active');
+            document.getElementById(`panel-${tabName}-${fieldId}`).classList.add('active');
+        }
+
+        // === MODALS ===
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // Crop History Modal
+        function openCropHistoryModal(fieldId) {
+            const f = allFields.find(x => x._id === fieldId);
+            document.getElementById('chFieldId').value = fieldId;
+            document.getElementById('chModalSub').textContent = `${f.farm} | ${f.field} | ${fmtAcres(f.acres)} ac`;
+            // Reset form
+            ['chYear','chCrop','chVariety','chYield','chPrice','chNotes','chSeed','chFertilizer','chChemicals','chInsurance','chFuel','chRepairs','chCustom','chRent','chTaxes','chDrying','chMisc'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('cropHistoryModal').classList.add('active');
+        }
+
+        async function saveCropHistory() {
+            const btn = document.getElementById('chSaveBtn');
+            btn.disabled = true; btn.textContent = 'Saving...';
+            const fieldId = document.getElementById('chFieldId').value;
+
+            const entry = {
+                year: parseInt(document.getElementById('chYear').value),
+                crop: document.getElementById('chCrop').value.toUpperCase().trim(),
+                variety: document.getElementById('chVariety').value.trim(),
+                yieldPerAcre: parseFloat(document.getElementById('chYield').value) || 0,
+                pricePerBushel: parseFloat(document.getElementById('chPrice').value) || 0,
+                notes: document.getElementById('chNotes').value.trim(),
+                costs: {
+                    seed: parseFloat(document.getElementById('chSeed').value) || 0,
+                    fertilizer: parseFloat(document.getElementById('chFertilizer').value) || 0,
+                    chemicals: parseFloat(document.getElementById('chChemicals').value) || 0,
+                    cropInsurance: parseFloat(document.getElementById('chInsurance').value) || 0,
+                    fuelOil: parseFloat(document.getElementById('chFuel').value) || 0,
+                    repairs: parseFloat(document.getElementById('chRepairs').value) || 0,
+                    customHire: parseFloat(document.getElementById('chCustom').value) || 0,
+                    landRent: parseFloat(document.getElementById('chRent').value) || 0,
+                    taxes: parseFloat(document.getElementById('chTaxes').value) || 0,
+                    dryingHauling: parseFloat(document.getElementById('chDrying').value) || 0,
+                    misc: parseFloat(document.getElementById('chMisc').value) || 0
+                }
+            };
+
+            if (!entry.year) { showAlert('error', 'Year is required'); btn.disabled = false; btn.textContent = 'Save'; return; }
+
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${fieldId}/crop-history`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(entry)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert('success', 'Crop history saved');
+                    closeModal('cropHistoryModal');
+                    // Update local data
+                    const idx = allFields.findIndex(f => f._id === fieldId);
+                    if (idx >= 0) allFields[idx] = data.field;
+                    renderFields();
+                } else { showAlert('error', data.error || 'Failed to save'); }
+            } catch (e) { showAlert('error', 'Failed to save crop history'); }
+            btn.disabled = false; btn.textContent = 'Save';
+        }
+
+        // Soil Sample Modal
+        function openSoilModal(fieldId) {
+            const f = allFields.find(x => x._id === fieldId);
+            document.getElementById('soilFieldId').value = fieldId;
+            document.getElementById('soilModalSub').textContent = `${f.farm} | ${f.field}`;
+            ['soilDate','soilDepth','soilPh','soilN','soilP','soilK','soilS','soilZn','soilFe','soilOM','soilCEC','soilSalts','soilNotes'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('soilModal').classList.add('active');
+        }
+
+        async function saveSoilSample() {
+            const btn = document.getElementById('soilSaveBtn');
+            btn.disabled = true; btn.textContent = 'Saving...';
+            const fieldId = document.getElementById('soilFieldId').value;
+
+            const sample = {
+                date: document.getElementById('soilDate').value || null,
+                depth: document.getElementById('soilDepth').value.trim(),
+                ph: parseFloat(document.getElementById('soilPh').value) || null,
+                nitrogen: parseFloat(document.getElementById('soilN').value) || null,
+                phosphorus: parseFloat(document.getElementById('soilP').value) || null,
+                potassium: parseFloat(document.getElementById('soilK').value) || null,
+                sulfur: parseFloat(document.getElementById('soilS').value) || null,
+                zinc: parseFloat(document.getElementById('soilZn').value) || null,
+                iron: parseFloat(document.getElementById('soilFe').value) || null,
+                organicMatter: parseFloat(document.getElementById('soilOM').value) || null,
+                cec: parseFloat(document.getElementById('soilCEC').value) || null,
+                salts: parseFloat(document.getElementById('soilSalts').value) || null,
+                notes: document.getElementById('soilNotes').value.trim()
+            };
+
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${fieldId}/soil-sample`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sample)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert('success', 'Soil sample saved');
+                    closeModal('soilModal');
+                    const idx = allFields.findIndex(f => f._id === fieldId);
+                    if (idx >= 0) allFields[idx] = data.field;
+                    renderFields();
+                } else { showAlert('error', data.error || 'Failed to save'); }
+            } catch (e) { showAlert('error', 'Failed to save soil sample'); }
+            btn.disabled = false; btn.textContent = 'Save';
+        }
+
+        // Field Details Modal
+        function openDetailsModal(fieldId) {
+            const f = allFields.find(x => x._id === fieldId);
+            document.getElementById('detFieldId').value = fieldId;
+            document.getElementById('detailsModalSub').textContent = `${f.farm} | ${f.field} | ${fmtAcres(f.acres)} ac`;
+
+            const lease = f.lease || {};
+            const ins = f.insurance || {};
+            const taxes = f.taxes || {};
+
+            document.getElementById('detCounty').value = f.county || '';
+            document.getElementById('detLegal').value = f.legal || '';
+            document.getElementById('detSection').value = f.section || '';
+            document.getElementById('detTownship').value = f.township || '';
+            document.getElementById('detRange').value = f.range || '';
+
+            document.getElementById('detSoilType').value = (f.soil && f.soil.type) || '';
+            document.getElementById('detSoilClass').value = (f.soil && f.soil.class) || '';
+
+            document.getElementById('detLeaseType').value = lease.type || '';
+            document.getElementById('detLandlord').value = lease.landlord || '';
+            document.getElementById('detRent').value = lease.rentPerAcre || '';
+            document.getElementById('detShare').value = lease.sharePercentage || '';
+
+            document.getElementById('detInsProvider').value = ins.provider || '';
+            document.getElementById('detInsType').value = ins.type || '';
+            document.getElementById('detInsLevel').value = ins.level || '';
+            document.getElementById('detInsYield').value = ins.guaranteedYield || '';
+            document.getElementById('detInsPrice').value = ins.guaranteedPrice || '';
+            document.getElementById('detInsPremium').value = ins.premiumPerAcre || '';
+            document.getElementById('detInsSubsidy').value = ins.subsidy || '';
+            document.getElementById('detInsNet').value = ins.netPremium || '';
+
+            document.getElementById('detTaxPerAcre').value = taxes.propertyTaxPerAcre || '';
+            document.getElementById('detTaxValue').value = taxes.assessedValue || '';
+            document.getElementById('detTaxAuth').value = taxes.taxingAuthority || '';
+
+            document.getElementById('detNotes').value = f.notes || '';
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        async function saveDetails() {
+            const btn = document.getElementById('detSaveBtn');
+            btn.disabled = true; btn.textContent = 'Saving...';
+            const fieldId = document.getElementById('detFieldId').value;
+            const f = allFields.find(x => x._id === fieldId);
+
+            const body = {
+                county: document.getElementById('detCounty').value.trim(),
+                section: document.getElementById('detSection').value.trim(),
+                township: document.getElementById('detTownship').value.trim(),
+                range: document.getElementById('detRange').value.trim(),
+                notes: document.getElementById('detNotes').value.trim(),
+                soil: {
+                    type: document.getElementById('detSoilType').value.trim(),
+                    class: document.getElementById('detSoilClass').value,
+                    irrigated: (f.soil && f.soil.irrigated) || false,
+                    drainageTile: (f.soil && f.soil.drainageTile) || false,
+                    samples: (f.soil && f.soil.samples) || []
+                },
+                lease: {
+                    type: document.getElementById('detLeaseType').value,
+                    landlord: document.getElementById('detLandlord').value.trim(),
+                    rentPerAcre: parseFloat(document.getElementById('detRent').value) || 0,
+                    sharePercentage: parseFloat(document.getElementById('detShare').value) || 0
+                },
+                insurance: {
+                    provider: document.getElementById('detInsProvider').value.trim(),
+                    type: document.getElementById('detInsType').value.trim(),
+                    level: parseFloat(document.getElementById('detInsLevel').value) || 0,
+                    guaranteedYield: parseFloat(document.getElementById('detInsYield').value) || 0,
+                    guaranteedPrice: parseFloat(document.getElementById('detInsPrice').value) || 0,
+                    premiumPerAcre: parseFloat(document.getElementById('detInsPremium').value) || 0,
+                    subsidy: parseFloat(document.getElementById('detInsSubsidy').value) || 0,
+                    netPremium: parseFloat(document.getElementById('detInsNet').value) || 0
+                },
+                taxes: {
+                    propertyTaxPerAcre: parseFloat(document.getElementById('detTaxPerAcre').value) || 0,
+                    assessedValue: parseFloat(document.getElementById('detTaxValue').value) || 0,
+                    taxingAuthority: document.getElementById('detTaxAuth').value.trim()
+                }
+            };
+
+            // Also update legal desc if changed
+            const newLegal = document.getElementById('detLegal').value.trim();
+            if (newLegal !== (f.legal || '')) {
+                // Update via main PUT
+                await fetch(`${API}/api/cropping-fields/${fieldId}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ legal: newLegal })
+                });
+            }
+
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${fieldId}/details`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert('success', 'Field details saved');
+                    closeModal('detailsModal');
+                    const idx = allFields.findIndex(x => x._id === fieldId);
+                    if (idx >= 0) allFields[idx] = data.field;
+                    renderFields();
+                } else { showAlert('error', data.error || 'Failed to save'); }
+            } catch (e) { showAlert('error', 'Failed to save field details'); }
+            btn.disabled = false; btn.textContent = 'Save';
+        }
+
+        // Alert
+        function showAlert(type, message) {
+            const el = document.getElementById(type === 'success' ? 'alertSuccess' : 'alertError');
+            const other = document.getElementById(type === 'success' ? 'alertError' : 'alertSuccess');
+            other.style.display = 'none';
+            el.textContent = message;
+            el.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+        });
+
+        // Year selector
+        document.getElementById('yearSelect').addEventListener('change', function() {
+            selectedYear = parseInt(this.value);
+            // For now year selection is informational - data entry uses it as default
+        });
+
+        // Init
+        loadFields();
+    </script>
+</body>
+</html>

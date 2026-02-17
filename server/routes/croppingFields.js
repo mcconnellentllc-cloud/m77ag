@@ -2,6 +2,199 @@ const express = require('express');
 const router = express.Router();
 const CroppingField = require('../models/croppingField');
 
+// === CSV IMPORT ENDPOINT ===
+router.post('/import/crop-history', async (req, res) => {
+  try {
+    const { rows } = req.body;
+    if (!rows || !Array.isArray(rows) || rows.length === 0) {
+      return res.status(400).json({ success: false, error: 'No data provided' });
+    }
+
+    let updated = 0;
+    let notFound = 0;
+    const missing = [];
+
+    for (const row of rows) {
+      const field = await CroppingField.findOne({ farm: row.farm, field: row.field });
+      if (!field) {
+        if (!missing.find(m => m.farm === row.farm && m.field === row.field)) {
+          missing.push({ farm: row.farm, field: row.field });
+        }
+        notFound++;
+        continue;
+      }
+
+      const year = parseInt(row.year);
+      if (!year) continue;
+
+      const costs = row.costs || {};
+      const entry = {
+        year,
+        crop: row.crop || '',
+        variety: row.variety || '',
+        yieldPerAcre: parseFloat(row.yieldPerAcre) || 0,
+        pricePerBushel: parseFloat(row.pricePerBushel) || 0,
+        costs: {
+          seed: parseFloat(costs.seed || row.seed) || 0,
+          fertilizer: parseFloat(costs.fertilizer || row.fertilizer) || 0,
+          chemicals: parseFloat(costs.chemicals || row.chemicals) || 0,
+          cropInsurance: parseFloat(costs.cropInsurance || row.cropInsurance) || 0,
+          fuelOil: parseFloat(costs.fuelOil || row.fuelOil) || 0,
+          repairs: parseFloat(costs.repairs || row.repairs) || 0,
+          customHire: parseFloat(costs.customHire || row.customHire) || 0,
+          landRent: parseFloat(costs.landRent || row.landRent) || 0,
+          dryingHauling: parseFloat(costs.dryingHauling || row.dryingHauling) || 0,
+          taxes: parseFloat(costs.taxes || row.taxes) || 0,
+          misc: parseFloat(costs.misc || row.misc) || 0
+        },
+        notes: row.notes || ''
+      };
+
+      const c = entry.costs;
+      entry.totalCost = c.seed + c.fertilizer + c.chemicals + c.cropInsurance +
+        c.fuelOil + c.repairs + c.customHire + c.landRent + c.dryingHauling +
+        c.taxes + c.misc;
+
+      const acres = field.acres || 0;
+      entry.grossRevenue = entry.yieldPerAcre * entry.pricePerBushel * acres;
+      entry.netIncome = entry.grossRevenue - (entry.totalCost * acres);
+      entry.profitPerAcre = acres > 0 ? (entry.grossRevenue / acres) - entry.totalCost : 0;
+
+      const existingIdx = field.cropHistory.findIndex(h => h.year === year);
+      if (existingIdx >= 0) {
+        field.cropHistory[existingIdx] = { ...field.cropHistory[existingIdx].toObject(), ...entry };
+      } else {
+        field.cropHistory.push(entry);
+      }
+      field.cropHistory.sort((a, b) => b.year - a.year);
+
+      const cropKey = `crop${year}`;
+      if (field.schema.paths[cropKey] && entry.crop) {
+        field[cropKey] = entry.crop;
+      }
+
+      await field.save();
+      updated++;
+    }
+
+    res.json({
+      success: true,
+      updated,
+      notFound,
+      missing,
+      message: `Imported ${updated} crop history records. ${notFound > 0 ? notFound + ' rows had unmatched fields.' : ''}`
+    });
+  } catch (error) {
+    console.error('Error importing crop history:', error);
+    res.status(500).json({ success: false, error: 'Import failed: ' + error.message });
+  }
+});
+
+router.post('/import/field-details', async (req, res) => {
+  try {
+    const { rows } = req.body;
+    if (!rows || !Array.isArray(rows)) {
+      return res.status(400).json({ success: false, error: 'No data provided' });
+    }
+
+    let updated = 0;
+    let notFound = 0;
+
+    for (const row of rows) {
+      const field = await CroppingField.findOne({ farm: row.farm, field: row.field });
+      if (!field) { notFound++; continue; }
+
+      if (row.county) field.county = row.county;
+      if (row.soilType || row.soilClass) {
+        if (!field.soil) field.soil = {};
+        if (row.soilType) field.soil.type = row.soilType;
+        if (row.soilClass) field.soil.class = row.soilClass;
+      }
+      if (row.leaseType) {
+        field.lease = {
+          type: row.leaseType,
+          landlord: row.landlord || '',
+          rentPerAcre: parseFloat(row.rentPerAcre) || 0,
+          sharePercentage: parseFloat(row.sharePercentage) || 0
+        };
+      }
+      if (row.insProvider || row.insType) {
+        field.insurance = {
+          provider: row.insProvider || '',
+          type: row.insType || '',
+          level: parseFloat(row.insLevel) || 0,
+          guaranteedYield: parseFloat(row.insGuaranteedYield) || 0,
+          guaranteedPrice: parseFloat(row.insGuaranteedPrice) || 0,
+          premiumPerAcre: parseFloat(row.insPremiumPerAcre) || 0,
+          subsidy: parseFloat(row.insSubsidy) || 0,
+          netPremium: parseFloat(row.insNetPremium) || 0
+        };
+      }
+      if (row.propertyTaxPerAcre || row.assessedValue) {
+        field.taxes = {
+          propertyTaxPerAcre: parseFloat(row.propertyTaxPerAcre) || 0,
+          assessedValue: parseFloat(row.assessedValue) || 0,
+          taxingAuthority: row.taxAuthority || ''
+        };
+      }
+      if (row.notes) field.notes = row.notes;
+
+      await field.save();
+      updated++;
+    }
+
+    res.json({ success: true, updated, notFound, message: `Updated ${updated} field details.` });
+  } catch (error) {
+    console.error('Error importing field details:', error);
+    res.status(500).json({ success: false, error: 'Import failed: ' + error.message });
+  }
+});
+
+router.post('/import/soil-samples', async (req, res) => {
+  try {
+    const { rows } = req.body;
+    if (!rows || !Array.isArray(rows)) {
+      return res.status(400).json({ success: false, error: 'No data provided' });
+    }
+
+    let updated = 0;
+    let notFound = 0;
+
+    for (const row of rows) {
+      const field = await CroppingField.findOne({ farm: row.farm, field: row.field });
+      if (!field) { notFound++; continue; }
+
+      if (!field.soil) field.soil = { samples: [] };
+      if (!field.soil.samples) field.soil.samples = [];
+
+      field.soil.samples.push({
+        date: row.date ? new Date(row.date) : null,
+        depth: row.depth || '',
+        ph: parseFloat(row.ph) || null,
+        nitrogen: parseFloat(row.nitrogen) || null,
+        phosphorus: parseFloat(row.phosphorus) || null,
+        potassium: parseFloat(row.potassium) || null,
+        sulfur: parseFloat(row.sulfur) || null,
+        zinc: parseFloat(row.zinc) || null,
+        iron: parseFloat(row.iron) || null,
+        organicMatter: parseFloat(row.organicMatter) || null,
+        cec: parseFloat(row.cec) || null,
+        salts: parseFloat(row.salts) || null,
+        notes: row.notes || ''
+      });
+      field.soil.samples.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      await field.save();
+      updated++;
+    }
+
+    res.json({ success: true, updated, notFound, message: `Imported ${updated} soil samples.` });
+  } catch (error) {
+    console.error('Error importing soil samples:', error);
+    res.status(500).json({ success: false, error: 'Import failed: ' + error.message });
+  }
+});
+
 // Get all fields
 router.get('/', async (req, res) => {
   try {
@@ -349,6 +542,154 @@ router.put('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating field:', error);
     res.status(500).json({ success: false, error: 'Failed to update field' });
+  }
+});
+
+// === FIELD DETAILS (soil, lease, insurance, taxes, location) ===
+router.put('/:id/details', async (req, res) => {
+  try {
+    const { soil, lease, insurance, taxes, county, section, township, range, notes } = req.body;
+    const updateData = {};
+
+    if (soil) updateData.soil = soil;
+    if (lease) updateData.lease = lease;
+    if (insurance) updateData.insurance = insurance;
+    if (taxes) updateData.taxes = taxes;
+    if (county !== undefined) updateData.county = county;
+    if (section !== undefined) updateData.section = section;
+    if (township !== undefined) updateData.township = township;
+    if (range !== undefined) updateData.range = range;
+    if (notes !== undefined) updateData.notes = notes;
+
+    const field = await CroppingField.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error updating field details:', error);
+    res.status(500).json({ success: false, error: 'Failed to update field details' });
+  }
+});
+
+// === CROP HISTORY ===
+
+// Add a crop history entry
+router.post('/:id/crop-history', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    const entry = req.body;
+
+    // Auto-calculate totals if costs are provided
+    if (entry.costs) {
+      const c = entry.costs;
+      entry.totalCost = (c.seed || 0) + (c.fertilizer || 0) + (c.chemicals || 0) +
+        (c.cropInsurance || 0) + (c.fuelOil || 0) + (c.repairs || 0) +
+        (c.customHire || 0) + (c.landRent || 0) + (c.dryingHauling || 0) +
+        (c.taxes || 0) + (c.misc || 0);
+    }
+
+    if (entry.yieldPerAcre && entry.pricePerBushel) {
+      entry.grossRevenue = entry.yieldPerAcre * entry.pricePerBushel * (field.acres || 0);
+    }
+
+    if (entry.totalCost !== undefined) {
+      const totalCostField = (entry.totalCost || 0) * (field.acres || 0);
+      entry.netIncome = (entry.grossRevenue || 0) - totalCostField;
+      entry.profitPerAcre = (entry.grossRevenue || 0) / (field.acres || 1) - (entry.totalCost || 0);
+    }
+
+    // Check if year already exists, replace it
+    const existingIdx = field.cropHistory.findIndex(h => h.year === entry.year);
+    if (existingIdx >= 0) {
+      field.cropHistory[existingIdx] = { ...field.cropHistory[existingIdx].toObject(), ...entry };
+    } else {
+      field.cropHistory.push(entry);
+    }
+
+    // Sort by year descending
+    field.cropHistory.sort((a, b) => b.year - a.year);
+
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error adding crop history:', error);
+    res.status(500).json({ success: false, error: 'Failed to add crop history' });
+  }
+});
+
+// Delete a crop history entry
+router.delete('/:id/crop-history/:entryId', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    field.cropHistory = field.cropHistory.filter(h => h._id.toString() !== req.params.entryId);
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error deleting crop history:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete crop history' });
+  }
+});
+
+// === SOIL SAMPLES ===
+
+// Add a soil sample
+router.post('/:id/soil-sample', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    if (!field.soil) {
+      field.soil = { samples: [] };
+    }
+    if (!field.soil.samples) {
+      field.soil.samples = [];
+    }
+
+    field.soil.samples.push(req.body);
+    field.soil.samples.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error adding soil sample:', error);
+    res.status(500).json({ success: false, error: 'Failed to add soil sample' });
+  }
+});
+
+// Delete a soil sample
+router.delete('/:id/soil-sample/:sampleId', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    if (field.soil && field.soil.samples) {
+      field.soil.samples = field.soil.samples.filter(s => s._id.toString() !== req.params.sampleId);
+    }
+
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error deleting soil sample:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete soil sample' });
   }
 });
 
