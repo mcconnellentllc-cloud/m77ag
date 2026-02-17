@@ -202,6 +202,71 @@
             margin-left: 8px;
         }
 
+        /* Crop Filter Tabs */
+        .crop-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .crop-filter {
+            padding: 6px 14px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .crop-filter:hover {
+            border-color: #2d5016;
+        }
+        .crop-filter.active {
+            color: white;
+            border-color: transparent;
+        }
+        .crop-filter .count {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        .crop-filter[data-crop="all"].active { background: #2d5016; }
+        .crop-filter[data-crop="CORN"].active { background: #e65100; }
+        .crop-filter[data-crop="WHEAT"].active { background: #ff8f00; color: #333; }
+        .crop-filter[data-crop="SORGHUM"].active { background: #5d4037; }
+        .crop-filter[data-crop="FALLOW"].active { background: #757575; }
+        .crop-filter[data-crop="PASTURE"].active { background: #2d5016; }
+        .crop-filter[data-crop="TRITICALE"].active { background: #558b2f; }
+        .crop-filter[data-crop="PEARL MILLET"].active { background: #7b1fa2; }
+        .crop-filter[data-crop="SORGHUM SUDAN"].active { background: #bf360c; }
+        .crop-filter[data-crop="WASTE"].active { background: #607d8b; }
+        .crop-filter[data-crop="BUILDING SITE"].active { background: #263238; }
+        .filter-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .active-filters {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .active-filters .filter-count {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+        }
+
         /* Fields Table */
         .fields-table-container {
             background: white;
@@ -558,10 +623,17 @@
                     </button>
                 </div>
             </div>
+            <div class="filter-label">Filter by Farm</div>
             <div class="farm-tabs" id="farmTabs">
                 <button class="farm-tab active" data-farm="all">All Farms</button>
                 <!-- Farm tabs populated by JS -->
             </div>
+            <div class="filter-label" style="margin-top: 15px;">Filter by Crop</div>
+            <div class="crop-filters" id="cropFilters">
+                <button class="crop-filter active" data-crop="all">All Crops</button>
+                <!-- Crop filters populated by JS -->
+            </div>
+            <div class="active-filters" id="activeFilters"></div>
         </div>
 
         <!-- Fields Table -->
@@ -608,6 +680,7 @@
         let cropSummary = {};
         let farmSummary = [];
         let currentFarm = 'all';
+        let currentCrop = 'all';
         let currentView = 'list'; // 'list' or 'cards'
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -640,6 +713,7 @@
                 renderSummary();
                 renderCropBars();
                 renderFarmTabs();
+                renderCropFilters();
                 renderView();
             } catch (e) {
                 console.error('Error loading data:', e);
@@ -704,7 +778,66 @@
             document.querySelectorAll('.farm-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.farm === farm);
             });
+            updateActiveFilters();
             renderView();
+        }
+
+        function renderCropFilters() {
+            const container = document.getElementById('cropFilters');
+            // Build crop list from actual data
+            const cropCounts = {};
+            allFields.forEach(f => {
+                const crop = f.crop2026 || 'UNKNOWN';
+                if (!cropCounts[crop]) cropCounts[crop] = { count: 0, acres: 0 };
+                cropCounts[crop].count++;
+                cropCounts[crop].acres += f.acres || 0;
+            });
+
+            const sortedCrops = Object.entries(cropCounts).sort((a, b) => b[1].acres - a[1].acres);
+
+            let html = `<button class="crop-filter active" data-crop="all" onclick="selectCrop('all')">All Crops <span class="count">${allFields.length}</span></button>`;
+            sortedCrops.forEach(([crop, data]) => {
+                html += `<button class="crop-filter" data-crop="${crop}" onclick="selectCrop('${crop}')">${crop} <span class="count">${data.count}</span></button>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectCrop(crop) {
+            currentCrop = crop;
+            document.querySelectorAll('.crop-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.crop === crop);
+            });
+            updateActiveFilters();
+            renderView();
+        }
+
+        function getFilteredFields() {
+            let fields = allFields;
+            if (currentFarm !== 'all') {
+                fields = fields.filter(f => f.farm === currentFarm);
+            }
+            if (currentCrop !== 'all') {
+                fields = fields.filter(f => f.crop2026 === currentCrop);
+            }
+            return fields;
+        }
+
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            const fields = getFilteredFields();
+            const totalAcres = fields.reduce((sum, f) => sum + (f.acres || 0), 0);
+
+            if (currentFarm === 'all' && currentCrop === 'all') {
+                container.innerHTML = '';
+                return;
+            }
+
+            let parts = [];
+            if (currentFarm !== 'all') parts.push(currentFarm);
+            if (currentCrop !== 'all') parts.push(currentCrop);
+
+            container.innerHTML = `Showing <span class="filter-count">${fields.length}</span> fields / <span class="filter-count">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> acres${parts.length ? ' -- ' + parts.join(' + ') : ''}`;
         }
 
         // View toggle
@@ -727,11 +860,7 @@
 
         function renderFieldsCards() {
             const container = document.getElementById('fieldsCardsContainer');
-            let fields = allFields;
-
-            if (currentFarm !== 'all') {
-                fields = fields.filter(f => f.farm === currentFarm);
-            }
+            let fields = getFilteredFields();
 
             if (fields.length === 0) {
                 container.innerHTML = '<div class="no-fields-card">No fields found</div>';
@@ -780,11 +909,7 @@
 
         function renderFieldsTable() {
             const tbody = document.getElementById('fieldsTable');
-            let fields = allFields;
-
-            if (currentFarm !== 'all') {
-                fields = fields.filter(f => f.farm === currentFarm);
-            }
+            let fields = getFilteredFields();
 
             if (fields.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
