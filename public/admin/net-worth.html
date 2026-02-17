@@ -540,6 +540,12 @@
                     <span>Real Estate</span>
                     <strong>${formatCurrency(entity.realEstate.value)}</strong>
                   </div>
+                  ${entity.farmland && entity.farmland.value > 0 ? `
+                  <div class="breakdown-row">
+                    <span>Farmland (KB Farms)</span>
+                    <strong>${formatCurrency(entity.farmland.value)}</strong>
+                  </div>
+                  ` : ''}
                   ${entity.additionalAssets.value > 0 ? `
                   <div class="breakdown-row">
                     <span>Other Assets</span>
@@ -562,6 +568,12 @@
                     <span>Real Estate Loans</span>
                     <strong class="text-danger">${formatCurrency(entity.realEstate.owed)}</strong>
                   </div>
+                  ${entity.farmland && entity.farmland.owed > 0 ? `
+                  <div class="breakdown-row">
+                    <span>Farmland Loans (KB Farms)</span>
+                    <strong class="text-danger">${formatCurrency(entity.farmland.owed)}</strong>
+                  </div>
+                  ` : ''}
                   ${entity.additionalLiabilities.amount > 0 ? `
                   <div class="breakdown-row">
                     <span>Other Liabilities</span>
