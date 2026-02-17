@@ -451,7 +451,7 @@
         /* Field Cards Grid */
         .field-cards-grid {
             display: none;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -465,85 +465,153 @@
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
+            border-left: 5px solid transparent;
         }
         .field-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.12);
         }
+        /* Farm color - left border */
+        .field-card.farm-LAFARMS { border-left-color: #1a5276; }
+        .field-card.farm-KBFARMS { border-left-color: #7d3c98; }
+        .field-card.farm-PETERSON { border-left-color: #922b21; }
+        .field-card.farm-HDFARMS { border-left-color: #117864; }
+        .field-card.farm-MEFARMS { border-left-color: #b9770e; }
+        .field-card.farm-A1FARMS { border-left-color: #2c3e50; }
+
         .field-card-header {
-            padding: 15px 20px;
+            padding: 14px 18px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
         }
-        .field-card-header.CORN { background: linear-gradient(135deg, #e65100 0%, #ff8f00 100%); color: white; }
-        .field-card-header.WHEAT { background: linear-gradient(135deg, #ff8f00 0%, #ffc107 100%); color: #333; }
-        .field-card-header.SORGHUM { background: linear-gradient(135deg, #5d4037 0%, #795548 100%); color: white; }
-        .field-card-header.FALLOW { background: linear-gradient(135deg, #616161 0%, #9e9e9e 100%); color: white; }
-        .field-card-header.PASTURE { background: linear-gradient(135deg, #2d5016 0%, #4caf50 100%); color: white; }
-        .field-card-header.TRITICALE { background: linear-gradient(135deg, #558b2f 0%, #8bc34a 100%); color: white; }
-        .field-card-header.PEARL-MILLET, .field-card-header.PEARL_MILLET { background: linear-gradient(135deg, #7b1fa2 0%, #ab47bc 100%); color: white; }
-        .field-card-header.SORGHUM-SUDAN, .field-card-header.SORGHUM_SUDAN { background: linear-gradient(135deg, #bf360c 0%, #e64a19 100%); color: white; }
-        .field-card-header.WASTE { background: linear-gradient(135deg, #455a64 0%, #607d8b 100%); color: white; }
-        .field-card-header.BUILDING-SITE, .field-card-header.BUILDING_SITE { background: linear-gradient(135deg, #263238 0%, #37474f 100%); color: white; }
+        /* Crop color - header bar */
+        .field-card-header.CORN { background: #e65100; color: white; }
+        .field-card-header.WHEAT { background: #f4a020; color: #333; }
+        .field-card-header.SORGHUM { background: #5d4037; color: white; }
+        .field-card-header.FALLOW { background: #757575; color: white; }
+        .field-card-header.PASTURE { background: #2d5016; color: white; }
+        .field-card-header.TRITICALE { background: #558b2f; color: white; }
+        .field-card-header.PEARL-MILLET, .field-card-header.PEARL_MILLET { background: #7b1fa2; color: white; }
+        .field-card-header.SORGHUM-SUDAN, .field-card-header.SORGHUM_SUDAN { background: #bf360c; color: white; }
+        .field-card-header.WASTE { background: #607d8b; color: white; }
+        .field-card-header.BUILDING-SITE, .field-card-header.BUILDING_SITE { background: #263238; color: white; }
         .field-card-name {
             font-family: 'Oswald', sans-serif;
-            font-size: 20px;
+            font-size: 18px;
+            line-height: 1.2;
         }
-        .field-card-farm {
-            font-size: 12px;
-            opacity: 0.85;
+        .field-card-farm-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+        .field-card-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .field-card-crop-code {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.25);
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .field-card-acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            opacity: 0.9;
             margin-top: 4px;
         }
-        .field-card-crop {
-            background: rgba(255,255,255,0.25);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .field-card-body {
-            padding: 20px;
-        }
-        .field-card-stats {
+
+        /* Financial metrics row */
+        .field-card-financials {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border-bottom: 1px solid #f0f0f0;
         }
-        .field-stat {
-            background: #f8f8f8;
-            padding: 12px;
-            border-radius: 6px;
+        .fin-metric {
+            padding: 12px 10px;
+            text-align: center;
+            border-right: 1px solid #f0f0f0;
         }
-        .field-stat-label {
+        .fin-metric:last-child { border-right: none; }
+        .fin-metric-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        .fin-metric-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            color: #2d5016;
+        }
+        .fin-metric-value.no-data {
+            color: #ccc;
+            font-size: 13px;
+        }
+        .fin-metric-value.negative { color: #c0392b; }
+        .fin-metric-value.positive { color: #2d5016; }
+
+        /* Cost split bar */
+        .cost-split-row {
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .cost-split-label {
+            color: #999;
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #666;
-            margin-bottom: 4px;
         }
-        .field-stat-value {
-            font-family: 'Oswald', sans-serif;
-            font-size: 18px;
+        .cost-split-values {
+            display: flex;
+            gap: 16px;
+        }
+        .cost-m77 {
+            font-weight: 600;
             color: #2d5016;
         }
-        .field-card-details {
-            font-size: 13px;
-            color: #666;
-            border-top: 1px solid #f0f0f0;
-            padding-top: 15px;
+        .cost-landlord {
+            font-weight: 600;
+            color: #7d3c98;
         }
-        .field-detail-item {
+        .lease-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .lease-badge.owned { background: #e8f5e9; color: #2d5016; }
+        .lease-badge.cash-rent { background: #fff3e0; color: #e65100; }
+        .lease-badge.crop-share { background: #f3e5f5; color: #7b1fa2; }
+        .lease-badge.flex-lease { background: #e3f2fd; color: #1565c0; }
+
+        /* Bottom details (legal, fsa, tract) */
+        .field-card-footer {
+            padding: 10px 18px;
+            font-size: 11px;
+            color: #aaa;
             display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid #f8f8f8;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .field-detail-item:last-child {
-            border-bottom: none;
+        .field-card-footer span {
+            white-space: nowrap;
         }
+
         .no-fields-card {
             grid-column: 1 / -1;
             text-align: center;
@@ -555,6 +623,11 @@
             .field-cards-grid {
                 grid-template-columns: 1fr;
             }
+            .field-card-financials {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .fin-metric:nth-child(2) { border-right: none; }
+            .fin-metric:nth-child(1), .fin-metric:nth-child(2) { border-bottom: 1px solid #f0f0f0; }
             .view-toggle {
                 margin-bottom: 15px;
             }
@@ -681,9 +754,12 @@
 
     <!-- Field Detail Modal -->
     <div class="modal-overlay" id="fieldModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalFieldName">Field Name</h2>
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header" id="modalHeader">
+                <div>
+                    <h2 class="modal-title" id="modalFieldName">Field Name</h2>
+                    <div id="modalSubtitle" style="font-size:13px;color:#666;margin-top:4px;"></div>
+                </div>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalBody">
@@ -705,6 +781,81 @@
             if (!crop || !year) return '';
             if (NON_PRODUCTIVE.includes(crop.toUpperCase())) return '';
             return crop.toUpperCase().replace(/\s+/g, '-') + String(year).slice(-2);
+        }
+
+        // Farm color map for reference
+        const FARM_COLORS = {
+            LAFARMS: '#1a5276',
+            KBFARMS: '#7d3c98',
+            PETERSON: '#922b21',
+            HDFARMS: '#117864',
+            MEFARMS: '#b9770e',
+            A1FARMS: '#2c3e50'
+        };
+
+        function fmtDollar(val) {
+            if (!val && val !== 0) return '--';
+            return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtBushels(val) {
+            if (!val) return '--';
+            return val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' bu';
+        }
+
+        // Client-side cost split calc (mirrors server virtual)
+        const SHARED_COSTS = ['seed', 'fertilizer', 'chemicals', 'cropInsurance', 'dryingHauling'];
+        const OPERATOR_COSTS = ['fuelOil', 'repairs', 'customHire'];
+        function calcCostSplit(f) {
+            const c = f.costs || {};
+            const leaseType = (f.lease && f.lease.type) || 'owned';
+            const sharePct = (f.lease && f.lease.sharePercentage) || 0;
+            const landlordShare = sharePct / 100;
+            const allKeys = ['seed','fertilizer','chemicals','cropInsurance','fuelOil','repairs','customHire','landRent','dryingHauling','taxes','misc'];
+            const totalPerAcre = allKeys.reduce((sum, k) => sum + (c[k] || 0), 0);
+
+            let m77Costs = 0, landlordCosts = 0;
+            if (leaseType === 'crop-share' && landlordShare > 0) {
+                SHARED_COSTS.forEach(k => {
+                    m77Costs += (c[k] || 0) * (1 - landlordShare);
+                    landlordCosts += (c[k] || 0) * landlordShare;
+                });
+                OPERATOR_COSTS.forEach(k => { m77Costs += (c[k] || 0); });
+                landlordCosts += (c.taxes || 0);
+                m77Costs += (c.misc || 0) * (1 - landlordShare);
+                landlordCosts += (c.misc || 0) * landlordShare;
+            } else {
+                m77Costs = totalPerAcre;
+            }
+
+            const revPerAcre = ((f.projectedYield || 0) * (f.projectedPrice || 0)) + (f.governmentPayment || 0);
+            let m77Rev = revPerAcre, landlordRev = 0;
+            if (leaseType === 'crop-share' && landlordShare > 0) {
+                landlordRev = revPerAcre * landlordShare;
+                m77Rev = revPerAcre * (1 - landlordShare);
+            }
+
+            let breakEvenPrice = 0;
+            const projYield = f.projectedYield || 0;
+            if (projYield > 0) {
+                if (leaseType === 'crop-share' && landlordShare > 0) {
+                    breakEvenPrice = m77Costs / (projYield * (1 - landlordShare));
+                } else {
+                    breakEvenPrice = totalPerAcre / projYield;
+                }
+            }
+
+            return {
+                leaseType,
+                landlordName: (f.lease && f.lease.landlord) || '',
+                sharePct,
+                totalPerAcre,
+                m77Costs, m77Rev,
+                m77Net: m77Rev - m77Costs,
+                landlordCosts, landlordRev,
+                landlordNet: landlordRev - landlordCosts,
+                breakEvenPrice
+            };
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -895,41 +1046,58 @@
                 const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
                 const acres = f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
                 const code = getCropCode(f.crop2026, 2026);
+                const split = calcCostSplit(f);
+                const hasFinancials = split.totalPerAcre > 0 || (f.projectedYield && f.projectedYield > 0);
+                const leaseType = split.leaseType || 'owned';
+                const leaseLabel = leaseType === 'crop-share'
+                    ? `${split.sharePct}% share${split.landlordName ? ' - ' + split.landlordName : ''}`
+                    : leaseType === 'cash-rent'
+                    ? `Cash rent${split.landlordName ? ' - ' + split.landlordName : ''}`
+                    : 'Owned - M77 AG';
 
                 return `
-                    <div class="field-card" onclick="openFieldModal('${f._id}')">
+                    <div class="field-card farm-${f.farm}" onclick="openFieldModal('${f._id}')">
                         <div class="field-card-header ${cropClass}">
                             <div>
                                 <div class="field-card-name">${f.field}</div>
-                                <div class="field-card-farm">${f.farm}${code ? ' / ' + code : ''}</div>
+                                <div class="field-card-farm-badge">${f.farm}</div>
                             </div>
-                            <span class="field-card-crop">${f.crop2026 || 'N/A'}</span>
+                            <div class="field-card-right">
+                                ${code ? `<div class="field-card-crop-code">${code}</div>` : `<div class="field-card-crop-code">${f.crop2026 || '--'}</div>`}
+                                <div class="field-card-acres">${acres} ac</div>
+                            </div>
                         </div>
-                        <div class="field-card-body">
-                            <div class="field-card-stats">
-                                <div class="field-stat">
-                                    <div class="field-stat-label">Acres</div>
-                                    <div class="field-stat-value">${acres}</div>
-                                </div>
-                                <div class="field-stat">
-                                    <div class="field-stat-label">Crop Code</div>
-                                    <div class="field-stat-value">${code || '--'}</div>
-                                </div>
+                        <div class="field-card-financials">
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Cost/Ac</div>
+                                <div class="fin-metric-value ${hasFinancials ? '' : 'no-data'}">${hasFinancials ? fmtDollar(split.totalPerAcre) : 'TBD'}</div>
                             </div>
-                            <div class="field-card-details">
-                                <div class="field-detail-item">
-                                    <span class="field-detail-label">FSA Farm</span>
-                                    <span class="field-detail-value">${f.fsaFarm || '-'}</span>
-                                </div>
-                                <div class="field-detail-item">
-                                    <span class="field-detail-label">Legal</span>
-                                    <span class="field-detail-value">${f.legal || '-'}</span>
-                                </div>
-                                <div class="field-detail-item">
-                                    <span class="field-detail-label">Tract</span>
-                                    <span class="field-detail-value">${f.tract || '-'}</span>
-                                </div>
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Est Yield</div>
+                                <div class="fin-metric-value ${f.projectedYield ? '' : 'no-data'}">${f.projectedYield ? fmtBushels(f.projectedYield) : 'TBD'}</div>
                             </div>
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Break-Even</div>
+                                <div class="fin-metric-value ${split.breakEvenPrice > 0 ? '' : 'no-data'}">${split.breakEvenPrice > 0 ? fmtDollar(split.breakEvenPrice) + '/bu' : 'TBD'}</div>
+                            </div>
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Net/Ac</div>
+                                <div class="fin-metric-value ${!hasFinancials ? 'no-data' : split.m77Net >= 0 ? 'positive' : 'negative'}">${hasFinancials ? fmtDollar(split.m77Net) : 'TBD'}</div>
+                            </div>
+                        </div>
+                        <div class="cost-split-row">
+                            <div>
+                                <span class="lease-badge ${leaseType}">${leaseLabel}</span>
+                            </div>
+                            <div class="cost-split-values">
+                                <span class="cost-m77">M77: ${fmtDollar(split.m77Costs)}/ac</span>
+                                ${leaseType === 'crop-share' ? `<span class="cost-landlord">LL: ${fmtDollar(split.landlordCosts)}/ac</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="field-card-footer">
+                            <span>Legal: ${f.legal || '-'}</span>
+                            <span>FSA: ${f.fsaFarm || '-'}</span>
+                            <span>Tract: ${f.tract || '-'}</span>
                         </div>
                     </div>
                 `;
@@ -964,43 +1132,144 @@
         }
 
         function openFieldModal(id) {
-            const field = allFields.find(f => f._id === id);
-            if (!field) return;
+            const f = allFields.find(x => x._id === id);
+            if (!f) return;
 
-            const code = getCropCode(field.crop2026, 2026);
-            document.getElementById('modalFieldName').textContent = field.field;
+            const code = getCropCode(f.crop2026, 2026);
+            const split = calcCostSplit(f);
+            const cropClass = (f.crop2026 || '').replace(/\s+/g, '-');
+            const c = f.costs || {};
+            const acres = f.acres || 0;
+            const isShare = split.leaseType === 'crop-share' && split.sharePct > 0;
+            const operatorPct = isShare ? (100 - split.sharePct) : 100;
+
+            document.getElementById('modalFieldName').textContent = f.field;
+            document.getElementById('modalSubtitle').innerHTML =
+                `<span style="color:${FARM_COLORS[f.farm] || '#333'};font-weight:600">${f.farm}</span>` +
+                ` -- <span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span>` +
+                (code ? ` -- <span class="crop-code has-code">${code}</span>` : '') +
+                ` -- ${acres.toLocaleString('en-US', { minimumFractionDigits: 2 })} ac`;
+
+            const costRows = [
+                { label: 'Seed', key: 'seed', shared: true },
+                { label: 'Fertilizer', key: 'fertilizer', shared: true },
+                { label: 'Chemicals', key: 'chemicals', shared: true },
+                { label: 'Crop Insurance', key: 'cropInsurance', shared: true },
+                { label: 'Fuel & Oil', key: 'fuelOil', shared: false },
+                { label: 'Repairs', key: 'repairs', shared: false },
+                { label: 'Custom Hire', key: 'customHire', shared: false },
+                { label: 'Land Rent', key: 'landRent', shared: false },
+                { label: 'Drying/Hauling', key: 'dryingHauling', shared: true },
+                { label: 'Taxes', key: 'taxes', shared: false },
+                { label: 'Misc', key: 'misc', shared: true }
+            ];
+
+            let costTableHtml = costRows.map(r => {
+                const total = c[r.key] || 0;
+                let m77Val, llVal;
+                if (isShare && r.shared) {
+                    m77Val = total * (operatorPct / 100);
+                    llVal = total * (split.sharePct / 100);
+                } else if (r.key === 'taxes' && isShare) {
+                    m77Val = 0;
+                    llVal = total;
+                } else {
+                    m77Val = total;
+                    llVal = 0;
+                }
+                return `<tr>
+                    <td style="padding:6px 0;font-size:13px;">${r.label}</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;">${fmtDollar(total)}</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#2d5016;">${fmtDollar(m77Val)}</td>
+                    ${isShare ? `<td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#7d3c98;">${fmtDollar(llVal)}</td>` : ''}
+                </tr>`;
+            }).join('');
+
+            const leaseLabel = isShare
+                ? `Crop Share: ${split.sharePct}% landlord / ${operatorPct}% M77 AG${split.landlordName ? ' -- ' + split.landlordName : ''}`
+                : split.leaseType === 'cash-rent'
+                ? `Cash Rent${split.landlordName ? ' -- ' + split.landlordName : ''}`
+                : 'Owned -- M77 AG 100%';
+
             document.getElementById('modalBody').innerHTML = `
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Farm</span>
-                    <span class="field-detail-value">${field.farm}</span>
+                <!-- Key Metrics -->
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px;">
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">Cost/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#2d5016;">${split.totalPerAcre > 0 ? fmtDollar(split.totalPerAcre) : 'TBD'}</div>
+                    </div>
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">Est Yield</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#2d5016;">${f.projectedYield ? fmtBushels(f.projectedYield) : 'TBD'}</div>
+                    </div>
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">Break-Even</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#2d5016;">${split.breakEvenPrice > 0 ? fmtDollar(split.breakEvenPrice) + '/bu' : 'TBD'}</div>
+                    </div>
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">M77 Net/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:${split.m77Net >= 0 ? '#2d5016' : '#c0392b'};">${split.totalPerAcre > 0 || f.projectedYield ? fmtDollar(split.m77Net) : 'TBD'}</div>
+                    </div>
                 </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Field Name</span>
-                    <span class="field-detail-value">${field.field}</span>
+
+                <!-- Lease Info -->
+                <div style="padding:10px 14px;background:#fafafa;border-radius:6px;margin-bottom:20px;font-size:13px;">
+                    <span class="lease-badge ${split.leaseType}">${split.leaseType.toUpperCase()}</span>
+                    <span style="margin-left:8px;color:#666;">${leaseLabel}</span>
                 </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">2026 Crop</span>
-                    <span class="field-detail-value"><span class="crop-badge ${(field.crop2026 || '').replace(/\s+/g, '-')}">${field.crop2026 || '-'}</span></span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Crop Code</span>
-                    <span class="field-detail-value">${code ? `<span class="crop-code has-code">${code}</span>` : '--'}</span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Acres</span>
-                    <span class="field-detail-value">${field.acres ? field.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Legal Description</span>
-                    <span class="field-detail-value">${field.legal || '-'}</span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">FSA Farm #</span>
-                    <span class="field-detail-value">${field.fsaFarm || '-'}</span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Tract #</span>
-                    <span class="field-detail-value">${field.tract || '-'}</span>
+
+                <!-- Expense Breakdown -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Expense Breakdown (per acre)</h3>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                    <thead>
+                        <tr style="border-bottom:2px solid #e0e0e0;">
+                            <th style="text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#999;padding:6px 0;">Category</th>
+                            <th style="text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Total</th>
+                            <th style="text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#2d5016;">M77 AG</th>
+                            ${isShare ? `<th style="text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#7d3c98;">Landlord</th>` : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${costTableHtml}
+                    </tbody>
+                    <tfoot>
+                        <tr style="border-top:2px solid #e0e0e0;font-weight:700;">
+                            <td style="padding:8px 0;font-size:13px;">Total</td>
+                            <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;">${fmtDollar(split.totalPerAcre)}</td>
+                            <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#2d5016;">${fmtDollar(split.m77Costs)}</td>
+                            ${isShare ? `<td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#7d3c98;">${fmtDollar(split.landlordCosts)}</td>` : ''}
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Revenue -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Revenue (per acre)</h3>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;">Yield x Price</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;">${f.projectedYield && f.projectedPrice ? fmtBushels(f.projectedYield) + ' x ' + fmtDollar(f.projectedPrice) : 'TBD'}</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;">Govt Payment</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;">${fmtDollar(f.governmentPayment || 0)}</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;font-weight:600;">M77 AG Revenue</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#2d5016;font-weight:600;">${fmtDollar(split.m77Rev)}</td>
+                    </tr>
+                    ${isShare ? `<tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;">Landlord Revenue (${split.sharePct}%)</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#7d3c98;">${fmtDollar(split.landlordRev)}</td>
+                    </tr>` : ''}
+                </table>
+
+                <!-- Field Details -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Field Details</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#666;">
+                    <div>Legal: <strong style="color:#333;">${f.legal || '-'}</strong></div>
+                    <div>FSA Farm: <strong style="color:#333;">${f.fsaFarm || '-'}</strong></div>
+                    <div>Tract: <strong style="color:#333;">${f.tract || '-'}</strong></div>
+                    <div>County: <strong style="color:#333;">${f.county || '-'}</strong></div>
                 </div>
             `;
             document.getElementById('fieldModal').classList.add('active');

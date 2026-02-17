@@ -202,6 +202,113 @@ croppingFieldSchema.virtual('avgProfitPerAcre').get(function() {
   return history.reduce((sum, h) => sum + h.profitPerAcre, 0) / history.length;
 });
 
+// === Virtuals: Landlord vs Operator (M77 AG) Cost Split ===
+// Crop-share: landlord pays their % of shared costs (seed, fert, chem, insurance, drying)
+// Cash-rent / Owned: M77 AG pays 100%
+// Shared cost categories that landlord participates in on crop-share
+const SHARED_COSTS = ['seed', 'fertilizer', 'chemicals', 'cropInsurance', 'dryingHauling'];
+// Operator-only costs (M77 AG always pays 100%)
+const OPERATOR_COSTS = ['fuelOil', 'repairs', 'customHire'];
+
+croppingFieldSchema.virtual('costSplit').get(function() {
+  const c = this.costs || {};
+  const leaseType = (this.lease && this.lease.type) || 'owned';
+  const sharePct = (this.lease && this.lease.sharePercentage) || 0;
+  const landlordShare = sharePct / 100;
+  const rentPerAcre = (this.lease && this.lease.rentPerAcre) || 0;
+
+  const allCostKeys = ['seed', 'fertilizer', 'chemicals', 'cropInsurance',
+    'fuelOil', 'repairs', 'customHire', 'landRent', 'dryingHauling', 'taxes', 'misc'];
+
+  const totalPerAcre = allCostKeys.reduce((sum, k) => sum + (c[k] || 0), 0);
+
+  let m77Costs = 0;
+  let landlordCosts = 0;
+  const m77Detail = {};
+  const landlordDetail = {};
+
+  if (leaseType === 'crop-share' && landlordShare > 0) {
+    // Shared costs split by percentage
+    SHARED_COSTS.forEach(k => {
+      const val = c[k] || 0;
+      landlordDetail[k] = +(val * landlordShare).toFixed(2);
+      m77Detail[k] = +(val * (1 - landlordShare)).toFixed(2);
+      landlordCosts += landlordDetail[k];
+      m77Costs += m77Detail[k];
+    });
+    // Operator costs: 100% M77
+    OPERATOR_COSTS.forEach(k => {
+      const val = c[k] || 0;
+      m77Detail[k] = val;
+      landlordDetail[k] = 0;
+      m77Costs += val;
+    });
+    // Taxes: landlord typically pays
+    landlordDetail.taxes = c.taxes || 0;
+    m77Detail.taxes = 0;
+    landlordCosts += landlordDetail.taxes;
+    // Land rent: N/A for crop-share
+    m77Detail.landRent = 0;
+    landlordDetail.landRent = 0;
+    // Misc: split
+    const miscVal = c.misc || 0;
+    landlordDetail.misc = +(miscVal * landlordShare).toFixed(2);
+    m77Detail.misc = +(miscVal * (1 - landlordShare)).toFixed(2);
+    landlordCosts += landlordDetail.misc;
+    m77Costs += m77Detail.misc;
+  } else {
+    // Owned or cash-rent: M77 pays everything
+    allCostKeys.forEach(k => {
+      m77Detail[k] = c[k] || 0;
+      landlordDetail[k] = 0;
+      m77Costs += m77Detail[k];
+    });
+  }
+
+  // Revenue split
+  const revenuePerAcre = ((this.projectedYield || 0) * (this.projectedPrice || 0)) +
+    (this.governmentPayment || 0);
+  let m77Revenue = revenuePerAcre;
+  let landlordRevenue = 0;
+
+  if (leaseType === 'crop-share' && landlordShare > 0) {
+    landlordRevenue = +(revenuePerAcre * landlordShare).toFixed(2);
+    m77Revenue = +(revenuePerAcre * (1 - landlordShare)).toFixed(2);
+  }
+
+  // Break-even: price per bushel needed to cover costs
+  const projYield = this.projectedYield || 0;
+  let breakEvenPrice = 0;
+  if (projYield > 0) {
+    if (leaseType === 'crop-share' && landlordShare > 0) {
+      // M77's break-even on their share
+      breakEvenPrice = m77Costs / (projYield * (1 - landlordShare));
+    } else {
+      breakEvenPrice = totalPerAcre / projYield;
+    }
+  }
+
+  return {
+    leaseType,
+    landlordName: (this.lease && this.lease.landlord) || '',
+    sharePercentage: sharePct,
+    totalPerAcre: +totalPerAcre.toFixed(2),
+    m77: {
+      costsPerAcre: +m77Costs.toFixed(2),
+      revenuePerAcre: +m77Revenue.toFixed(2),
+      netPerAcre: +(m77Revenue - m77Costs).toFixed(2),
+      detail: m77Detail
+    },
+    landlord: {
+      costsPerAcre: +landlordCosts.toFixed(2),
+      revenuePerAcre: +landlordRevenue.toFixed(2),
+      netPerAcre: +(landlordRevenue - landlordCosts).toFixed(2),
+      detail: landlordDetail
+    },
+    breakEvenPrice: +breakEvenPrice.toFixed(2)
+  };
+});
+
 // === Virtuals: Crop Codes for each year slot ===
 [2025, 2026, 2027, 2028, 2029, 2030].forEach(yr => {
   croppingFieldSchema.virtual(`cropCode${yr}`).get(function() {
