@@ -1210,8 +1210,14 @@
             const leaseType = (f.lease && f.lease.type) || 'owned';
             const sharePct = (f.lease && f.lease.sharePercentage) || 0;
             const landlordShare = sharePct / 100;
+
+            // Land payment per acre (loan carrying cost for KBFARMS owned ground)
+            // M77 AG pays this as rent to KB Farms to cover the land note
+            const landPayment = f.landPaymentPerAcre || 0;
+
             const allKeys = ['seed','fertilizer','chemicals','cropInsurance','fuelOil','repairs','customHire','landRent','dryingHauling','taxes','misc'];
-            const totalPerAcre = allKeys.reduce((sum, k) => sum + (c[k] || 0), 0);
+            const budgetCosts = allKeys.reduce((sum, k) => sum + (c[k] || 0), 0);
+            const totalPerAcre = budgetCosts + landPayment;
 
             let m77Costs = 0, landlordCosts = 0;
             if (leaseType === 'crop-share' && landlordShare > 0) {
@@ -1249,6 +1255,7 @@
                 landlordName: (f.lease && f.lease.landlord) || '',
                 sharePct,
                 totalPerAcre,
+                landPayment,
                 m77Costs, m77Rev,
                 m77Net: m77Rev - m77Costs,
                 landlordCosts, landlordRev,
@@ -1788,6 +1795,16 @@
                     ${isShare ? `<td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#7d3c98;">${fmtDollar(llVal)}</td>` : ''}
                 </tr>`;
             }).join('');
+
+            // Add land payment row for KBFARMS owned fields
+            if (split.landPayment > 0) {
+                costTableHtml += `<tr style="border-top:1px dashed #e0e0e0;">
+                    <td style="padding:6px 0;font-size:13px;color:#1a5276;font-weight:600;">Land Payment</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#1a5276;">${fmtDollar(split.landPayment)}</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#1a5276;">${fmtDollar(split.landPayment)}</td>
+                    ${isShare ? '<td></td>' : ''}
+                </tr>`;
+            }
 
             const leaseLabel = isShare
                 ? `Crop Share: ${split.sharePct}% landlord / ${operatorPct}% M77 AG${split.landlordName ? ' -- ' + split.landlordName : ''}`
