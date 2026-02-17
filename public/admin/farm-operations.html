@@ -803,6 +803,85 @@
             font-size: 16px;
             padding: 4px 8px;
         }
+        /* Quarter Card Sub-Fields */
+        .quarter-subfields {
+            padding: 0 18px 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .quarter-subfield-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #fafafa;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin: 0 -18px;
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+        .quarter-subfield-row:last-child { border-bottom: none; }
+        .quarter-subfield-row:hover { background: #f8f8f8; }
+        .qsf-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qsf-direction {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.06);
+            border-radius: 3px;
+        }
+        .qsf-name {
+            font-weight: 500;
+            color: #555;
+        }
+        .qsf-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Oswald', sans-serif;
+        }
+        .qsf-crop {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+        .qsf-crop.CORN { background: #fff3e0; color: #e65100; }
+        .qsf-crop.WHEAT { background: #fff8e1; color: #f57f17; }
+        .qsf-crop.SORGHUM { background: #efebe9; color: #5d4037; }
+        .qsf-crop.FALLOW { background: #f5f5f5; color: #757575; }
+        .qsf-crop.PEARL-MILLET { background: #f3e5f5; color: #7b1fa2; }
+        .qsf-crop.TRITICALE { background: #e8f5e9; color: #558b2f; }
+        .qsf-crop.SORGHUM-SUDAN { background: #fbe9e7; color: #bf360c; }
+        .qsf-acres {
+            font-size: 12px;
+            color: #666;
+            min-width: 55px;
+            text-align: right;
+        }
+        /* Quarter card header - multiple crop badges */
+        .field-card-crops {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .field-card-crops .field-card-crop-code {
+            font-size: 11px;
+            padding: 2px 7px;
+        }
+
         @media (max-width: 768px) {
             .expense-form-row {
                 grid-template-columns: 1fr 1fr;
@@ -1275,6 +1354,7 @@
             const container = document.getElementById('activeFilters');
             const fields = getFilteredFields();
             const totalAcres = fields.reduce((sum, f) => sum + (f.acres || 0), 0);
+            const quarters = groupIntoQuarters(fields);
 
             if (currentFarm === 'all' && currentCrop === 'all') {
                 container.innerHTML = '';
@@ -1285,7 +1365,7 @@
             if (currentFarm !== 'all') parts.push(currentFarm);
             if (currentCrop !== 'all') parts.push(currentCrop);
 
-            container.innerHTML = `Showing <span class="filter-count">${fields.length}</span> fields / <span class="filter-count">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> acres${parts.length ? ' -- ' + parts.join(' + ') : ''}`;
+            container.innerHTML = `Showing <span class="filter-count">${quarters.length}</span> quarters / <span class="filter-count">${fields.length}</span> fields / <span class="filter-count">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> acres${parts.length ? ' -- ' + parts.join(' + ') : ''}`;
         }
 
         // View toggle
@@ -1306,6 +1386,124 @@
             }
         }
 
+        // Parse a field name into quarter number, direction, and name
+        // "10.S OURS" => { num: "10", dir: "S", name: "OURS" }
+        // "22 TOP HILL" => { num: "22", dir: null, name: "TOP HILL" }
+        // "1001 ROSCOE HOME" => { num: "1001", dir: null, name: "ROSCOE HOME" }
+        function parseFieldName(fieldName) {
+            const match = fieldName.match(/^(\d+)(?:\.([A-Z]))?\s*(.*)$/i);
+            if (!match) return { num: null, dir: null, name: fieldName };
+            return { num: match[1], dir: match[2] ? match[2].toUpperCase() : null, name: match[3].trim() };
+        }
+
+        // Group filtered fields into quarter objects
+        function groupIntoQuarters(fields) {
+            const quarterMap = {};
+
+            fields.forEach(f => {
+                const parsed = parseFieldName(f.field);
+                // Quarter key = farm + number (e.g., "LAFARMS-10")
+                const key = f.farm + '-' + (parsed.num || f.field);
+
+                if (!quarterMap[key]) {
+                    quarterMap[key] = {
+                        key,
+                        num: parsed.num,
+                        name: parsed.name,
+                        farm: f.farm,
+                        fields: [],
+                        totalAcres: 0
+                    };
+                }
+                quarterMap[key].fields.push({ ...f, _parsed: parsed });
+                quarterMap[key].totalAcres += (f.acres || 0);
+                // Use the name from any sub-field (they share the same location name)
+                if (parsed.name && (!quarterMap[key].name || quarterMap[key].name.length < parsed.name.length)) {
+                    quarterMap[key].name = parsed.name;
+                }
+            });
+
+            // Sort fields within each quarter by direction (N/W/E/S/M/C/P)
+            const dirOrder = { N: 0, W: 1, M: 2, C: 3, E: 4, S: 5, P: 6 };
+            Object.values(quarterMap).forEach(q => {
+                q.fields.sort((a, b) => {
+                    const da = a._parsed.dir ? (dirOrder[a._parsed.dir] ?? 9) : 9;
+                    const db = b._parsed.dir ? (dirOrder[b._parsed.dir] ?? 9) : 9;
+                    return da - db;
+                });
+            });
+
+            // Sort quarters by number within farm
+            return Object.values(quarterMap).sort((a, b) => {
+                if (a.farm !== b.farm) return a.farm.localeCompare(b.farm);
+                return (parseInt(a.num) || 999) - (parseInt(b.num) || 999);
+            });
+        }
+
+        // Compute weighted-average cost split across all fields in a quarter
+        function calcQuarterSplit(fields) {
+            let totalAcres = 0;
+            let wtdCost = 0, wtdYield = 0, wtdBE = 0, wtdM77Net = 0;
+            let wtdM77Costs = 0, wtdLLCosts = 0;
+            let hasAnyFinancials = false;
+            let hasAnyYield = false;
+            let leaseType = 'owned';
+            let landlordName = '';
+            let sharePct = 0;
+
+            fields.forEach(f => {
+                const ac = f.acres || 0;
+                totalAcres += ac;
+                const split = calcCostSplit(f);
+                const hasFin = split.totalPerAcre > 0 || (f.projectedYield && f.projectedYield > 0);
+                if (hasFin) hasAnyFinancials = true;
+                if (f.projectedYield > 0) hasAnyYield = true;
+
+                wtdCost += split.totalPerAcre * ac;
+                wtdYield += (f.projectedYield || 0) * ac;
+                wtdM77Net += split.m77Net * ac;
+                wtdM77Costs += split.m77Costs * ac;
+                wtdLLCosts += split.landlordCosts * ac;
+
+                // Use the dominant lease type
+                if (split.leaseType !== 'owned') {
+                    leaseType = split.leaseType;
+                    landlordName = split.landlordName;
+                    sharePct = split.sharePct;
+                }
+            });
+
+            const costPerAcre = totalAcres > 0 ? wtdCost / totalAcres : 0;
+            const avgYield = totalAcres > 0 ? wtdYield / totalAcres : 0;
+            const m77Net = totalAcres > 0 ? wtdM77Net / totalAcres : 0;
+            const m77Costs = totalAcres > 0 ? wtdM77Costs / totalAcres : 0;
+            const llCosts = totalAcres > 0 ? wtdLLCosts / totalAcres : 0;
+
+            let breakEvenPrice = 0;
+            if (avgYield > 0 && costPerAcre > 0) {
+                if (leaseType === 'crop-share' && sharePct > 0) {
+                    breakEvenPrice = m77Costs / (avgYield * (1 - sharePct / 100));
+                } else {
+                    breakEvenPrice = costPerAcre / avgYield;
+                }
+            }
+
+            return {
+                totalPerAcre: costPerAcre,
+                avgYield,
+                breakEvenPrice,
+                m77Net,
+                m77Costs,
+                landlordCosts: llCosts,
+                leaseType,
+                landlordName,
+                sharePct,
+                hasFinancials: hasAnyFinancials,
+                hasYield: hasAnyYield,
+                totalAcres
+            };
+        }
+
         function renderFieldsCards() {
             const container = document.getElementById('fieldsCardsContainer');
             let fields = getFilteredFields();
@@ -1315,12 +1513,54 @@
                 return;
             }
 
-            container.innerHTML = fields.map(f => {
-                const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
-                const acres = f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
-                const code = getCropCode(f.crop2026, 2026);
-                const split = calcCostSplit(f);
-                const hasFinancials = split.totalPerAcre > 0 || (f.projectedYield && f.projectedYield > 0);
+            const quarters = groupIntoQuarters(fields);
+
+            container.innerHTML = quarters.map(q => {
+                const isMulti = q.fields.length > 1;
+                const qSplit = isMulti ? calcQuarterSplit(q.fields) : null;
+                const firstField = q.fields[0];
+
+                // For single-field quarters, use the field directly
+                const displayName = isMulti
+                    ? `${q.num} ${q.name}`
+                    : firstField.field;
+
+                const totalAcres = q.totalAcres;
+                const acresStr = totalAcres ? totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
+
+                // Determine crop codes present in this quarter
+                const cropCodes = {};
+                q.fields.forEach(f => {
+                    const code = getCropCode(f.crop2026, 2026);
+                    const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                    if (code) cropCodes[code] = cropClass;
+                });
+                const codeEntries = Object.entries(cropCodes);
+                const primaryCrop = firstField.crop2026 ? firstField.crop2026.replace(/\s+/g, '-') : '';
+
+                // Financials
+                let split, hasFinancials, hasYield;
+                if (isMulti) {
+                    split = qSplit;
+                    hasFinancials = split.hasFinancials;
+                    hasYield = split.hasYield;
+                } else {
+                    const s = calcCostSplit(firstField);
+                    split = {
+                        totalPerAcre: s.totalPerAcre,
+                        avgYield: firstField.projectedYield || 0,
+                        breakEvenPrice: s.breakEvenPrice,
+                        m77Net: s.m77Net,
+                        m77Costs: s.m77Costs,
+                        landlordCosts: s.landlordCosts,
+                        leaseType: s.leaseType,
+                        landlordName: s.landlordName,
+                        sharePct: s.sharePct
+                    };
+                    hasFinancials = split.totalPerAcre > 0 || split.avgYield > 0;
+                    hasYield = split.avgYield > 0;
+                }
+
                 const leaseType = split.leaseType || 'owned';
                 const leaseLabel = leaseType === 'crop-share'
                     ? `${split.sharePct}% share${split.landlordName ? ' - ' + split.landlordName : ''}`
@@ -1328,18 +1568,47 @@
                     ? `Cash rent${split.landlordName ? ' - ' + split.landlordName : ''}`
                     : 'Owned - M77 AG';
 
+                // Sub-field rows for multi-field quarters
+                let subFieldsHtml = '';
+                if (isMulti) {
+                    subFieldsHtml = `<div class="quarter-subfields">${q.fields.map(f => {
+                        const dir = f._parsed.dir || '';
+                        const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                        const code = getCropCode(f.crop2026, 2026);
+                        const fAcres = f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
+                        return `<div class="quarter-subfield-row" onclick="event.stopPropagation(); openFieldModal('${f._id}')">
+                            <div class="qsf-left">
+                                ${dir ? `<span class="qsf-direction">${dir}</span>` : ''}
+                                <span class="qsf-name">${f.field}</span>
+                            </div>
+                            <div class="qsf-right">
+                                ${code ? `<span class="qsf-crop ${cropClass}">${code}</span>` : ''}
+                                <span class="qsf-acres">${fAcres} ac</span>
+                            </div>
+                        </div>`;
+                    }).join('')}</div>`;
+                }
+
+                // For single field quarters, clicking opens modal
+                const cardClick = !isMulti ? `onclick="openFieldModal('${firstField._id}')"` : '';
+
                 return `
-                    <div class="field-card farm-${f.farm}" onclick="openFieldModal('${f._id}')">
-                        <div class="field-card-header ${cropClass}">
+                    <div class="field-card farm-${q.farm}" ${cardClick}>
+                        <div class="field-card-header ${primaryCrop}">
                             <div>
-                                <div class="field-card-name">${f.field}</div>
-                                <div class="field-card-farm-badge">${f.farm}</div>
+                                <div class="field-card-name">${displayName}</div>
+                                <div class="field-card-farm-badge">${q.farm}${isMulti ? ' -- ' + q.fields.length + ' fields' : ''}</div>
                             </div>
                             <div class="field-card-right">
-                                ${code ? `<div class="field-card-crop-code">${code}</div>` : `<div class="field-card-crop-code">${f.crop2026 || '--'}</div>`}
-                                <div class="field-card-acres">${acres} ac</div>
+                                ${codeEntries.length === 1
+                                    ? `<div class="field-card-crop-code">${codeEntries[0][0]}</div>`
+                                    : codeEntries.length > 1
+                                    ? `<div class="field-card-crops">${codeEntries.map(([c, cls]) => `<div class="field-card-crop-code">${c}</div>`).join('')}</div>`
+                                    : `<div class="field-card-crop-code">${firstField.crop2026 || '--'}</div>`}
+                                <div class="field-card-acres">${acresStr} ac</div>
                             </div>
                         </div>
+                        ${subFieldsHtml}
                         <div class="field-card-financials">
                             <div class="fin-metric">
                                 <div class="fin-metric-label">Cost/Ac</div>
@@ -1347,7 +1616,7 @@
                             </div>
                             <div class="fin-metric">
                                 <div class="fin-metric-label">Est Yield</div>
-                                <div class="fin-metric-value ${f.projectedYield ? '' : 'no-data'}">${f.projectedYield ? fmtBushels(f.projectedYield) : 'TBD'}</div>
+                                <div class="fin-metric-value ${hasYield ? '' : 'no-data'}">${hasYield ? fmtBushels(split.avgYield) : 'TBD'}</div>
                             </div>
                             <div class="fin-metric">
                                 <div class="fin-metric-label">Break-Even</div>
@@ -1368,9 +1637,9 @@
                             </div>
                         </div>
                         <div class="field-card-footer">
-                            <span>Legal: ${f.legal || '-'}</span>
-                            <span>FSA: ${f.fsaFarm || '-'}</span>
-                            <span>Tract: ${f.tract || '-'}</span>
+                            <span>Legal: ${firstField.legal || '-'}</span>
+                            <span>FSA: ${firstField.fsaFarm || '-'}</span>
+                            <span>Tract: ${firstField.tract || '-'}</span>
                         </div>
                     </div>
                 `;
