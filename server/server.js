@@ -71,6 +71,7 @@ const seedOrderRoutes = require('./routes/seedOrder');
 const imageUploadRoutes = require('./routes/imageUpload');
 const employeeRoutes = require('./routes/employees');
 const croppingFieldRoutes = require('./routes/croppingFields');
+const cropExpenseRoutes = require('./routes/cropExpenses');
 const stripeRoutes = require('./routes/stripe');
 const stripeController = require('./controllers/stripeController');
 
@@ -111,6 +112,7 @@ app.use('/api/seed-orders', seedOrderRoutes);
 app.use('/api/upload', imageUploadRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/cropping-fields', croppingFieldRoutes);
+app.use('/api/crop-expenses', cropExpenseRoutes);
 app.use('/api/stripe', stripeRoutes);
 
 // Stripe webhook endpoint (needs raw body)
