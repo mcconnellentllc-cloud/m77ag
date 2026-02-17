@@ -599,6 +599,53 @@
         .lease-badge.crop-share { background: #f3e5f5; color: #7b1fa2; }
         .lease-badge.flex-lease { background: #e3f2fd; color: #1565c0; }
 
+        /* Market value row */
+        .market-value-row {
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 12px;
+        }
+        .mv-label {
+            color: #999;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .mv-values {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .mv-per-acre {
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            color: #1a5276;
+        }
+        .mv-total {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #999;
+        }
+        .mv-edit-btn {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 10px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mv-edit-btn:hover { border-color: #2d5016; color: #2d5016; }
+        .mv-not-set {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #ccc;
+        }
+
         /* Bottom details (legal, fsa, tract) */
         .field-card-footer {
             padding: 10px 18px;
@@ -1636,6 +1683,21 @@
                                 ${leaseType === 'crop-share' ? `<span class="cost-landlord">LL: ${fmtDollar(split.landlordCosts)}/ac</span>` : ''}
                             </div>
                         </div>
+                        ${(() => {
+                            const mvPerAcre = q.fields.reduce((v, f) => v || (f.marketValuePerAcre || 0), 0);
+                            const mvTotal = mvPerAcre * totalAcres;
+                            const qKey = q.farm + '|' + q.num;
+                            return `<div class="market-value-row">
+                                <div class="mv-label">Market Value</div>
+                                <div class="mv-values">
+                                    ${mvPerAcre > 0
+                                        ? `<span class="mv-per-acre">${fmtDollar(mvPerAcre)}/ac</span>
+                                           <span class="mv-total">${fmtDollar(mvTotal)} total</span>`
+                                        : `<span class="mv-not-set">Not set</span>`}
+                                    <button class="mv-edit-btn" onclick="event.stopPropagation(); editMarketValue('${qKey}', ${mvPerAcre}, '${displayName.replace(/'/g, "\\'")}', ${totalAcres})">Edit</button>
+                                </div>
+                            </div>`;
+                        })()}
                         <div class="field-card-footer">
                             <span>Legal: ${firstField.legal || '-'}</span>
                             <span>FSA: ${firstField.fsaFarm || '-'}</span>
@@ -1804,6 +1866,23 @@
                         <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#7d3c98;">${fmtDollar(split.landlordRev)}</td>
                     </tr>` : ''}
                 </table>
+
+                <!-- Market Value -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Land Value</h3>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#f0f4f8;border-radius:6px;margin-bottom:20px;">
+                    <div>
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#666;margin-bottom:4px;">Market Value</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:22px;color:#1a5276;">
+                            ${f.marketValuePerAcre ? fmtDollar(f.marketValuePerAcre) + '/ac' : 'Not set'}
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#666;margin-bottom:4px;">Total Value</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:22px;color:#1a5276;">
+                            ${f.marketValuePerAcre ? fmtDollar(f.marketValuePerAcre * acres) : '--'}
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Field Details -->
                 <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Field Details</h3>
@@ -2083,6 +2162,49 @@
                 }
             } catch (e) {
                 alert('Error deleting: ' + e.message);
+            }
+        }
+
+        // =============================================
+        // MARKET VALUE
+        // =============================================
+        function editMarketValue(qKey, currentValue, quarterName, totalAcres) {
+            const parts = qKey.split('|');
+            const farm = parts[0];
+            const quarterNum = parts[1];
+
+            const input = prompt(
+                `Market value per acre for ${quarterName} (${farm}, ${totalAcres.toFixed(2)} ac):\n\nCurrent: ${currentValue > 0 ? '$' + currentValue.toFixed(2) + '/ac' : 'Not set'}`,
+                currentValue > 0 ? currentValue.toString() : ''
+            );
+
+            if (input === null) return;
+            const val = parseFloat(input.replace(/[$,]/g, ''));
+            if (isNaN(val) || val < 0) {
+                alert('Enter a valid dollar amount');
+                return;
+            }
+
+            saveMarketValue(farm, quarterNum, val);
+        }
+
+        async function saveMarketValue(farm, quarterNum, marketValuePerAcre) {
+            try {
+                const resp = await fetch('/api/cropping-fields/quarter/market-value', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ farm, quarterNum, marketValuePerAcre })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    // Reload and re-render
+                    await loadData();
+                    renderView();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to save'));
+                }
+            } catch (e) {
+                alert('Error saving market value: ' + e.message);
             }
         }
     </script>
