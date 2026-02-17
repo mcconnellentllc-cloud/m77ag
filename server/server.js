@@ -253,6 +253,11 @@ app.get('/admin/farm-projections', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farm-projections.html'));
 });
 
+// Field manager
+app.get('/admin/field-manager', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
+});
+
 // Public page routes
 app.get('/hunting', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting.html'));

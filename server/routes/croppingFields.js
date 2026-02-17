@@ -352,4 +352,152 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// === FIELD DETAILS (soil, lease, insurance, taxes, location) ===
+router.put('/:id/details', async (req, res) => {
+  try {
+    const { soil, lease, insurance, taxes, county, section, township, range, notes } = req.body;
+    const updateData = {};
+
+    if (soil) updateData.soil = soil;
+    if (lease) updateData.lease = lease;
+    if (insurance) updateData.insurance = insurance;
+    if (taxes) updateData.taxes = taxes;
+    if (county !== undefined) updateData.county = county;
+    if (section !== undefined) updateData.section = section;
+    if (township !== undefined) updateData.township = township;
+    if (range !== undefined) updateData.range = range;
+    if (notes !== undefined) updateData.notes = notes;
+
+    const field = await CroppingField.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error updating field details:', error);
+    res.status(500).json({ success: false, error: 'Failed to update field details' });
+  }
+});
+
+// === CROP HISTORY ===
+
+// Add a crop history entry
+router.post('/:id/crop-history', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    const entry = req.body;
+
+    // Auto-calculate totals if costs are provided
+    if (entry.costs) {
+      const c = entry.costs;
+      entry.totalCost = (c.seed || 0) + (c.fertilizer || 0) + (c.chemicals || 0) +
+        (c.cropInsurance || 0) + (c.fuelOil || 0) + (c.repairs || 0) +
+        (c.customHire || 0) + (c.landRent || 0) + (c.dryingHauling || 0) +
+        (c.taxes || 0) + (c.misc || 0);
+    }
+
+    if (entry.yieldPerAcre && entry.pricePerBushel) {
+      entry.grossRevenue = entry.yieldPerAcre * entry.pricePerBushel * (field.acres || 0);
+    }
+
+    if (entry.totalCost !== undefined) {
+      const totalCostField = (entry.totalCost || 0) * (field.acres || 0);
+      entry.netIncome = (entry.grossRevenue || 0) - totalCostField;
+      entry.profitPerAcre = (entry.grossRevenue || 0) / (field.acres || 1) - (entry.totalCost || 0);
+    }
+
+    // Check if year already exists, replace it
+    const existingIdx = field.cropHistory.findIndex(h => h.year === entry.year);
+    if (existingIdx >= 0) {
+      field.cropHistory[existingIdx] = { ...field.cropHistory[existingIdx].toObject(), ...entry };
+    } else {
+      field.cropHistory.push(entry);
+    }
+
+    // Sort by year descending
+    field.cropHistory.sort((a, b) => b.year - a.year);
+
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error adding crop history:', error);
+    res.status(500).json({ success: false, error: 'Failed to add crop history' });
+  }
+});
+
+// Delete a crop history entry
+router.delete('/:id/crop-history/:entryId', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    field.cropHistory = field.cropHistory.filter(h => h._id.toString() !== req.params.entryId);
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error deleting crop history:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete crop history' });
+  }
+});
+
+// === SOIL SAMPLES ===
+
+// Add a soil sample
+router.post('/:id/soil-sample', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    if (!field.soil) {
+      field.soil = { samples: [] };
+    }
+    if (!field.soil.samples) {
+      field.soil.samples = [];
+    }
+
+    field.soil.samples.push(req.body);
+    field.soil.samples.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error adding soil sample:', error);
+    res.status(500).json({ success: false, error: 'Failed to add soil sample' });
+  }
+});
+
+// Delete a soil sample
+router.delete('/:id/soil-sample/:sampleId', async (req, res) => {
+  try {
+    const field = await CroppingField.findById(req.params.id);
+    if (!field) {
+      return res.status(404).json({ success: false, error: 'Field not found' });
+    }
+
+    if (field.soil && field.soil.samples) {
+      field.soil.samples = field.soil.samples.filter(s => s._id.toString() !== req.params.sampleId);
+    }
+
+    await field.save();
+    res.json({ success: true, field });
+  } catch (error) {
+    console.error('Error deleting soil sample:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete soil sample' });
+  }
+});
+
 module.exports = router;
