@@ -149,6 +149,9 @@ const croppingFieldSchema = new mongoose.Schema({
   projectedPrice: { type: Number, default: 0 },
   governmentPayment: { type: Number, default: 0 },
 
+  // Land valuation
+  marketValuePerAcre: { type: Number, default: 0 },
+
   // Legacy
   costPerAcre: Number,
   estimatedRevenue: Number,
@@ -187,6 +190,11 @@ croppingFieldSchema.virtual('netPerAcre').get(function() {
 
 croppingFieldSchema.virtual('netIncome').get(function() {
   return (this.netPerAcre || 0) * (this.acres || 0);
+});
+
+// === Virtual: Total Market Value ===
+croppingFieldSchema.virtual('totalMarketValue').get(function() {
+  return (this.marketValuePerAcre || 0) * (this.acres || 0);
 });
 
 // === Virtuals: Historical Averages ===

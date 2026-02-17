@@ -393,15 +393,51 @@ router.get('/summary/budget/:farmName', async (req, res) => {
 });
 
 // Bulk update budget for a field
+// Set market value for all fields in a quarter (by farm + quarter number)
+router.put('/quarter/market-value', async (req, res) => {
+  try {
+    const { farm, quarterNum, marketValuePerAcre } = req.body;
+    if (!farm || !quarterNum || typeof marketValuePerAcre !== 'number') {
+      return res.status(400).json({ success: false, error: 'Required: farm, quarterNum, marketValuePerAcre' });
+    }
+
+    // Match all fields whose name starts with this quarter number
+    const regex = new RegExp('^' + quarterNum + '(\\.|\\s)');
+    const result = await CroppingField.updateMany(
+      { farm, field: { $regex: regex } },
+      { $set: { marketValuePerAcre } }
+    );
+
+    // Also match standalone fields that are exactly the number + space + name
+    const regexExact = new RegExp('^' + quarterNum + '\\s');
+    const result2 = await CroppingField.updateMany(
+      { farm, field: { $regex: regexExact } },
+      { $set: { marketValuePerAcre } }
+    );
+
+    const updated = Math.max(result.modifiedCount, result2.modifiedCount);
+
+    res.json({
+      success: true,
+      modifiedCount: updated,
+      message: `Market value set to $${marketValuePerAcre}/ac for quarter ${quarterNum} (${farm})`
+    });
+  } catch (error) {
+    console.error('Error updating quarter market value:', error);
+    res.status(500).json({ success: false, error: 'Failed to update market value' });
+  }
+});
+
 router.put('/:id/budget', async (req, res) => {
   try {
-    const { costs, projectedYield, projectedPrice, governmentPayment } = req.body;
+    const { costs, projectedYield, projectedPrice, governmentPayment, marketValuePerAcre } = req.body;
 
     const updateData = {};
     if (costs) updateData.costs = costs;
     if (typeof projectedYield === 'number') updateData.projectedYield = projectedYield;
     if (typeof projectedPrice === 'number') updateData.projectedPrice = projectedPrice;
     if (typeof governmentPayment === 'number') updateData.governmentPayment = governmentPayment;
+    if (typeof marketValuePerAcre === 'number') updateData.marketValuePerAcre = marketValuePerAcre;
 
     const field = await CroppingField.findByIdAndUpdate(
       req.params.id,
