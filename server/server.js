@@ -248,6 +248,11 @@ app.get('/admin/partners', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/partners.html'));
 });
 
+// Farm projections
+app.get('/admin/farm-projections', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farm-projections.html'));
+});
+
 // Public page routes
 app.get('/hunting', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting.html'));
