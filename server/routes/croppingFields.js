@@ -420,6 +420,59 @@ router.put('/:id/budget', async (req, res) => {
   }
 });
 
+// Get summary by crop code (across all years)
+router.get('/summary/crop-codes', async (req, res) => {
+  try {
+    const { year } = req.query;
+    const fields = await CroppingField.find({});
+
+    const codeSummary = {};
+    const years = year ? [parseInt(year)] : [2025, 2026, 2027, 2028, 2029, 2030];
+
+    fields.forEach(f => {
+      years.forEach(yr => {
+        const crop = f[`crop${yr}`];
+        if (!crop || !f.acres) return;
+        const nonProductive = ['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'];
+        if (nonProductive.includes(crop)) return;
+
+        const code = crop.toUpperCase().replace(/\s+/g, '-') + String(yr).slice(-2);
+        if (!codeSummary[code]) {
+          codeSummary[code] = {
+            cropCode: code,
+            crop,
+            year: yr,
+            totalAcres: 0,
+            fieldCount: 0,
+            farms: {},
+            fields: []
+          };
+        }
+        codeSummary[code].totalAcres += f.acres;
+        codeSummary[code].fieldCount++;
+        codeSummary[code].farms[f.farm] = (codeSummary[code].farms[f.farm] || 0) + f.acres;
+        codeSummary[code].fields.push({
+          id: f._id,
+          farm: f.farm,
+          field: f.field,
+          acres: f.acres
+        });
+      });
+    });
+
+    // Sort by year then crop
+    const sorted = Object.values(codeSummary).sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      return a.crop.localeCompare(b.crop);
+    });
+
+    res.json({ success: true, cropCodes: sorted });
+  } catch (error) {
+    console.error('Error fetching crop code summary:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch crop code summary' });
+  }
+});
+
 // Get summary by farm
 router.get('/summary/farms', async (req, res) => {
   try {

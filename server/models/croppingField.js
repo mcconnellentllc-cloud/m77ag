@@ -1,9 +1,19 @@
 const mongoose = require('mongoose');
 
+// Crop code generator: "WHEAT" + 2026 => "WHEAT26"
+function makeCropCode(crop, year) {
+  if (!crop || !year) return '';
+  const c = crop.toUpperCase().trim();
+  if (['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'].includes(c)) return '';
+  const yr = String(year).slice(-2);
+  return c.replace(/\s+/g, '-') + yr;
+}
+
 // === Crop History Entry (one per field per year) ===
 const cropHistorySchema = new mongoose.Schema({
   year: { type: Number, required: true },
   crop: String,
+  cropCode: String,
   variety: String,
   plantingDate: Date,
   harvestDate: Date,
@@ -192,10 +202,53 @@ croppingFieldSchema.virtual('avgProfitPerAcre').get(function() {
   return history.reduce((sum, h) => sum + h.profitPerAcre, 0) / history.length;
 });
 
+// === Virtuals: Crop Codes for each year slot ===
+[2025, 2026, 2027, 2028, 2029, 2030].forEach(yr => {
+  croppingFieldSchema.virtual(`cropCode${yr}`).get(function() {
+    return makeCropCode(this[`crop${yr}`], yr);
+  });
+});
+
+// Current year crop code (2026)
+croppingFieldSchema.virtual('cropCode').get(function() {
+  return makeCropCode(this.crop2026, 2026);
+});
+
+// All crop codes across years (for search/filtering)
+croppingFieldSchema.virtual('allCropCodes').get(function() {
+  const codes = [];
+  [2025, 2026, 2027, 2028, 2029, 2030].forEach(yr => {
+    const code = makeCropCode(this[`crop${yr}`], yr);
+    if (code) codes.push(code);
+  });
+  // Also from crop history
+  (this.cropHistory || []).forEach(h => {
+    const code = h.cropCode || makeCropCode(h.crop, h.year);
+    if (code && !codes.includes(code)) codes.push(code);
+  });
+  return codes;
+});
+
+// Pre-save: auto-generate cropCode on history entries
+croppingFieldSchema.pre('save', function(next) {
+  if (this.cropHistory) {
+    this.cropHistory.forEach(h => {
+      if (h.crop && h.year && !h.cropCode) {
+        h.cropCode = makeCropCode(h.crop, h.year);
+      }
+    });
+  }
+  next();
+});
+
 // Indexes
 croppingFieldSchema.index({ farm: 1 });
 croppingFieldSchema.index({ crop2026: 1 });
 croppingFieldSchema.index({ fsaFarm: 1, tract: 1 });
 croppingFieldSchema.index({ 'cropHistory.year': 1 });
+croppingFieldSchema.index({ 'cropHistory.cropCode': 1 });
+
+// Export the helper so routes can use it
+croppingFieldSchema.statics.makeCropCode = makeCropCode;
 
 module.exports = mongoose.model('CroppingField', croppingFieldSchema);

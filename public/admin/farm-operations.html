@@ -327,6 +327,22 @@
         .crop-badge.WASTE { background: #eceff1; color: #455a64; }
         .crop-badge.BUILDING-SITE, .crop-badge.BUILDING_SITE { background: #263238; color: white; }
 
+        .crop-code {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 0.5px;
+            background: #f0f0f0;
+            color: #333;
+        }
+        .crop-code.has-code {
+            background: #e8f0e3;
+            color: #2d5016;
+        }
+
         /* Field Card Modal */
         .modal-overlay {
             display: none;
@@ -648,6 +664,7 @@
                         <th>Tract</th>
                         <th>Acres</th>
                         <th>2026 Crop</th>
+                        <th>Crop Code</th>
                     </tr>
                 </thead>
                 <tbody id="fieldsTable">
@@ -682,6 +699,13 @@
         let currentFarm = 'all';
         let currentCrop = 'all';
         let currentView = 'list'; // 'list' or 'cards'
+
+        const NON_PRODUCTIVE = ['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'];
+        function getCropCode(crop, year) {
+            if (!crop || !year) return '';
+            if (NON_PRODUCTIVE.includes(crop.toUpperCase())) return '';
+            return crop.toUpperCase().replace(/\s+/g, '-') + String(year).slice(-2);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
@@ -870,13 +894,14 @@
             container.innerHTML = fields.map(f => {
                 const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
                 const acres = f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
+                const code = getCropCode(f.crop2026, 2026);
 
                 return `
                     <div class="field-card" onclick="openFieldModal('${f._id}')">
                         <div class="field-card-header ${cropClass}">
                             <div>
                                 <div class="field-card-name">${f.field}</div>
-                                <div class="field-card-farm">${f.farm}</div>
+                                <div class="field-card-farm">${f.farm}${code ? ' / ' + code : ''}</div>
                             </div>
                             <span class="field-card-crop">${f.crop2026 || 'N/A'}</span>
                         </div>
@@ -887,11 +912,15 @@
                                     <div class="field-stat-value">${acres}</div>
                                 </div>
                                 <div class="field-stat">
-                                    <div class="field-stat-label">FSA Farm</div>
-                                    <div class="field-stat-value">${f.fsaFarm || '-'}</div>
+                                    <div class="field-stat-label">Crop Code</div>
+                                    <div class="field-stat-value">${code || '--'}</div>
                                 </div>
                             </div>
                             <div class="field-card-details">
+                                <div class="field-detail-item">
+                                    <span class="field-detail-label">FSA Farm</span>
+                                    <span class="field-detail-value">${f.fsaFarm || '-'}</span>
+                                </div>
                                 <div class="field-detail-item">
                                     <span class="field-detail-label">Legal</span>
                                     <span class="field-detail-value">${f.legal || '-'}</span>
@@ -912,12 +941,13 @@
             let fields = getFilteredFields();
 
             if (fields.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = fields.map(f => {
                 const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                const code = getCropCode(f.crop2026, 2026);
                 return `
                     <tr onclick="openFieldModal('${f._id}')" style="cursor:pointer">
                         <td>${f.farm}</td>
@@ -927,6 +957,7 @@
                         <td>${f.tract || '-'}</td>
                         <td class="acres">${f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
                         <td><span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span></td>
+                        <td>${code ? `<span class="crop-code has-code">${code}</span>` : '<span class="crop-code">--</span>'}</td>
                     </tr>
                 `;
             }).join('');
@@ -936,6 +967,7 @@
             const field = allFields.find(f => f._id === id);
             if (!field) return;
 
+            const code = getCropCode(field.crop2026, 2026);
             document.getElementById('modalFieldName').textContent = field.field;
             document.getElementById('modalBody').innerHTML = `
                 <div class="field-detail-row">
@@ -945,6 +977,18 @@
                 <div class="field-detail-row">
                     <span class="field-detail-label">Field Name</span>
                     <span class="field-detail-value">${field.field}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">2026 Crop</span>
+                    <span class="field-detail-value"><span class="crop-badge ${(field.crop2026 || '').replace(/\s+/g, '-')}">${field.crop2026 || '-'}</span></span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Crop Code</span>
+                    <span class="field-detail-value">${code ? `<span class="crop-code has-code">${code}</span>` : '--'}</span>
+                </div>
+                <div class="field-detail-row">
+                    <span class="field-detail-label">Acres</span>
+                    <span class="field-detail-value">${field.acres ? field.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</span>
                 </div>
                 <div class="field-detail-row">
                     <span class="field-detail-label">Legal Description</span>
@@ -957,14 +1001,6 @@
                 <div class="field-detail-row">
                     <span class="field-detail-label">Tract #</span>
                     <span class="field-detail-value">${field.tract || '-'}</span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">Acres</span>
-                    <span class="field-detail-value">${field.acres ? field.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</span>
-                </div>
-                <div class="field-detail-row">
-                    <span class="field-detail-label">2026 Crop</span>
-                    <span class="field-detail-value"><span class="crop-badge ${(field.crop2026 || '').replace(/\s+/g, '-')}">${field.crop2026 || '-'}</span></span>
                 </div>
             `;
             document.getElementById('fieldModal').classList.add('active');
