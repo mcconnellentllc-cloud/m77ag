@@ -9,9 +9,13 @@ const CapitalInvestment = require('../models/capitalInvestment');
 // so annual loan payments flow into per-acre costs
 // =============================================
 const KB_QUARTER_TO_PARCEL = {
+  '20': 'Pauli Section',
+  '21': 'Pauli Section',
+  '22': 'Pauli Section',
   '23': 'Pauli Section',
   '24': 'Pauli Section',
   '25': 'Michael Section',
+  '26': 'Michael Section',
   '27': 'Michael Section',
   '28': 'Michael Section',
   '29': 'Michael Section',
