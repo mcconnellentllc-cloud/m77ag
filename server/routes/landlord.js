@@ -18,22 +18,26 @@ const isLandlordOrAdmin = (req, res, next) => {
 router.use(authenticate);
 router.use(isLandlordOrAdmin);
 
-// Get landlord preferences
-router.get('/preferences', landlordController.getPreferences);
+// Dashboard summary
+router.get('/summary', landlordController.getSummary);
 
-// Update landlord preferences
-router.put('/preferences', landlordController.updatePreferences);
+// Fields (real CroppingField data)
+router.get('/fields', landlordController.getFields);
 
-// Get financial summary (running bill)
+// Financial summary (running bill)
 router.get('/financial-summary', landlordController.getFinancialSummary);
 
-// Get properties and fields with crop data
+// Preferences
+router.get('/preferences', landlordController.getPreferences);
+router.put('/preferences', landlordController.updatePreferences);
+
+// Properties (legacy - same as fields)
 router.get('/properties', landlordController.getProperties);
 
-// Get transactions
+// Transactions
 router.get('/transactions', landlordController.getTransactions);
 
-// ACH / Stripe payment setup
+// ACH / Stripe
 router.post('/ach/setup', landlordController.setupACH);
 router.post('/ach/disconnect', landlordController.disconnectACH);
 

@@ -1,25 +1,17 @@
-// Auth check
+// =============================================
+// Auth
+// =============================================
 const token = localStorage.getItem('token');
 const userStr = localStorage.getItem('user');
-
-if (!token || !userStr) {
-    window.location.href = '/landlord/login.html';
-}
-
+if (!token || !userStr) window.location.href = '/landlord/login.html';
 const user = JSON.parse(userStr);
 
-// API helper
 async function apiCall(endpoint, options = {}) {
-    const defaultOptions = {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
+    const defaults = {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     };
-
-    const response = await fetch(endpoint, { ...defaultOptions, ...options });
+    const response = await fetch(endpoint, { ...defaults, ...options });
     const data = await response.json();
-
     if (!response.ok) {
         if (response.status === 401) {
             localStorage.removeItem('token');
@@ -28,372 +20,332 @@ async function apiCall(endpoint, options = {}) {
         }
         throw new Error(data.message || 'API call failed');
     }
-
     return data;
 }
 
-// Show alert
-function showAlert(message, type = 'info') {
-    const alertDiv = document.getElementById('alert');
-    alertDiv.textContent = message;
-    alertDiv.className = `alert alert-${type}`;
-    alertDiv.style.display = 'block';
-
-    setTimeout(() => {
-        alertDiv.style.display = 'none';
-    }, 5000);
-}
-
-// Logout
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/landlord/login.html';
 }
 
-// Format currency
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
+function showAlert(msg, type = 'success') {
+    const el = document.getElementById('alert');
+    el.textContent = msg;
+    el.className = `alert alert-${type}`;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
 
-// Format number
-function formatNumber(num, decimals = 2) {
-    return Number(num).toFixed(decimals);
+function fmt(n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtDollar(n) { return '$' + fmt(n); }
+
+// =============================================
+// Crop colors
+// =============================================
+const CROP_COLORS = {
+    CORN: '#f59e0b', WHEAT: '#d97706', SORGHUM: '#ea580c', FALLOW: '#9ca3af',
+    PASTURE: '#10b981', 'PEARL MILLET': '#6366f1', TRITICALE: '#3b82f6',
+    'SORGHUM SUDAN': '#f97316', 'BUILDING SITE': '#6b7280', WASTE: '#d1d5db'
+};
+
+function cropBadgeClass(crop) {
+    return 'crop-' + (crop || '').replace(/\s+/g, '-').toUpperCase();
 }
 
-// Load dashboard data
+// =============================================
+// Tab Navigation
+// =============================================
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+// =============================================
+// Load Dashboard
+// =============================================
 async function loadDashboard() {
+    document.getElementById('userInfo').textContent = user.name || user.email;
+    await Promise.all([loadSummary(), loadFields(), loadPreferences()]);
+}
+
+// =============================================
+// Overview Tab: Summary
+// =============================================
+async function loadSummary() {
     try {
-        // Update user info in header
-        document.getElementById('userInfo').textContent = user.name || user.email;
+        const data = await apiCall('/api/landlord/summary');
+        if (!data.success) return;
+        const s = data.summary;
 
-        // Load landlord preferences
-        await loadPreferences();
+        document.getElementById('totalAcres').textContent = fmt(s.totalAcres);
+        document.getElementById('cropAcres').textContent = fmt(s.cropAcres);
+        document.getElementById('totalFields').textContent = s.totalFields;
+        document.getElementById('totalFarms').textContent = s.farms;
+        document.getElementById('totalTax').textContent = fmtDollar(s.totalPropertyTax);
 
-        // Load financial summary
-        await loadFinancialSummary();
-
-        // Load properties and fields
-        await loadProperties();
-
-        // Load transactions
-        await loadTransactions();
-
-        // Load market prices
-        await loadMarketPrices();
-
+        renderCropMix(s.cropMix, s.totalAcres);
+        renderCountyBreakdown(s.countyBreakdown);
     } catch (error) {
-        console.error('Error loading dashboard:', error);
-        showAlert('Error loading dashboard data', 'error');
+        console.error('Error loading summary:', error);
     }
 }
 
-// Load landlord preferences
+function renderCropMix(cropMix, totalAcres) {
+    const bar = document.getElementById('cropMixBar');
+    const legend = document.getElementById('cropMixLegend');
+    if (!cropMix || totalAcres === 0) {
+        bar.innerHTML = '';
+        legend.innerHTML = '<div class="empty-state">No crop data</div>';
+        return;
+    }
+
+    // Sort by acres descending
+    const sorted = Object.entries(cropMix).sort((a, b) => b[1] - a[1]);
+
+    bar.innerHTML = sorted.map(([crop, ac]) => {
+        const pct = (ac / totalAcres * 100);
+        const color = CROP_COLORS[crop] || '#94a3b8';
+        return `<div class="crop-mix-segment" style="width:${pct}%;background:${color};" title="${crop}: ${fmt(ac)} ac (${pct.toFixed(1)}%)"></div>`;
+    }).join('');
+
+    legend.innerHTML = sorted.map(([crop, ac]) => {
+        const color = CROP_COLORS[crop] || '#94a3b8';
+        const pct = (ac / totalAcres * 100).toFixed(1);
+        return `<div class="crop-mix-item"><div class="crop-mix-dot" style="background:${color}"></div>${crop} -- ${fmt(ac)} ac (${pct}%)</div>`;
+    }).join('');
+}
+
+function renderCountyBreakdown(counties) {
+    const grid = document.getElementById('countyGrid');
+    if (!counties || Object.keys(counties).length === 0) {
+        grid.innerHTML = '<div class="empty-state">No county data</div>';
+        return;
+    }
+
+    grid.innerHTML = Object.entries(counties)
+        .sort((a, b) => b[1].acres - a[1].acres)
+        .map(([county, info]) => `
+            <div class="county-card">
+                <div class="county-name">${county} County</div>
+                <div class="county-detail">${fmt(info.acres)} acres across ${info.fields} fields</div>
+            </div>
+        `).join('');
+}
+
+// =============================================
+// Fields Tab
+// =============================================
+async function loadFields() {
+    try {
+        const data = await apiCall('/api/landlord/fields');
+        const container = document.getElementById('fieldsContainer');
+
+        if (!data.success || !data.farms || data.farms.length === 0) {
+            container.innerHTML = '<div class="empty-state">No fields assigned. Contact M77 AG at office@m77ag.com.</div>';
+            return;
+        }
+
+        let html = '';
+        for (const farmGroup of data.farms) {
+            html += `
+                <div class="farm-header">
+                    <div class="farm-name">${farmGroup.farm}</div>
+                    <div class="farm-stats">
+                        <span>Total: <strong>${fmt(farmGroup.totalAcres)} ac</strong></span>
+                        <span>Crop: <strong>${fmt(farmGroup.cropAcres)} ac</strong></span>
+                        <span>Fields: <strong>${farmGroup.fields.length}</strong></span>
+                    </div>
+                </div>
+                <div class="field-grid">
+            `;
+
+            for (const f of farmGroup.fields) {
+                html += renderFieldCard(f);
+            }
+            html += '</div>';
+        }
+
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading fields:', error);
+        document.getElementById('fieldsContainer').innerHTML = '<div class="empty-state">Error loading fields</div>';
+    }
+}
+
+function renderFieldCard(f) {
+    const crop = f.crop2026 || '--';
+    const cropClass = cropBadgeClass(crop);
+    const hasCropClass = CROP_COLORS[crop.toUpperCase()] ? cropClass : 'crop-default';
+    const ac = f.acres ? fmt(f.acres) : '--';
+    const leaseType = (f.lease && f.lease.type) || '--';
+    const soilType = (f.soil && typeof f.soil === 'object' && f.soil.type) || '--';
+    const soilClass = (f.soil && typeof f.soil === 'object' && f.soil.class) || '--';
+    const county = f.county || '--';
+    const section = f.section || '--';
+    const twp = f.township || '--';
+    const rng = f.range || '--';
+    const taxPerAcre = (f.taxes && f.taxes.propertyTaxPerAcre) ? fmtDollar(f.taxes.propertyTaxPerAcre) : '--';
+    const totalTax = (f.taxes && f.taxes.propertyTaxPerAcre && f.acres)
+        ? fmtDollar(f.taxes.propertyTaxPerAcre * f.acres) : '--';
+    const mktVal = f.marketValuePerAcre ? fmtDollar(f.marketValuePerAcre) + '/ac' : '--';
+
+    // Cost summary
+    const costPerAcre = f.totalCostPerAcre || 0;
+    const revPerAcre = f.revenuePerAcre || 0;
+    const netPerAcre = f.netPerAcre || 0;
+
+    // Rotation
+    const years = [2025, 2026, 2027, 2028, 2029, 2030];
+    const rotation = years.map(yr => {
+        const c = f['crop' + yr] || '';
+        const shortCrop = c.length > 8 ? c.substring(0, 7) + '.' : c;
+        return { year: yr, crop: shortCrop || '--', isCurrent: yr === 2026 };
+    });
+
+    return `
+        <div class="field-card">
+            <div class="field-card-header">
+                <div>
+                    <span class="field-name">${f.field}</span>
+                    <span class="field-acres" style="margin-left:8px;">${ac} ac</span>
+                </div>
+                <span class="crop-badge ${hasCropClass}">${crop}</span>
+            </div>
+            <div class="field-card-body">
+                <div class="field-info-grid">
+                    <div class="field-info-item">
+                        <div class="field-info-label">County</div>
+                        <div class="field-info-value">${county}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Section / Twp / Rng</div>
+                        <div class="field-info-value">${section} / ${twp} / ${rng}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Soil Type</div>
+                        <div class="field-info-value">${soilType}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Soil Class</div>
+                        <div class="field-info-value">${soilClass}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Lease</div>
+                        <div class="field-info-value" style="text-transform:capitalize;">${leaseType}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Market Value</div>
+                        <div class="field-info-value">${mktVal}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Tax / Acre</div>
+                        <div class="field-info-value">${taxPerAcre}</div>
+                    </div>
+                    <div class="field-info-item">
+                        <div class="field-info-label">Total Tax</div>
+                        <div class="field-info-value">${totalTax}</div>
+                    </div>
+                </div>
+
+                ${costPerAcre > 0 || revPerAcre > 0 ? `
+                <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+                    <div>
+                        <div class="field-info-label">Cost/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:15px;color:#666;margin-top:2px;">${fmtDollar(costPerAcre)}</div>
+                    </div>
+                    <div>
+                        <div class="field-info-label">Rev/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:15px;color:#2d5016;margin-top:2px;">${fmtDollar(revPerAcre)}</div>
+                    </div>
+                    <div>
+                        <div class="field-info-label">Net/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:15px;color:${netPerAcre >= 0 ? '#2d5016' : '#dc2626'};margin-top:2px;">${fmtDollar(netPerAcre)}</div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="rotation-row">
+                    ${rotation.map(r => `
+                        <div class="rotation-year ${r.isCurrent ? 'current' : ''}">
+                            <div class="yr">${r.year}</div>
+                            <div class="crop">${r.crop}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="field-card-footer">
+                Legal: ${f.legal || '--'} | FSA: ${f.fsaFarm || '--'} / ${f.tract || '--'}
+            </div>
+        </div>
+    `;
+}
+
+// =============================================
+// Preferences Tab
+// =============================================
 async function loadPreferences() {
     try {
         const data = await apiCall('/api/landlord/preferences');
+        if (!data.success || !data.preferences) return;
+        const p = data.preferences;
 
-        if (data.success && data.preferences) {
-            const prefs = data.preferences;
-
-            // Grain prices
-            if (prefs.grainSalePrice) {
-                document.getElementById('cornPrice').value = prefs.grainSalePrice.corn || '';
-                document.getElementById('soybeansPrice').value = prefs.grainSalePrice.soybeans || '';
-                document.getElementById('wheatPrice').value = prefs.grainSalePrice.wheat || '';
-                document.getElementById('miloPrice').value = prefs.grainSalePrice.milo || '';
-            }
-
-            // Payment preferences
-            document.getElementById('paymentTiming').value = prefs.paymentTiming || 'after_harvest';
-            document.getElementById('paymentMethod').value = prefs.paymentMethod || 'check';
-            document.getElementById('specialInstructions').value = prefs.specialInstructions || '';
-
-            if (prefs.customPaymentDate) {
-                document.getElementById('customPaymentDate').value = prefs.customPaymentDate.split('T')[0];
-            }
-
-            // Show custom date field if needed
-            if (prefs.paymentTiming === 'custom') {
-                document.getElementById('customDateGroup').style.display = 'block';
-            }
-
-            // Show ACH section if ACH is selected
-            if (prefs.paymentMethod === 'ach') {
-                document.getElementById('achSection').style.display = 'block';
-
-                // Check if ACH is already connected
-                if (prefs.stripeCustomerId && prefs.stripeBankAccountId) {
-                    document.getElementById('achSetupForm').style.display = 'none';
-                    document.getElementById('achConnected').style.display = 'block';
-                    document.getElementById('connectedAccount').textContent = 'Bank account ending in ****';
-                }
-            }
+        if (p.grainSalePrice) {
+            if (p.grainSalePrice.corn) document.getElementById('cornPrice').value = p.grainSalePrice.corn;
+            if (p.grainSalePrice.wheat) document.getElementById('wheatPrice').value = p.grainSalePrice.wheat;
+            if (p.grainSalePrice.milo) document.getElementById('miloPrice').value = p.grainSalePrice.milo;
         }
+        if (p.paymentTiming) document.getElementById('paymentTiming').value = p.paymentTiming;
+        if (p.paymentMethod) document.getElementById('paymentMethod').value = p.paymentMethod;
+        if (p.specialInstructions) document.getElementById('specialInstructions').value = p.specialInstructions;
     } catch (error) {
         console.error('Error loading preferences:', error);
     }
 }
 
-// Load financial summary (running bill)
-async function loadFinancialSummary() {
-    try {
-        const data = await apiCall('/api/landlord/financial-summary');
-
-        if (data.success && data.summary) {
-            const summary = data.summary;
-
-            // Update stats
-            document.getElementById('totalAcres').textContent = formatNumber(summary.totalAcres, 2);
-            document.getElementById('totalFields').textContent = summary.totalFields;
-
-            // Running bill calculation
-            const rentOwed = summary.rentOwed || 0;
-            const expensesOwed = summary.expensesOwed || 0;
-            const incomeOwed = summary.incomeOwed || 0;
-
-            // Net balance: positive = owed to landlord, negative = owed to M77 AG
-            const netBalance = (rentOwed + incomeOwed) - expensesOwed;
-
-            document.getElementById('rentOwed').textContent = formatCurrency(netBalance);
-            document.getElementById('ytdIncome').textContent = formatCurrency(summary.ytdIncome || 0);
-
-            // Change color based on balance
-            const rentOwedEl = document.getElementById('rentOwed');
-            if (netBalance >= 0) {
-                rentOwedEl.style.color = '#2c5f2d'; // Green - money owed to landlord
-            } else {
-                rentOwedEl.style.color = '#d9534f'; // Red - money owed to M77 AG
-            }
-        }
-    } catch (error) {
-        console.error('Error loading financial summary:', error);
-    }
-}
-
-// Load properties and fields with crop data
-async function loadProperties() {
-    try {
-        const data = await apiCall('/api/landlord/properties');
-
-        const container = document.getElementById('propertiesList');
-
-        if (data.success && data.properties && data.properties.length > 0) {
-            let html = '';
-
-            for (const property of data.properties) {
-                html += `
-                    <div style="margin-bottom: 2rem; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem;">
-                        <h3 style="color: #2c5f2d; margin-bottom: 1rem;">${property.name}</h3>
-                        <p style="color: #666; margin-bottom: 1rem;">
-                            Total Acres: ${formatNumber(property.totalAcres, 2)} |
-                            Fields: ${property.fields ? property.fields.length : 0}
-                        </p>
-
-                        ${property.fields && property.fields.length > 0 ? `
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Field</th>
-                                        <th>Acres</th>
-                                        <th>Current Crop</th>
-                                        <th>Projected Yield</th>
-                                        <th>Break-Even</th>
-                                        <th>Profit/Loss per Acre</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${property.fields.map(field => `
-                                        <tr>
-                                            <td><strong>${field.name}</strong></td>
-                                            <td>${formatNumber(field.acres, 2)}</td>
-                                            <td>
-                                                <span class="badge" style="background: ${getCropColor(field.currentCrop?.cropType)}; color: white;">
-                                                    ${field.currentCrop?.cropType || 'No crop'}
-                                                </span>
-                                            </td>
-                                            <td>${field.currentCrop?.estimatedYield ? formatNumber(field.currentCrop.estimatedYield, 2) + ' bu' : 'TBD'}</td>
-                                            <td>${field.financials?.breakEvenPerAcre ? formatCurrency(field.financials.breakEvenPerAcre) : 'TBD'}</td>
-                                            <td style="color: ${(field.financials?.profitPerAcre || 0) >= 0 ? '#2c5f2d' : '#d9534f'}">
-                                                ${field.financials?.profitPerAcre ? formatCurrency(field.financials.profitPerAcre) : 'TBD'}
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        ` : '<p style="color: #666;">No fields assigned yet</p>'}
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
-        } else {
-            container.innerHTML = '<p style="color: #666; text-align: center;">No properties assigned yet. Contact M77 AG for assistance.</p>';
-        }
-    } catch (error) {
-        console.error('Error loading properties:', error);
-        document.getElementById('propertiesList').innerHTML = '<p style="color: #d9534f;">Error loading properties</p>';
-    }
-}
-
-// Load recent transactions
-async function loadTransactions() {
-    try {
-        const data = await apiCall('/api/landlord/transactions');
-
-        const container = document.getElementById('transactionsList');
-
-        if (data.success && data.transactions && data.transactions.length > 0) {
-            let html = `
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Balance Impact</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            for (const txn of data.transactions) {
-                const isIncome = txn.type === 'income' || txn.type === 'rent_payment';
-                const balanceImpact = isIncome ? 'Owed to You' : 'You Owe';
-
-                html += `
-                    <tr>
-                        <td>${new Date(txn.date).toLocaleDateString()}</td>
-                        <td>${txn.description}</td>
-                        <td>
-                            <span class="badge ${isIncome ? 'badge-success' : 'badge-warning'}">
-                                ${txn.type}
-                            </span>
-                        </td>
-                        <td style="color: ${isIncome ? '#2c5f2d' : '#d9534f'}">
-                            ${isIncome ? '+' : '-'}${formatCurrency(Math.abs(txn.amount))}
-                        </td>
-                        <td>${balanceImpact}</td>
-                    </tr>
-                `;
-            }
-
-            html += `
-                    </tbody>
-                </table>
-            `;
-
-            container.innerHTML = html;
-        } else {
-            container.innerHTML = '<p style="color: #666; text-align: center;">No transactions yet</p>';
-        }
-    } catch (error) {
-        console.error('Error loading transactions:', error);
-        document.getElementById('transactionsList').innerHTML = '<p style="color: #d9534f;">Error loading transactions</p>';
-    }
-}
-
-// Load market prices (mock data for now)
-async function loadMarketPrices() {
-    // TODO: Integrate with real market data API
-    document.getElementById('cornMarket').textContent = '$4.25';
-    document.getElementById('soybeansMarket').textContent = '$11.00';
-    document.getElementById('wheatMarket').textContent = '$5.75';
-    document.getElementById('miloMarket').textContent = '$3.85';
-}
-
-// Get crop color
-function getCropColor(crop) {
-    const colors = {
-        'corn': '#f39c12',
-        'soybeans': '#27ae60',
-        'wheat': '#e67e22',
-        'milo': '#d35400',
-        'sunflower': '#f1c40f',
-        'fallow': '#95a5a6'
-    };
-    return colors[crop] || '#7f8c8d';
-}
-
-// Form submissions
+// Save grain prices
 document.getElementById('grainPriceForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-
     try {
-        const grainPrices = {
-            corn: parseFloat(document.getElementById('cornPrice').value) || null,
-            soybeans: parseFloat(document.getElementById('soybeansPrice').value) || null,
-            wheat: parseFloat(document.getElementById('wheatPrice').value) || null,
-            milo: parseFloat(document.getElementById('miloPrice').value) || null
-        };
-
         await apiCall('/api/landlord/preferences', {
             method: 'PUT',
-            body: JSON.stringify({ grainSalePrice: grainPrices })
+            body: JSON.stringify({
+                grainSalePrice: {
+                    corn: parseFloat(document.getElementById('cornPrice').value) || null,
+                    wheat: parseFloat(document.getElementById('wheatPrice').value) || null,
+                    milo: parseFloat(document.getElementById('miloPrice').value) || null
+                }
+            })
         });
-
-        showAlert('Grain price preferences saved successfully!', 'success');
+        showAlert('Grain price targets saved.');
     } catch (error) {
-        console.error('Error saving grain prices:', error);
-        showAlert('Error saving grain prices', 'error');
+        showAlert('Error saving prices.', 'error');
     }
 });
 
+// Save payment prefs
 document.getElementById('paymentPrefForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-
     try {
-        const paymentPrefs = {
-            paymentTiming: document.getElementById('paymentTiming').value,
-            customPaymentDate: document.getElementById('customPaymentDate').value || null,
-            paymentMethod: document.getElementById('paymentMethod').value,
-            specialInstructions: document.getElementById('specialInstructions').value || null
-        };
-
         await apiCall('/api/landlord/preferences', {
             method: 'PUT',
-            body: JSON.stringify(paymentPrefs)
+            body: JSON.stringify({
+                paymentTiming: document.getElementById('paymentTiming').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                specialInstructions: document.getElementById('specialInstructions').value || null
+            })
         });
-
-        showAlert('Payment preferences saved successfully!', 'success');
-
-        // Reload preferences to update UI
-        await loadPreferences();
+        showAlert('Payment preferences saved.');
     } catch (error) {
-        console.error('Error saving payment preferences:', error);
-        showAlert('Error saving payment preferences', 'error');
+        showAlert('Error saving preferences.', 'error');
     }
 });
 
-// Payment timing change handler
-document.getElementById('paymentTiming').addEventListener('change', (e) => {
-    const customDateGroup = document.getElementById('customDateGroup');
-    if (e.target.value === 'custom') {
-        customDateGroup.style.display = 'block';
-    } else {
-        customDateGroup.style.display = 'none';
-    }
-});
-
-// Payment method change handler
-document.getElementById('paymentMethod').addEventListener('change', (e) => {
-    const achSection = document.getElementById('achSection');
-    if (e.target.value === 'ach') {
-        achSection.style.display = 'block';
-    } else {
-        achSection.style.display = 'none';
-    }
-});
-
-// Initialize dashboard
+// =============================================
+// Init
+// =============================================
 window.addEventListener('DOMContentLoaded', loadDashboard);
-
-// Refresh dashboard every 30 seconds
-setInterval(() => {
-    loadFinancialSummary();
-    loadProperties();
-}, 30000);
