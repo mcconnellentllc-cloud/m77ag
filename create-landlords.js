@@ -19,11 +19,11 @@ const landlords = [
     landlordFarms: ['KBFARMS', 'LAFARMS', 'HDFARMS', 'MEFARMS', 'A1FARMS']
   },
   {
-    name: 'Gigi',
+    name: 'Dorothy McConnell',
     email: 'gigi@m77ag.com',
     phone: '970-774-3276',
     password: 'Dorothy',
-    landlordFarms: []
+    landlordFarms: ['HDFARMS']
   }
 ];
 
