@@ -884,4 +884,447 @@ router.delete('/:id/soil-sample/:sampleId', async (req, res) => {
   }
 });
 
+// === AI SOIL RECOMMENDATIONS ===
+// Uses Anthropic Claude API if ANTHROPIC_API_KEY is set, otherwise falls back to rule-based engine
+router.post('/ai-recommendation', async (req, res) => {
+  try {
+    const { prompt, field, latestSample, sampleHistory, concerns } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ success: false, error: 'Prompt is required' });
+    }
+
+    // Build context for the AI or rule engine
+    const s = latestSample || {};
+    const crop = (field && field.crop) || 'Unknown';
+    const fieldName = (field && field.name) || 'Unknown';
+    const soilType = (field && field.soilType) || '';
+    const acres = (field && field.acres) || 0;
+
+    // Try Anthropic API first if available
+    if (process.env.ANTHROPIC_API_KEY) {
+      try {
+        const anthropicResponse = await callAnthropicAPI(prompt, field, latestSample, sampleHistory, concerns);
+        if (anthropicResponse) {
+          return res.json({ success: true, recommendation: anthropicResponse, source: 'claude' });
+        }
+      } catch (apiErr) {
+        console.error('Anthropic API error, falling back to rule engine:', apiErr.message);
+      }
+    }
+
+    // Fall back to comprehensive rule-based recommendation engine
+    const recommendation = generateDetailedRecommendation(prompt, field, s, sampleHistory || [], concerns || []);
+    res.json({ success: true, recommendation, source: 'agronomic-engine' });
+
+  } catch (error) {
+    console.error('Error generating AI recommendation:', error);
+    res.status(500).json({ success: false, error: 'Failed to generate recommendation' });
+  }
+});
+
+// Anthropic API call
+async function callAnthropicAPI(prompt, field, latestSample, sampleHistory, concerns) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return null;
+
+  const s = latestSample || {};
+  const crop = (field && field.crop) || 'Unknown';
+
+  // Build soil data summary
+  const soilParts = [];
+  if (s.ph != null) soilParts.push(`pH: ${s.ph}`);
+  if (s.bufferPH != null) soilParts.push(`Buffer pH: ${s.bufferPH}`);
+  if (s.organicMatter != null) soilParts.push(`Organic Matter: ${s.organicMatter}%`);
+  if (s.NO3ppm != null) soilParts.push(`NO3-N: ${s.NO3ppm} ppm (${s.NO3lbs || '?'} lb/A)`);
+  if (s.olsenP != null) soilParts.push(`Olsen P: ${s.olsenP} ppm`);
+  if (s.brayP2 != null) soilParts.push(`Bray-2 P: ${s.brayP2} ppm`);
+  if (s.potassium != null) soilParts.push(`Potassium: ${s.potassium} ppm`);
+  if (s.sulfur != null) soilParts.push(`Sulfur: ${s.sulfur} ppm`);
+  if (s.calcium != null) soilParts.push(`Calcium: ${s.calcium} ppm`);
+  if (s.magnesium != null) soilParts.push(`Magnesium: ${s.magnesium} ppm`);
+  if (s.zinc != null) soilParts.push(`Zinc: ${s.zinc} ppm`);
+  if (s.iron != null) soilParts.push(`Iron: ${s.iron} ppm`);
+  if (s.boron != null) soilParts.push(`Boron: ${s.boron} ppm`);
+  if (s.copper != null) soilParts.push(`Copper: ${s.copper} ppm`);
+  if (s.manganese != null) soilParts.push(`Manganese: ${s.manganese} ppm`);
+  if (s.cec != null) soilParts.push(`CEC: ${s.cec} me/100g`);
+  if (s.caSat != null) soilParts.push(`Ca Sat: ${s.caSat}%`);
+  if (s.mgSat != null) soilParts.push(`Mg Sat: ${s.mgSat}%`);
+  if (s.kSat != null) soilParts.push(`K Sat: ${s.kSat}%`);
+  if (s.naSat != null) soilParts.push(`Na Sat: ${s.naSat}%`);
+
+  const systemPrompt = `You are an expert agronomist in Northeast Colorado dryland and irrigated farming. You provide specific, actionable recommendations based on soil test data. Keep responses practical and focused on the farmer's question. Use specific product rates and application timing when possible. This is for a commercial farming operation (M77 AG) that primarily grows dryland corn, wheat, sorghum, and triticale. Reference common products available in Northeast Colorado. Do not use emojis. Keep a professional tone.`;
+
+  const userMessage = `Field: ${field.name} (${field.farm})
+Acres: ${field.acres || 'Unknown'}
+Planned Crop: ${crop}
+Soil Type: ${field.soilType || 'Not specified'}
+County: ${field.county || 'Northeast Colorado'}
+
+Latest Soil Test Results:
+${soilParts.join('\n')}
+
+${concerns && concerns.length > 0 ? 'Identified Concerns:\n' + concerns.map(c => `- ${c.area}: ${c.message}`).join('\n') : ''}
+
+${sampleHistory && sampleHistory.length > 1 ? 'Historical samples available for trend analysis (' + sampleHistory.length + ' records).' : ''}
+
+Farmer Question: ${prompt}`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Anthropic API returned ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (data.content && data.content[0] && data.content[0].text) {
+    return data.content[0].text;
+  }
+  return null;
+}
+
+// Comprehensive rule-based recommendation engine
+function generateDetailedRecommendation(prompt, field, s, history, concerns) {
+  const crop = (field && field.crop) || '';
+  const acres = (field && field.acres) || 0;
+  const fieldName = (field && field.name) || '';
+  const promptLower = prompt.toLowerCase();
+
+  let lines = [];
+
+  // Detect what kind of recommendation is being asked for
+  const wantsCornStarter = promptLower.includes('corn starter') || promptLower.includes('starter');
+  const wantsFertProgram = promptLower.includes('fertilizer program') || promptLower.includes('full program') || promptLower.includes('fert program');
+  const wantsConcerns = promptLower.includes('concern') || promptLower.includes('health') || promptLower.includes('problem');
+  const wantsMicro = promptLower.includes('micro') || promptLower.includes('trace');
+  const wantsLime = promptLower.includes('lime') || promptLower.includes('ph');
+  const wantsCompare = promptLower.includes('compare') || promptLower.includes('ideal');
+
+  if (wantsCornStarter) {
+    lines.push('### Corn Starter Fertilizer Recommendation');
+    lines.push(`**Field:** ${fieldName} | **Crop:** ${crop} | **Acres:** ${acres}`);
+    lines.push('');
+
+    if (s.olsenP != null && s.olsenP < 15) {
+      lines.push('**Phosphorus is the priority** - Olsen P at ' + s.olsenP + ' ppm is below the 15 ppm threshold for dryland corn.');
+      lines.push('');
+      lines.push('**Recommended Starter:** 10-34-0 (ammonium polyphosphate) applied in-furrow at planting.');
+      lines.push('- Rate: 5-7 gal/acre in a 2x2 band');
+      lines.push('- This delivers approximately 15-21 lb/A P2O5 and 5-7 lb/A N');
+      lines.push('- The polyphosphate form has better early-season availability in cool soils');
+    } else {
+      lines.push('Olsen P is ' + (s.olsenP || 'not tested') + ' ppm - ' + (s.olsenP >= 15 ? 'adequate' : 'check levels') + '.');
+      lines.push('');
+      lines.push('**Recommended Starter Options:**');
+      lines.push('- **10-34-0** at 3-5 gal/acre in 2x2 band for general starter response');
+      lines.push('- **9-18-9** at 5 gal/acre if K is also needed (K at ' + (s.potassium || '?') + ' ppm)');
+    }
+
+    if (s.zinc != null && s.zinc < 0.8) {
+      lines.push('');
+      lines.push('**Add zinc to starter:** Zn at ' + s.zinc + ' ppm warrants in-furrow zinc.');
+      lines.push('- Add 1 qt/acre zinc sulfate solution (36% Zn) to the starter blend');
+      lines.push('- Or use a complete starter like 6-24-6 with zinc at 5 gal/acre');
+    }
+
+    if (s.sulfur != null && s.sulfur < 8) {
+      lines.push('');
+      lines.push('**Consider adding sulfur:** S at ' + s.sulfur + ' ppm is low.');
+      lines.push('- Add 12-0-0-26S (ATS) at 2-3 gal/acre blended with starter');
+    }
+
+    if (s.ph != null) {
+      lines.push('');
+      if (s.ph < 6.0) {
+        lines.push('**pH Note:** At pH ' + s.ph + ', phosphorus availability is reduced. The starter band helps overcome this by placing P near the seedling root zone.');
+      } else if (s.ph > 7.5) {
+        lines.push('**pH Note:** At pH ' + s.ph + ', consider including a small amount of acidifying product (ATS or UAN) in the starter to improve local P availability.');
+      }
+    }
+
+    lines.push('');
+    lines.push('**Application Timing:** Apply at planting in a 2x2 placement (2 inches to the side, 2 inches below seed). Do not exceed 7 gal/acre total liquid in-furrow on sandy soils to avoid salt injury.');
+
+  } else if (wantsFertProgram) {
+    lines.push('### Full Fertilizer Program for ' + (crop || 'Planned Crop'));
+    lines.push(`**Field:** ${fieldName} | **Acres:** ${acres}`);
+    lines.push('');
+
+    // Nitrogen
+    lines.push('**NITROGEN**');
+    const residualN = s.NO3lbs || 0;
+    if (crop === 'CORN' || crop === 'SORGHUM') {
+      const yieldGoal = s.yieldGoal || 80;
+      const nFactor = crop === 'CORN' ? 1.2 : 1.0;
+      const totalNeed = Math.round(yieldGoal * nFactor);
+      const toApply = Math.max(0, totalNeed - residualN);
+      lines.push(`- Yield goal: ${yieldGoal} bu/A | N requirement: ${totalNeed} lb/A`);
+      lines.push(`- Residual soil N: ${residualN} lb/A`);
+      lines.push(`- **Supplemental N needed: ${toApply} lb/A**`);
+      if (toApply > 0) {
+        lines.push(`- Option 1: UAN 32% at ${Math.round(toApply / 0.32 / 11.06)} gal/A pre-plant or sidedress`);
+        lines.push(`- Option 2: Anhydrous ammonia at ${Math.round(toApply / 0.82)} lb/A pre-plant`);
+        lines.push(`- Split application recommended: 40% pre-plant, 60% sidedress at V6`);
+      }
+    } else if (crop === 'WHEAT' || crop === 'TRITICALE') {
+      const yieldGoal = s.yieldGoal || 40;
+      const totalNeed = Math.round(yieldGoal * 2.0);
+      const toApply = Math.max(0, totalNeed - residualN);
+      lines.push(`- Yield goal: ${yieldGoal} bu/A | N requirement: ${totalNeed} lb/A`);
+      lines.push(`- Residual soil N: ${residualN} lb/A`);
+      lines.push(`- **Supplemental N needed: ${toApply} lb/A**`);
+      if (toApply > 0) {
+        lines.push(`- Apply UAN 32% topdress at greenup: ${Math.round(toApply / 0.32 / 11.06)} gal/A`);
+      }
+    }
+
+    // Phosphorus
+    lines.push('');
+    lines.push('**PHOSPHORUS**');
+    if (s.olsenP != null) {
+      if (s.olsenP < 10) {
+        lines.push(`- Olsen P: ${s.olsenP} ppm - **DEFICIENT**`);
+        lines.push('- Build application: 40-60 lb/A P2O5 broadcast + 15-20 lb/A P2O5 in starter');
+        lines.push('- Product: MAP (11-52-0) at 80-115 lb/A broadcast');
+      } else if (s.olsenP < 15) {
+        lines.push(`- Olsen P: ${s.olsenP} ppm - below optimal`);
+        lines.push('- Maintenance: 25-35 lb/A P2O5 in starter band');
+        lines.push('- Product: 10-34-0 at 5-7 gal/A in 2x2');
+      } else {
+        lines.push(`- Olsen P: ${s.olsenP} ppm - adequate`);
+        lines.push('- Maintenance only: starter band if desired');
+      }
+    } else {
+      lines.push('- Olsen P not tested - recommend soil test before program');
+    }
+
+    // Potassium
+    lines.push('');
+    lines.push('**POTASSIUM**');
+    if (s.potassium != null) {
+      if (s.potassium < 200) {
+        lines.push(`- K: ${s.potassium} ppm - **DEFICIENT**`);
+        lines.push('- Apply 60-80 lb/A K2O broadcast');
+        lines.push('- Product: Potash (0-0-60) at 100-135 lb/A');
+      } else if (s.potassium < 300) {
+        lines.push(`- K: ${s.potassium} ppm - adequate but monitor`);
+      } else {
+        lines.push(`- K: ${s.potassium} ppm - sufficient, no application needed`);
+      }
+    }
+
+    // Sulfur
+    lines.push('');
+    lines.push('**SULFUR**');
+    if (s.sulfur != null) {
+      if (s.sulfur < 5) {
+        lines.push(`- S: ${s.sulfur} ppm - low`);
+        lines.push('- Apply 10-15 lb/A S as ATS (12-0-0-26S) or gypsum');
+      } else {
+        lines.push(`- S: ${s.sulfur} ppm - adequate`);
+      }
+    }
+
+    // Micronutrients
+    lines.push('');
+    lines.push('**MICRONUTRIENTS**');
+    if (s.zinc != null && s.zinc < 0.8 && (crop === 'CORN' || crop === 'SORGHUM')) {
+      lines.push(`- Zinc: ${s.zinc} ppm - add 1-2 lb/A Zn as zinc sulfate`);
+    }
+    if (s.boron != null && s.boron < 0.3) {
+      lines.push(`- Boron: ${s.boron} ppm - apply 0.5 lb/A B as Solubor`);
+    }
+    if (s.manganese != null && s.manganese < 2) {
+      lines.push(`- Manganese: ${s.manganese} ppm - consider foliar Mn at V6`);
+    }
+
+    // Estimated cost
+    lines.push('');
+    lines.push('**ESTIMATED PROGRAM COST**');
+    lines.push('- Consult your local ag retailer for current pricing');
+    lines.push('- Budget $40-80/acre for a complete dryland program in NE Colorado');
+
+  } else if (wantsConcerns) {
+    lines.push('### Soil Health Assessment');
+    lines.push(`**Field:** ${fieldName} | **Crop:** ${crop}`);
+    lines.push('');
+
+    if (concerns.length === 0) {
+      lines.push('No major concerns detected in the most recent soil test. Key metrics are within acceptable ranges.');
+    } else {
+      lines.push(`**${concerns.length} concern${concerns.length > 1 ? 's' : ''} identified:**`);
+      lines.push('');
+      concerns.forEach((c, i) => {
+        lines.push(`**${i + 1}. ${c.area}** (${c.severity})`);
+        lines.push(`- ${c.message}`);
+
+        // Add specific remediation advice for each concern
+        if (c.area === 'pH' && c.severity === 'critical') {
+          lines.push('- **Action:** Apply ag lime at 2-3 tons/acre. Use dolomitic lime if Mg is also low. Best applied in fall for spring planting.');
+        } else if (c.area === 'pH') {
+          lines.push('- **Action:** Monitor and plan lime application before next acid-sensitive crop. Target pH 6.5.');
+        } else if (c.area === 'Organic Matter') {
+          lines.push('- **Action:** Incorporate crop residue, consider cover crops where moisture allows, minimize tillage.');
+        } else if (c.area === 'Nitrogen') {
+          lines.push('- **Action:** Plan supplemental N application. Split applications improve efficiency.');
+        } else if (c.area === 'Phosphorus') {
+          lines.push('- **Action:** Broadcast MAP or DAP in fall, plus in-furrow starter at planting.');
+        } else if (c.area === 'Potassium') {
+          lines.push('- **Action:** Broadcast potash (0-0-60). K is relatively immobile - fall application works well.');
+        }
+        lines.push('');
+      });
+    }
+
+    // Trend analysis
+    if (history.length >= 2) {
+      lines.push('### Trend Analysis');
+      const sorted = [...history].sort((a, b) => (a.year || 0) - (b.year || 0));
+      const oldest = sorted[0], newest = sorted[sorted.length - 1];
+      if (oldest.ph != null && newest.ph != null) {
+        const phChange = newest.ph - oldest.ph;
+        lines.push(`- pH trend: ${oldest.ph} -> ${newest.ph} (${phChange > 0 ? '+' : ''}${phChange.toFixed(1)} over ${sorted.length} samples)`);
+      }
+      if (oldest.organicMatter != null && newest.organicMatter != null) {
+        lines.push(`- O.M. trend: ${oldest.organicMatter}% -> ${newest.organicMatter}%`);
+      }
+    }
+
+  } else if (wantsMicro) {
+    lines.push('### Micronutrient Assessment');
+    lines.push(`**Field:** ${fieldName} | **Crop:** ${crop}`);
+    lines.push('');
+
+    const micros = [
+      { key: 'zinc', name: 'Zinc', unit: 'ppm', critical: 0.5, adequate: 1.0, cropNote: 'Critical for corn - affects pollination and kernel set.' },
+      { key: 'iron', name: 'Iron', unit: 'ppm', critical: 2, adequate: 4, cropNote: 'Deficiency rare in NE Colorado unless pH > 7.8.' },
+      { key: 'boron', name: 'Boron', unit: 'ppm', critical: 0.2, adequate: 0.5, cropNote: 'Important for cell wall formation. Low levels common on sandy soils.' },
+      { key: 'manganese', name: 'Manganese', unit: 'ppm', critical: 1, adequate: 2, cropNote: 'Availability drops on high pH and high OM soils.' },
+      { key: 'copper', name: 'Copper', unit: 'ppm', critical: 0.2, adequate: 0.5, cropNote: 'Deficiency uncommon. Excess can be toxic.' }
+    ];
+
+    micros.forEach(m => {
+      const val = s[m.key];
+      if (val != null) {
+        const status = val < m.critical ? 'DEFICIENT' : val < m.adequate ? 'Low' : 'Adequate';
+        lines.push(`**${m.name}:** ${val} ${m.unit} - ${status}`);
+        lines.push(`- ${m.cropNote}`);
+        if (val < m.adequate) {
+          lines.push(`- Consider supplemental application.`);
+        }
+        lines.push('');
+      } else {
+        lines.push(`**${m.name}:** Not tested`);
+        lines.push('');
+      }
+    });
+
+  } else if (wantsLime) {
+    lines.push('### Lime Recommendation');
+    lines.push(`**Field:** ${fieldName} | **pH:** ${s.ph || 'Not tested'} | **Buffer pH:** ${s.bufferPH || 'Not tested'}`);
+    lines.push('');
+
+    if (s.ph == null) {
+      lines.push('pH has not been tested for this field. A soil test is needed before making lime recommendations.');
+    } else if (s.ph >= 6.5) {
+      lines.push(`pH at ${s.ph} is within the acceptable range for most crops. No lime application needed.`);
+    } else {
+      const targetPH = 6.5;
+      lines.push(`Current pH: ${s.ph} | Target pH: ${targetPH}`);
+      lines.push('');
+      if (s.bufferPH != null) {
+        // Use buffer pH to estimate lime rate
+        const limeRate = Math.max(0, (targetPH - s.bufferPH) * 3.3);
+        lines.push(`Based on buffer pH of ${s.bufferPH}:`);
+        lines.push(`- **Estimated lime rate: ${limeRate.toFixed(1)} tons/acre** of ENM 60 ag lime`);
+        lines.push('- Adjust rate based on lime quality (ENM rating)');
+      } else {
+        lines.push('Buffer pH not available - estimated lime rate:');
+        if (s.ph < 5.5) lines.push('- **2.5-3.5 tons/acre** ag lime');
+        else if (s.ph < 6.0) lines.push('- **1.5-2.5 tons/acre** ag lime');
+        else lines.push('- **1.0-1.5 tons/acre** ag lime');
+      }
+
+      lines.push('');
+      if (s.magnesium != null && s.mgSat != null && s.mgSat < 12) {
+        lines.push('**Lime Type:** Use dolomitic lime - Mg saturation at ' + s.mgSat + '% is below the 12% ideal.');
+      } else {
+        lines.push('**Lime Type:** Calcitic (hi-cal) lime is appropriate. Mg levels are adequate.');
+      }
+      lines.push('');
+      lines.push('**Application:** Fall application preferred. Incorporate if possible. Allow 6-12 months for full reaction. Re-test pH after 12 months.');
+    }
+
+  } else if (wantsCompare) {
+    lines.push('### Comparison to Ideal Levels for ' + (crop || 'General Cropping'));
+    lines.push(`**Field:** ${fieldName}`);
+    lines.push('');
+
+    const checks = [
+      { key: 'ph', name: 'pH', low: 6.0, high: 7.5 },
+      { key: 'organicMatter', name: 'Organic Matter', low: 1.5, high: 3.0, unit: '%' },
+      { key: 'NO3lbs', name: 'Nitrate-N', low: 15, high: 50, unit: 'lb/A' },
+      { key: 'olsenP', name: 'Olsen P', low: 15, high: 30, unit: 'ppm' },
+      { key: 'potassium', name: 'Potassium', low: 250, high: 600, unit: 'ppm' },
+      { key: 'sulfur', name: 'Sulfur', low: 5, high: 20, unit: 'ppm' },
+      { key: 'zinc', name: 'Zinc', low: 0.5, high: 2.0, unit: 'ppm' },
+      { key: 'calcium', name: 'Calcium', low: 1000, high: 2500, unit: 'ppm' },
+      { key: 'cec', name: 'CEC', low: 10, high: 25, unit: 'me/100g' }
+    ];
+
+    checks.forEach(c => {
+      const val = s[c.key];
+      if (val != null) {
+        let status, note;
+        if (val < c.low) { status = 'BELOW IDEAL'; note = 'Needs attention'; }
+        else if (val > c.high) { status = 'ABOVE IDEAL'; note = 'Monitor'; }
+        else { status = 'IN RANGE'; note = 'Good'; }
+        lines.push(`- **${c.name}:** ${val}${c.unit || ''} | Ideal: ${c.low}-${c.high}${c.unit || ''} | **${status}** (${note})`);
+      }
+    });
+
+  } else {
+    // General recommendation based on soil data
+    lines.push('### Soil Analysis Summary');
+    lines.push(`**Field:** ${fieldName} | **Crop:** ${crop} | **Acres:** ${acres}`);
+    lines.push('');
+
+    if (!s || Object.keys(s).length === 0) {
+      lines.push('No soil test data available for this field. Submit a soil sample to get specific recommendations.');
+    } else {
+      // Give overview
+      lines.push('**Key Metrics:**');
+      if (s.ph != null) lines.push(`- pH: ${s.ph} (${s.ph < 6.0 ? 'Acidic - may need lime' : s.ph > 7.5 ? 'Alkaline' : 'Good range'})`);
+      if (s.organicMatter != null) lines.push(`- O.M.: ${s.organicMatter}% (${s.organicMatter < 1.5 ? 'Low' : 'Adequate'})`);
+      if (s.NO3lbs != null) lines.push(`- Residual N: ${s.NO3lbs} lb/A (${s.NO3lbs < 15 ? 'Supplemental N needed' : 'Good base'})`);
+      if (s.olsenP != null) lines.push(`- Phosphorus: ${s.olsenP} ppm (${s.olsenP < 15 ? 'Low - apply P' : 'Adequate'})`);
+      if (s.potassium != null) lines.push(`- Potassium: ${s.potassium} ppm (${s.potassium < 250 ? 'Below optimal' : 'Adequate'})`);
+
+      lines.push('');
+      lines.push('**For more specific advice, try asking:**');
+      lines.push('- "What corn starter fertilizer do you recommend?"');
+      lines.push('- "What is the full fertilizer program for this field?"');
+      lines.push('- "What are the biggest soil health concerns?"');
+      lines.push('- "What micronutrient applications should I consider?"');
+      lines.push('- "What lime recommendation would you give?"');
+    }
+  }
+
+  return lines.join('\n');
+}
+
 module.exports = router;

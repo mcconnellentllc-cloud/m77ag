@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Analysis | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+
+        /* Header */
+        .admin-header { background: #1a1a1a; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 22px; color: #d4af37; text-decoration: none; }
+        .admin-nav { display: flex; gap: 25px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+
+        /* Layout */
+        .page-layout { display: flex; height: calc(100vh - 52px); }
+
+        /* Sidebar */
+        .sidebar { width: 320px; background: white; border-right: 1px solid #e8e8e8; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 18px 20px; border-bottom: 1px solid #eee; }
+        .sidebar-title { font-family: 'Oswald', sans-serif; font-size: 20px; color: #1a1a1a; margin-bottom: 12px; }
+        .sidebar-search { width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+        .sidebar-search:focus { outline: none; border-color: #2d5016; }
+
+        .sidebar-filters { padding: 12px 20px; border-bottom: 1px solid #eee; display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-chip { padding: 5px 12px; font-size: 11px; font-weight: 600; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .filter-chip:hover { border-color: #2d5016; color: #2d5016; }
+        .filter-chip.active { background: #2d5016; color: white; border-color: #2d5016; }
+
+        .sidebar-sort { padding: 10px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; }
+        .sidebar-sort label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; white-space: nowrap; }
+        .sidebar-sort select { flex: 1; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; cursor: pointer; }
+
+        .field-list { flex: 1; overflow-y: auto; }
+        .field-item { padding: 14px 20px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.2s; }
+        .field-item:hover { background: #f9f8f6; }
+        .field-item.active { background: rgba(45,80,22,0.06); border-left: 3px solid #2d5016; }
+        .field-item-top { display: flex; justify-content: space-between; align-items: center; }
+        .field-item-name { font-weight: 600; font-size: 14px; }
+        .field-item-acres { font-family: 'Oswald', sans-serif; font-size: 14px; color: #2d5016; }
+        .field-item-meta { display: flex; gap: 8px; margin-top: 4px; align-items: center; }
+        .field-item-farm { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .field-item-crop { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 1px 8px; border-radius: 10px; }
+        .field-item-crop.CORN { background: rgba(244,160,32,0.15); color: #b87800; }
+        .field-item-crop.WHEAT { background: rgba(212,165,74,0.15); color: #8a6d2e; }
+        .field-item-crop.SORGHUM { background: rgba(139,69,19,0.15); color: #8B4513; }
+        .field-item-crop.FALLOW { background: rgba(160,160,160,0.15); color: #666; }
+        .field-item-crop.PASTURE { background: rgba(74,124,35,0.15); color: #3d6520; }
+        .field-item-crop.TRITICALE { background: rgba(107,142,35,0.15); color: #556b1a; }
+        .field-item-indicators { display: flex; gap: 6px; margin-top: 6px; }
+        .field-indicator { width: 8px; height: 8px; border-radius: 50%; }
+        .field-indicator.good { background: #27ae60; }
+        .field-indicator.warn { background: #e67e22; }
+        .field-indicator.bad { background: #c0392b; }
+        .field-indicator.na { background: #ddd; }
+        .field-item-samples { font-size: 10px; color: #aaa; margin-left: auto; }
+
+        .sidebar-stats { padding: 14px 20px; background: #fafaf8; border-top: 1px solid #eee; }
+        .sidebar-stats-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+        .sidebar-stats-row .label { color: #888; }
+        .sidebar-stats-row .value { font-weight: 600; color: #2d5016; }
+
+        /* Main Content */
+        .main-content { flex: 1; overflow-y: auto; padding: 30px; }
+
+        /* Empty state */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #999; }
+        .empty-state-title { font-family: 'Oswald', sans-serif; font-size: 24px; color: #ccc; margin-bottom: 8px; }
+        .empty-state-text { font-size: 14px; }
+
+        /* Field header */
+        .field-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 15px; }
+        .field-header-left h1 { font-family: 'Oswald', sans-serif; font-size: 28px; color: #1a1a1a; }
+        .field-header-left .sub { font-size: 13px; color: #888; margin-top: 2px; }
+        .field-header-right { display: flex; gap: 10px; align-items: center; }
+        .header-stat { text-align: center; padding: 8px 16px; background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .header-stat .hv { font-family: 'Oswald', sans-serif; font-size: 18px; color: #2d5016; }
+        .header-stat .hl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #999; }
+
+        /* Section cards */
+        .section-card { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
+        .section-header { padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        .section-title { font-family: 'Oswald', sans-serif; font-size: 16px; color: #1a1a1a; }
+        .section-badge { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: rgba(45,80,22,0.1); color: #2d5016; }
+        .section-body { padding: 20px 22px; }
+        .section-body.collapsed { display: none; }
+
+        /* Alerts */
+        .alert-list { display: flex; flex-direction: column; gap: 8px; }
+        .soil-alert { padding: 10px 14px; border-radius: 6px; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; }
+        .soil-alert .alert-icon { flex-shrink: 0; font-weight: 700; width: 20px; text-align: center; font-size: 14px; }
+        .soil-alert.alert-critical { background: rgba(192,57,43,0.08); color: #922b21; border-left: 3px solid #c0392b; }
+        .soil-alert.alert-warning { background: rgba(230,126,34,0.08); color: #935116; border-left: 3px solid #e67e22; }
+        .soil-alert.alert-info { background: rgba(41,128,185,0.08); color: #1a5276; border-left: 3px solid #2980b9; }
+        .soil-alert.alert-agronomist { background: rgba(45,80,22,0.08); color: #2d5016; border-left: 3px solid #2d5016; }
+
+        /* Nutrient bars */
+        .nutrient-bars { display: flex; flex-direction: column; gap: 6px; }
+        .nutrient-bar { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+        .nb-label { font-size: 11px; color: #888; text-transform: uppercase; min-width: 80px; font-weight: 500; }
+        .nb-track { flex: 1; height: 8px; background: #f0f0f0; border-radius: 4px; position: relative; overflow: hidden; }
+        .nb-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .nb-fill.critical { background: #c0392b; }
+        .nb-fill.low { background: #e67e22; }
+        .nb-fill.ideal { background: #27ae60; }
+        .nb-fill.high { background: #2980b9; }
+        .nb-value { font-family: 'Oswald', sans-serif; font-size: 13px; min-width: 70px; text-align: right; }
+        .nb-value.critical { color: #c0392b; }
+        .nb-value.low { color: #e67e22; }
+        .nb-value.ideal { color: #27ae60; }
+        .nb-value.high { color: #2980b9; }
+
+        /* Ideal range marker */
+        .nb-ideal-range { position: absolute; top: -2px; bottom: -2px; border-left: 2px dashed rgba(0,0,0,0.15); border-right: 2px dashed rgba(0,0,0,0.15); background: rgba(39,174,96,0.08); z-index: 1; }
+
+        /* Base saturation bar */
+        .base-sat-container { margin: 12px 0; }
+        .base-sat-bar { display: flex; height: 20px; border-radius: 5px; overflow: hidden; }
+        .base-sat-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; }
+        .base-sat-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+        .base-sat-legend span { font-size: 11px; color: #666; display: flex; align-items: center; gap: 5px; }
+        .base-sat-legend .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* Sample history table */
+        .sample-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .sample-table th { text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; background: #fafafa; border-bottom: 2px solid #eee; cursor: pointer; user-select: none; transition: color 0.2s; }
+        .sample-table th:hover { color: #2d5016; }
+        .sample-table th.sorted { color: #2d5016; font-weight: 700; }
+        .sample-table th .sort-arrow { margin-left: 4px; font-size: 8px; }
+        .sample-table td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; }
+        .sample-table tr:hover { background: #fafaf8; }
+        .sample-table .status-critical { color: #c0392b; font-weight: 600; }
+        .sample-table .status-low { color: #e67e22; font-weight: 600; }
+        .sample-table .status-ideal { color: #27ae60; }
+        .sample-table .status-high { color: #2980b9; font-weight: 600; }
+
+        /* Recommendations section */
+        .rec-list { display: flex; flex-direction: column; gap: 8px; }
+        .rec-item { font-size: 13px; color: #444; padding: 8px 0 8px 18px; position: relative; border-bottom: 1px solid #f5f5f5; }
+        .rec-item:last-child { border-bottom: none; }
+        .rec-item::before { content: ''; position: absolute; left: 0; top: 14px; width: 8px; height: 8px; background: #d4a54a; border-radius: 50%; }
+
+        /* AI Recommendations Panel */
+        .ai-panel { background: #faf8f5; border: 1px solid #e8e4de; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .ai-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .ai-panel-title { font-family: 'Oswald', sans-serif; font-size: 18px; color: #1a1a1a; }
+        .ai-panel-subtitle { font-size: 12px; color: #888; margin-top: 2px; }
+
+        .ai-prompt-area { display: flex; gap: 10px; margin-bottom: 16px; }
+        .ai-prompt-input { flex: 1; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; transition: border-color 0.3s; resize: none; }
+        .ai-prompt-input:focus { outline: none; border-color: #2d5016; }
+        .ai-prompt-input::placeholder { color: #bbb; }
+
+        .ai-send-btn { padding: 12px 24px; background: #2d5016; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.3s; white-space: nowrap; }
+        .ai-send-btn:hover { background: #3d6b1f; }
+        .ai-send-btn:disabled { background: #999; cursor: not-allowed; }
+
+        .ai-quick-prompts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .ai-quick-btn { padding: 6px 14px; border: 1px solid #ddd; border-radius: 20px; background: white; font-size: 12px; cursor: pointer; transition: all 0.2s; color: #555; }
+        .ai-quick-btn:hover { border-color: #2d5016; color: #2d5016; background: rgba(45,80,22,0.04); }
+
+        .ai-response { background: white; border-radius: 8px; padding: 18px; border: 1px solid #e8e8e8; font-size: 13px; line-height: 1.7; color: #333; white-space: pre-wrap; min-height: 60px; }
+        .ai-response.loading { color: #999; font-style: italic; }
+        .ai-response h4 { font-family: 'Oswald', sans-serif; font-size: 14px; color: #2d5016; margin: 12px 0 6px; }
+        .ai-response h4:first-child { margin-top: 0; }
+        .ai-response ul { margin: 4px 0 8px 20px; }
+        .ai-response li { margin-bottom: 4px; }
+
+        /* Comparison table */
+        .compare-table { width: 100%; border-collapse: collapse; font-size: 12px; overflow-x: auto; display: block; }
+        .compare-table th { padding: 10px 14px; background: #fafafa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; border-bottom: 2px solid #eee; text-align: left; white-space: nowrap; position: sticky; top: 0; cursor: pointer; }
+        .compare-table th:hover { color: #2d5016; }
+        .compare-table td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+        .compare-table tr:hover td { background: #fafaf8; }
+        .compare-table tr.highlight td { background: rgba(45,80,22,0.04); }
+
+        /* Tabs for main content */
+        .content-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid #e8e8e8; }
+        .content-tab { padding: 12px 24px; font-size: 13px; font-weight: 600; color: #999; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .content-tab:hover { color: #555; }
+        .content-tab.active { color: #2d5016; border-bottom-color: #2d5016; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .page-layout { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; max-height: 40vh; }
+            .main-content { padding: 20px; }
+        }
+        @media (max-width: 768px) {
+            .field-header { flex-direction: column; }
+            .field-header-right { flex-wrap: wrap; }
+            .ai-prompt-area { flex-direction: column; }
+            .admin-nav { gap: 12px; }
+            .sidebar { max-height: 35vh; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/field-manager">Field Manager</a>
+            <a href="/admin/soil-samples" class="active">Soil Analysis</a>
+            <a href="/admin/farm-projections">Projections</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <div class="page-layout">
+        <!-- Sidebar: Field Browser -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Soil Analysis</div>
+                <input type="text" class="sidebar-search" id="fieldSearch" placeholder="Search fields...">
+            </div>
+            <div class="sidebar-filters" id="farmFilters"></div>
+            <div class="sidebar-sort">
+                <label>Sort by</label>
+                <select id="sortSelect">
+                    <option value="name">Field Name</option>
+                    <option value="farm">Farm</option>
+                    <option value="crop">Crop</option>
+                    <option value="acres">Acres</option>
+                    <option value="ph">pH (low first)</option>
+                    <option value="om">Organic Matter</option>
+                    <option value="nitrogen">Nitrogen</option>
+                    <option value="phosphorus">Phosphorus</option>
+                    <option value="potassium">Potassium</option>
+                    <option value="concerns">Most Concerns</option>
+                    <option value="samples">Sample Count</option>
+                </select>
+            </div>
+            <div class="field-list" id="fieldList"></div>
+            <div class="sidebar-stats" id="sidebarStats"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-title">Soil Analysis Center</div>
+                <div class="empty-state-text">Select a field from the sidebar to view soil data, or use the All Fields comparison tab.</div>
+            </div>
+            <div id="fieldDetail" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API = window.location.origin;
+        let allFields = [];
+        let activeFarm = 'ALL';
+        let activeFieldId = null;
+        let activeView = 'analysis'; // analysis, compare, ai
+        let compareSortKey = 'field';
+        let compareSortDir = 'asc';
+
+        // === SOIL THRESHOLDS ===
+        const SOIL_THRESHOLDS = {
+            ph:        { low: 5.5, ideal: [6.0, 7.5], high: 8.3, unit: '', label: 'pH' },
+            organicMatter: { low: 1.0, ideal: [1.5, 3.0], unit: '%', label: 'Organic Matter' },
+            NO3lbs:    { low: 10, ideal: [15, 50], unit: 'lb/A', label: 'NO3-N (lb/A)' },
+            olsenP:    { low: 10, ideal: [15, 30], unit: 'ppm', label: 'Olsen P' },
+            brayP2:    { low: 80, ideal: [100, 200], unit: 'ppm', label: 'Bray-2 P' },
+            sulfur:    { low: 5, ideal: [5, 20], unit: 'ppm', label: 'Sulfur' },
+            potassium: { low: 200, ideal: [250, 600], unit: 'ppm', label: 'Potassium' },
+            calcium:   { low: 800, ideal: [1000, 2500], unit: 'ppm', label: 'Calcium' },
+            magnesium: { low: 50, ideal: [50, 300], unit: 'ppm', label: 'Magnesium' },
+            zinc:      { low: 0.5, ideal: [0.5, 2.0], unit: 'ppm', label: 'Zinc' },
+            iron:      { low: 2, ideal: [4, 50], unit: 'ppm', label: 'Iron' },
+            boron:     { low: 0.2, ideal: [0.2, 1.0], unit: 'ppm', label: 'Boron' },
+            copper:    { low: 0.2, ideal: [0.2, 2.0], unit: 'ppm', label: 'Copper' },
+            manganese: { low: 1, ideal: [1, 10], unit: 'ppm', label: 'Manganese' },
+            cec:       { low: 8, ideal: [10, 25], unit: 'me/100g', label: 'CEC' },
+            caSat:     { low: 60, ideal: [65, 75], high: 80, unit: '%', label: 'Ca Sat' },
+            mgSat:     { low: 10, ideal: [12, 18], high: 20, unit: '%', label: 'Mg Sat' },
+            kSat:      { low: 3, ideal: [4, 8], high: 10, unit: '%', label: 'K Sat' }
+        };
+
+        function getSoilStatus(key, value) {
+            if (value == null) return 'na';
+            const t = SOIL_THRESHOLDS[key];
+            if (!t) return '';
+            if (value < (t.low || -Infinity)) return t.low && value < t.low * 0.7 ? 'critical' : 'low';
+            if (t.high && value > t.high) return 'high';
+            if (value >= t.ideal[0] && value <= t.ideal[1]) return 'ideal';
+            if (value < t.ideal[0]) return 'low';
+            return 'high';
+        }
+
+        function getLatestSample(f) {
+            const samples = (f.soil && f.soil.samples) || [];
+            if (samples.length === 0) return null;
+            return [...samples].sort((a, b) => (b.year || 0) - (a.year || 0))[0];
+        }
+
+        function getSampleCount(f) {
+            return (f.soil && f.soil.samples) ? f.soil.samples.length : 0;
+        }
+
+        function identifyConcerns(s, samples) {
+            const concerns = [];
+            if (!s) return concerns;
+            if (s.ph != null && s.ph < 5.5) concerns.push({ severity: 'critical', area: 'pH', message: 'pH is ' + s.ph + ' - critically acidic. Lime application recommended.' });
+            else if (s.ph != null && s.ph < 6.0) concerns.push({ severity: 'warning', area: 'pH', message: 'pH is ' + s.ph + ' - moderately acidic. Monitor and consider liming.' });
+            if (samples && samples.length >= 2) {
+                const phVals = samples.filter(x => x.ph).sort((a,b) => (a.year||0)-(b.year||0));
+                if (phVals.length >= 2) {
+                    const first = phVals[0].ph, last = phVals[phVals.length-1].ph;
+                    if (last < first - 0.5) concerns.push({ severity: 'warning', area: 'pH Trend', message: 'pH declining from ' + first + ' to ' + last + '.' });
+                }
+            }
+            if (s.organicMatter != null && s.organicMatter < 1.0) concerns.push({ severity: 'critical', area: 'Organic Matter', message: 'OM at ' + s.organicMatter + '% - very low.' });
+            else if (s.organicMatter != null && s.organicMatter < 1.5) concerns.push({ severity: 'warning', area: 'Organic Matter', message: 'OM at ' + s.organicMatter + '% - below optimal.' });
+            if (s.NO3lbs != null && s.NO3lbs < 10) concerns.push({ severity: 'warning', area: 'Nitrogen', message: 'Low residual N (' + s.NO3lbs + ' lb/A). Supplemental N likely needed.' });
+            if (s.olsenP != null && s.olsenP < 10) concerns.push({ severity: 'critical', area: 'Phosphorus', message: 'Olsen P at ' + s.olsenP + ' ppm - deficient.' });
+            else if (s.olsenP != null && s.olsenP < 15) concerns.push({ severity: 'warning', area: 'Phosphorus', message: 'Olsen P at ' + s.olsenP + ' ppm - below optimal.' });
+            if (s.potassium != null && s.potassium < 200) concerns.push({ severity: 'critical', area: 'Potassium', message: 'K at ' + s.potassium + ' ppm - deficient.' });
+            if (s.caSat != null && s.caSat < 50) concerns.push({ severity: 'warning', area: 'Ca Saturation', message: 'Ca saturation at ' + s.caSat + '% - below ideal 65-75%.' });
+            if (s.boron != null && s.boron < 0.2) concerns.push({ severity: 'warning', area: 'Boron', message: 'Boron at ' + s.boron + ' ppm - low.' });
+            if (s.cec != null && s.cec < 8) concerns.push({ severity: 'info', area: 'CEC', message: 'CEC at ' + s.cec + ' - low exchange capacity.' });
+            const salts = s.solubleSalts || s.salts;
+            if (salts != null && salts > 1.5) concerns.push({ severity: 'critical', area: 'Salts', message: 'Soluble salts at ' + salts + ' mmhos/cm - above threshold.' });
+            return concerns;
+        }
+
+        function generateRecommendations(s, crop) {
+            const recs = [];
+            if (!s) return recs;
+            if (s.ph != null && s.ph < 5.5) recs.push('Apply ag lime at 2-3 tons/acre to raise pH from ' + s.ph + ' to 6.5+.');
+            else if (s.ph != null && s.ph < 6.0 && crop === 'CORN') recs.push('Consider lime application to improve pH from ' + s.ph + ' for corn.');
+            if (s.NO3lbs != null && s.NO3lbs < 15 && (crop === 'CORN' || crop === 'SORGHUM')) {
+                const goal = 80, factor = crop === 'CORN' ? 1.2 : 1.0;
+                const deficit = (goal * factor) - s.NO3lbs;
+                if (deficit > 0) recs.push('Supplement with ' + Math.round(deficit) + ' lb/A nitrogen for ' + goal + ' bu/A ' + crop.toLowerCase() + ' goal.');
+            }
+            if (s.olsenP != null && s.olsenP < 12) recs.push('Apply 30-40 lb/A P2O5 to build Olsen P from ' + s.olsenP + ' ppm.');
+            if (s.potassium != null && s.potassium < 200) recs.push('Apply potash - K at ' + s.potassium + ' ppm is deficient.');
+            if (s.sulfur != null && s.sulfur < 5 && (crop === 'CORN' || crop === 'WHEAT')) recs.push('Consider sulfur application - currently ' + s.sulfur + ' ppm.');
+            if (s.zinc != null && s.zinc < 0.5 && crop === 'CORN') recs.push('Zinc at ' + s.zinc + ' ppm - consider zinc sulfate for corn.');
+            if (recs.length === 0) recs.push('Soil levels adequate for planned crop. Continue monitoring.');
+            return recs;
+        }
+
+        function getCropClass(crop) {
+            if (!crop) return '';
+            if (crop.includes('SORGHUM') && crop.includes('SUDAN')) return 'SORGHUM-SUDAN';
+            if (crop.includes('PEARL')) return 'PEARL';
+            return crop;
+        }
+
+        // === DATA LOADING ===
+        async function loadFields() {
+            try {
+                const res = await fetch(`${API}/api/cropping-fields`);
+                const data = await res.json();
+                if (data.success) {
+                    allFields = data.fields;
+                    renderFarmFilters();
+                    renderFieldList();
+                    renderSidebarStats();
+                }
+            } catch (e) {
+                console.error('Error loading fields:', e);
+            }
+        }
+
+        function renderFarmFilters() {
+            const farms = new Set();
+            allFields.forEach(f => farms.add(f.farm));
+            const container = document.getElementById('farmFilters');
+            let html = `<div class="filter-chip ${activeFarm === 'ALL' ? 'active' : ''}" onclick="setFarm('ALL')">All</div>`;
+            [...farms].sort().forEach(farm => {
+                html += `<div class="filter-chip ${activeFarm === farm ? 'active' : ''}" onclick="setFarm('${farm}')">${farm}</div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function setFarm(farm) {
+            activeFarm = farm;
+            renderFarmFilters();
+            renderFieldList();
+            renderSidebarStats();
+        }
+
+        function getFilteredFields() {
+            let fields = allFields;
+            if (activeFarm !== 'ALL') fields = fields.filter(f => f.farm === activeFarm);
+            const search = document.getElementById('fieldSearch').value.toLowerCase().trim();
+            if (search) {
+                fields = fields.filter(f =>
+                    f.field.toLowerCase().includes(search) ||
+                    f.farm.toLowerCase().includes(search) ||
+                    (f.crop2026 || '').toLowerCase().includes(search)
+                );
+            }
+            return sortFields(fields);
+        }
+
+        function sortFields(fields) {
+            const sortBy = document.getElementById('sortSelect').value;
+            return [...fields].sort((a, b) => {
+                const sA = getLatestSample(a), sB = getLatestSample(b);
+                switch (sortBy) {
+                    case 'name': return a.field.localeCompare(b.field);
+                    case 'farm': return a.farm.localeCompare(b.farm) || a.field.localeCompare(b.field);
+                    case 'crop': return (a.crop2026 || '').localeCompare(b.crop2026 || '');
+                    case 'acres': return (b.acres || 0) - (a.acres || 0);
+                    case 'ph': return (sA && sA.ph || 99) - (sB && sB.ph || 99);
+                    case 'om': return (sA && sA.organicMatter || 0) - (sB && sB.organicMatter || 0);
+                    case 'nitrogen': return (sA && sA.NO3lbs || 0) - (sB && sB.NO3lbs || 0);
+                    case 'phosphorus': return (sA && sA.olsenP || 0) - (sB && sB.olsenP || 0);
+                    case 'potassium': return (sA && sA.potassium || 0) - (sB && sB.potassium || 0);
+                    case 'concerns': return identifyConcerns(sB, (b.soil && b.soil.samples) || []).length - identifyConcerns(sA, (a.soil && a.soil.samples) || []).length;
+                    case 'samples': return getSampleCount(b) - getSampleCount(a);
+                    default: return 0;
+                }
+            });
+        }
+
+        function renderFieldList() {
+            const fields = getFilteredFields();
+            const container = document.getElementById('fieldList');
+
+            if (fields.length === 0) {
+                container.innerHTML = '<div style="padding:30px;text-align:center;color:#bbb;font-size:13px;">No fields match filters.</div>';
+                return;
+            }
+
+            container.innerHTML = fields.map(f => {
+                const s = getLatestSample(f);
+                const samples = (f.soil && f.soil.samples) || [];
+                const concerns = identifyConcerns(s, samples);
+                const sCount = samples.length;
+
+                // Quick indicators: pH, N, P, K
+                const indicators = ['ph', 'NO3lbs', 'olsenP', 'potassium'].map(key => {
+                    if (!s || s[key] == null) return '<div class="field-indicator na" title="No data"></div>';
+                    const st = getSoilStatus(key, s[key]);
+                    const cls = st === 'critical' ? 'bad' : st === 'low' ? 'warn' : st === 'ideal' ? 'good' : st === 'high' ? 'good' : 'na';
+                    return `<div class="field-indicator ${cls}" title="${SOIL_THRESHOLDS[key].label}: ${s[key]}"></div>`;
+                }).join('');
+
+                return `<div class="field-item ${activeFieldId === f._id ? 'active' : ''}" onclick="selectField('${f._id}')">
+                    <div class="field-item-top">
+                        <span class="field-item-name">${f.field}</span>
+                        <span class="field-item-acres">${f.acres ? f.acres.toFixed(1) : '--'} ac</span>
+                    </div>
+                    <div class="field-item-meta">
+                        <span class="field-item-farm">${f.farm}</span>
+                        <span class="field-item-crop ${getCropClass(f.crop2026 || '')}">${f.crop2026 || '--'}</span>
+                    </div>
+                    <div class="field-item-indicators">
+                        ${indicators}
+                        ${concerns.length > 0 ? '<span style="font-size:10px;color:#c0392b;margin-left:4px;font-weight:600;">' + concerns.length + ' concern' + (concerns.length > 1 ? 's' : '') + '</span>' : ''}
+                        <span class="field-item-samples">${sCount} sample${sCount !== 1 ? 's' : ''}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderSidebarStats() {
+            const fields = getFilteredFields();
+            let withSamples = 0, totalSamples = 0, totalConcerns = 0;
+            fields.forEach(f => {
+                const samples = (f.soil && f.soil.samples) || [];
+                if (samples.length > 0) withSamples++;
+                totalSamples += samples.length;
+                totalConcerns += identifyConcerns(getLatestSample(f), samples).length;
+            });
+            document.getElementById('sidebarStats').innerHTML = `
+                <div class="sidebar-stats-row"><span class="label">Fields Shown</span><span class="value">${fields.length}</span></div>
+                <div class="sidebar-stats-row"><span class="label">With Soil Data</span><span class="value">${withSamples} / ${fields.length}</span></div>
+                <div class="sidebar-stats-row"><span class="label">Total Samples</span><span class="value">${totalSamples}</span></div>
+                <div class="sidebar-stats-row"><span class="label">Active Concerns</span><span class="value" style="color:${totalConcerns > 0 ? '#c0392b' : '#2d5016'}">${totalConcerns}</span></div>
+            `;
+        }
+
+        // === FIELD DETAIL VIEW ===
+        function selectField(fieldId) {
+            activeFieldId = fieldId;
+            renderFieldList();
+            renderFieldDetail();
+        }
+
+        function renderFieldDetail() {
+            const f = allFields.find(x => x._id === activeFieldId);
+            if (!f) return;
+
+            document.getElementById('emptyState').style.display = 'none';
+            const container = document.getElementById('fieldDetail');
+            container.style.display = 'block';
+
+            const samples = (f.soil && f.soil.samples) || [];
+            const sorted = [...samples].sort((a, b) => (b.year || 0) - (a.year || 0));
+            const latest = sorted[0] || null;
+            const crop = f.crop2026 || '';
+            const concerns = identifyConcerns(latest, samples);
+            const recs = generateRecommendations(latest, crop);
+            const agAlerts = (latest && latest.agronomistAlerts) || [];
+
+            let html = '';
+
+            // Header
+            html += `<div class="field-header">
+                <div class="field-header-left">
+                    <h1>${f.field}</h1>
+                    <div class="sub">${f.farm} | ${f.crop2026 || 'No crop'} | ${f.acres ? f.acres.toFixed(1) : '--'} acres${f.legal ? ' | ' + f.legal : ''}</div>
+                </div>
+                <div class="field-header-right">
+                    <div class="header-stat"><div class="hv">${samples.length}</div><div class="hl">Samples</div></div>
+                    <div class="header-stat"><div class="hv" style="color:${concerns.length > 0 ? '#c0392b' : '#27ae60'}">${concerns.length}</div><div class="hl">Concerns</div></div>
+                    ${latest && latest.ph != null ? '<div class="header-stat"><div class="hv">' + latest.ph + '</div><div class="hl">pH</div></div>' : ''}
+                    ${latest && latest.organicMatter != null ? '<div class="header-stat"><div class="hv">' + latest.organicMatter + '%</div><div class="hl">O.M.</div></div>' : ''}
+                </div>
+            </div>`;
+
+            // Content tabs
+            html += `<div class="content-tabs">
+                <div class="content-tab ${activeView === 'analysis' ? 'active' : ''}" onclick="switchView('analysis')">Soil Analysis</div>
+                <div class="content-tab ${activeView === 'compare' ? 'active' : ''}" onclick="switchView('compare')">All Fields Comparison</div>
+                <div class="content-tab ${activeView === 'ai' ? 'active' : ''}" onclick="switchView('ai')">AI Recommendations</div>
+            </div>`;
+
+            // === ANALYSIS TAB ===
+            html += `<div class="tab-content ${activeView === 'analysis' ? 'active' : ''}" id="tabAnalysis">`;
+
+            if (!latest) {
+                html += '<div style="text-align:center;padding:40px;color:#bbb;">No soil samples for this field.</div>';
+            } else {
+                // Agronomist alerts
+                if (agAlerts.length > 0) {
+                    html += '<div class="section-card"><div class="section-header"><div class="section-title">Agronomist Notes</div><div class="section-badge">' + agAlerts.length + '</div></div><div class="section-body"><div class="alert-list">';
+                    agAlerts.forEach(a => {
+                        html += '<div class="soil-alert alert-agronomist"><span class="alert-icon">!</span><div><strong>' + (a.type || 'Note') + ':</strong> ' + a.message + '</div></div>';
+                    });
+                    html += '</div></div></div>';
+                }
+
+                // Concerns
+                if (concerns.length > 0) {
+                    html += '<div class="section-card"><div class="section-header"><div class="section-title">Detected Concerns</div><div class="section-badge" style="background:rgba(192,57,43,0.1);color:#c0392b;">' + concerns.length + '</div></div><div class="section-body"><div class="alert-list">';
+                    concerns.forEach(c => {
+                        const icon = c.severity === 'critical' ? '!!' : c.severity === 'warning' ? '!' : 'i';
+                        html += '<div class="soil-alert alert-' + c.severity + '"><span class="alert-icon">' + icon + '</span><div><strong>' + c.area + ':</strong> ' + c.message + '</div></div>';
+                    });
+                    html += '</div></div></div>';
+                }
+
+                // Recommendations
+                if (recs.length > 0 && !(recs.length === 1 && recs[0].includes('adequate'))) {
+                    html += '<div class="section-card"><div class="section-header"><div class="section-title">2026 Recommendations</div></div><div class="section-body"><div class="rec-list">';
+                    recs.forEach(r => { html += '<div class="rec-item">' + r + '</div>'; });
+                    html += '</div></div></div>';
+                }
+
+                // Nutrient Status
+                html += '<div class="section-card"><div class="section-header" onclick="toggleSection(this)"><div class="section-title">Nutrient Status</div><div class="section-badge">' + (latest.year || 'Latest') + ' Sample</div></div><div class="section-body"><div class="nutrient-bars">';
+                const nutrients = ['ph', 'organicMatter', 'NO3lbs', 'olsenP', 'brayP2', 'potassium', 'sulfur', 'calcium', 'magnesium', 'zinc', 'iron', 'boron', 'copper', 'manganese', 'cec'];
+                nutrients.forEach(key => {
+                    const val = latest[key];
+                    if (val == null) return;
+                    const t = SOIL_THRESHOLDS[key];
+                    if (!t) return;
+                    const status = getSoilStatus(key, val);
+                    const maxRef = t.ideal[1] * 1.5;
+                    const pct = Math.min(100, Math.max(3, (val / maxRef) * 100));
+                    const idealL = Math.max(0, (t.ideal[0] / maxRef) * 100);
+                    const idealR = Math.min(100, (t.ideal[1] / maxRef) * 100);
+                    html += `<div class="nutrient-bar">
+                        <span class="nb-label">${t.label}</span>
+                        <div class="nb-track">
+                            <div class="nb-ideal-range" style="left:${idealL}%;width:${idealR - idealL}%"></div>
+                            <div class="nb-fill ${status}" style="width:${pct}%"></div>
+                        </div>
+                        <span class="nb-value ${status}">${val}${t.unit ? ' ' + t.unit : ''}</span>
+                    </div>`;
+                });
+                html += '</div></div></div>';
+
+                // Base Saturation
+                if (latest.caSat) {
+                    const ca = latest.caSat || 0, mg = latest.mgSat || 0, k = latest.kSat || 0, na = latest.naSat || 0, h = latest.hSat || 0;
+                    html += '<div class="section-card"><div class="section-header" onclick="toggleSection(this)"><div class="section-title">Base Saturation</div></div><div class="section-body"><div class="base-sat-container">';
+                    html += '<div class="base-sat-bar">';
+                    if (ca > 0) html += '<div class="base-sat-seg" style="width:' + ca + '%;background:#3498db;">' + (ca > 8 ? ca + '%' : '') + '</div>';
+                    if (mg > 0) html += '<div class="base-sat-seg" style="width:' + mg + '%;background:#27ae60;">' + (mg > 5 ? mg + '%' : '') + '</div>';
+                    if (k > 0) html += '<div class="base-sat-seg" style="width:' + k + '%;background:#e67e22;">' + (k > 5 ? k + '%' : '') + '</div>';
+                    if (na > 0) html += '<div class="base-sat-seg" style="width:' + na + '%;background:#95a5a6;"></div>';
+                    if (h > 0) html += '<div class="base-sat-seg" style="width:' + h + '%;background:#ecf0f1;color:#999;">' + (h > 8 ? h + '%' : '') + '</div>';
+                    html += '</div>';
+                    html += '<div class="base-sat-legend">';
+                    html += '<span><span class="dot" style="background:#3498db;"></span>Ca ' + ca + '%</span>';
+                    html += '<span><span class="dot" style="background:#27ae60;"></span>Mg ' + mg + '%</span>';
+                    html += '<span><span class="dot" style="background:#e67e22;"></span>K ' + k + '%</span>';
+                    if (na > 0) html += '<span><span class="dot" style="background:#95a5a6;"></span>Na ' + na + '%</span>';
+                    html += '<span><span class="dot" style="background:#ecf0f1;border:1px solid #ddd;"></span>H ' + h + '%</span>';
+                    html += '</div></div></div></div>';
+                }
+
+                // Sample History
+                html += '<div class="section-card"><div class="section-header" onclick="toggleSection(this)"><div class="section-title">Sample History</div><div class="section-badge">' + sorted.length + ' records</div></div><div class="section-body">';
+                if (sorted.length > 0) {
+                    html += '<div style="overflow-x:auto;"><table class="sample-table"><thead><tr>';
+                    html += '<th>Date</th><th>Crop</th><th>Depth</th><th>pH</th><th>O.M.%</th><th>NO3 lb/A</th><th>Olsen P</th><th>K</th><th>S</th><th>Ca</th><th>Mg</th><th>Zn</th><th>B</th><th>CEC</th>';
+                    html += '</tr></thead><tbody>';
+                    sorted.forEach(s => {
+                        const dateStr = s.date ? new Date(s.date).toLocaleDateString() : (s.year ? s.year : '--');
+                        const td = (key, val) => {
+                            if (val == null) return '<td style="color:#ddd;">--</td>';
+                            const st = getSoilStatus(key, val);
+                            return '<td class="status-' + st + '">' + val + '</td>';
+                        };
+                        html += '<tr>';
+                        html += '<td><strong>' + dateStr + '</strong></td>';
+                        html += '<td>' + (s.crop || '--') + '</td>';
+                        html += '<td>' + (s.depth || '--') + '</td>';
+                        html += td('ph', s.ph);
+                        html += td('organicMatter', s.organicMatter);
+                        html += td('NO3lbs', s.NO3lbs);
+                        html += td('olsenP', s.olsenP);
+                        html += td('potassium', s.potassium);
+                        html += td('sulfur', s.sulfur);
+                        html += td('calcium', s.calcium);
+                        html += td('magnesium', s.magnesium);
+                        html += td('zinc', s.zinc);
+                        html += td('boron', s.boron);
+                        html += td('cec', s.cec);
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table></div>';
+                }
+                html += '</div></div>';
+            }
+            html += '</div>'; // end analysis tab
+
+            // === COMPARISON TAB ===
+            html += `<div class="tab-content ${activeView === 'compare' ? 'active' : ''}" id="tabCompare">${renderComparisonTable()}</div>`;
+
+            // === AI RECOMMENDATIONS TAB ===
+            html += `<div class="tab-content ${activeView === 'ai' ? 'active' : ''}" id="tabAI">${renderAIPanel(f, latest, crop)}</div>`;
+
+            container.innerHTML = html;
+        }
+
+        function switchView(view) {
+            activeView = view;
+            renderFieldDetail();
+        }
+
+        function toggleSection(headerEl) {
+            const body = headerEl.nextElementSibling;
+            body.classList.toggle('collapsed');
+        }
+
+        // === COMPARISON TABLE ===
+        function renderComparisonTable() {
+            const fields = getFilteredFields().filter(f => getSampleCount(f) > 0);
+            if (fields.length === 0) return '<div style="text-align:center;padding:40px;color:#bbb;">No fields with soil data in current filter.</div>';
+
+            let rows = fields.map(f => {
+                const s = getLatestSample(f);
+                const concerns = identifyConcerns(s, (f.soil && f.soil.samples) || []);
+                return { f, s, concerns: concerns.length };
+            });
+
+            // Sort comparison table
+            rows.sort((a, b) => {
+                let va, vb;
+                const dir = compareSortDir === 'asc' ? 1 : -1;
+                switch (compareSortKey) {
+                    case 'field': va = a.f.field; vb = b.f.field; return va.localeCompare(vb) * dir;
+                    case 'farm': va = a.f.farm; vb = b.f.farm; return va.localeCompare(vb) * dir;
+                    case 'crop': va = a.f.crop2026 || ''; vb = b.f.crop2026 || ''; return va.localeCompare(vb) * dir;
+                    case 'acres': return ((a.f.acres || 0) - (b.f.acres || 0)) * dir;
+                    case 'concerns': return (a.concerns - b.concerns) * dir;
+                    default:
+                        va = a.s ? (a.s[compareSortKey] || 0) : 0;
+                        vb = b.s ? (b.s[compareSortKey] || 0) : 0;
+                        return (va - vb) * dir;
+                }
+            });
+
+            const cols = [
+                { key: 'field', label: 'Field' },
+                { key: 'farm', label: 'Farm' },
+                { key: 'crop', label: 'Crop' },
+                { key: 'acres', label: 'Acres' },
+                { key: 'ph', label: 'pH' },
+                { key: 'organicMatter', label: 'O.M.%' },
+                { key: 'NO3lbs', label: 'NO3 lb/A' },
+                { key: 'olsenP', label: 'Olsen P' },
+                { key: 'potassium', label: 'K ppm' },
+                { key: 'sulfur', label: 'S ppm' },
+                { key: 'calcium', label: 'Ca' },
+                { key: 'zinc', label: 'Zn' },
+                { key: 'cec', label: 'CEC' },
+                { key: 'concerns', label: 'Concerns' }
+            ];
+
+            let html = '<div style="overflow-x:auto;"><table class="compare-table"><thead><tr>';
+            cols.forEach(col => {
+                const isSorted = compareSortKey === col.key;
+                const arrow = isSorted ? (compareSortDir === 'asc' ? ' ^' : ' v') : '';
+                html += `<th class="${isSorted ? 'sorted' : ''}" onclick="sortCompare('${col.key}')">${col.label}<span class="sort-arrow">${arrow}</span></th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            rows.forEach(({ f, s, concerns }) => {
+                const isActive = f._id === activeFieldId;
+                const td = (key) => {
+                    if (!s || s[key] == null) return '<td style="color:#ddd;">--</td>';
+                    const st = getSoilStatus(key, s[key]);
+                    return '<td class="status-' + st + '">' + s[key] + '</td>';
+                };
+                html += `<tr class="${isActive ? 'highlight' : ''}" onclick="selectField('${f._id}')" style="cursor:pointer;">`;
+                html += `<td><strong>${f.field}</strong></td>`;
+                html += `<td>${f.farm}</td>`;
+                html += `<td>${f.crop2026 || '--'}</td>`;
+                html += `<td>${f.acres ? f.acres.toFixed(1) : '--'}</td>`;
+                html += td('ph');
+                html += td('organicMatter');
+                html += td('NO3lbs');
+                html += td('olsenP');
+                html += td('potassium');
+                html += td('sulfur');
+                html += td('calcium');
+                html += td('zinc');
+                html += td('cec');
+                html += `<td style="color:${concerns > 0 ? '#c0392b' : '#27ae60'};font-weight:600;">${concerns}</td>`;
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+            return html;
+        }
+
+        function sortCompare(key) {
+            if (compareSortKey === key) {
+                compareSortDir = compareSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                compareSortKey = key;
+                compareSortDir = key === 'field' || key === 'farm' || key === 'crop' ? 'asc' : 'desc';
+            }
+            renderFieldDetail();
+        }
+
+        // === AI RECOMMENDATIONS PANEL ===
+        function renderAIPanel(f, latest, crop) {
+            const fieldName = f ? f.field : '';
+            const farmName = f ? f.farm : '';
+
+            let soilSummary = 'No soil data available.';
+            if (latest) {
+                const parts = [];
+                if (latest.ph != null) parts.push('pH: ' + latest.ph);
+                if (latest.organicMatter != null) parts.push('O.M.: ' + latest.organicMatter + '%');
+                if (latest.NO3lbs != null) parts.push('NO3-N: ' + latest.NO3lbs + ' lb/A');
+                if (latest.olsenP != null) parts.push('Olsen P: ' + latest.olsenP + ' ppm');
+                if (latest.potassium != null) parts.push('K: ' + latest.potassium + ' ppm');
+                if (latest.sulfur != null) parts.push('S: ' + latest.sulfur + ' ppm');
+                if (latest.zinc != null) parts.push('Zn: ' + latest.zinc + ' ppm');
+                if (latest.calcium != null) parts.push('Ca: ' + latest.calcium + ' ppm');
+                if (latest.magnesium != null) parts.push('Mg: ' + latest.magnesium + ' ppm');
+                if (latest.boron != null) parts.push('B: ' + latest.boron + ' ppm');
+                if (latest.cec != null) parts.push('CEC: ' + latest.cec);
+                if (latest.caSat != null) parts.push('Ca Sat: ' + latest.caSat + '%');
+                if (latest.mgSat != null) parts.push('Mg Sat: ' + latest.mgSat + '%');
+                if (latest.kSat != null) parts.push('K Sat: ' + latest.kSat + '%');
+                soilSummary = parts.join(' | ');
+            }
+
+            return `
+                <div class="ai-panel">
+                    <div class="ai-panel-header">
+                        <div>
+                            <div class="ai-panel-title">Ask for Recommendations</div>
+                            <div class="ai-panel-subtitle">Powered by agronomic analysis for ${fieldName} (${crop || 'Unknown crop'}) | ${farmName}</div>
+                        </div>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-bottom:12px;padding:10px;background:#f5f3f0;border-radius:6px;">
+                        <strong>Current Soil Data:</strong> ${soilSummary}
+                    </div>
+                    <div class="ai-quick-prompts">
+                        <div class="ai-quick-btn" onclick="askAI('What corn starter fertilizer do you recommend for this field based on the soil test?')">Corn starter recommendation</div>
+                        <div class="ai-quick-btn" onclick="askAI('What is the full fertilizer program you recommend for ${crop || 'corn'} on this field?')">Full fertilizer program</div>
+                        <div class="ai-quick-btn" onclick="askAI('What are the biggest soil health concerns for this field and how should I address them?')">Soil health concerns</div>
+                        <div class="ai-quick-btn" onclick="askAI('Based on these soil levels, what micronutrient applications should I consider?')">Micronutrient needs</div>
+                        <div class="ai-quick-btn" onclick="askAI('What lime application rate would you recommend and what type?')">Lime recommendation</div>
+                        <div class="ai-quick-btn" onclick="askAI('Compare this field to ideal levels for ${crop || 'corn'} and tell me what needs work.')">Compare to ideal</div>
+                    </div>
+                    <div class="ai-prompt-area">
+                        <textarea class="ai-prompt-input" id="aiPromptInput" rows="2" placeholder="Ask about fertilizer programs, soil amendments, crop-specific needs..."></textarea>
+                        <button class="ai-send-btn" id="aiSendBtn" onclick="sendAIPrompt()">Get Recommendation</button>
+                    </div>
+                    <div class="ai-response" id="aiResponse">Select a quick prompt above or type your own question about this field's soil data.</div>
+                </div>
+            `;
+        }
+
+        function askAI(prompt) {
+            document.getElementById('aiPromptInput').value = prompt;
+            sendAIPrompt();
+        }
+
+        async function sendAIPrompt() {
+            const prompt = document.getElementById('aiPromptInput').value.trim();
+            if (!prompt) return;
+
+            const btn = document.getElementById('aiSendBtn');
+            const responseEl = document.getElementById('aiResponse');
+            btn.disabled = true;
+            btn.textContent = 'Thinking...';
+            responseEl.className = 'ai-response loading';
+            responseEl.textContent = 'Analyzing soil data and generating recommendations...';
+
+            const f = allFields.find(x => x._id === activeFieldId);
+            if (!f) { responseEl.textContent = 'Please select a field first.'; btn.disabled = false; btn.textContent = 'Get Recommendation'; return; }
+
+            const samples = (f.soil && f.soil.samples) || [];
+            const latest = getLatestSample(f);
+
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/ai-recommendation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt,
+                        field: {
+                            name: f.field,
+                            farm: f.farm,
+                            acres: f.acres,
+                            crop: f.crop2026,
+                            soilType: f.soil && f.soil.type,
+                            soilClass: f.soil && f.soil.class,
+                            county: f.county
+                        },
+                        latestSample: latest,
+                        sampleHistory: samples.slice(0, 5),
+                        concerns: identifyConcerns(latest, samples)
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    responseEl.className = 'ai-response';
+                    responseEl.innerHTML = formatAIResponse(data.recommendation);
+                } else {
+                    responseEl.className = 'ai-response';
+                    responseEl.textContent = 'Error: ' + (data.error || 'Failed to get recommendation.');
+                }
+            } catch (e) {
+                responseEl.className = 'ai-response';
+                responseEl.textContent = 'Error connecting to server. Please try again.';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Get Recommendation';
+        }
+
+        function formatAIResponse(text) {
+            // Convert markdown-style formatting to HTML
+            let html = text
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+                .replace(/^## (.+)$/gm, '<h4>$1</h4>')
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+            // Wrap consecutive <li> items in <ul>
+            html = html.replace(/(<li>[\s\S]*?<\/li>)(?![\s\S]*?<\/ul>)/g, '<ul>$1</ul>');
+            return html;
+        }
+
+        // === EVENT LISTENERS ===
+        document.getElementById('fieldSearch').addEventListener('input', () => {
+            renderFieldList();
+            renderSidebarStats();
+        });
+        document.getElementById('sortSelect').addEventListener('change', () => {
+            renderFieldList();
+        });
+
+        // Init
+        loadFields();
+    </script>
+</body>
+</html>

@@ -260,6 +260,11 @@ app.get('/admin/field-manager', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
 });
 
+// Soil analysis
+app.get('/admin/soil-samples', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/soil-samples.html'));
+});
+
 // Public page routes
 app.get('/hunting', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/hunting.html'));
