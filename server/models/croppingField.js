@@ -42,7 +42,12 @@ const cropHistorySchema = new mongoose.Schema({
 // === Soil Sample Entry ===
 const soilSampleSchema = new mongoose.Schema({
   date: Date,
+  year: Number,
   depth: String,
+  crop: String,
+  yieldGoal: Number,
+
+  // Basic fields (legacy compatibility)
   nitrogen: Number,
   phosphorus: Number,
   potassium: Number,
@@ -53,6 +58,38 @@ const soilSampleSchema = new mongoose.Schema({
   organicMatter: Number,
   cec: Number,
   salts: Number,
+
+  // Extended soil test panel
+  bufferPH: Number,
+  excessLime: String,        // N, L, M, H
+  solubleSalts: Number,      // mmhos/cm
+  NO3ppm: Number,            // Nitrate-N ppm
+  NO3lbs: Number,            // Nitrate-N lb/A
+  NO3Total: Number,          // Total available N lb/A
+  olsenP: Number,            // Olsen Phosphorus ppm
+  bray1P: Number,            // Bray-1 P ppm
+  brayP2: Number,            // Bray-2 P ppm
+  calcium: Number,           // ppm
+  magnesium: Number,         // ppm
+  sodium: Number,            // ppm
+  manganese: Number,         // ppm
+  copper: Number,            // ppm
+  boron: Number,             // ppm
+
+  // Base saturation percentages
+  baseSat: Number,
+  hSat: Number,
+  caSat: Number,
+  mgSat: Number,
+  kSat: Number,
+  naSat: Number,
+
+  // Agronomist notes/alerts
+  agronomistAlerts: [{
+    type: String,
+    message: String
+  }],
+
   notes: String
 }, { _id: true });
 

@@ -129,6 +129,50 @@
         .soil-val .sv-num { font-family: 'Oswald', sans-serif; font-size: 15px; color: #2d5016; }
         .soil-val .sv-lbl { font-size: 9px; color: #999; text-transform: uppercase; }
 
+        /* Soil status indicators */
+        .soil-val .sv-num.status-low { color: #e67e22; }
+        .soil-val .sv-num.status-critical { color: #c0392b; }
+        .soil-val .sv-num.status-high { color: #2980b9; }
+        .soil-val .sv-num.status-ideal { color: #27ae60; }
+
+        /* Soil alerts */
+        .soil-alerts { margin-bottom: 10px; }
+        .soil-alert { padding: 8px 12px; border-radius: 5px; font-size: 12px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; }
+        .soil-alert .alert-icon { flex-shrink: 0; font-weight: 700; width: 18px; text-align: center; }
+        .soil-alert.alert-critical { background: rgba(192,57,43,0.08); color: #922b21; border-left: 3px solid #c0392b; }
+        .soil-alert.alert-warning { background: rgba(230,126,34,0.08); color: #935116; border-left: 3px solid #e67e22; }
+        .soil-alert.alert-info { background: rgba(41,128,185,0.08); color: #1a5276; border-left: 3px solid #2980b9; }
+        .soil-alert.alert-agronomist { background: rgba(45,80,22,0.08); color: #2d5016; border-left: 3px solid #2d5016; }
+
+        /* Soil recommendations */
+        .soil-recs { background: #f8f6f2; border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+        .soil-recs-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #2d5016; margin-bottom: 6px; }
+        .soil-rec-item { font-size: 12px; color: #444; padding: 3px 0; padding-left: 14px; position: relative; }
+        .soil-rec-item::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; background: #d4a54a; border-radius: 50%; }
+
+        /* Nutrient status bar */
+        .nutrient-bar { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+        .nutrient-bar-label { font-size: 10px; color: #888; text-transform: uppercase; min-width: 60px; }
+        .nutrient-bar-track { flex: 1; height: 6px; background: #eee; border-radius: 3px; position: relative; overflow: hidden; }
+        .nutrient-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+        .nutrient-bar-fill.low { background: #e67e22; }
+        .nutrient-bar-fill.ideal { background: #27ae60; }
+        .nutrient-bar-fill.high { background: #2980b9; }
+        .nutrient-bar-fill.critical { background: #c0392b; }
+        .nutrient-bar-value { font-family: 'Oswald', sans-serif; font-size: 12px; min-width: 50px; text-align: right; }
+
+        /* Soil section toggle */
+        .soil-section { margin-bottom: 10px; }
+        .soil-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #999; padding: 6px 0; border-bottom: 1px solid #eee; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .soil-section-title .toggle { font-size: 10px; color: #bbb; }
+
+        /* Base saturation mini chart */
+        .base-sat-bar { display: flex; height: 14px; border-radius: 3px; overflow: hidden; margin: 6px 0; }
+        .base-sat-seg { display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white; }
+        .base-sat-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+        .base-sat-legend span { font-size: 10px; color: #666; display: flex; align-items: center; gap: 4px; }
+        .base-sat-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+
         /* === MODALS === */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
         .modal-overlay.active { display: flex; }
@@ -277,34 +321,88 @@
 
     <!-- Add Soil Sample Modal -->
     <div class="modal-overlay" id="soilModal">
-        <div class="modal">
+        <div class="modal" style="max-width:720px;">
             <div class="modal-header">
                 <h2>Add Soil Sample</h2>
                 <p id="soilModalSub"></p>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="soilFieldId">
+
+                <div class="form-section">Sample Info</div>
                 <div class="form-row three">
                     <div class="form-group"><label>Sample Date</label><input type="date" id="soilDate"></div>
-                    <div class="form-group"><label>Depth</label><input type="text" id="soilDepth" placeholder="0-6 in"></div>
+                    <div class="form-group"><label>Year</label><input type="number" id="soilYear" min="2018" max="2030" placeholder="2026"></div>
+                    <div class="form-group"><label>Depth</label><input type="text" id="soilDepth" placeholder="0-8 in"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Crop</label><input type="text" id="soilCrop" placeholder="Corn, Wheat, etc."></div>
+                    <div class="form-group"><label>Yield Goal (bu/ac)</label><input type="number" id="soilYieldGoal" step="1" placeholder="80"></div>
+                    <div class="form-group"></div>
+                </div>
+
+                <div class="form-section">Core Soil Chemistry</div>
+                <div class="form-row three">
                     <div class="form-group"><label>pH</label><input type="number" id="soilPh" step="0.1" placeholder="7.0"></div>
+                    <div class="form-group"><label>Buffer pH</label><input type="number" id="soilBufferPH" step="0.1" placeholder="6.8"></div>
+                    <div class="form-group"><label>Excess Lime</label><select id="soilExcessLime"><option value="">--</option><option value="N">N</option><option value="L">L</option><option value="M">M</option><option value="H">H</option></select></div>
                 </div>
                 <div class="form-row three">
-                    <div class="form-group"><label>Nitrogen (ppm)</label><input type="number" id="soilN" step="0.1" placeholder="0"></div>
-                    <div class="form-group"><label>Phosphorus (ppm)</label><input type="number" id="soilP" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>O.M. %</label><input type="number" id="soilOM" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>CEC (me/100g)</label><input type="number" id="soilCEC" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Soluble Salts (mmhos)</label><input type="number" id="soilSolubleSalts" step="0.01" placeholder="0"></div>
+                </div>
+
+                <div class="form-section">Nitrogen</div>
+                <div class="form-row three">
+                    <div class="form-group"><label>NO3-N (ppm)</label><input type="number" id="soilNO3ppm" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>NO3-N (lb/A)</label><input type="number" id="soilNO3lbs" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Total N (lb/A)</label><input type="number" id="soilNO3Total" step="0.1" placeholder="0"></div>
+                </div>
+
+                <div class="form-section">Phosphorus &amp; Potassium</div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Olsen P (ppm)</label><input type="number" id="soilOlsenP" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Bray-1 P (ppm)</label><input type="number" id="soilBray1P" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Bray-2 P (ppm)</label><input type="number" id="soilBrayP2" step="0.1" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
                     <div class="form-group"><label>Potassium (ppm)</label><input type="number" id="soilK" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Sulfur (ppm)</label><input type="number" id="soilS" step="0.1" placeholder="0"></div>
+                    <div class="form-group"></div>
+                </div>
+
+                <div class="form-section">Secondary &amp; Micro Nutrients</div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Calcium (ppm)</label><input type="number" id="soilCalcium" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Magnesium (ppm)</label><input type="number" id="soilMagnesium" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Sodium (ppm)</label><input type="number" id="soilSodium" step="0.1" placeholder="0"></div>
                 </div>
                 <div class="form-row three">
-                    <div class="form-group"><label>Sulfur (ppm)</label><input type="number" id="soilS" step="0.1" placeholder="0"></div>
                     <div class="form-group"><label>Zinc (ppm)</label><input type="number" id="soilZn" step="0.1" placeholder="0"></div>
                     <div class="form-group"><label>Iron (ppm)</label><input type="number" id="soilFe" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Manganese (ppm)</label><input type="number" id="soilManganese" step="0.1" placeholder="0"></div>
                 </div>
                 <div class="form-row three">
-                    <div class="form-group"><label>Organic Matter %</label><input type="number" id="soilOM" step="0.1" placeholder="0"></div>
-                    <div class="form-group"><label>CEC</label><input type="number" id="soilCEC" step="0.1" placeholder="0"></div>
-                    <div class="form-group"><label>Salts (mmhos)</label><input type="number" id="soilSalts" step="0.01" placeholder="0"></div>
+                    <div class="form-group"><label>Copper (ppm)</label><input type="number" id="soilCopper" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Boron (ppm)</label><input type="number" id="soilBoron" step="0.1" placeholder="0"></div>
+                    <div class="form-group"></div>
                 </div>
-                <div class="form-group"><label>Notes</label><textarea id="soilNotes" rows="2" placeholder="Optional notes"></textarea></div>
+
+                <div class="form-section">Base Saturation %</div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Base Sat %</label><input type="number" id="soilBaseSat" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>H Sat %</label><input type="number" id="soilHSat" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Ca Sat %</label><input type="number" id="soilCaSat" step="0.1" placeholder="0"></div>
+                </div>
+                <div class="form-row three">
+                    <div class="form-group"><label>Mg Sat %</label><input type="number" id="soilMgSat" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>K Sat %</label><input type="number" id="soilKSat" step="0.1" placeholder="0"></div>
+                    <div class="form-group"><label>Na Sat %</label><input type="number" id="soilNaSat" step="0.1" placeholder="0"></div>
+                </div>
+
+                <div class="form-section">Notes</div>
+                <div class="form-group"><textarea id="soilNotes" rows="2" placeholder="Optional notes"></textarea></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('soilModal')">Cancel</button>
@@ -604,38 +702,268 @@
             `;
         }
 
+        // === SOIL THRESHOLDS (agronomic ideal ranges) ===
+        const SOIL_THRESHOLDS = {
+            ph:        { low: 5.5, ideal: [6.0, 7.5], high: 8.3, unit: '', label: 'pH' },
+            organicMatter: { low: 1.0, ideal: [1.5, 3.0], unit: '%', label: 'O.M.' },
+            NO3lbs:    { low: 10, ideal: [15, 50], unit: 'lb/A', label: 'NO3-N' },
+            olsenP:    { low: 10, ideal: [15, 30], unit: 'ppm', label: 'Olsen P' },
+            brayP2:    { low: 80, ideal: [100, 200], unit: 'ppm', label: 'Bray-2 P' },
+            sulfur:    { low: 5, ideal: [5, 20], unit: 'ppm', label: 'Sulfur' },
+            potassium: { low: 200, ideal: [250, 600], unit: 'ppm', label: 'K' },
+            calcium:   { low: 800, ideal: [1000, 2500], unit: 'ppm', label: 'Ca' },
+            magnesium: { low: 50, ideal: [50, 300], unit: 'ppm', label: 'Mg' },
+            zinc:      { low: 0.5, ideal: [0.5, 2.0], unit: 'ppm', label: 'Zn' },
+            boron:     { low: 0.2, ideal: [0.2, 1.0], unit: 'ppm', label: 'B' },
+            cec:       { low: 8, ideal: [10, 25], unit: 'me', label: 'CEC' },
+            caSat:     { low: 60, ideal: [65, 75], high: 80, unit: '%', label: 'Ca Sat' },
+            mgSat:     { low: 10, ideal: [12, 18], high: 20, unit: '%', label: 'Mg Sat' },
+            kSat:      { low: 3, ideal: [4, 8], high: 10, unit: '%', label: 'K Sat' }
+        };
+
+        function getSoilStatus(key, value) {
+            if (value == null) return 'na';
+            const t = SOIL_THRESHOLDS[key];
+            if (!t) return '';
+            if (value < (t.low || -Infinity)) return t.low && value < t.low * 0.7 ? 'critical' : 'low';
+            if (t.high && value > t.high) return 'high';
+            if (value >= t.ideal[0] && value <= t.ideal[1]) return 'ideal';
+            if (value < t.ideal[0]) return 'low';
+            return 'high';
+        }
+
+        function identifyConcerns(s, samples) {
+            const concerns = [];
+            if (!s) return concerns;
+            // pH
+            if (s.ph != null && s.ph < 5.5) {
+                concerns.push({ severity: 'critical', area: 'pH', message: 'pH is ' + s.ph + ' - critically acidic. Lime application recommended.' });
+            } else if (s.ph != null && s.ph < 6.0) {
+                concerns.push({ severity: 'warning', area: 'pH', message: 'pH is ' + s.ph + ' - moderately acidic. Monitor and consider liming.' });
+            }
+            // pH trend
+            if (samples && samples.length >= 2) {
+                const phVals = samples.filter(x => x.ph).sort((a,b) => (a.year||0)-(b.year||0));
+                if (phVals.length >= 2) {
+                    const first = phVals[0].ph;
+                    const last = phVals[phVals.length-1].ph;
+                    if (last < first - 0.5) {
+                        concerns.push({ severity: 'warning', area: 'pH Trend', message: 'pH declining from ' + first + ' to ' + last + '.' });
+                    }
+                }
+            }
+            // OM
+            if (s.organicMatter != null && s.organicMatter < 1.0) {
+                concerns.push({ severity: 'critical', area: 'Organic Matter', message: 'OM at ' + s.organicMatter + '% - very low.' });
+            } else if (s.organicMatter != null && s.organicMatter < 1.5) {
+                concerns.push({ severity: 'warning', area: 'Organic Matter', message: 'OM at ' + s.organicMatter + '% - below optimal.' });
+            }
+            // Nitrogen
+            if (s.NO3lbs != null && s.NO3lbs < 10) {
+                concerns.push({ severity: 'warning', area: 'Nitrogen', message: 'Low residual N (' + s.NO3lbs + ' lb/A). Supplemental N likely needed.' });
+            }
+            // Phosphorus
+            if (s.olsenP != null && s.olsenP < 10) {
+                concerns.push({ severity: 'critical', area: 'Phosphorus', message: 'Olsen P at ' + s.olsenP + ' ppm - deficient.' });
+            } else if (s.olsenP != null && s.olsenP < 15) {
+                concerns.push({ severity: 'warning', area: 'Phosphorus', message: 'Olsen P at ' + s.olsenP + ' ppm - below optimal.' });
+            }
+            // Potassium
+            if (s.potassium != null && s.potassium < 200) {
+                concerns.push({ severity: 'critical', area: 'Potassium', message: 'K at ' + s.potassium + ' ppm - deficient.' });
+            }
+            // Ca saturation
+            if (s.caSat != null && s.caSat < 50) {
+                concerns.push({ severity: 'warning', area: 'Ca Saturation', message: 'Ca saturation at ' + s.caSat + '% - below ideal 65-75%.' });
+            }
+            // Boron
+            if (s.boron != null && s.boron < 0.2) {
+                concerns.push({ severity: 'warning', area: 'Boron', message: 'Boron at ' + s.boron + ' ppm - low.' });
+            }
+            // CEC
+            if (s.cec != null && s.cec < 8) {
+                concerns.push({ severity: 'info', area: 'CEC', message: 'CEC at ' + s.cec + ' - low exchange capacity.' });
+            }
+            // Salts
+            const salts = s.solubleSalts || s.salts;
+            if (salts != null && salts > 1.5) {
+                concerns.push({ severity: 'critical', area: 'Salts', message: 'Soluble salts at ' + salts + ' mmhos/cm - above threshold.' });
+            }
+            return concerns;
+        }
+
+        function generateRecommendations(s, crop) {
+            const recs = [];
+            if (!s) return recs;
+            if (s.ph != null && s.ph < 5.5) {
+                recs.push('Apply ag lime at 2-3 tons/acre to raise pH from ' + s.ph + ' to 6.5+.');
+            } else if (s.ph != null && s.ph < 6.0 && crop === 'CORN') {
+                recs.push('Consider lime application to improve pH from ' + s.ph + ' for corn.');
+            }
+            if (s.NO3lbs != null && s.NO3lbs < 15 && (crop === 'CORN' || crop === 'SORGHUM')) {
+                const goal = 80;
+                const factor = crop === 'CORN' ? 1.2 : 1.0;
+                const deficit = (goal * factor) - s.NO3lbs;
+                if (deficit > 0) recs.push('Supplement with ' + Math.round(deficit) + ' lb/A nitrogen for ' + goal + ' bu/A ' + crop.toLowerCase() + ' goal.');
+            }
+            if (s.olsenP != null && s.olsenP < 12) {
+                recs.push('Apply 30-40 lb/A P2O5 to build Olsen P from ' + s.olsenP + ' ppm.');
+            }
+            if (s.potassium != null && s.potassium < 200) {
+                recs.push('Apply potash - K at ' + s.potassium + ' ppm is deficient.');
+            }
+            if (s.sulfur != null && s.sulfur < 5 && (crop === 'CORN' || crop === 'WHEAT')) {
+                recs.push('Consider sulfur application - currently ' + s.sulfur + ' ppm.');
+            }
+            if (s.zinc != null && s.zinc < 0.5 && crop === 'CORN') {
+                recs.push('Zinc at ' + s.zinc + ' ppm - consider zinc sulfate for corn.');
+            }
+            if (recs.length === 0) {
+                recs.push('Soil levels adequate for planned crop. Continue monitoring.');
+            }
+            return recs;
+        }
+
+        function renderNutrientBar(key, value) {
+            const t = SOIL_THRESHOLDS[key];
+            if (!t || value == null) return '';
+            const status = getSoilStatus(key, value);
+            // Calculate bar width as percentage (capped at 100%)
+            const maxRef = t.ideal[1] * 1.5;
+            const pct = Math.min(100, Math.max(5, (value / maxRef) * 100));
+            return '<div class="nutrient-bar">' +
+                '<span class="nutrient-bar-label">' + t.label + '</span>' +
+                '<div class="nutrient-bar-track"><div class="nutrient-bar-fill ' + status + '" style="width:' + pct + '%"></div></div>' +
+                '<span class="nutrient-bar-value" style="color:' + (status === 'critical' ? '#c0392b' : status === 'low' ? '#e67e22' : status === 'ideal' ? '#27ae60' : '#333') + '">' + value + (t.unit ? ' ' + t.unit : '') + '</span>' +
+                '</div>';
+        }
+
+        function renderBaseSatBar(s) {
+            if (!s || !s.caSat) return '';
+            const ca = s.caSat || 0;
+            const mg = s.mgSat || 0;
+            const k = s.kSat || 0;
+            const na = s.naSat || 0;
+            const h = s.hSat || 0;
+            return '<div class="soil-section-title">Base Saturation</div>' +
+                '<div class="base-sat-bar">' +
+                (ca > 0 ? '<div class="base-sat-seg" style="width:' + ca + '%;background:#3498db;">' + (ca > 8 ? ca + '%' : '') + '</div>' : '') +
+                (mg > 0 ? '<div class="base-sat-seg" style="width:' + mg + '%;background:#27ae60;">' + (mg > 5 ? mg + '%' : '') + '</div>' : '') +
+                (k > 0 ? '<div class="base-sat-seg" style="width:' + k + '%;background:#e67e22;">' + (k > 5 ? k + '%' : '') + '</div>' : '') +
+                (na > 0 ? '<div class="base-sat-seg" style="width:' + na + '%;background:#95a5a6;">' + '</div>' : '') +
+                (h > 0 ? '<div class="base-sat-seg" style="width:' + h + '%;background:#ecf0f1;color:#999;">' + (h > 8 ? h + '%' : '') + '</div>' : '') +
+                '</div>' +
+                '<div class="base-sat-legend">' +
+                '<span><span class="dot" style="background:#3498db;"></span>Ca ' + ca + '%</span>' +
+                '<span><span class="dot" style="background:#27ae60;"></span>Mg ' + mg + '%</span>' +
+                '<span><span class="dot" style="background:#e67e22;"></span>K ' + k + '%</span>' +
+                (na > 0 ? '<span><span class="dot" style="background:#95a5a6;"></span>Na ' + na + '%</span>' : '') +
+                '<span><span class="dot" style="background:#ecf0f1;border:1px solid #ddd;"></span>H ' + h + '%</span>' +
+                '</div>';
+        }
+
         function renderSoilPanel(f) {
             const samples = (f.soil && f.soil.samples) || [];
             if (samples.length === 0) {
-                return `
-                    <div class="empty-state">No soil samples recorded yet.</div>
-                    <div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal('${f._id}')">Add Soil Sample</button></div>
-                `;
+                return '<div class="empty-state">No soil samples recorded yet.</div>' +
+                    '<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal(\'' + f._id + '\')">Add Soil Sample</button></div>';
             }
 
-            const cards = samples.map(s => {
-                const date = s.date ? new Date(s.date).toLocaleDateString() : 'No date';
-                return `
-                <div class="soil-card">
-                    <div class="soil-card-header">
-                        <span class="soil-card-date">${date}</span>
-                        <span class="soil-card-depth">${s.depth || ''}</span>
-                    </div>
-                    <div class="soil-grid">
-                        ${s.ph ? `<div class="soil-val"><div class="sv-num">${s.ph}</div><div class="sv-lbl">pH</div></div>` : ''}
-                        ${s.nitrogen ? `<div class="soil-val"><div class="sv-num">${s.nitrogen}</div><div class="sv-lbl">N ppm</div></div>` : ''}
-                        ${s.phosphorus ? `<div class="soil-val"><div class="sv-num">${s.phosphorus}</div><div class="sv-lbl">P ppm</div></div>` : ''}
-                        ${s.potassium ? `<div class="soil-val"><div class="sv-num">${s.potassium}</div><div class="sv-lbl">K ppm</div></div>` : ''}
-                        ${s.sulfur ? `<div class="soil-val"><div class="sv-num">${s.sulfur}</div><div class="sv-lbl">S ppm</div></div>` : ''}
-                        ${s.zinc ? `<div class="soil-val"><div class="sv-num">${s.zinc}</div><div class="sv-lbl">Zn ppm</div></div>` : ''}
-                        ${s.organicMatter ? `<div class="soil-val"><div class="sv-num">${s.organicMatter}%</div><div class="sv-lbl">O.M.</div></div>` : ''}
-                        ${s.cec ? `<div class="soil-val"><div class="sv-num">${s.cec}</div><div class="sv-lbl">CEC</div></div>` : ''}
-                    </div>
-                    ${s.notes ? `<div style="font-size:12px;color:#888;margin-top:8px;">${s.notes}</div>` : ''}
-                </div>`;
-            }).join('');
+            // Sort samples by year descending
+            const sorted = [...samples].sort((a,b) => (b.year||0) - (a.year||0));
+            const latest = sorted[0];
+            const crop = f.crop2026 || '';
 
-            return `${cards}<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal('${f._id}')">Add Soil Sample</button></div>`;
+            let html = '';
+
+            // Agronomist alerts from the latest sample
+            const agAlerts = (latest.agronomistAlerts || []);
+            if (agAlerts.length > 0) {
+                html += '<div class="soil-alerts">';
+                agAlerts.forEach(a => {
+                    html += '<div class="soil-alert alert-agronomist"><span class="alert-icon">!</span><div><strong>' + (a.type || 'Note') + ':</strong> ' + a.message + '</div></div>';
+                });
+                html += '</div>';
+            }
+
+            // Auto-detected concerns
+            const concerns = identifyConcerns(latest, samples);
+            if (concerns.length > 0) {
+                html += '<div class="soil-alerts">';
+                concerns.forEach(c => {
+                    html += '<div class="soil-alert alert-' + c.severity + '"><span class="alert-icon">' + (c.severity === 'critical' ? '!!' : c.severity === 'warning' ? '!' : 'i') + '</span><div><strong>' + c.area + ':</strong> ' + c.message + '</div></div>';
+                });
+                html += '</div>';
+            }
+
+            // Recommendations
+            const recs = generateRecommendations(latest, crop);
+            if (recs.length > 0 && !(recs.length === 1 && recs[0].includes('adequate'))) {
+                html += '<div class="soil-recs"><div class="soil-recs-title">2026 Recommendations</div>';
+                recs.forEach(r => { html += '<div class="soil-rec-item">' + r + '</div>'; });
+                html += '</div>';
+            }
+
+            // Latest sample nutrient status bars
+            html += '<div class="soil-section"><div class="soil-section-title">Nutrient Status <span class="toggle">' + (latest.year || '') + ' Sample</span></div>';
+            html += renderNutrientBar('ph', latest.ph);
+            html += renderNutrientBar('organicMatter', latest.organicMatter);
+            html += renderNutrientBar('NO3lbs', latest.NO3lbs);
+            html += renderNutrientBar('olsenP', latest.olsenP);
+            html += renderNutrientBar('potassium', latest.potassium);
+            html += renderNutrientBar('sulfur', latest.sulfur);
+            html += renderNutrientBar('calcium', latest.calcium);
+            html += renderNutrientBar('magnesium', latest.magnesium);
+            html += renderNutrientBar('zinc', latest.zinc);
+            html += renderNutrientBar('boron', latest.boron);
+            html += renderNutrientBar('cec', latest.cec);
+            html += '</div>';
+
+            // Base saturation
+            html += '<div class="soil-section">' + renderBaseSatBar(latest) + '</div>';
+
+            // History cards (all samples)
+            html += '<div class="soil-section"><div class="soil-section-title">Sample History <span class="toggle">' + sorted.length + ' records</span></div>';
+            sorted.forEach(s => {
+                const dateStr = s.date ? new Date(s.date).toLocaleDateString() : (s.year ? s.year : 'No date');
+                const cropStr = s.crop ? ' | ' + s.crop : '';
+                html += '<div class="soil-card">' +
+                    '<div class="soil-card-header">' +
+                    '<span class="soil-card-date">' + dateStr + cropStr + '</span>' +
+                    '<span class="soil-card-depth">' + (s.depth || '') + (s.yieldGoal ? ' | Goal: ' + s.yieldGoal + ' bu' : '') + '</span>' +
+                    '</div>' +
+                    '<div class="soil-grid">';
+
+                // Color-coded nutrient values
+                const vals = [
+                    ['ph', s.ph, 'pH'],
+                    ['organicMatter', s.organicMatter, 'O.M.%'],
+                    ['NO3lbs', s.NO3lbs, 'NO3 lb/A'],
+                    ['olsenP', s.olsenP, 'Olsen P'],
+                    ['potassium', s.potassium, 'K ppm'],
+                    ['sulfur', s.sulfur, 'S ppm'],
+                    ['calcium', s.calcium, 'Ca ppm'],
+                    ['magnesium', s.magnesium, 'Mg ppm'],
+                    ['zinc', s.zinc, 'Zn ppm'],
+                    ['boron', s.boron, 'B ppm'],
+                    ['cec', s.cec, 'CEC']
+                ];
+
+                vals.forEach(([key, val, label]) => {
+                    if (val != null) {
+                        const st = getSoilStatus(key, val);
+                        html += '<div class="soil-val"><div class="sv-num' + (st ? ' status-' + st : '') + '">' + val + '</div><div class="sv-lbl">' + label + '</div></div>';
+                    }
+                });
+
+                html += '</div>';
+                if (s.notes) html += '<div style="font-size:12px;color:#888;margin-top:8px;">' + s.notes + '</div>';
+                html += '</div>';
+            });
+            html += '</div>';
+
+            html += '<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal(\'' + f._id + '\')">Add Soil Sample</button></div>';
+            return html;
         }
 
         function renderInsurancePanel(f) {
@@ -734,11 +1062,23 @@
         }
 
         // Soil Sample Modal
+        const soilModalFields = [
+            'soilDate','soilYear','soilDepth','soilCrop','soilYieldGoal',
+            'soilPh','soilBufferPH','soilExcessLime','soilOM','soilCEC','soilSolubleSalts',
+            'soilNO3ppm','soilNO3lbs','soilNO3Total',
+            'soilOlsenP','soilBray1P','soilBrayP2','soilK','soilS',
+            'soilCalcium','soilMagnesium','soilSodium',
+            'soilZn','soilFe','soilManganese','soilCopper','soilBoron',
+            'soilBaseSat','soilHSat','soilCaSat','soilMgSat','soilKSat','soilNaSat',
+            'soilNotes'
+        ];
+
         function openSoilModal(fieldId) {
             const f = allFields.find(x => x._id === fieldId);
             document.getElementById('soilFieldId').value = fieldId;
-            document.getElementById('soilModalSub').textContent = `${f.farm} | ${f.field}`;
-            ['soilDate','soilDepth','soilPh','soilN','soilP','soilK','soilS','soilZn','soilFe','soilOM','soilCEC','soilSalts','soilNotes'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('soilModalSub').textContent = f.farm + ' | ' + f.field;
+            soilModalFields.forEach(id => { document.getElementById(id).value = ''; });
+            document.getElementById('soilYear').value = selectedYear;
             document.getElementById('soilModal').classList.add('active');
         }
 
@@ -747,24 +1087,56 @@
             btn.disabled = true; btn.textContent = 'Saving...';
             const fieldId = document.getElementById('soilFieldId').value;
 
+            const pf = (id) => parseFloat(document.getElementById(id).value) || null;
+            const sv = (id) => document.getElementById(id).value.trim();
+
             const sample = {
-                date: document.getElementById('soilDate').value || null,
-                depth: document.getElementById('soilDepth').value.trim(),
-                ph: parseFloat(document.getElementById('soilPh').value) || null,
-                nitrogen: parseFloat(document.getElementById('soilN').value) || null,
-                phosphorus: parseFloat(document.getElementById('soilP').value) || null,
-                potassium: parseFloat(document.getElementById('soilK').value) || null,
-                sulfur: parseFloat(document.getElementById('soilS').value) || null,
-                zinc: parseFloat(document.getElementById('soilZn').value) || null,
-                iron: parseFloat(document.getElementById('soilFe').value) || null,
-                organicMatter: parseFloat(document.getElementById('soilOM').value) || null,
-                cec: parseFloat(document.getElementById('soilCEC').value) || null,
-                salts: parseFloat(document.getElementById('soilSalts').value) || null,
-                notes: document.getElementById('soilNotes').value.trim()
+                date: sv('soilDate') || null,
+                year: parseInt(document.getElementById('soilYear').value) || null,
+                depth: sv('soilDepth'),
+                crop: sv('soilCrop'),
+                yieldGoal: pf('soilYieldGoal'),
+
+                ph: pf('soilPh'),
+                bufferPH: pf('soilBufferPH'),
+                excessLime: sv('soilExcessLime') || null,
+                organicMatter: pf('soilOM'),
+                cec: pf('soilCEC'),
+                solubleSalts: pf('soilSolubleSalts'),
+
+                nitrogen: pf('soilNO3ppm'),
+                NO3ppm: pf('soilNO3ppm'),
+                NO3lbs: pf('soilNO3lbs'),
+                NO3Total: pf('soilNO3Total'),
+
+                phosphorus: pf('soilOlsenP'),
+                olsenP: pf('soilOlsenP'),
+                bray1P: pf('soilBray1P'),
+                brayP2: pf('soilBrayP2'),
+                potassium: pf('soilK'),
+                sulfur: pf('soilS'),
+
+                calcium: pf('soilCalcium'),
+                magnesium: pf('soilMagnesium'),
+                sodium: pf('soilSodium'),
+                zinc: pf('soilZn'),
+                iron: pf('soilFe'),
+                manganese: pf('soilManganese'),
+                copper: pf('soilCopper'),
+                boron: pf('soilBoron'),
+
+                baseSat: pf('soilBaseSat'),
+                hSat: pf('soilHSat'),
+                caSat: pf('soilCaSat'),
+                mgSat: pf('soilMgSat'),
+                kSat: pf('soilKSat'),
+                naSat: pf('soilNaSat'),
+
+                notes: sv('soilNotes')
             };
 
             try {
-                const res = await fetch(`${API}/api/cropping-fields/${fieldId}/soil-sample`, {
+                const res = await fetch(API + '/api/cropping-fields/' + fieldId + '/soil-sample', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sample)
                 });
                 const data = await res.json();

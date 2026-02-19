@@ -205,6 +205,31 @@ const fields = [
     soil: { type: 'Sand', class: 'III' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
 
+  { client: 'MCC. ENT.', farm: 'KBFARMS', field: '28.E MICHAEL', legal: null, fsaFarm: '3720', tract: '3815', acres: 38.00, crop2026: 'SORGHUM SUDAN',
+    county: 'Sedgwick', section: '13', township: '9N', range: '47W',
+    soil: { type: 'Sand', class: 'III' }, lease: { type: 'owned' },
+    taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
+
+  { client: 'MCC. ENT.', farm: 'KBFARMS', field: '28.NE MICHAEL', legal: null, fsaFarm: '3720', tract: '3815', acres: null, crop2026: 'SORGHUM',
+    county: 'Sedgwick', section: '13', township: '9N', range: '47W',
+    soil: { type: 'Sand', class: 'III' }, lease: { type: 'owned' },
+    taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
+
+  { client: 'MCC. ENT.', farm: 'KBFARMS', field: '28.NW MICHAEL', legal: null, fsaFarm: '3720', tract: '3815', acres: 105.00, crop2026: 'CORN',
+    county: 'Sedgwick', section: '13', township: '9N', range: '47W',
+    soil: { type: 'Sand', class: 'III' }, lease: { type: 'owned' },
+    taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
+
+  { client: 'MCC. ENT.', farm: 'KBFARMS', field: '28.SE MICHAEL', legal: null, fsaFarm: '3720', tract: '3815', acres: 67.00, crop2026: 'WHEAT',
+    county: 'Sedgwick', section: '13', township: '9N', range: '47W',
+    soil: { type: 'Sand', class: 'III' }, lease: { type: 'owned' },
+    taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
+
+  { client: 'MCC. ENT.', farm: 'KBFARMS', field: '28.SW MICHAEL', legal: null, fsaFarm: '3720', tract: '3815', acres: 80.00, crop2026: 'SORGHUM',
+    county: 'Sedgwick', section: '13', township: '9N', range: '47W',
+    soil: { type: 'Sand', class: 'III' }, lease: { type: 'owned' },
+    taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
+
   { client: 'MCC. ENT.', farm: 'KBFARMS', field: '298 HWY HOUSE', legal: 'SW13-9-47', fsaFarm: '3720', tract: '3815', acres: 8.00, crop2026: 'BUILDING SITE',
     county: 'Sedgwick', section: '13', township: '9N', range: '47W',
     lease: { type: 'owned' },
@@ -405,7 +430,7 @@ const fields = [
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
 
-  { client: 'MCC. ENT.', farm: 'A1FARMS', field: '60.S DAILEYRD', legal: 'NE4 28-7-48', fsaFarm: '4114', tract: '4048', acres: null, crop2026: 'CORN',
+  { client: 'MCC. ENT.', farm: 'A1FARMS', field: '60.E DAILEYRD', legal: 'NE4 28-7-48', fsaFarm: '4114', tract: '4048', acres: 78.78, crop2026: 'CORN',
     county: 'Logan', section: '28', township: '7N', range: '48W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
