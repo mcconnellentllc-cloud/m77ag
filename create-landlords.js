@@ -1,113 +1,77 @@
-// Script to create landlord accounts for M77 AG Land Management
+// Create landlord accounts for M77 AG
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { User } = require('./server/models/user');
+const User = require('./server/models/user');
 
-// Landlords based on M77AG Master Workbook
 const landlords = [
-  {
-    name: 'HD Farms',
-    email: 'hdfarms@m77ag.com',
-    identifier: 'HDFARMS',
-    farms: ['HDFARMS']
-  },
-  {
-    name: 'KB Farms',
-    email: 'kbfarms@m77ag.com',
-    identifier: 'KBFARMS',
-    farms: ['KBFARMS']
-  },
-  {
-    name: 'LA Farms',
-    email: 'lafarms@m77ag.com',
-    identifier: 'LAFARMS',
-    farms: ['LAFARMS']
-  },
-  {
-    name: 'ME Farms',
-    email: 'mefarms@m77ag.com',
-    identifier: 'MEFARMS',
-    farms: ['MEFARMS']
-  },
   {
     name: 'Peterson Farms',
     email: 'peterson@m77ag.com',
-    identifier: 'PETERSON',
-    farms: ['PETERSON']
+    phone: '970-774-3276',
+    password: 'Bushelbuster',
+    landlordFarms: ['PETERSON']
   },
   {
-    name: 'A1 Farms',
-    email: 'a1farms@m77ag.com',
-    identifier: 'A1FARMS',
-    farms: ['A1FARMS']
+    name: 'McConnell Farms',
+    email: 'mcconnell@m77ag.com',
+    phone: '970-774-3276',
+    password: 'Hangon00',
+    landlordFarms: ['KBFARMS', 'LAFARMS', 'HDFARMS', 'MEFARMS', 'A1FARMS']
   },
   {
-    name: 'Vandenbark',
-    email: 'vandenbark@m77ag.com',
-    identifier: 'VANDENBARK',
-    farms: ['VANDENBARK']
+    name: 'Gigi',
+    email: 'gigi@m77ag.com',
+    phone: '970-774-3276',
+    password: 'Dorothy',
+    landlordFarms: []
   }
 ];
 
 async function createLandlords() {
   try {
-    // Connect to MongoDB
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
-    await mongoose.connect(mongoURI);
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
-    console.log('='.repeat(80));
+    console.log('='.repeat(60));
 
     let created = 0;
     let updated = 0;
-    let skipped = 0;
 
-    for (const landlord of landlords) {
-      // Check if user already exists
-      const existingUser = await User.findOne({ email: landlord.email });
+    for (const ll of landlords) {
+      const existing = await User.findOne({ email: ll.email });
 
-      if (existingUser) {
-        // Update to landlord role if not already
-        if (existingUser.role !== 'landlord') {
-          existingUser.role = 'landlord';
-          existingUser.firstName = landlord.name.split(' ')[0];
-          existingUser.lastName = landlord.name.split(' ').slice(1).join(' ') || 'Farms';
-          await existingUser.save();
-          console.log(`✓ Updated ${landlord.name} to landlord role`);
-          updated++;
-        } else {
-          console.log(`- Skipped ${landlord.name} (already exists as landlord)`);
-          skipped++;
-        }
+      if (existing) {
+        // Update role, farms, and password
+        existing.role = 'landlord';
+        existing.landlordFarms = ll.landlordFarms;
+        existing.name = ll.name;
+        existing.password = ll.password;
+        existing.isActive = true;
+        await existing.save();
+        console.log(`  Updated: ${ll.name} (${ll.email}) -> farms: ${ll.landlordFarms.join(', ') || 'none assigned'}`);
+        updated++;
       } else {
-        // Create new landlord account
-        const newLandlord = await User.create({
-          username: landlord.identifier.toLowerCase(),
-          email: landlord.email,
-          password: 'Farm2026',
+        await User.create({
+          name: ll.name,
+          email: ll.email,
+          phone: ll.phone,
+          password: ll.password,
           role: 'landlord',
-          firstName: landlord.name.split(' ')[0],
-          lastName: landlord.name.split(' ').slice(1).join(' ') || 'Farms',
-          phone: '970-774-3276'  // M77 AG office number
+          isActive: true,
+          emailVerified: true,
+          landlordFarms: ll.landlordFarms
         });
-
-        console.log(`✓ Created ${landlord.name} (${landlord.email})`);
+        console.log(`  Created: ${ll.name} (${ll.email}) -> farms: ${ll.landlordFarms.join(', ') || 'none assigned'}`);
         created++;
       }
     }
 
-    console.log('='.repeat(80));
-    console.log(`\nSummary:`);
-    console.log(`  Created: ${created} landlords`);
-    console.log(`  Updated: ${updated} landlords`);
-    console.log(`  Skipped: ${skipped} landlords`);
-    console.log(`  Total: ${landlords.length} landlords`);
-    console.log(`\nAll landlord accounts use password: Farm2026`);
-    console.log('='.repeat(80));
+    console.log('='.repeat(60));
+    console.log(`Created: ${created}, Updated: ${updated}`);
+    console.log('='.repeat(60));
 
     await mongoose.connection.close();
-
   } catch (error) {
-    console.error('Error creating landlord accounts:', error.message);
+    console.error('Error:', error.message);
     process.exit(1);
   }
 }

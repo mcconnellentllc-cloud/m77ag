@@ -166,6 +166,12 @@ const userSchema = new mongoose.Schema({
     ref: 'Property'
   }],
 
+  // Farm codes this landlord owns (maps to CroppingField.farm)
+  landlordFarms: [{
+    type: String,
+    enum: ['LAFARMS', 'KBFARMS', 'PETERSON', 'HDFARMS', 'MEFARMS', 'A1FARMS']
+  }],
+
   // Customer Loyalty / Spending Tracker
   lifetimeSpend: {
     type: Number,

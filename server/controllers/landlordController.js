@@ -1,16 +1,21 @@
 const User = require('../models/user');
+const CroppingField = require('../models/croppingField');
+const CapitalInvestment = require('../models/capitalInvestment');
 
-// Get landlord preferences
+// Helper: get landlord's farms array from user
+async function getLandlordFarms(userId) {
+  const user = await User.findById(userId).lean();
+  if (!user) return [];
+  return user.landlordFarms || [];
+}
+
+// =============================================
+// GET /api/landlord/preferences
+// =============================================
 exports.getPreferences = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     res.json({
       success: true,
@@ -18,265 +23,256 @@ exports.getPreferences = async (req, res) => {
     });
   } catch (error) {
     console.error('Error getting landlord preferences:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get preferences',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to get preferences' });
   }
 };
 
-// Update landlord preferences
+// =============================================
+// PUT /api/landlord/preferences
+// =============================================
 exports.updatePreferences = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     // Merge existing preferences with new ones
-    user.landlordPreferences = {
-      ...user.landlordPreferences,
-      ...req.body
-    };
+    const existing = user.landlordPreferences ? user.landlordPreferences.toObject() : {};
+    const updates = req.body;
 
+    // Handle nested grainSalePrice merge
+    if (updates.grainSalePrice) {
+      existing.grainSalePrice = { ...(existing.grainSalePrice || {}), ...updates.grainSalePrice };
+      delete updates.grainSalePrice;
+    }
+
+    user.landlordPreferences = { ...existing, ...updates };
     await user.save();
 
     res.json({
       success: true,
-      message: 'Preferences updated successfully',
+      message: 'Preferences updated',
       preferences: user.landlordPreferences
     });
   } catch (error) {
     console.error('Error updating landlord preferences:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update preferences',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to update preferences' });
   }
 };
 
-// Get financial summary (running bill)
-exports.getFinancialSummary = async (req, res) => {
+// =============================================
+// GET /api/landlord/fields
+// Returns all CroppingFields for this landlord's farms
+// with real costs, splits, soil, taxes, rotation
+// =============================================
+exports.getFields = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).populate('properties');
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
+    const farms = await getLandlordFarms(req.userId);
+    if (farms.length === 0) {
+      return res.json({ success: true, fields: [], farms: [] });
     }
 
-    // TODO: Calculate from actual data in database
-    // For now, return mock data structure
-    const summary = {
-      totalAcres: 0,
-      totalFields: 0,
-      rentOwed: 0,        // Rent owed to landlord
-      expensesOwed: 0,    // Expenses landlord owes to M77 AG
-      incomeOwed: 0,      // Crop income owed to landlord
-      ytdIncome: 0        // Year-to-date income received
-    };
+    const fields = await CroppingField.find({ farm: { $in: farms } })
+      .sort({ farm: 1, field: 1 })
+      .lean({ virtuals: true });
 
-    // Calculate from properties if they exist
-    if (user.properties && user.properties.length > 0) {
-      for (const property of user.properties) {
-        summary.totalAcres += property.totalAcres || 0;
-        // TODO: Add field counting when Property model includes fields
+    // Group fields by farm
+    const byFarm = {};
+    let totalAcres = 0;
+    let totalCropAcres = 0;
+
+    for (const f of fields) {
+      if (!byFarm[f.farm]) {
+        byFarm[f.farm] = { farm: f.farm, fields: [], totalAcres: 0, cropAcres: 0 };
+      }
+      byFarm[f.farm].fields.push(f);
+      const ac = f.acres || 0;
+      byFarm[f.farm].totalAcres += ac;
+      totalAcres += ac;
+      const crop = (f.crop2026 || '').toUpperCase();
+      if (!['PASTURE', 'WASTE', 'BUILDING SITE', 'FALLOW'].includes(crop)) {
+        byFarm[f.farm].cropAcres += ac;
+        totalCropAcres += ac;
       }
     }
 
     res.json({
       success: true,
-      summary
+      farms: Object.values(byFarm),
+      totalAcres,
+      totalCropAcres,
+      totalFields: fields.length
+    });
+  } catch (error) {
+    console.error('Error getting landlord fields:', error);
+    res.status(500).json({ success: false, message: 'Failed to get fields' });
+  }
+};
+
+// =============================================
+// GET /api/landlord/summary
+// Dashboard summary stats from real CroppingField data
+// =============================================
+exports.getSummary = async (req, res) => {
+  try {
+    const farms = await getLandlordFarms(req.userId);
+    if (farms.length === 0) {
+      return res.json({
+        success: true,
+        summary: { totalAcres: 0, totalFields: 0, cropAcres: 0, farms: 0, cropMix: {}, countyBreakdown: {} }
+      });
+    }
+
+    const fields = await CroppingField.find({ farm: { $in: farms } }).lean({ virtuals: true });
+
+    let totalAcres = 0;
+    let cropAcres = 0;
+    const cropMix = {};
+    const countyBreakdown = {};
+    let totalPropertyTax = 0;
+
+    for (const f of fields) {
+      const ac = f.acres || 0;
+      totalAcres += ac;
+
+      const crop = (f.crop2026 || 'UNASSIGNED').toUpperCase();
+      cropMix[crop] = (cropMix[crop] || 0) + ac;
+
+      if (!['PASTURE', 'WASTE', 'BUILDING SITE', 'FALLOW'].includes(crop)) {
+        cropAcres += ac;
+      }
+
+      if (f.county) {
+        if (!countyBreakdown[f.county]) countyBreakdown[f.county] = { acres: 0, fields: 0 };
+        countyBreakdown[f.county].acres += ac;
+        countyBreakdown[f.county].fields += 1;
+      }
+
+      if (f.taxes && f.taxes.propertyTaxPerAcre) {
+        totalPropertyTax += f.taxes.propertyTaxPerAcre * ac;
+      }
+    }
+
+    res.json({
+      success: true,
+      summary: {
+        totalAcres: +totalAcres.toFixed(2),
+        totalFields: fields.length,
+        cropAcres: +cropAcres.toFixed(2),
+        farms: farms.length,
+        cropMix,
+        countyBreakdown,
+        totalPropertyTax: +totalPropertyTax.toFixed(2)
+      }
+    });
+  } catch (error) {
+    console.error('Error getting landlord summary:', error);
+    res.status(500).json({ success: false, message: 'Failed to get summary' });
+  }
+};
+
+// =============================================
+// GET /api/landlord/financial-summary
+// Running bill: costs, revenue, net for landlord's fields
+// =============================================
+exports.getFinancialSummary = async (req, res) => {
+  try {
+    const farms = await getLandlordFarms(req.userId);
+    if (farms.length === 0) {
+      return res.json({
+        success: true,
+        summary: { totalAcres: 0, totalFields: 0, rentOwed: 0, expensesOwed: 0, incomeOwed: 0, ytdIncome: 0 }
+      });
+    }
+
+    const fields = await CroppingField.find({ farm: { $in: farms } }).lean({ virtuals: true });
+
+    let totalAcres = 0;
+    let totalCosts = 0;
+    let totalRevenue = 0;
+    let totalPropertyTax = 0;
+
+    for (const f of fields) {
+      const ac = f.acres || 0;
+      totalAcres += ac;
+
+      // Sum costs from the costs object
+      if (f.costs) {
+        const c = f.costs;
+        const costPerAcre = (c.seed || 0) + (c.fertilizer || 0) + (c.chemicals || 0) +
+          (c.cropInsurance || 0) + (c.fuelOil || 0) + (c.repairs || 0) +
+          (c.customHire || 0) + (c.landRent || 0) + (c.dryingHauling || 0) + (c.misc || 0);
+        totalCosts += costPerAcre * ac;
+      }
+
+      // Revenue
+      const revPerAcre = ((f.projectedYield || 0) * (f.projectedPrice || 0)) + (f.governmentPayment || 0);
+      totalRevenue += revPerAcre * ac;
+
+      // Tax
+      if (f.taxes && f.taxes.propertyTaxPerAcre) {
+        totalPropertyTax += f.taxes.propertyTaxPerAcre * ac;
+      }
+    }
+
+    res.json({
+      success: true,
+      summary: {
+        totalAcres: +totalAcres.toFixed(2),
+        totalFields: fields.length,
+        totalCosts: +totalCosts.toFixed(2),
+        totalRevenue: +totalRevenue.toFixed(2),
+        netIncome: +(totalRevenue - totalCosts).toFixed(2),
+        totalPropertyTax: +totalPropertyTax.toFixed(2),
+        rentOwed: 0,
+        expensesOwed: +totalCosts.toFixed(2),
+        incomeOwed: +totalRevenue.toFixed(2),
+        ytdIncome: 0
+      }
     });
   } catch (error) {
     console.error('Error getting financial summary:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get financial summary',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to get financial summary' });
   }
 };
 
-// Get landlord's properties and fields
+// =============================================
+// GET /api/landlord/properties (legacy - redirects to fields)
+// =============================================
 exports.getProperties = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId).populate({
-      path: 'properties',
-      populate: {
-        path: 'fields'
-      }
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // Enhance properties with financial data
-    const propertiesWithFinancials = user.properties.map(property => {
-      const propObj = property.toObject();
-
-      // Add financial calculations for each field
-      if (propObj.fields) {
-        propObj.fields = propObj.fields.map(field => {
-          // TODO: Calculate actual financials from transactions
-          const financials = {
-            breakEvenPerAcre: 0,
-            profitPerAcre: 0,
-            totalExpenses: 0,
-            projectedRevenue: 0
-          };
-
-          return {
-            ...field,
-            financials
-          };
-        });
-      }
-
-      return propObj;
-    });
-
-    res.json({
-      success: true,
-      properties: propertiesWithFinancials
-    });
-  } catch (error) {
-    console.error('Error getting landlord properties:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get properties',
-      error: error.message
-    });
-  }
+  return exports.getFields(req, res);
 };
 
-// Get landlord's transactions
+// =============================================
+// GET /api/landlord/transactions
+// =============================================
 exports.getTransactions = async (req, res) => {
   try {
-    // TODO: Query actual transactions from database
-    // For now, return empty array
-    const transactions = [];
-
-    res.json({
-      success: true,
-      transactions
-    });
+    // Transactions will be built out as grain sales / expense entries happen
+    res.json({ success: true, transactions: [] });
   } catch (error) {
     console.error('Error getting landlord transactions:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get transactions',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to get transactions' });
   }
 };
 
-// Setup ACH payment (Stripe integration)
+// =============================================
+// ACH setup / disconnect (Stripe - placeholder)
+// =============================================
 exports.setupACH = async (req, res) => {
-  try {
-    const { bankToken } = req.body;
-
-    if (!bankToken) {
-      return res.status(400).json({
-        success: false,
-        message: 'Bank token is required'
-      });
-    }
-
-    const user = await User.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // TODO: Implement Stripe customer and bank account creation
-    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-    //
-    // let customer;
-    // if (user.landlordPreferences.stripeCustomerId) {
-    //   customer = await stripe.customers.retrieve(user.landlordPreferences.stripeCustomerId);
-    // } else {
-    //   customer = await stripe.customers.create({
-    //     email: user.email,
-    //     name: user.name,
-    //     metadata: {
-    //       userId: user._id.toString()
-    //     }
-    //   });
-    // }
-    //
-    // const bankAccount = await stripe.customers.createSource(customer.id, {
-    //   source: bankToken
-    // });
-    //
-    // user.landlordPreferences.stripeCustomerId = customer.id;
-    // user.landlordPreferences.stripeBankAccountId = bankAccount.id;
-
-    await user.save();
-
-    res.json({
-      success: true,
-      message: 'Bank account connected successfully'
-    });
-  } catch (error) {
-    console.error('Error setting up ACH:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to setup ACH',
-      error: error.message
-    });
-  }
+  res.json({ success: false, message: 'ACH integration not yet configured' });
 };
 
-// Disconnect ACH
 exports.disconnectACH = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // TODO: Remove from Stripe
-    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-    // if (user.landlordPreferences.stripeBankAccountId) {
-    //   await stripe.customers.deleteSource(
-    //     user.landlordPreferences.stripeCustomerId,
-    //     user.landlordPreferences.stripeBankAccountId
-    //   );
-    // }
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     user.landlordPreferences.stripeBankAccountId = null;
     await user.save();
 
-    res.json({
-      success: true,
-      message: 'Bank account disconnected successfully'
-    });
+    res.json({ success: true, message: 'Bank account disconnected' });
   } catch (error) {
     console.error('Error disconnecting ACH:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to disconnect ACH',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to disconnect ACH' });
   }
 };
