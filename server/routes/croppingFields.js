@@ -1,6 +1,63 @@
 const express = require('express');
 const router = express.Router();
 const CroppingField = require('../models/croppingField');
+const CapitalInvestment = require('../models/capitalInvestment');
+
+// =============================================
+// KB Farms land cost mapping
+// Maps quarter number prefixes to their CapitalInvestment parcel name
+// so annual loan payments flow into per-acre costs
+// =============================================
+const KB_QUARTER_TO_PARCEL = {
+  '20': 'Pauli Section',
+  '21': 'Pauli Section',
+  '22': 'Pauli Section',
+  '23': 'Pauli Section',
+  '24': 'Pauli Section',
+  '25': 'Michael Section',
+  '26': 'Michael Section',
+  '27': 'Michael Section',
+  '28': 'Michael Section',
+  '29': 'Michael Section',
+  '298': 'Michael Section',
+  '201': "Neal's Pasture",
+  '202': 'Madsen Pasture',
+  '299': "Neal's Pasture"
+};
+
+// Build land payment per acre for each KBFARMS parcel from CapitalInvestment loans
+async function getKBFarmsLandPayments() {
+  const kbCapital = await CapitalInvestment.find({ 'location.associatedFarm': 'KB Farms', type: 'land' });
+  const parcelPayments = {};
+
+  kbCapital.forEach(cap => {
+    const totalAcres = cap.landDetails?.totalAcres || 0;
+    let annualPayment = 0;
+    (cap.loans || []).forEach(loan => {
+      annualPayment += loan.paymentAmount || 0;
+    });
+    const paymentPerAcre = totalAcres > 0 ? annualPayment / totalAcres : 0;
+    parcelPayments[cap.name] = {
+      annualPayment,
+      totalAcres,
+      paymentPerAcre,
+      loanBalance: (cap.loans || []).reduce((s, l) => s + (l.currentBalance || 0), 0)
+    };
+  });
+
+  return parcelPayments;
+}
+
+// Get the land payment per acre for a KBFARMS field based on its quarter number
+function getLandPaymentForField(fieldName, parcelPayments) {
+  // Extract quarter number from field name (e.g., "23.E SW PAULI" -> "23")
+  const match = fieldName.match(/^(\d+)/);
+  if (!match) return 0;
+  const qNum = match[1];
+  const parcelName = KB_QUARTER_TO_PARCEL[qNum];
+  if (!parcelName || !parcelPayments[parcelName]) return 0;
+  return parcelPayments[parcelName].paymentPerAcre;
+}
 
 // === CSV IMPORT ENDPOINT ===
 router.post('/import/crop-history', async (req, res) => {
@@ -195,7 +252,7 @@ router.post('/import/soil-samples', async (req, res) => {
   }
 });
 
-// Get all fields
+// Get all fields (enriched with land payment data for KBFARMS)
 router.get('/', async (req, res) => {
   try {
     const { farm, crop } = req.query;
@@ -206,10 +263,22 @@ router.get('/', async (req, res) => {
 
     const fields = await CroppingField.find(filter).sort({ farm: 1, field: 1 });
 
+    // Enrich KBFARMS fields with land payment per acre from CapitalInvestment loans
+    const parcelPayments = await getKBFarmsLandPayments();
+    const enriched = fields.map(f => {
+      const obj = f.toObject();
+      if (obj.farm === 'KBFARMS') {
+        obj.landPaymentPerAcre = getLandPaymentForField(obj.field, parcelPayments);
+      } else {
+        obj.landPaymentPerAcre = 0;
+      }
+      return obj;
+    });
+
     res.json({
       success: true,
-      count: fields.length,
-      fields
+      count: enriched.length,
+      fields: enriched
     });
   } catch (error) {
     console.error('Error fetching fields:', error);

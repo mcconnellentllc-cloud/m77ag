@@ -3,9 +3,45 @@ const router = express.Router();
 const Equipment = require('../models/equipment');
 const RealEstate = require('../models/realEstate');
 const Entity = require('../models/entity');
+const CroppingField = require('../models/croppingField');
+const CapitalInvestment = require('../models/capitalInvestment');
 
 // Define entities for net worth tracking
 const ENTITIES = ['M77 AG', 'McConnell Enterprises', 'Kyle & Brandi McConnell'];
+
+// Aggregate KB Farms land value from CroppingField market values + CapitalInvestment loans
+async function getKBFarmsLandSummary() {
+  // Get all KBFARMS owned fields with market value set
+  const kbFields = await CroppingField.find({ farm: 'KBFARMS' });
+
+  let totalAcres = 0;
+  let totalMarketValue = 0;
+  kbFields.forEach(f => {
+    const acres = f.acres || 0;
+    const mvpa = f.marketValuePerAcre || 0;
+    totalAcres += acres;
+    totalMarketValue += mvpa * acres;
+  });
+
+  // Get KB Farms loan balances from CapitalInvestment
+  const kbCapital = await CapitalInvestment.find({ 'location.associatedFarm': 'KB Farms', type: 'land' });
+  let totalOwed = 0;
+  let annualPayments = 0;
+  kbCapital.forEach(cap => {
+    (cap.loans || []).forEach(loan => {
+      totalOwed += loan.currentBalance || 0;
+      annualPayments += loan.paymentAmount || 0;
+    });
+  });
+
+  return {
+    count: kbCapital.length,
+    acres: totalAcres,
+    value: totalMarketValue,
+    owed: totalOwed,
+    annualPayments
+  };
+}
 
 // Get complete net worth summary for all entities
 router.get('/summary', async (req, res) => {
@@ -14,6 +50,7 @@ router.get('/summary', async (req, res) => {
     const allEquipment = await Equipment.find();
     const allRealEstate = await RealEstate.find();
     const entities = await Entity.find();
+    const kbFarmsLand = await getKBFarmsLandSummary();
 
     // Build entity summaries
     const entitySummaries = {};
@@ -24,6 +61,7 @@ router.get('/summary', async (req, res) => {
         name: entityName,
         equipment: { count: 0, value: 0, owed: 0 },
         realEstate: { count: 0, value: 0, owed: 0, acres: 0, annualTaxes: 0 },
+        farmland: { count: 0, value: 0, owed: 0, acres: 0 },
         additionalAssets: { count: 0, value: 0 },
         additionalLiabilities: { count: 0, amount: 0 },
         totalAssets: 0,
@@ -54,6 +92,18 @@ router.get('/summary', async (req, res) => {
       }
     });
 
+    // Inject KB Farms land (CroppingField market values + CapitalInvestment loans)
+    // into Kyle & Brandi McConnell entity as farmland
+    const kbEntity = 'Kyle & Brandi McConnell';
+    if (entitySummaries[kbEntity]) {
+      entitySummaries[kbEntity].farmland = {
+        count: kbFarmsLand.count,
+        value: kbFarmsLand.value,
+        owed: kbFarmsLand.owed,
+        acres: kbFarmsLand.acres
+      };
+    }
+
     // Process additional assets/liabilities from entities collection
     entities.forEach(entity => {
       if (entitySummaries[entity.name]) {
@@ -74,11 +124,13 @@ router.get('/summary', async (req, res) => {
       }
     });
 
-    // Calculate totals for each entity
+    // Calculate totals for each entity (including farmland)
     Object.keys(entitySummaries).forEach(name => {
       const entity = entitySummaries[name];
-      entity.totalAssets = entity.equipment.value + entity.realEstate.value + entity.additionalAssets.value;
-      entity.totalLiabilities = entity.equipment.owed + entity.realEstate.owed + entity.additionalLiabilities.amount;
+      const farmlandValue = entity.farmland ? entity.farmland.value : 0;
+      const farmlandOwed = entity.farmland ? entity.farmland.owed : 0;
+      entity.totalAssets = entity.equipment.value + entity.realEstate.value + farmlandValue + entity.additionalAssets.value;
+      entity.totalLiabilities = entity.equipment.owed + entity.realEstate.owed + farmlandOwed + entity.additionalLiabilities.amount;
       entity.netWorth = entity.totalAssets - entity.totalLiabilities;
     });
 
@@ -99,9 +151,9 @@ router.get('/summary', async (req, res) => {
       grandTotal.equipment.value += entity.equipment.value;
       grandTotal.equipment.owed += entity.equipment.owed;
       grandTotal.realEstate.count += entity.realEstate.count;
-      grandTotal.realEstate.value += entity.realEstate.value;
-      grandTotal.realEstate.owed += entity.realEstate.owed;
-      grandTotal.realEstate.acres += entity.realEstate.acres;
+      grandTotal.realEstate.value += entity.realEstate.value + (entity.farmland ? entity.farmland.value : 0);
+      grandTotal.realEstate.owed += entity.realEstate.owed + (entity.farmland ? entity.farmland.owed : 0);
+      grandTotal.realEstate.acres += entity.realEstate.acres + (entity.farmland ? entity.farmland.acres : 0);
       grandTotal.realEstate.annualTaxes += entity.realEstate.annualTaxes;
     });
 
@@ -149,6 +201,15 @@ router.get('/entity/:name', async (req, res) => {
       totalAcres += prop.acres || 0;
       annualTaxes += prop.annualTaxes || 0;
     });
+
+    // Include KB Farms farmland for Kyle & Brandi McConnell
+    let farmland = { count: 0, value: 0, owed: 0, acres: 0 };
+    if (entityName === 'Kyle & Brandi McConnell') {
+      farmland = await getKBFarmsLandSummary();
+      realEstateValue += farmland.value;
+      realEstateOwed += farmland.owed;
+      totalAcres += farmland.acres;
+    }
 
     // Get additional assets/liabilities
     let additionalAssetsValue = 0;
