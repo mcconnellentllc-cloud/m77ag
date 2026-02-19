@@ -226,7 +226,12 @@ router.post('/import/soil-samples', async (req, res) => {
 
       field.soil.samples.push({
         date: row.date ? new Date(row.date) : null,
+        year: parseInt(row.year) || null,
         depth: row.depth || '',
+        crop: row.crop || '',
+        yieldGoal: parseFloat(row.yieldGoal) || null,
+
+        // Basic / legacy fields
         ph: parseFloat(row.ph) || null,
         nitrogen: parseFloat(row.nitrogen) || null,
         phosphorus: parseFloat(row.phosphorus) || null,
@@ -237,6 +242,34 @@ router.post('/import/soil-samples', async (req, res) => {
         organicMatter: parseFloat(row.organicMatter) || null,
         cec: parseFloat(row.cec) || null,
         salts: parseFloat(row.salts) || null,
+
+        // Extended panel
+        bufferPH: parseFloat(row.bufferPH) || null,
+        excessLime: row.excessLime || null,
+        solubleSalts: parseFloat(row.solubleSalts) || null,
+        NO3ppm: parseFloat(row.NO3ppm) || null,
+        NO3lbs: parseFloat(row.NO3lbs) || null,
+        NO3Total: parseFloat(row.NO3Total) || null,
+        olsenP: parseFloat(row.olsenP) || null,
+        bray1P: parseFloat(row.bray1P) || null,
+        brayP2: parseFloat(row.brayP2) || null,
+        calcium: parseFloat(row.calcium) || null,
+        magnesium: parseFloat(row.magnesium) || null,
+        sodium: parseFloat(row.sodium) || null,
+        manganese: parseFloat(row.manganese) || null,
+        copper: parseFloat(row.copper) || null,
+        boron: parseFloat(row.boron) || null,
+
+        // Base saturation
+        baseSat: parseFloat(row.baseSat) || null,
+        hSat: parseFloat(row.hSat) || null,
+        caSat: parseFloat(row.caSat) || null,
+        mgSat: parseFloat(row.mgSat) || null,
+        kSat: parseFloat(row.kSat) || null,
+        naSat: parseFloat(row.naSat) || null,
+
+        // Alerts
+        agronomistAlerts: row.agronomistAlerts || [],
         notes: row.notes || ''
       });
       field.soil.samples.sort((a, b) => new Date(b.date) - new Date(a.date));
