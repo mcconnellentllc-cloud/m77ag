@@ -5,7 +5,7 @@ import AppShell from "@/components/layout/AppShell";
 import { ENTITIES } from "@/lib/entities";
 import {
   Mail, Tag, Shield, Plus, Trash2,
-  CheckCircle, XCircle, X,
+  CheckCircle, X,
 } from "lucide-react";
 
 interface EmailAccountData {
@@ -158,9 +158,12 @@ export default function SettingsPage() {
                             <CheckCircle size={12} /> Active
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                            <XCircle size={12} /> Not connected
-                          </span>
+                          <a
+                            href={`/api/auth/${account.provider === "gmail" ? "google" : "microsoft"}?accountId=${account.id}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                          >
+                            Connect
+                          </a>
                         )}
                       </div>
                       {account.lastSyncAt && (
