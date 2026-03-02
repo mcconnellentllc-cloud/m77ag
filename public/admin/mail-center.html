@@ -750,6 +750,13 @@
                 <h1 class="page-title">Mail Center</h1>
                 <p class="page-subtitle" id="todayDate"></p>
             </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="syncStatus" style="font-size: 12px; color: #888;"></span>
+                <button class="btn-primary" id="syncBtn" onclick="triggerSync()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                    Sync Emails
+                </button>
+            </div>
         </div>
 
         <!-- Tab Navigation -->
@@ -826,6 +833,18 @@
                 </div>
                 <div class="panel-body padded" id="expensesByEntity">
                     <div class="spinner"></div>
+                </div>
+            </div>
+
+            <!-- Recent Emails Summary -->
+            <div class="section-title">Recent Emails</div>
+            <div class="panel" style="margin-bottom: 30px;">
+                <div class="panel-header">
+                    <h3>Latest Incoming Emails</h3>
+                    <span class="view-all" onclick="loadMoreEmails()">Load more</span>
+                </div>
+                <div class="panel-body" id="emailSummaryList">
+                    <div class="empty-state" id="emailEmptyState">No emails synced yet. Click "Sync Emails" to pull in your latest mail, or add email accounts in Settings.</div>
                 </div>
             </div>
         </div>
@@ -918,9 +937,10 @@
 
             <!-- Accounts -->
             <div class="settings-content active" id="settings-accounts">
-                <p style="font-size: 13px; color: #888; margin-bottom: 16px;">Connected email accounts. OAuth tokens must be configured to enable sync.</p>
-                <div style="margin-bottom: 16px;">
+                <p style="font-size: 13px; color: #888; margin-bottom: 16px;">Connected email accounts. Click "Connect" to authorize email sync via OAuth.</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 16px;">
                     <button class="btn-primary" onclick="openModal('addAccountModal')">+ Add Account</button>
+                    <button class="btn-secondary" onclick="triggerSync()">Sync All Now</button>
                 </div>
                 <div class="panel">
                     <div class="panel-body" id="accountsList">
@@ -1642,7 +1662,9 @@
         // Accounts
         const accountsContainer = document.getElementById('accountsList');
         if (accountsData && accountsData.accounts && accountsData.accounts.length > 0) {
-            accountsContainer.innerHTML = accountsData.accounts.map(a => `
+            accountsContainer.innerHTML = accountsData.accounts.map(a => {
+                const authPath = a.provider === 'gmail' ? 'google' : 'microsoft';
+                return `
                 <div class="account-row">
                     <div class="account-icon ${a.provider === 'gmail' ? 'gmail' : 'outlook'}">
                         ${a.provider === 'gmail' ? 'G' : 'M'}
@@ -1657,11 +1679,16 @@
                             <span style="font-size: 11px; color: #888;">${a.entity.name}</span>
                         </div>
                     ` : ''}
-                    <span class="badge-status ${a.syncEnabled ? 'badge-paid' : 'badge-pending'}">
-                        ${a.syncEnabled ? 'Active' : 'Not Connected'}
-                    </span>
+                    ${a.syncEnabled ? `
+                        <span class="badge-status badge-paid">Active</span>
+                        ${a.lastSyncAt ? `<span style="font-size: 10px; color: #aaa;">Last sync: ${formatDate(a.lastSyncAt)}</span>` : ''}
+                        <button class="btn-secondary" onclick="syncAccount('${a.id}')">Sync Now</button>
+                    ` : `
+                        <a href="/api/mail-center/auth/${authPath}?accountId=${a.id}" class="btn-primary" style="text-decoration: none; font-size: 12px; padding: 8px 16px;">Connect</a>
+                    `}
                 </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             accountsContainer.innerHTML = '<div class="empty-state">No email accounts configured. Add an account to get started.</div>';
         }
@@ -1752,6 +1779,141 @@
     }
 
     // ============================================================
+    // SYNC ENGINE
+    // ============================================================
+    let syncing = false;
+
+    async function triggerSync() {
+        if (syncing) return;
+        syncing = true;
+        const btn = document.getElementById('syncBtn');
+        const statusEl = document.getElementById('syncStatus');
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;margin:0;border-width:2px;display:inline-block;vertical-align:middle;"></div> Syncing...';
+        statusEl.textContent = 'Syncing all accounts...';
+
+        try {
+            const data = await apiFetch('/sync', { method: 'POST' });
+            if (data && data.success) {
+                statusEl.textContent = `Synced: ${data.totalNew} new emails`;
+                if (data.totalNew > 0) {
+                    loadDashboard();
+                    loadRecentEmails();
+                }
+            } else {
+                statusEl.textContent = 'Sync failed';
+            }
+        } catch (err) {
+            statusEl.textContent = 'Sync error';
+        } finally {
+            syncing = false;
+            btn.disabled = false;
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg> Sync Emails`;
+            setTimeout(() => { statusEl.textContent = ''; }, 5000);
+        }
+    }
+
+    async function syncAccount(accountId) {
+        try {
+            const data = await apiFetch('/sync/' + accountId, { method: 'POST' });
+            if (data && data.success) {
+                const result = data.result;
+                document.getElementById('syncStatus').textContent = `${result.emailAddress}: ${result.newEmails} new`;
+                loadSettings();
+                if (result.newEmails > 0) {
+                    loadDashboard();
+                    loadRecentEmails();
+                }
+            }
+        } catch (err) {
+            console.error('Sync error:', err);
+        }
+    }
+
+    // ============================================================
+    // RECENT EMAILS (Dashboard)
+    // ============================================================
+    let emailPage = 1;
+
+    async function loadRecentEmails() {
+        const data = await apiFetch(`/emails?limit=20&page=${emailPage}`);
+        if (!data || !data.emails) return;
+
+        const container = document.getElementById('emailSummaryList');
+
+        if (data.emails.length === 0 && emailPage === 1) {
+            container.innerHTML = '<div class="empty-state">No emails synced yet. Click "Sync Emails" to pull in your latest mail, or add email accounts in Settings.</div>';
+            return;
+        }
+
+        const priorityColors = {
+            critical: '#dc2626',
+            high: '#ea580c',
+            medium: '#2563eb',
+            low: '#16a34a',
+            none: '#9ca3af'
+        };
+
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 4px;"></th>
+                        <th>From</th>
+                        <th>Subject</th>
+                        <th>Entity</th>
+                        <th>Priority</th>
+                        <th>Summary</th>
+                        <th>Received</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.emails.map(email => `
+                        <tr style="${!email.isRead ? 'font-weight: 500;' : 'opacity: 0.75;'}">
+                            <td style="padding: 0;"><div style="width: 4px; height: 100%; min-height: 40px; background: ${priorityColors[email.priority] || '#ddd'};"></div></td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${email.senderName || email.senderEmail}
+                                </div>
+                                <div style="font-size: 10px; color: #aaa; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${email.senderEmail}
+                                </div>
+                            </td>
+                            <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${email.subject || '(No Subject)'}
+                                ${email.hasAttachments ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' : ''}
+                            </td>
+                            <td>
+                                ${email.entity ? `
+                                    <div style="display:flex;align-items:center;gap:6px;">
+                                        <div class="entity-dot" style="background:${email.entity.color}"></div>
+                                        <span style="font-size:11px;color:#666;">${email.entity.name}</span>
+                                    </div>
+                                ` : '<span style="font-size:11px;color:#ccc;">--</span>'}
+                            </td>
+                            <td><span class="badge-status badge-${email.priority}">${email.priority}</span></td>
+                            <td style="font-size: 11px; color: #888; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${email.aiSummary || email.snippet || ''}
+                            </td>
+                            <td style="font-size: 11px; color: #888; white-space: nowrap;">${formatShortDate(email.receivedAt)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            ${data.pagination.totalPages > emailPage ? `
+                <div style="padding: 12px 20px; text-align: center;">
+                    <button class="btn-secondary" onclick="loadMoreEmails()">Load more (${data.pagination.total - emailPage * 20} remaining)</button>
+                </div>
+            ` : ''}
+        `;
+    }
+
+    function loadMoreEmails() {
+        emailPage++;
+        loadRecentEmails();
+    }
+
+    // ============================================================
     // LOGOUT
     // ============================================================
     function logout() {
@@ -1767,8 +1929,20 @@
         // Set default dates
         document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
 
+        // Check URL params for OAuth callback messages
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('connected')) {
+            document.getElementById('syncStatus').textContent = 'Account connected: ' + urlParams.get('connected');
+            window.history.replaceState({}, '', '/admin/mail-center');
+        }
+        if (urlParams.get('error')) {
+            document.getElementById('syncStatus').textContent = 'Error: ' + urlParams.get('error');
+            document.getElementById('syncStatus').style.color = '#dc2626';
+            window.history.replaceState({}, '', '/admin/mail-center');
+        }
+
         await loadEntities();
-        await loadDashboard();
+        await Promise.all([loadDashboard(), loadRecentEmails()]);
     }
 
     init();
