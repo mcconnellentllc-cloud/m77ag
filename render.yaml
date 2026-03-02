@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: m77ag
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # MongoDB Atlas
+      - key: MONGODB_URI
+        sync: false
+      # JWT Authentication
+      - key: JWT_SECRET
+        generateValue: true
+      # Email (Nodemailer)
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      # Stripe
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Cloudinary (image uploads)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # Mail Center — Google OAuth (Gmail sync)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        value: https://m77ag.com/api/mail-center/auth/google/callback
+      # Mail Center — Microsoft OAuth (Outlook sync)
+      - key: MICROSOFT_CLIENT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false
+      - key: MICROSOFT_TENANT_ID
+        sync: false
+      - key: MICROSOFT_REDIRECT_URI
+        value: https://m77ag.com/api/mail-center/auth/microsoft/callback
+      # Mail Center — AI Categorization
+      - key: ANTHROPIC_API_KEY
+        sync: false

@@ -9,7 +9,6 @@ Business entities:
 - pioneer: Pioneer Seeds, Corteva, seed sales, hybrid data, seed customers
 - togoag: Retail business, ToGoAG operations
 - acreprofit: Chemical sales, spray records, chemical customers
-- cocorn: Colorado Corn Growers Association, CCGA board, corn association
 - hunting: Hunting leases, hunters, DNR, wildlife
 - mcconnellent: General business bills, utilities, insurance, accounting, legal
 - personal: Family, kids, personal, non-business
