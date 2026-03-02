@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M77 AG - Mail Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .back-link {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #d4af37; }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .user-name {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+        .logout-btn {
+            padding: 8px 16px;
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+        .page-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            background: white;
+            padding: 4px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn:hover { background: #f5f3f0; color: #333; }
+        .tab-btn.active {
+            background: #1a1a1a;
+            color: white;
+        }
+        .tab-btn .badge {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 6px;
+        }
+        .tab-btn.active .badge {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+
+        /* Tab Content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Metric Cards */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .metric-card .metric-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        .metric-card .metric-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .metric-card .metric-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+            line-height: 1;
+        }
+        .metric-card .metric-sub {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        /* Entity Grid */
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .entity-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            cursor: default;
+        }
+        .entity-card .entity-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .entity-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .entity-card .entity-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .entity-card .entity-count {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #1a1a1a;
+        }
+
+        /* Section Headers */
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #2d5016;
+            border-radius: 2px;
+        }
+
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        /* White Panel */
+        .panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .panel-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        .panel-header .view-all {
+            font-size: 12px;
+            color: #2d5016;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .panel-header .view-all:hover { text-decoration: underline; }
+        .panel-body { padding: 0; }
+        .panel-body.padded { padding: 20px; }
+        .panel-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #fafafa;
+        }
+        .panel-row:last-child { border-bottom: none; }
+        .panel-row-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .panel-row-info {
+            min-width: 0;
+        }
+        .panel-row-info .primary {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .panel-row-info .secondary {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+        .panel-row .amount {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a1a1a;
+            white-space: nowrap;
+        }
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        /* Status Badges */
+        .badge-status {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-paid { background: #d1fae5; color: #065f46; }
+        .badge-overdue { background: #fee2e2; color: #991b1b; }
+        .badge-critical { background: #fee2e2; color: #991b1b; }
+        .badge-high { background: #ffedd5; color: #9a3412; }
+        .badge-medium { background: #e0f2fe; color: #075985; }
+        .badge-low { background: #f0fdf4; color: #166534; }
+        .badge-none { background: #f3f4f6; color: #6b7280; }
+
+        /* Expense Bar */
+        .expense-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+        .expense-bar-label {
+            width: 120px;
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
+        }
+        .expense-bar-track {
+            flex: 1;
+            height: 24px;
+            background: #f3f4f6;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .expense-bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            min-width: 2px;
+        }
+        .expense-bar-amount {
+            width: 90px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        /* Bills Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .data-table thead {
+            background: #fafaf8;
+        }
+        .data-table th {
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+        }
+        .data-table th.text-right { text-align: right; }
+        .data-table td {
+            padding: 12px 16px;
+            border-top: 1px solid #f5f5f3;
+        }
+        .data-table td.text-right { text-align: right; }
+        .data-table tr:hover { background: #fafaf8; }
+        .data-table .entity-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .data-table .amount-cell {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #333; }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: #f5f3f0; }
+        .btn-success {
+            padding: 6px 14px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-success:hover { background: #3d6520; }
+        .btn-danger {
+            padding: 6px 14px;
+            background: transparent;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-danger:hover { background: #fef2f2; }
+
+        /* Filters */
+        .filters-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            min-width: 160px;
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+        .modal-close:hover { color: #333; }
+        .modal-body { padding: 24px; }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+        .form-group textarea { resize: vertical; }
+        .form-submit {
+            width: 100%;
+            padding: 14px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            margin-top: 8px;
+        }
+        .form-submit:hover { background: #3d6520; }
+        .form-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Rules list */
+        .rule-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            border-bottom: 1px solid #f5f5f3;
+        }
+        .rule-row:last-child { border-bottom: none; }
+        .rule-info { flex: 1; }
+        .rule-condition {
+            font-size: 13px;
+            color: #333;
+        }
+        .rule-condition strong { font-weight: 600; }
+        .rule-condition code {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .rule-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .rule-entity {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Account rows */
+        .account-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f5f5f3;
+        }
+        .account-row:last-child { border-bottom: none; }
+        .account-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .account-icon.gmail { background: #dc2626; }
+        .account-icon.outlook { background: #2563eb; }
+        .account-info { flex: 1; min-width: 0; }
+        .account-name { font-size: 14px; font-weight: 500; color: #333; }
+        .account-email { font-size: 12px; color: #888; }
+
+        /* Spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #e5e5e5;
+            border-top-color: #2d5016;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 40px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Priority summary row */
+        .priority-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+        .priority-label {
+            width: 80px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        .priority-bar {
+            flex: 1;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .priority-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        .priority-count {
+            width: 40px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .metrics-row { grid-template-columns: repeat(2, 1fr); }
+            .entity-grid { grid-template-columns: repeat(3, 1fr); }
+            .two-col { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .metrics-row { grid-template-columns: 1fr 1fr; }
+            .entity-grid { grid-template-columns: repeat(2, 1fr); }
+            .page-header { flex-direction: column; gap: 16px; }
+            .tab-nav { gap: 2px; }
+            .tab-btn { padding: 8px 14px; font-size: 12px; }
+            .header { padding: 12px 16px; }
+            .logo { font-size: 22px; }
+        }
+        @media (max-width: 480px) {
+            .entity-grid { grid-template-columns: 1fr 1fr; }
+            .metrics-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <a href="/admin/dashboard" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Dashboard
+            </a>
+            <div class="logo">M77 AG</div>
+        </div>
+        <div class="header-right">
+            <span class="user-name" id="userName"></span>
+            <button class="logout-btn" onclick="logout()">SIGN OUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Mail Center</h1>
+                <p class="page-subtitle" id="todayDate"></p>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="bills">Bills <span class="badge" id="billsBadge" style="display:none">0</span></button>
+            <button class="tab-btn" data-tab="expenses">Expenses</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </div>
+
+        <!-- ==================== DASHBOARD TAB ==================== -->
+        <div class="tab-content active" id="tab-dashboard">
+            <!-- Top Metrics -->
+            <div class="metrics-row" id="dashMetrics">
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #eff6ff;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div class="metric-label">Unread</div>
+                    <div class="metric-value" id="metricUnread">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #fef2f2;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <div class="metric-label">Action Required</div>
+                    <div class="metric-value" id="metricAction">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #fffbeb;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
+                    </div>
+                    <div class="metric-label">Bills Due This Week</div>
+                    <div class="metric-value" id="metricBillsDue">$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #f0fdf4;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="metric-label">Expenses This Month</div>
+                    <div class="metric-value" id="metricExpenses">$0</div>
+                </div>
+            </div>
+
+            <!-- Unread by Entity -->
+            <div class="section-title">Unread by Entity</div>
+            <div class="entity-grid" id="entityGrid"></div>
+
+            <!-- Two Column: Bills Due + Recent Activity -->
+            <div class="two-col">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Bills Due This Week</h3>
+                        <span class="view-all" onclick="switchTab('bills')">View all</span>
+                    </div>
+                    <div class="panel-body" id="billsDueList">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Recent Activity</h3>
+                    </div>
+                    <div class="panel-body" id="activityList">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses by Entity -->
+            <div class="panel" style="margin-bottom: 30px;">
+                <div class="panel-header">
+                    <h3>Expenses This Month by Entity</h3>
+                </div>
+                <div class="panel-body padded" id="expensesByEntity">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== BILLS TAB ==================== -->
+        <div class="tab-content" id="tab-bills">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-family: 'Oswald', sans-serif; font-size: 24px; color: #1a1a1a;">Bills</h2>
+                <button class="btn-primary" onclick="openModal('addBillModal')">+ Add Bill</button>
+            </div>
+
+            <!-- Bills Summary -->
+            <div class="metrics-row" id="billsSummary">
+                <div class="metric-card">
+                    <div class="metric-label">Total Due</div>
+                    <div class="metric-value" id="billsTotalDue">$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Pending</div>
+                    <div class="metric-value" id="billsPending">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Overdue</div>
+                    <div class="metric-value" id="billsOverdue" style="color: #dc2626;">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Paid This Month</div>
+                    <div class="metric-value" id="billsPaid">0</div>
+                </div>
+            </div>
+
+            <!-- Bills Filters -->
+            <div class="filters-row">
+                <select class="filter-select" id="billStatusFilter" onchange="loadBills()">
+                    <option value="">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                </select>
+                <select class="filter-select" id="billEntityFilter" onchange="loadBills()">
+                    <option value="">All entities</option>
+                </select>
+            </div>
+
+            <!-- Bills Table -->
+            <div class="panel">
+                <div class="panel-body" id="billsTableContainer">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== EXPENSES TAB ==================== -->
+        <div class="tab-content" id="tab-expenses">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="font-family: 'Oswald', sans-serif; font-size: 24px; color: #1a1a1a;">Expenses</h2>
+                <button class="btn-primary" onclick="openModal('addExpenseModal')">+ Add Expense</button>
+            </div>
+
+            <div class="metric-card" style="display: inline-block; margin-bottom: 20px;">
+                <div class="metric-label">Total Shown</div>
+                <div class="metric-value" id="expensesTotal">$0</div>
+            </div>
+
+            <!-- Expenses Filters -->
+            <div class="filters-row">
+                <select class="filter-select" id="expenseEntityFilter" onchange="loadExpenses()">
+                    <option value="">All entities</option>
+                </select>
+                <input type="text" class="filter-select" id="expenseCategoryFilter" placeholder="Filter by category..." onkeyup="debounceLoadExpenses()">
+            </div>
+
+            <!-- Expenses Table -->
+            <div class="panel">
+                <div class="panel-body" id="expensesTableContainer">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SETTINGS TAB ==================== -->
+        <div class="tab-content" id="tab-settings">
+            <h2 style="font-family: 'Oswald', sans-serif; font-size: 24px; color: #1a1a1a; margin-bottom: 24px;">Settings</h2>
+
+            <!-- Settings Sub-Tabs -->
+            <div class="tab-nav" style="margin-bottom: 24px;">
+                <button class="tab-btn active" data-settings-tab="accounts">Email Accounts</button>
+                <button class="tab-btn" data-settings-tab="rules">Email Rules</button>
+                <button class="tab-btn" data-settings-tab="entities">Entities</button>
+            </div>
+
+            <!-- Accounts -->
+            <div class="settings-content active" id="settings-accounts">
+                <p style="font-size: 13px; color: #888; margin-bottom: 16px;">Connected email accounts. OAuth tokens must be configured to enable sync.</p>
+                <div style="margin-bottom: 16px;">
+                    <button class="btn-primary" onclick="openModal('addAccountModal')">+ Add Account</button>
+                </div>
+                <div class="panel">
+                    <div class="panel-body" id="accountsList">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="settings-content" id="settings-rules" style="display:none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <p style="font-size: 13px; color: #888;">Rules override AI categorization. Checked in order before AI is called.</p>
+                    <button class="btn-primary" onclick="openModal('addRuleModal')">+ Add Rule</button>
+                </div>
+                <div class="panel">
+                    <div class="panel-body" id="rulesList">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entities -->
+            <div class="settings-content" id="settings-entities" style="display:none;">
+                <p style="font-size: 13px; color: #888; margin-bottom: 16px;">Business entities. Every email, bill, and expense is tagged to one of these.</p>
+                <div class="panel">
+                    <div class="panel-body" id="entitiesList">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Add Bill Modal -->
+    <div class="modal-overlay" id="addBillModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Bill</h2>
+                <button class="modal-close" onclick="closeModal('addBillModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Entity *</label>
+                    <select id="billEntity"></select>
+                </div>
+                <div class="form-group">
+                    <label>Vendor *</label>
+                    <input type="text" id="billVendor" placeholder="Vendor name">
+                </div>
+                <div class="form-group">
+                    <label>Amount *</label>
+                    <input type="number" id="billAmount" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Invoice Number</label>
+                    <input type="text" id="billInvoice" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" id="billDueDate">
+                </div>
+                <button class="form-submit" onclick="submitBill()">Add Bill</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pay Bill Modal -->
+    <div class="modal-overlay" id="payBillModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Mark Bill as Paid</h2>
+                <button class="modal-close" onclick="closeModal('payBillModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="payBillId">
+                <div class="form-group">
+                    <label>Check Number</label>
+                    <input type="text" id="payCheckNumber">
+                </div>
+                <div class="form-group">
+                    <label>Payment Date</label>
+                    <input type="date" id="payDate">
+                </div>
+                <div class="form-group">
+                    <label>Bank Account</label>
+                    <input type="text" id="payBankAccount">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="payNotes" rows="2"></textarea>
+                </div>
+                <button class="form-submit" onclick="submitPayment()">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div class="modal-overlay" id="addExpenseModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Expense</h2>
+                <button class="modal-close" onclick="closeModal('addExpenseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Entity *</label>
+                    <select id="expenseEntity" onchange="updateExpenseCategories()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="expenseDate">
+                </div>
+                <div class="form-group">
+                    <label>Vendor *</label>
+                    <input type="text" id="expenseVendor" placeholder="Vendor name">
+                </div>
+                <div class="form-group">
+                    <label>Amount *</label>
+                    <input type="number" id="expenseAmount" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="expenseCategory">
+                        <option value="">Select entity first...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Check Number</label>
+                    <input type="text" id="expenseCheckNumber">
+                </div>
+                <div class="form-group">
+                    <label>Bank Account</label>
+                    <input type="text" id="expenseBankAccount">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="expenseNotes" rows="2"></textarea>
+                </div>
+                <button class="form-submit" onclick="submitExpense()">Add Expense</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div class="modal-overlay" id="addAccountModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Email Account</h2>
+                <button class="modal-close" onclick="closeModal('addAccountModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="accountEmail" placeholder="email@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Display Name *</label>
+                    <input type="text" id="accountName" placeholder="Account name">
+                </div>
+                <div class="form-group">
+                    <label>Provider *</label>
+                    <select id="accountProvider">
+                        <option value="gmail">Gmail</option>
+                        <option value="outlook">Outlook / Microsoft</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Default Entity</label>
+                    <select id="accountEntity"></select>
+                </div>
+                <button class="form-submit" onclick="submitAccount()">Add Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Rule Modal -->
+    <div class="modal-overlay" id="addRuleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Email Rule</h2>
+                <button class="modal-close" onclick="closeModal('addRuleModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Condition Type</label>
+                    <select id="ruleConditionType">
+                        <option value="sender">Sender Email</option>
+                        <option value="domain">Sender Domain</option>
+                        <option value="subject">Subject Contains</option>
+                        <option value="keyword">Keyword</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Value *</label>
+                    <input type="text" id="ruleConditionValue" placeholder="e.g. john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Assign to Entity</label>
+                    <select id="ruleEntity"></select>
+                </div>
+                <div class="form-group">
+                    <label>Set Priority</label>
+                    <select id="rulePriority">
+                        <option value="">No priority override</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                        <option value="none">Noise</option>
+                    </select>
+                </div>
+                <button class="form-submit" onclick="submitRule()">Create Rule</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ============================================================
+    // AUTH & GLOBALS
+    // ============================================================
+    const API_BASE = '/api/mail-center';
+    let token = localStorage.getItem('adminToken');
+    let entities = [];
+
+    if (!token) {
+        window.location.href = '/admin/login';
+    }
+
+    function getHeaders() {
+        return {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        };
+    }
+
+    async function apiFetch(path, options = {}) {
+        const res = await fetch(API_BASE + path, {
+            ...options,
+            headers: getHeaders()
+        });
+        if (res.status === 401) {
+            window.location.href = '/admin/login';
+            return null;
+        }
+        return res.json();
+    }
+
+    function formatCurrency(amount) {
+        const num = parseFloat(amount) || 0;
+        if (num >= 1000000) return '$' + (num / 1000000).toFixed(1) + 'M';
+        if (num >= 10000) return '$' + (num / 1000).toFixed(1) + 'K';
+        return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '--';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatShortDate(dateStr) {
+        if (!dateStr) return '--';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function timeAgo(dateStr) {
+        const d = new Date(dateStr);
+        const now = new Date();
+        const diff = now - d;
+        const mins = Math.floor(diff / 60000);
+        if (mins < 60) return mins + 'm ago';
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return hrs + 'h ago';
+        const days = Math.floor(hrs / 24);
+        return days + 'd ago';
+    }
+
+    // Set date
+    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Set user name
+    try {
+        const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
+        document.getElementById('userName').textContent = 'Welcome, ' + (user.name || 'Admin');
+    } catch(e) {}
+
+    // ============================================================
+    // TAB NAVIGATION
+    // ============================================================
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+
+        if (tabId === 'bills') loadBills();
+        if (tabId === 'expenses') loadExpenses();
+        if (tabId === 'settings') loadSettings();
+    }
+
+    // Settings sub-tabs
+    document.querySelectorAll('.tab-btn[data-settings-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn[data-settings-tab]').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.settings-content').forEach(c => c.style.display = 'none');
+            btn.classList.add('active');
+            document.getElementById('settings-' + btn.dataset.settingsTab).style.display = 'block';
+        });
+    });
+
+    // ============================================================
+    // MODAL HELPERS
+    // ============================================================
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('open');
+        });
+    });
+
+    // ============================================================
+    // ENTITY SELECT POPULATION
+    // ============================================================
+    async function loadEntities() {
+        const data = await apiFetch('/entities');
+        if (data && data.entities) {
+            entities = data.entities;
+            populateEntitySelects();
+        }
+    }
+
+    function populateEntitySelects() {
+        const selects = ['billEntity', 'expenseEntity', 'accountEntity', 'ruleEntity', 'billEntityFilter', 'expenseEntityFilter'];
+        selects.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isFilter = id.includes('Filter');
+            el.innerHTML = isFilter ? '<option value="">All entities</option>' : '<option value="">Select entity...</option>';
+            entities.forEach(e => {
+                el.innerHTML += `<option value="${e.slug}">${e.name}</option>`;
+            });
+        });
+    }
+
+    // ============================================================
+    // DASHBOARD
+    // ============================================================
+    async function loadDashboard() {
+        const [statsData, overviewData] = await Promise.all([
+            apiFetch('/emails/stats'),
+            apiFetch('/financial/overview')
+        ]);
+
+        // Metrics
+        if (statsData) {
+            document.getElementById('metricUnread').textContent = statsData.totalUnread || 0;
+            document.getElementById('metricAction').textContent = statsData.actionRequired || 0;
+        }
+        if (overviewData) {
+            document.getElementById('metricBillsDue').textContent = formatCurrency(overviewData.billsDueAmount || 0);
+            document.getElementById('metricExpenses').textContent = formatCurrency(overviewData.totalExpensesThisMonth || 0);
+
+            // Bills badge
+            const pendingCount = (overviewData.billsDueThisWeek || []).length;
+            const badge = document.getElementById('billsBadge');
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.style.display = 'inline';
+            }
+
+            // Bills due list
+            renderBillsDue(overviewData.billsDueThisWeek || []);
+
+            // Activity list
+            renderActivity(overviewData.recentActivity || []);
+
+            // Expenses by entity
+            renderExpensesByEntity(overviewData.expensesByEntity || {});
+        }
+
+        // Entity grid
+        if (statsData && statsData.unreadByEntity) {
+            renderEntityGrid(statsData.unreadByEntity);
+        }
+    }
+
+    function renderEntityGrid(unreadByEntity) {
+        const grid = document.getElementById('entityGrid');
+        grid.innerHTML = '';
+        entities.forEach(entity => {
+            const count = unreadByEntity[entity.slug] || 0;
+            grid.innerHTML += `
+                <div class="entity-card">
+                    <div class="entity-header">
+                        <div class="entity-dot" style="background: ${entity.color}"></div>
+                        <span class="entity-name">${entity.name}</span>
+                    </div>
+                    <div class="entity-count">${count}</div>
+                </div>
+            `;
+        });
+    }
+
+    function renderBillsDue(bills) {
+        const container = document.getElementById('billsDueList');
+        if (bills.length === 0) {
+            container.innerHTML = '<div class="empty-state">No bills due this week</div>';
+            return;
+        }
+        container.innerHTML = bills.slice(0, 5).map(bill => `
+            <div class="panel-row">
+                <div class="panel-row-left">
+                    <div class="entity-dot" style="background: ${bill.entity?.color || '#6b7280'}"></div>
+                    <div class="panel-row-info">
+                        <div class="primary">${bill.vendor}</div>
+                        <div class="secondary">${bill.dueDate ? formatShortDate(bill.dueDate) : 'No due date'}</div>
+                    </div>
+                </div>
+                <span class="amount">${formatCurrency(bill.amount)}</span>
+            </div>
+        `).join('');
+    }
+
+    function renderActivity(activities) {
+        const container = document.getElementById('activityList');
+        if (activities.length === 0) {
+            container.innerHTML = '<div class="empty-state">No recent activity</div>';
+            return;
+        }
+        container.innerHTML = activities.slice(0, 8).map(a => `
+            <div class="panel-row">
+                <div class="panel-row-left">
+                    ${a.entity ? `<div class="entity-dot" style="background: ${a.entity.color}"></div>` : '<div class="entity-dot" style="background: #ddd"></div>'}
+                    <div class="panel-row-info">
+                        <div class="primary">${a.description}</div>
+                        <div class="secondary">${a.user?.name || 'System'} -- ${timeAgo(a.createdAt)}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderExpensesByEntity(expensesByEntity) {
+        const container = document.getElementById('expensesByEntity');
+        const keys = Object.keys(expensesByEntity);
+        if (keys.length === 0) {
+            container.innerHTML = '<div class="empty-state">No expenses recorded this month</div>';
+            return;
+        }
+        const maxAmount = Math.max(...Object.values(expensesByEntity), 1);
+        container.innerHTML = entities.filter(e => expensesByEntity[e.slug] > 0).map(entity => {
+            const amount = expensesByEntity[entity.slug] || 0;
+            const pct = (amount / maxAmount) * 100;
+            return `
+                <div class="expense-bar-row">
+                    <span class="expense-bar-label">${entity.name}</span>
+                    <div class="expense-bar-track">
+                        <div class="expense-bar-fill" style="width: ${pct}%; background: ${entity.color};"></div>
+                    </div>
+                    <span class="expense-bar-amount">${formatCurrency(amount)}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ============================================================
+    // BILLS TAB
+    // ============================================================
+    async function loadBills() {
+        const status = document.getElementById('billStatusFilter').value;
+        const entity = document.getElementById('billEntityFilter').value;
+        let qs = '';
+        if (status) qs += '&status=' + status;
+        if (entity) qs += '&entity=' + entity;
+
+        const data = await apiFetch('/bills?' + qs.replace(/^&/, ''));
+        if (!data || !data.bills) return;
+
+        const bills = data.bills;
+        const pending = bills.filter(b => b.status === 'pending');
+        const overdue = bills.filter(b => b.status === 'pending' && b.dueDate && new Date(b.dueDate) < new Date());
+        const paid = bills.filter(b => b.status === 'paid');
+        const totalDue = pending.reduce((sum, b) => sum + parseFloat(b.amount), 0);
+
+        document.getElementById('billsTotalDue').textContent = formatCurrency(totalDue);
+        document.getElementById('billsPending').textContent = pending.length;
+        document.getElementById('billsOverdue').textContent = overdue.length;
+        document.getElementById('billsPaid').textContent = paid.length;
+
+        const container = document.getElementById('billsTableContainer');
+        if (bills.length === 0) {
+            container.innerHTML = '<div class="empty-state">No bills found</div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Entity</th>
+                        <th>Vendor</th>
+                        <th class="text-right">Amount</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Source</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${bills.map(bill => {
+                        const isOverdue = bill.status === 'pending' && bill.dueDate && new Date(bill.dueDate) < new Date();
+                        const statusClass = bill.status === 'paid' ? 'badge-paid' : isOverdue ? 'badge-overdue' : 'badge-pending';
+                        const statusLabel = isOverdue ? 'Overdue' : bill.status;
+                        return `
+                            <tr>
+                                <td>
+                                    <div class="entity-cell">
+                                        <div class="entity-dot" style="background: ${bill.entity?.color || '#6b7280'}"></div>
+                                        ${bill.entity?.name || 'Unassigned'}
+                                    </div>
+                                </td>
+                                <td style="font-weight: 500;">${bill.vendor}</td>
+                                <td class="text-right amount-cell">${formatCurrency(bill.amount)}</td>
+                                <td style="${isOverdue ? 'color: #dc2626; font-weight: 500;' : ''}">${formatDate(bill.dueDate)}</td>
+                                <td><span class="badge-status ${statusClass}">${statusLabel}</span></td>
+                                <td style="color: #888; text-transform: capitalize;">${bill.source}</td>
+                                <td class="text-right">
+                                    ${bill.status === 'pending' ? `<button class="btn-success" onclick="openPayBill('${bill.id}')">Mark Paid</button>` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    async function submitBill() {
+        const entitySlug = document.getElementById('billEntity').value;
+        const vendor = document.getElementById('billVendor').value;
+        const amount = document.getElementById('billAmount').value;
+        if (!entitySlug || !vendor || !amount) return;
+
+        await apiFetch('/bills', {
+            method: 'POST',
+            body: JSON.stringify({
+                entitySlug,
+                vendor,
+                amount: parseFloat(amount),
+                invoiceNumber: document.getElementById('billInvoice').value || null,
+                dueDate: document.getElementById('billDueDate').value || null
+            })
+        });
+
+        closeModal('addBillModal');
+        document.getElementById('billVendor').value = '';
+        document.getElementById('billAmount').value = '';
+        document.getElementById('billInvoice').value = '';
+        document.getElementById('billDueDate').value = '';
+        loadBills();
+        loadDashboard();
+    }
+
+    function openPayBill(billId) {
+        document.getElementById('payBillId').value = billId;
+        document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('payCheckNumber').value = '';
+        document.getElementById('payBankAccount').value = '';
+        document.getElementById('payNotes').value = '';
+        openModal('payBillModal');
+    }
+
+    async function submitPayment() {
+        const billId = document.getElementById('payBillId').value;
+        await apiFetch(`/bills/${billId}/pay`, {
+            method: 'POST',
+            body: JSON.stringify({
+                checkNumber: document.getElementById('payCheckNumber').value,
+                paymentDate: document.getElementById('payDate').value,
+                bankAccount: document.getElementById('payBankAccount').value,
+                notes: document.getElementById('payNotes').value
+            })
+        });
+        closeModal('payBillModal');
+        loadBills();
+        loadDashboard();
+    }
+
+    // ============================================================
+    // EXPENSES TAB
+    // ============================================================
+    let expenseDebounce;
+    function debounceLoadExpenses() {
+        clearTimeout(expenseDebounce);
+        expenseDebounce = setTimeout(loadExpenses, 300);
+    }
+
+    async function loadExpenses() {
+        const entity = document.getElementById('expenseEntityFilter').value;
+        const category = document.getElementById('expenseCategoryFilter').value;
+        let qs = '';
+        if (entity) qs += '&entity=' + entity;
+        if (category) qs += '&category=' + encodeURIComponent(category);
+
+        const data = await apiFetch('/expenses?' + qs.replace(/^&/, ''));
+        if (!data || !data.expenses) return;
+
+        const expenses = data.expenses;
+        const total = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+        document.getElementById('expensesTotal').textContent = formatCurrency(total);
+
+        const container = document.getElementById('expensesTableContainer');
+        if (expenses.length === 0) {
+            container.innerHTML = '<div class="empty-state">No expenses found</div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Entity</th>
+                        <th>Vendor</th>
+                        <th>Category</th>
+                        <th class="text-right">Amount</th>
+                        <th>Check #</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${expenses.map(exp => `
+                        <tr>
+                            <td style="color: #666;">${formatDate(exp.date)}</td>
+                            <td>
+                                <div class="entity-cell">
+                                    <div class="entity-dot" style="background: ${exp.entity?.color || '#6b7280'}"></div>
+                                    ${exp.entity?.name || 'Unassigned'}
+                                </div>
+                            </td>
+                            <td style="font-weight: 500;">${exp.vendor}</td>
+                            <td style="color: #666; text-transform: capitalize;">${exp.category}</td>
+                            <td class="text-right amount-cell">${formatCurrency(exp.amount)}</td>
+                            <td style="color: #888;">${exp.checkNumber || '--'}</td>
+                            <td style="color: #888; text-transform: capitalize;">${exp.source}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    function updateExpenseCategories() {
+        const slug = document.getElementById('expenseEntity').value;
+        const catSelect = document.getElementById('expenseCategory');
+        const entity = entities.find(e => e.slug === slug);
+        if (!entity) {
+            catSelect.innerHTML = '<option value="">Select entity first...</option>';
+            return;
+        }
+        catSelect.innerHTML = '<option value="">Select category...</option>';
+        (entity.expenseCategories || []).forEach(cat => {
+            catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+    }
+
+    async function submitExpense() {
+        const entitySlug = document.getElementById('expenseEntity').value;
+        const vendor = document.getElementById('expenseVendor').value;
+        const amount = document.getElementById('expenseAmount').value;
+        const category = document.getElementById('expenseCategory').value;
+        if (!entitySlug || !vendor || !amount || !category) return;
+
+        await apiFetch('/expenses', {
+            method: 'POST',
+            body: JSON.stringify({
+                entitySlug,
+                vendor,
+                amount: parseFloat(amount),
+                category,
+                date: document.getElementById('expenseDate').value || null,
+                checkNumber: document.getElementById('expenseCheckNumber').value || null,
+                bankAccount: document.getElementById('expenseBankAccount').value || null,
+                notes: document.getElementById('expenseNotes').value || null
+            })
+        });
+
+        closeModal('addExpenseModal');
+        document.getElementById('expenseVendor').value = '';
+        document.getElementById('expenseAmount').value = '';
+        document.getElementById('expenseCheckNumber').value = '';
+        document.getElementById('expenseBankAccount').value = '';
+        document.getElementById('expenseNotes').value = '';
+        loadExpenses();
+        loadDashboard();
+    }
+
+    // ============================================================
+    // SETTINGS TAB
+    // ============================================================
+    async function loadSettings() {
+        const [accountsData, rulesData] = await Promise.all([
+            apiFetch('/accounts'),
+            apiFetch('/rules')
+        ]);
+
+        // Accounts
+        const accountsContainer = document.getElementById('accountsList');
+        if (accountsData && accountsData.accounts && accountsData.accounts.length > 0) {
+            accountsContainer.innerHTML = accountsData.accounts.map(a => `
+                <div class="account-row">
+                    <div class="account-icon ${a.provider === 'gmail' ? 'gmail' : 'outlook'}">
+                        ${a.provider === 'gmail' ? 'G' : 'M'}
+                    </div>
+                    <div class="account-info">
+                        <div class="account-name">${a.displayName}</div>
+                        <div class="account-email">${a.emailAddress}</div>
+                    </div>
+                    ${a.entity ? `
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div class="entity-dot" style="background: ${a.entity.color}"></div>
+                            <span style="font-size: 11px; color: #888;">${a.entity.name}</span>
+                        </div>
+                    ` : ''}
+                    <span class="badge-status ${a.syncEnabled ? 'badge-paid' : 'badge-pending'}">
+                        ${a.syncEnabled ? 'Active' : 'Not Connected'}
+                    </span>
+                </div>
+            `).join('');
+        } else {
+            accountsContainer.innerHTML = '<div class="empty-state">No email accounts configured. Add an account to get started.</div>';
+        }
+
+        // Rules
+        const rulesContainer = document.getElementById('rulesList');
+        if (rulesData && rulesData.rules && rulesData.rules.length > 0) {
+            rulesContainer.innerHTML = rulesData.rules.map(r => `
+                <div class="rule-row">
+                    <div class="rule-info">
+                        <div class="rule-condition">
+                            When <strong>${r.conditionType}</strong> is <code>${r.conditionValue}</code>
+                        </div>
+                        <div class="rule-meta">
+                            ${r.entity ? `
+                                <div class="rule-entity">
+                                    <div class="entity-dot" style="background: ${r.entity.color}"></div>
+                                    <span>Assign to ${r.entity.name}</span>
+                                </div>
+                            ` : ''}
+                            ${r.assignPriority ? `<span style="font-size: 11px; color: #888;">Priority: ${r.assignPriority}</span>` : ''}
+                        </div>
+                    </div>
+                    <span class="badge-status ${r.isActive ? 'badge-paid' : 'badge-none'}">${r.isActive ? 'Active' : 'Disabled'}</span>
+                    <button class="btn-danger" onclick="deleteRule('${r.id}')">Delete</button>
+                </div>
+            `).join('');
+        } else {
+            rulesContainer.innerHTML = '<div class="empty-state">No rules yet. Create one to automatically categorize emails.</div>';
+        }
+
+        // Entities list
+        const entitiesContainer = document.getElementById('entitiesList');
+        entitiesContainer.innerHTML = entities.map(e => `
+            <div class="rule-row">
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                    <div class="entity-dot" style="background: ${e.color}; width: 14px; height: 14px;"></div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 500; color: #333;">${e.name}</div>
+                        <div style="font-size: 12px; color: #888;">${e.description || ''}</div>
+                    </div>
+                </div>
+                <span style="font-size: 12px; font-family: monospace; color: #aaa;">${e.slug}</span>
+            </div>
+        `).join('');
+    }
+
+    async function submitAccount() {
+        const emailAddress = document.getElementById('accountEmail').value;
+        const displayName = document.getElementById('accountName').value;
+        const provider = document.getElementById('accountProvider').value;
+        const entitySlug = document.getElementById('accountEntity').value;
+        if (!emailAddress || !displayName) return;
+
+        await apiFetch('/accounts', {
+            method: 'POST',
+            body: JSON.stringify({ emailAddress, displayName, provider, entitySlug })
+        });
+
+        closeModal('addAccountModal');
+        document.getElementById('accountEmail').value = '';
+        document.getElementById('accountName').value = '';
+        loadSettings();
+    }
+
+    async function submitRule() {
+        const conditionValue = document.getElementById('ruleConditionValue').value;
+        if (!conditionValue) return;
+
+        await apiFetch('/rules', {
+            method: 'POST',
+            body: JSON.stringify({
+                conditionType: document.getElementById('ruleConditionType').value,
+                conditionValue,
+                entitySlug: document.getElementById('ruleEntity').value || null,
+                priority: document.getElementById('rulePriority').value || null
+            })
+        });
+
+        closeModal('addRuleModal');
+        document.getElementById('ruleConditionValue').value = '';
+        loadSettings();
+    }
+
+    async function deleteRule(ruleId) {
+        await apiFetch('/rules/' + ruleId, { method: 'DELETE' });
+        loadSettings();
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function logout() {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        window.location.href = '/admin/login';
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    async function init() {
+        // Set default dates
+        document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+
+        await loadEntities();
+        await loadDashboard();
+    }
+
+    init();
+    </script>
+</body>
+</html>

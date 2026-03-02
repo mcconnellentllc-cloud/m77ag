@@ -74,6 +74,7 @@ const croppingFieldRoutes = require('./routes/croppingFields');
 const cropExpenseRoutes = require('./routes/cropExpenses');
 const stripeRoutes = require('./routes/stripe');
 const stripeController = require('./controllers/stripeController');
+const mailCenterRoutes = require('./routes/mailCenter');
 
 // Stripe webhook needs raw body - must be before express.json()
 // This is handled separately below after static files
@@ -114,6 +115,7 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/cropping-fields', croppingFieldRoutes);
 app.use('/api/crop-expenses', cropExpenseRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/mail-center', mailCenterRoutes);
 
 // Stripe webhook endpoint (needs raw body)
 app.post('/api/stripe/webhook',
@@ -162,6 +164,10 @@ app.get('/admin/equipment', (req, res) => {
 
 app.get('/admin/testimonials', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/testimonials.html'));
+});
+
+app.get('/admin/mail-center', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/mail-center.html'));
 });
 
 app.get('/admin', (req, res) => {
