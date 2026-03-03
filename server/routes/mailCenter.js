@@ -7,7 +7,146 @@ const {
   MailActivityLog, MailSenderCache
 } = require('../models/mailCenter');
 
-// All mail center routes require admin auth
+// ============================================================
+// OAUTH CALLBACKS — Must be BEFORE auth middleware
+// These routes are hit by redirects from Google/Microsoft
+// where no auth header or cookie is available
+// ============================================================
+
+// GET /api/mail-center/auth/google/callback
+router.get('/auth/google/callback', async (req, res) => {
+  try {
+    const { code, state: accountId, error } = req.query;
+
+    if (error || !code) {
+      return res.redirect('/admin/mail-center?error=' + encodeURIComponent(error || 'Unknown error'));
+    }
+
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/mail-center/auth/google/callback`;
+
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID || '',
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+        code,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code'
+      })
+    });
+
+    if (!tokenRes.ok) {
+      const errBody = await tokenRes.text();
+      console.error('Google token exchange failed:', errBody);
+      return res.redirect('/admin/mail-center?error=Token+exchange+failed');
+    }
+
+    const tokens = await tokenRes.json();
+
+    if (accountId && tokens.access_token) {
+      // Get the email address from Google userinfo
+      let emailAddress = null;
+      try {
+        const profileRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+          headers: { 'Authorization': `Bearer ${tokens.access_token}` }
+        });
+        if (profileRes.ok) {
+          const profile = await profileRes.json();
+          emailAddress = profile.email;
+        }
+      } catch (e) {
+        console.error('Failed to get Google profile:', e.message);
+      }
+
+      const updateData = {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token || undefined,
+        tokenExpiresAt: new Date(Date.now() + (tokens.expires_in || 3600) * 1000),
+        syncEnabled: true
+      };
+      if (emailAddress) updateData.emailAddress = emailAddress;
+
+      await MailEmailAccount.findByIdAndUpdate(accountId, updateData);
+    }
+
+    res.redirect('/admin/mail-center?connected=google');
+  } catch (err) {
+    console.error('Google OAuth callback error:', err);
+    res.redirect('/admin/mail-center?error=OAuth+callback+failed');
+  }
+});
+
+// GET /api/mail-center/auth/microsoft/callback
+router.get('/auth/microsoft/callback', async (req, res) => {
+  try {
+    const { code, state: accountId, error } = req.query;
+
+    if (error || !code) {
+      const errorDesc = req.query.error_description || 'Unknown error';
+      return res.redirect('/admin/mail-center?error=' + encodeURIComponent(errorDesc));
+    }
+
+    const tenantId = process.env.MICROSOFT_TENANT_ID || 'common';
+    const redirectUri = process.env.MICROSOFT_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/mail-center/auth/microsoft/callback`;
+
+    const tokenRes = await fetch(
+      `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: process.env.MICROSOFT_CLIENT_ID || '',
+          client_secret: process.env.MICROSOFT_CLIENT_SECRET || '',
+          code,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code'
+        })
+      }
+    );
+
+    if (!tokenRes.ok) {
+      const errBody = await tokenRes.text();
+      console.error('Microsoft token exchange failed:', errBody);
+      return res.redirect('/admin/mail-center?error=Token+exchange+failed');
+    }
+
+    const tokens = await tokenRes.json();
+
+    if (accountId) {
+      // Get the email address from Microsoft Graph
+      let emailAddress = null;
+      try {
+        const profileRes = await fetch('https://graph.microsoft.com/v1.0/me', {
+          headers: { 'Authorization': `Bearer ${tokens.access_token}` }
+        });
+        if (profileRes.ok) {
+          const profile = await profileRes.json();
+          emailAddress = profile.mail || profile.userPrincipalName;
+        }
+      } catch (e) {
+        console.error('Failed to get Microsoft profile:', e.message);
+      }
+
+      const updateData = {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token || undefined,
+        tokenExpiresAt: new Date(Date.now() + tokens.expires_in * 1000),
+        syncEnabled: true
+      };
+      if (emailAddress) updateData.emailAddress = emailAddress;
+
+      await MailEmailAccount.findByIdAndUpdate(accountId, updateData);
+    }
+
+    res.redirect('/admin/mail-center?connected=microsoft');
+  } catch (err) {
+    console.error('Microsoft OAuth callback error:', err);
+    res.redirect('/admin/mail-center?error=OAuth+callback+failed');
+  }
+});
+
+// All remaining mail center routes require admin auth
 router.use(authenticate, isAdmin);
 
 // Helper to log activity
@@ -819,15 +958,16 @@ router.post('/sync/:accountId', async (req, res) => {
 });
 
 // ============================================================
-// OAUTH CONNECT — Google
+// OAUTH INITIATE — Returns OAuth URL as JSON
+// Frontend calls via fetch (with Bearer header), then navigates
 // ============================================================
 
-// GET /api/mail-center/auth/google — initiate Google OAuth flow
-router.get('/auth/google', async (req, res) => {
+// GET /api/mail-center/auth/google/url — get Google OAuth URL
+router.get('/auth/google/url', async (req, res) => {
   try {
     const { accountId } = req.query;
     const clientId = process.env.GOOGLE_CLIENT_ID;
-    if (!clientId) return res.status(500).json({ success: false, message: 'GOOGLE_CLIENT_ID not configured' });
+    if (!clientId) return res.status(500).json({ success: false, message: 'GOOGLE_CLIENT_ID not configured. Add it in Render environment variables.' });
 
     const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/mail-center/auth/google/callback`;
 
@@ -846,69 +986,18 @@ router.get('/auth/google', async (req, res) => {
     authUrl.searchParams.set('prompt', 'consent');
     authUrl.searchParams.set('state', accountId || '');
 
-    res.redirect(authUrl.toString());
+    res.json({ success: true, url: authUrl.toString() });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// GET /api/mail-center/auth/google/callback
-router.get('/auth/google/callback', async (req, res) => {
-  try {
-    const { code, state: accountId, error } = req.query;
-
-    if (error || !code) {
-      return res.redirect('/admin/mail-center?error=' + encodeURIComponent(error || 'Unknown error'));
-    }
-
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/mail-center/auth/google/callback`;
-
-    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: process.env.GOOGLE_CLIENT_ID || '',
-        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
-        code,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code'
-      })
-    });
-
-    if (!tokenRes.ok) {
-      return res.redirect('/admin/mail-center?error=Token+exchange+failed');
-    }
-
-    const tokens = await tokenRes.json();
-
-    if (accountId && tokens.access_token) {
-      await MailEmailAccount.findByIdAndUpdate(accountId, {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token || null,
-        tokenExpiresAt: tokens.expiry_date
-          ? new Date(tokens.expiry_date)
-          : new Date(Date.now() + (tokens.expires_in || 3600) * 1000),
-        syncEnabled: true
-      });
-    }
-
-    res.redirect('/admin/mail-center?connected=google');
-  } catch (err) {
-    console.error('Google OAuth callback error:', err);
-    res.redirect('/admin/mail-center?error=OAuth+callback+failed');
-  }
-});
-
-// ============================================================
-// OAUTH CONNECT — Microsoft
-// ============================================================
-
-// GET /api/mail-center/auth/microsoft — initiate Microsoft OAuth flow
-router.get('/auth/microsoft', async (req, res) => {
+// GET /api/mail-center/auth/microsoft/url — get Microsoft OAuth URL
+router.get('/auth/microsoft/url', async (req, res) => {
   try {
     const { accountId } = req.query;
     const clientId = process.env.MICROSOFT_CLIENT_ID;
-    if (!clientId) return res.status(500).json({ success: false, message: 'MICROSOFT_CLIENT_ID not configured' });
+    if (!clientId) return res.status(500).json({ success: false, message: 'MICROSOFT_CLIENT_ID not configured. Add it in Render environment variables.' });
 
     const tenantId = process.env.MICROSOFT_TENANT_ID || 'common';
     const redirectUri = process.env.MICROSOFT_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/mail-center/auth/microsoft/callback`;
@@ -929,59 +1018,9 @@ router.get('/auth/microsoft', async (req, res) => {
     authUrl.searchParams.set('response_mode', 'query');
     authUrl.searchParams.set('state', accountId || '');
 
-    res.redirect(authUrl.toString());
+    res.json({ success: true, url: authUrl.toString() });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// GET /api/mail-center/auth/microsoft/callback
-router.get('/auth/microsoft/callback', async (req, res) => {
-  try {
-    const { code, state: accountId, error } = req.query;
-
-    if (error || !code) {
-      const errorDesc = req.query.error_description || 'Unknown error';
-      return res.redirect('/admin/mail-center?error=' + encodeURIComponent(errorDesc));
-    }
-
-    const tenantId = process.env.MICROSOFT_TENANT_ID || 'common';
-    const redirectUri = process.env.MICROSOFT_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/mail-center/auth/microsoft/callback`;
-
-    const tokenRes = await fetch(
-      `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          client_id: process.env.MICROSOFT_CLIENT_ID || '',
-          client_secret: process.env.MICROSOFT_CLIENT_SECRET || '',
-          code,
-          redirect_uri: redirectUri,
-          grant_type: 'authorization_code'
-        })
-      }
-    );
-
-    if (!tokenRes.ok) {
-      return res.redirect('/admin/mail-center?error=Token+exchange+failed');
-    }
-
-    const tokens = await tokenRes.json();
-
-    if (accountId) {
-      await MailEmailAccount.findByIdAndUpdate(accountId, {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token || null,
-        tokenExpiresAt: new Date(Date.now() + tokens.expires_in * 1000),
-        syncEnabled: true
-      });
-    }
-
-    res.redirect('/admin/mail-center?connected=microsoft');
-  } catch (err) {
-    console.error('Microsoft OAuth callback error:', err);
-    res.redirect('/admin/mail-center?error=OAuth+callback+failed');
   }
 });
 

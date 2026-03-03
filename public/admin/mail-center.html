@@ -1684,7 +1684,7 @@
                         ${a.lastSyncAt ? `<span style="font-size: 10px; color: #aaa;">Last sync: ${formatDate(a.lastSyncAt)}</span>` : ''}
                         <button class="btn-secondary" onclick="syncAccount('${a.id}')">Sync Now</button>
                     ` : `
-                        <a href="/api/mail-center/auth/${authPath}?accountId=${a.id}" class="btn-primary" style="text-decoration: none; font-size: 12px; padding: 8px 16px;">Connect</a>
+                        <button class="btn-primary" style="font-size: 12px; padding: 8px 16px;" onclick="connectAccount('${a.id}', '${authPath}')">Connect</button>
                     `}
                 </div>
                 `;
@@ -1734,6 +1734,21 @@
                 <span style="font-size: 12px; font-family: monospace; color: #aaa;">${e.slug}</span>
             </div>
         `).join('');
+    }
+
+    async function connectAccount(accountId, provider) {
+        try {
+            const data = await apiFetch(`/auth/${provider}/url?accountId=${accountId}`);
+            if (data && data.success && data.url) {
+                window.location.href = data.url;
+            } else {
+                document.getElementById('syncStatus').textContent = data?.message || 'Failed to get OAuth URL';
+                document.getElementById('syncStatus').style.color = '#dc2626';
+            }
+        } catch (err) {
+            document.getElementById('syncStatus').textContent = 'Error connecting account';
+            document.getElementById('syncStatus').style.color = '#dc2626';
+        }
     }
 
     async function submitAccount() {
