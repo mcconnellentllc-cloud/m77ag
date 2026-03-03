@@ -75,6 +75,16 @@
         .fc-stat .sv.na { color: #ccc; }
         .fc-stat .sl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #999; }
 
+        /* Soil quick-view on cards */
+        .fc-soil-quick { display: flex; gap: 6px; padding: 8px 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid #f0f0f0; }
+        .soil-dot { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+        .soil-dot.dot-ideal { background: rgba(39,174,96,0.12); color: #27ae60; }
+        .soil-dot.dot-low { background: rgba(230,126,34,0.12); color: #e67e22; }
+        .soil-dot.dot-critical { background: rgba(192,57,43,0.12); color: #c0392b; }
+        .soil-dot.dot-high { background: rgba(41,128,185,0.12); color: #2980b9; }
+        .soil-dot.dot-na { background: #f0f0f0; color: #bbb; }
+        .soil-concern-count { font-size: 10px; font-weight: 600; color: #c0392b; margin-left: auto; }
+
         /* Expand indicator */
         .fc-expand { text-align: center; padding: 6px; font-size: 10px; color: #bbb; cursor: pointer; transition: color 0.3s; }
         .fc-expand:hover { color: #2d5016; }
@@ -214,6 +224,7 @@
             <a href="/admin/dashboard">Dashboard</a>
             <a href="/admin/farm-operations">Farm Ops</a>
             <a href="/admin/field-manager" class="active">Field Manager</a>
+            <a href="/admin/soil-samples">Soil Analysis</a>
             <a href="/admin/farm-projections">Projections</a>
             <a href="/admin/financials">Financials</a>
         </nav>
@@ -586,6 +597,19 @@
                 const netPA = f.netPerAcre || 0;
                 const leaseType = f.lease && f.lease.type ? f.lease.type : '';
 
+                // Soil quick-view
+                const soilSamples = (f.soil && f.soil.samples) || [];
+                const latestSoil = soilSamples.length > 0 ? [...soilSamples].sort((a,b) => (b.year||0) - (a.year||0))[0] : null;
+                const soilConcerns = latestSoil ? identifyConcerns(latestSoil, soilSamples) : [];
+                const soilQuickHtml = latestSoil ? `
+                    <div class="fc-soil-quick">
+                        <span class="soil-dot ${latestSoil.ph != null ? 'dot-' + getSoilStatus('ph', latestSoil.ph) : 'dot-na'}" title="pH: ${latestSoil.ph || '?'}">pH ${latestSoil.ph || '--'}</span>
+                        <span class="soil-dot ${latestSoil.organicMatter != null ? 'dot-' + getSoilStatus('organicMatter', latestSoil.organicMatter) : 'dot-na'}" title="O.M.: ${latestSoil.organicMatter || '?'}%">OM ${latestSoil.organicMatter || '--'}%</span>
+                        <span class="soil-dot ${latestSoil.olsenP != null ? 'dot-' + getSoilStatus('olsenP', latestSoil.olsenP) : 'dot-na'}" title="Olsen P: ${latestSoil.olsenP || '?'} ppm">P ${latestSoil.olsenP || '--'}</span>
+                        <span class="soil-dot ${latestSoil.potassium != null ? 'dot-' + getSoilStatus('potassium', latestSoil.potassium) : 'dot-na'}" title="K: ${latestSoil.potassium || '?'} ppm">K ${latestSoil.potassium || '--'}</span>
+                        ${soilConcerns.length > 0 ? '<span class="soil-concern-count">' + soilConcerns.length + ' concern' + (soilConcerns.length > 1 ? 's' : '') + '</span>' : ''}
+                    </div>` : '';
+
                 return `
                 <div class="field-card" id="card-${f._id}">
                     <div class="fc-header" onclick="toggleCard('${f._id}')">
@@ -612,6 +636,7 @@
                             <div class="sl">Years of Data</div>
                         </div>
                     </div>
+                    ${soilQuickHtml}
                     <div class="fc-expand" onclick="toggleCard('${f._id}')">Click to expand</div>
                     <div class="fc-detail" id="detail-${f._id}">
                         ${renderDetailTabs(f)}
@@ -962,7 +987,7 @@
             });
             html += '</div>';
 
-            html += '<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal(\'' + f._id + '\')">Add Soil Sample</button></div>';
+            html += '<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal(\'' + f._id + '\')">Add Soil Sample</button> <a href="/admin/soil-samples" class="btn btn-outline btn-sm" style="text-decoration:none;">Full Soil Analysis</a></div>';
             return html;
         }
 
