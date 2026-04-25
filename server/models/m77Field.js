@@ -84,6 +84,19 @@ const m77FieldSchema = new mongoose.Schema({
     index: true
   },
 
+  // Origin tracking for one-time migration from legacy Field / CroppingField
+  // collections. Lets the migration script run idempotently — re-runs upsert
+  // on (legacySource, legacyId) instead of duplicating rows.
+  legacySource: {
+    type: String,
+    enum: ['Field', 'CroppingField'],
+    default: null
+  },
+  legacyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
+  },
+
   // Status / notes
   status: {
     type: String,
@@ -101,5 +114,9 @@ const m77FieldSchema = new mongoose.Schema({
 m77FieldSchema.index({ name: 1, county: 1 });
 m77FieldSchema.index({ rotationGroup: 1 });
 m77FieldSchema.index({ owner: 1 });
+m77FieldSchema.index(
+  { legacySource: 1, legacyId: 1 },
+  { unique: true, partialFilterExpression: { legacyId: { $type: 'objectId' } } }
+);
 
 module.exports = mongoose.model('M77Field', m77FieldSchema);

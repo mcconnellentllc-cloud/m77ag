@@ -268,6 +268,11 @@ app.get('/admin/field-manager', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
 });
 
+// M77 master field registry (Phase 1)
+app.get('/admin/fields', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/fields.html'));
+});
+
 // Soil analysis
 app.get('/admin/soil-samples', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/soil-samples.html'));
