@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fields | M77 AG Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: #1a1a1a;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #d4af37;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .admin-nav a:hover, .admin-nav a.active {
+            color: #d4af37;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #2d5016;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover { background: #234012; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+
+        .btn-secondary {
+            background: #fff;
+            color: #1a1a1a;
+            border: 1px solid #ddd;
+        }
+        .btn-secondary:hover { background: #f0f0f0; }
+
+        .btn-danger {
+            background: #c0392b;
+        }
+        .btn-danger:hover { background: #962d22; }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 12px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #1a1a1a;
+        }
+
+        .stat-value.gold { color: #d4af37; }
+        .stat-value.green { color: #2d5016; }
+
+        /* Filters */
+        .filter-bar {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        /* Table */
+        .table-wrap {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #1a1a1a;
+            color: #fff;
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover { background: #fafafa; }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-active { background: #e8f5e9; color: #2d5016; }
+        .badge-fallow { background: #fff8e1; color: #8a6d00; }
+        .badge-retired { background: #f5f5f5; color: #666; }
+        .badge-jd-linked { background: #e3f2fd; color: #1565c0; }
+        .badge-jd-unlinked { background: #f5f5f5; color: #999; }
+
+        .row-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: #888;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 720px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #888;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 24px 28px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-group label .req { color: #c0392b; }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 5px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show { display: block; }
+        .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
+        .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            thead { display: none; }
+            tbody td { display: block; padding: 8px 16px; border: none; }
+            tbody tr {
+                display: block;
+                border-bottom: 1px solid #eee;
+                padding: 10px 0;
+            }
+            tbody td::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 11px;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/fields.html" class="active">Fields</a>
+            <a href="/admin/farming-dashboard">Farming</a>
+            <a href="/admin/equipment">Equipment</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Fields</h1>
+                <p class="page-subtitle">M77 AG master field registry &middot; standalone of John Deere</p>
+            </div>
+            <button class="btn" id="btnNewField">Add Field</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Fields</div>
+                <div class="stat-value" id="statCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Acres</div>
+                <div class="stat-value green" id="statAcres">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Irrigated</div>
+                <div class="stat-value gold" id="statIrrigated">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">JD Linked</div>
+                <div class="stat-value" id="statJD">0</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label for="filterSearch">Search</label>
+                <input type="text" id="filterSearch" placeholder="Name, landlord, group">
+            </div>
+            <div class="filter-group">
+                <label for="filterCounty">County</label>
+                <select id="filterCounty"><option value="">All</option></select>
+            </div>
+            <div class="filter-group">
+                <label for="filterIrrigation">Irrigation</label>
+                <select id="filterIrrigation">
+                    <option value="">All</option>
+                    <option value="dryland">Dryland</option>
+                    <option value="pivot">Pivot</option>
+                    <option value="flood">Flood</option>
+                    <option value="drip">Drip</option>
+                    <option value="sprinkler">Sprinkler</option>
+                    <option value="none">None</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterOwner">Owner</label>
+                <select id="filterOwner">
+                    <option value="">All</option>
+                    <option value="m77">M77 owned</option>
+                    <option value="landlord">Landlord owned</option>
+                    <option value="shared">Shared</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterRotation">Rotation Group</label>
+                <select id="filterRotation"><option value="">All</option></select>
+            </div>
+            <div class="filter-group">
+                <label for="filterCrop">2026 Crop</label>
+                <select id="filterCrop"><option value="">All</option></select>
+            </div>
+            <div class="filter-group">
+                <label for="filterStatus">Status</label>
+                <select id="filterStatus">
+                    <option value="">All</option>
+                    <option value="active">Active</option>
+                    <option value="fallow">Fallow</option>
+                    <option value="retired">Retired</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>County</th>
+                        <th>Acres</th>
+                        <th>Owner</th>
+                        <th>Irrigation</th>
+                        <th>2026 Crop</th>
+                        <th>Rotation</th>
+                        <th>Status</th>
+                        <th>JD</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="fieldsTbody">
+                    <tr><td colspan="10" class="empty">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Add / edit modal -->
+    <div class="modal-overlay" id="fieldModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Field</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="modalError"></div>
+                <form id="fieldForm">
+                    <input type="hidden" id="fieldId">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="f_name">Name <span class="req">*</span></label>
+                            <input type="text" id="f_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_county">County</label>
+                            <input type="text" id="f_county">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="f_acres">Acres <span class="req">*</span></label>
+                            <input type="number" id="f_acres" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_status">Status</label>
+                            <select id="f_status">
+                                <option value="active">Active</option>
+                                <option value="fallow">Fallow</option>
+                                <option value="retired">Retired</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="f_owner">Owner</label>
+                            <select id="f_owner">
+                                <option value="m77">M77 owned</option>
+                                <option value="landlord">Landlord owned</option>
+                                <option value="shared">Shared</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_landlordName">Landlord Name</label>
+                            <input type="text" id="f_landlordName">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="f_m77Share">M77 Share %</label>
+                            <input type="number" id="f_m77Share" min="0" max="100" step="1" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="f_landlordShare">Landlord Share %</label>
+                            <input type="number" id="f_landlordShare" min="0" max="100" step="1" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="f_irrigation">Irrigation</label>
+                            <select id="f_irrigation">
+                                <option value="dryland">Dryland</option>
+                                <option value="pivot">Pivot</option>
+                                <option value="flood">Flood</option>
+                                <option value="drip">Drip</option>
+                                <option value="sprinkler">Sprinkler</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_crop2026">2026 Crop</label>
+                            <input type="text" id="f_crop2026" placeholder="corn, wheat, milo...">
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="f_rotation">Rotation Group</label>
+                            <input type="text" id="f_rotation" placeholder="e.g. North dryland, Pivot 4">
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="f_boundary">GeoJSON Boundary (optional)</label>
+                            <textarea id="f_boundary" placeholder='[[[lng,lat],[lng,lat],[lng,lat],[lng,lat]]]'></textarea>
+                            <div class="form-hint">Paste the coordinates array of a GeoJSON Polygon. Leave blank to skip.</div>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="f_notes">Notes</label>
+                            <textarea id="f_notes"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" id="modalCancel">Cancel</button>
+                <button class="btn btn-danger btn-sm" id="modalDelete" style="display:none;">Delete</button>
+                <button class="btn btn-sm" id="modalSave">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api/m77-fields';
+
+        function getToken() {
+            const cookieMatch = document.cookie.match(/(?:^|;\s*)token=([^;]+)/);
+            return (cookieMatch && decodeURIComponent(cookieMatch[1]))
+                || localStorage.getItem('authToken')
+                || localStorage.getItem('token');
+        }
+
+        function authHeaders() {
+            const t = getToken();
+            const h = { 'Content-Type': 'application/json' };
+            if (t) h['Authorization'] = 'Bearer ' + t;
+            return h;
+        }
+
+        async function api(path, opts = {}) {
+            const res = await fetch(API + path, {
+                ...opts,
+                headers: { ...authHeaders(), ...(opts.headers || {}) }
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) {
+                throw new Error(data.message || 'Request failed (' + res.status + ')');
+            }
+            return data;
+        }
+
+        const tbody = document.getElementById('fieldsTbody');
+        const modal = document.getElementById('fieldModal');
+        const modalError = document.getElementById('modalError');
+        let editingId = null;
+
+        function fmtAcres(n) {
+            if (n == null) return '-';
+            return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        }
+
+        function ownerLabel(f) {
+            if (f.owner === 'shared') {
+                return `Shared (${f.m77SharePercent || 0}/${f.landlordSharePercent || 0})`;
+            }
+            if (f.owner === 'landlord') {
+                return f.landlordName ? `Landlord — ${f.landlordName}` : 'Landlord';
+            }
+            return 'M77';
+        }
+
+        function statusBadge(s) {
+            const cls = s === 'fallow' ? 'badge-fallow'
+                : s === 'retired' ? 'badge-retired'
+                : 'badge-active';
+            return `<span class="badge ${cls}">${s || 'active'}</span>`;
+        }
+
+        function jdBadge(f) {
+            return f.jd_field_id
+                ? '<span class="badge badge-jd-linked">Linked</span>'
+                : '<span class="badge badge-jd-unlinked">—</span>';
+        }
+
+        function renderRows(fields) {
+            if (!fields.length) {
+                tbody.innerHTML = '<tr><td colspan="10" class="empty">No fields match the current filters.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = fields.map(f => `
+                <tr data-id="${f._id}">
+                    <td data-label="Name"><strong>${escapeHtml(f.name)}</strong></td>
+                    <td data-label="County">${escapeHtml(f.county || '-')}</td>
+                    <td data-label="Acres">${fmtAcres(f.acres)}</td>
+                    <td data-label="Owner">${escapeHtml(ownerLabel(f))}</td>
+                    <td data-label="Irrigation">${escapeHtml(f.irrigation || '-')}</td>
+                    <td data-label="2026 Crop">${escapeHtml(f.crop2026 || '-')}</td>
+                    <td data-label="Rotation">${escapeHtml(f.rotationGroup || '-')}</td>
+                    <td data-label="Status">${statusBadge(f.status)}</td>
+                    <td data-label="JD">${jdBadge(f)}</td>
+                    <td data-label="Actions">
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function updateStats(fields) {
+            document.getElementById('statCount').textContent = fields.length;
+            const acres = fields.reduce((s, f) => s + (f.acres || 0), 0);
+            document.getElementById('statAcres').textContent = fmtAcres(acres);
+            const irrig = fields.filter(f =>
+                f.irrigation && !['dryland', 'none'].includes(f.irrigation)
+            ).length;
+            document.getElementById('statIrrigated').textContent = irrig;
+            const jd = fields.filter(f => !!f.jd_field_id).length;
+            document.getElementById('statJD').textContent = jd;
+        }
+
+        async function loadFilterOptions() {
+            try {
+                const data = await api('/filter-options');
+                const fillSelect = (id, items) => {
+                    const sel = document.getElementById(id);
+                    const current = sel.value;
+                    sel.innerHTML = '<option value="">All</option>'
+                        + items.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+                    sel.value = current;
+                };
+                fillSelect('filterCounty', data.counties || []);
+                fillSelect('filterRotation', data.rotationGroups || []);
+                fillSelect('filterCrop', data.crops || []);
+            } catch (e) {
+                console.warn('filter-options load failed:', e.message);
+            }
+        }
+
+        async function loadFields() {
+            const params = new URLSearchParams();
+            const map = {
+                search: 'filterSearch',
+                county: 'filterCounty',
+                irrigation: 'filterIrrigation',
+                owner: 'filterOwner',
+                rotationGroup: 'filterRotation',
+                crop2026: 'filterCrop',
+                status: 'filterStatus'
+            };
+            for (const [key, id] of Object.entries(map)) {
+                const v = document.getElementById(id).value.trim();
+                if (v) params.set(key, v);
+            }
+            try {
+                const data = await api('/' + (params.toString() ? '?' + params.toString() : ''));
+                renderRows(data.fields || []);
+                updateStats(data.fields || []);
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="10" class="empty">Error: ${escapeHtml(e.message)}</td></tr>`;
+            }
+        }
+
+        function openModal(field) {
+            editingId = field ? field._id : null;
+            document.getElementById('modalTitle').textContent = field ? 'Edit Field' : 'Add Field';
+            document.getElementById('fieldId').value = field ? field._id : '';
+            document.getElementById('f_name').value = field?.name || '';
+            document.getElementById('f_county').value = field?.county || '';
+            document.getElementById('f_acres').value = field?.acres ?? '';
+            document.getElementById('f_status').value = field?.status || 'active';
+            document.getElementById('f_owner').value = field?.owner || 'm77';
+            document.getElementById('f_landlordName').value = field?.landlordName || '';
+            document.getElementById('f_m77Share').value = field?.m77SharePercent ?? 100;
+            document.getElementById('f_landlordShare').value = field?.landlordSharePercent ?? 0;
+            document.getElementById('f_irrigation').value = field?.irrigation || 'dryland';
+            document.getElementById('f_crop2026').value = field?.crop2026 || '';
+            document.getElementById('f_rotation').value = field?.rotationGroup || '';
+            document.getElementById('f_notes').value = field?.notes || '';
+            const coords = field?.boundary?.coordinates;
+            document.getElementById('f_boundary').value = coords ? JSON.stringify(coords) : '';
+            document.getElementById('modalDelete').style.display = field ? '' : 'none';
+            modalError.classList.remove('show');
+            modal.classList.add('open');
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            editingId = null;
+        }
+
+        function showError(msg) {
+            modalError.textContent = msg;
+            modalError.classList.add('show');
+        }
+
+        function buildPayload() {
+            const payload = {
+                name: document.getElementById('f_name').value.trim(),
+                county: document.getElementById('f_county').value.trim(),
+                acres: parseFloat(document.getElementById('f_acres').value),
+                status: document.getElementById('f_status').value,
+                owner: document.getElementById('f_owner').value,
+                landlordName: document.getElementById('f_landlordName').value.trim(),
+                m77SharePercent: parseInt(document.getElementById('f_m77Share').value, 10) || 0,
+                landlordSharePercent: parseInt(document.getElementById('f_landlordShare').value, 10) || 0,
+                irrigation: document.getElementById('f_irrigation').value,
+                crop2026: document.getElementById('f_crop2026').value.trim(),
+                rotationGroup: document.getElementById('f_rotation').value.trim(),
+                notes: document.getElementById('f_notes').value.trim()
+            };
+            const boundaryRaw = document.getElementById('f_boundary').value.trim();
+            if (boundaryRaw) {
+                let coords;
+                try {
+                    coords = JSON.parse(boundaryRaw);
+                } catch (e) {
+                    throw new Error('Boundary is not valid JSON.');
+                }
+                payload.boundary = { type: 'Polygon', coordinates: coords };
+            }
+            return payload;
+        }
+
+        async function saveField() {
+            modalError.classList.remove('show');
+            let payload;
+            try {
+                payload = buildPayload();
+            } catch (e) {
+                return showError(e.message);
+            }
+            if (!payload.name) return showError('Name is required.');
+            if (!Number.isFinite(payload.acres)) return showError('Acres is required.');
+
+            try {
+                if (editingId) {
+                    await api('/' + editingId, { method: 'PUT', body: JSON.stringify(payload) });
+                } else {
+                    await api('/', { method: 'POST', body: JSON.stringify(payload) });
+                }
+                closeModal();
+                await loadFilterOptions();
+                await loadFields();
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        async function deleteField() {
+            if (!editingId) return;
+            if (!confirm('Delete this field? This cannot be undone.')) return;
+            try {
+                await api('/' + editingId, { method: 'DELETE' });
+                closeModal();
+                await loadFilterOptions();
+                await loadFields();
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        async function editFieldById(id) {
+            try {
+                const data = await api('/' + id);
+                openModal(data.field);
+            } catch (e) {
+                alert('Error loading field: ' + e.message);
+            }
+        }
+
+        // Wire events
+        document.getElementById('btnNewField').addEventListener('click', () => openModal(null));
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modalCancel').addEventListener('click', closeModal);
+        document.getElementById('modalSave').addEventListener('click', saveField);
+        document.getElementById('modalDelete').addEventListener('click', deleteField);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        tbody.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('[data-edit]');
+            if (editBtn) editFieldById(editBtn.getAttribute('data-edit'));
+        });
+
+        ['filterSearch', 'filterCounty', 'filterIrrigation', 'filterOwner',
+         'filterRotation', 'filterCrop', 'filterStatus'].forEach(id => {
+            const el = document.getElementById(id);
+            const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+            el.addEventListener(evt, () => {
+                clearTimeout(window.__filterTimer);
+                window.__filterTimer = setTimeout(loadFields, 200);
+            });
+        });
+
+        // Initial load
+        (async () => {
+            if (!getToken()) {
+                tbody.innerHTML = '<tr><td colspan="10" class="empty">Not authenticated. <a href="/admin/login">Log in</a> to manage fields.</td></tr>';
+                return;
+            }
+            await loadFilterOptions();
+            await loadFields();
+        })();
+    </script>
+</body>
+</html>

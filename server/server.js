@@ -75,6 +75,7 @@ const cropExpenseRoutes = require('./routes/cropExpenses');
 const stripeRoutes = require('./routes/stripe');
 const stripeController = require('./controllers/stripeController');
 const mailCenterRoutes = require('./routes/mailCenter');
+const m77FieldRoutes = require('./routes/m77Fields');
 
 // Stripe webhook needs raw body - must be before express.json()
 // This is handled separately below after static files
@@ -116,6 +117,7 @@ app.use('/api/cropping-fields', croppingFieldRoutes);
 app.use('/api/crop-expenses', cropExpenseRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/mail-center', mailCenterRoutes);
+app.use('/api/m77-fields', m77FieldRoutes);
 
 // Stripe webhook endpoint (needs raw body)
 app.post('/api/stripe/webhook',
@@ -264,6 +266,11 @@ app.get('/admin/farm-projections', (req, res) => {
 // Field manager
 app.get('/admin/field-manager', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
+});
+
+// M77 master field registry (Phase 1)
+app.get('/admin/fields', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/fields.html'));
 });
 
 // Soil analysis
