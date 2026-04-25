@@ -54,6 +54,17 @@ const m77FieldSchema = new mongoose.Schema({
     default: 'dryland'
   },
 
+  // Enterprise grouping (top-level, above rotationGroup). Separates books for
+  // P&L / reporting purposes — e.g. "M77 AG" vs "Lueking". M77 may farm both
+  // but they are tracked as distinct enterprises.
+  enterprise: {
+    type: String,
+    required: true,
+    default: 'M77 AG',
+    trim: true,
+    index: true
+  },
+
   // 2026 crop and rotation grouping
   crop2026: {
     type: String,

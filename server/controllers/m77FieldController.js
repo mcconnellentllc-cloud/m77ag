@@ -1,6 +1,6 @@
 const M77Field = require('../models/m77Field');
 
-const ALLOWED_FILTERS = ['county', 'irrigation', 'rotationGroup', 'owner', 'status', 'crop2026'];
+const ALLOWED_FILTERS = ['county', 'irrigation', 'rotationGroup', 'owner', 'status', 'crop2026', 'enterprise'];
 
 function buildQuery(reqQuery) {
   const query = {};
@@ -119,16 +119,18 @@ exports.deleteField = async (req, res) => {
 
 exports.getFilterOptions = async (req, res) => {
   try {
-    const [counties, rotationGroups, crops] = await Promise.all([
+    const [counties, rotationGroups, crops, enterprises] = await Promise.all([
       M77Field.distinct('county'),
       M77Field.distinct('rotationGroup'),
-      M77Field.distinct('crop2026')
+      M77Field.distinct('crop2026'),
+      M77Field.distinct('enterprise')
     ]);
     res.json({
       success: true,
       counties: counties.filter(Boolean).sort(),
       rotationGroups: rotationGroups.filter(Boolean).sort(),
-      crops: crops.filter(Boolean).sort()
+      crops: crops.filter(Boolean).sort(),
+      enterprises: enterprises.filter(Boolean).sort()
     });
   } catch (error) {
     console.error('Error fetching filter options:', error);
