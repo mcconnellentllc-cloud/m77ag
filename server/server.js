@@ -76,6 +76,8 @@ const stripeRoutes = require('./routes/stripe');
 const stripeController = require('./controllers/stripeController');
 const mailCenterRoutes = require('./routes/mailCenter');
 const m77FieldRoutes = require('./routes/m77Fields');
+const jdRoutes = require('./routes/jd');
+const jdController = require('./controllers/jdController');
 
 // Stripe webhook needs raw body - must be before express.json()
 // This is handled separately below after static files
@@ -118,6 +120,7 @@ app.use('/api/crop-expenses', cropExpenseRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/mail-center', mailCenterRoutes);
 app.use('/api/m77-fields', m77FieldRoutes);
+app.use('/api/jd', jdRoutes);
 
 // Stripe webhook endpoint (needs raw body)
 app.post('/api/stripe/webhook',
@@ -272,6 +275,10 @@ app.get('/admin/field-manager', (req, res) => {
 app.get('/admin/fields', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/fields.html'));
 });
+
+// John Deere OAuth callback (Phase 2). The path matches the redirect URI
+// registered at developer.deere.com — must remain exact: /admin/jd-callback.
+app.get('/admin/jd-callback', jdController.handleCallback);
 
 // Soil analysis
 app.get('/admin/soil-samples', (req, res) => {

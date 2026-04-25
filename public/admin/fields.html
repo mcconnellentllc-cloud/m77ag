@@ -364,6 +364,26 @@
         .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
         .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
 
+        .jd-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #555;
+        }
+        .jd-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #999;
+        }
+        .jd-dot.connected { background: #2d5016; }
+        .jd-dot.error { background: #c0392b; }
+
         @media (max-width: 768px) {
             .container { padding: 20px; }
             .form-grid { grid-template-columns: 1fr; }
@@ -399,12 +419,22 @@
     </header>
 
     <main class="container">
+        <div class="alert" id="topBanner" style="margin-bottom: 20px;"></div>
+
         <div class="page-head">
             <div>
                 <h1 class="page-title">Fields</h1>
                 <p class="page-subtitle">M77 AG master field registry &middot; standalone of John Deere</p>
             </div>
-            <button class="btn" id="btnNewField">Add Field</button>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <div id="jdStatus" class="jd-status" title="John Deere connection">
+                    <span class="jd-dot" id="jdDot"></span>
+                    <span id="jdStatusLabel">JD: checking...</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnJdConnect" style="display:none;">Connect to John Deere</button>
+                <button class="btn btn-secondary btn-sm" id="btnJdDisconnect" style="display:none;">Disconnect JD</button>
+                <button class="btn" id="btnNewField">Add Field</button>
+            </div>
         </div>
 
         <div class="stats-grid">
@@ -900,14 +930,117 @@
             });
         });
 
+        // ----- John Deere connection panel -----
+
+        const jdDot = document.getElementById('jdDot');
+        const jdStatusLabel = document.getElementById('jdStatusLabel');
+        const btnJdConnect = document.getElementById('btnJdConnect');
+        const btnJdDisconnect = document.getElementById('btnJdDisconnect');
+        const topBanner = document.getElementById('topBanner');
+
+        function showBanner(kind, message) {
+            topBanner.className = 'alert alert-' + kind + ' show';
+            topBanner.textContent = message;
+            setTimeout(() => topBanner.classList.remove('show'), 8000);
+        }
+
+        function fmtRelative(seconds) {
+            if (!Number.isFinite(seconds) || seconds <= 0) return 'expired';
+            const m = Math.floor(seconds / 60);
+            const h = Math.floor(m / 60);
+            if (h >= 1) return `${h}h ${m % 60}m`;
+            return `${m}m`;
+        }
+
+        async function jdApi(path, opts = {}) {
+            const res = await fetch('/api/jd' + path, {
+                ...opts,
+                headers: { ...authHeaders(), ...(opts.headers || {}) }
+            });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) {
+                throw new Error(data.message || 'JD request failed (' + res.status + ')');
+            }
+            return data;
+        }
+
+        async function refreshJdStatus() {
+            try {
+                const s = await jdApi('/status');
+                if (s.connected) {
+                    jdDot.className = 'jd-dot connected';
+                    const env = s.environment || 'production';
+                    jdStatusLabel.textContent = `JD connected (${env}) · token ${fmtRelative(s.expiresInSeconds)}`;
+                    btnJdConnect.style.display = 'none';
+                    btnJdDisconnect.style.display = '';
+                } else {
+                    jdDot.className = 'jd-dot';
+                    jdStatusLabel.textContent = `JD not connected (${s.environment || 'production'})`;
+                    btnJdConnect.style.display = '';
+                    btnJdDisconnect.style.display = 'none';
+                }
+            } catch (e) {
+                jdDot.className = 'jd-dot error';
+                jdStatusLabel.textContent = 'JD: ' + e.message;
+                btnJdConnect.style.display = '';
+                btnJdDisconnect.style.display = 'none';
+            }
+        }
+
+        btnJdConnect.addEventListener('click', async () => {
+            try {
+                const data = await jdApi('/auth/start');
+                if (!data.url) throw new Error('No authorization URL returned');
+                window.location.href = data.url;
+            } catch (e) {
+                showBanner('error', 'Could not start JD connection: ' + e.message);
+            }
+        });
+
+        btnJdDisconnect.addEventListener('click', async () => {
+            if (!confirm('Disconnect from John Deere? Stored OAuth tokens will be deleted.')) return;
+            try {
+                await jdApi('/disconnect', { method: 'POST' });
+                showBanner('success', 'Disconnected from John Deere.');
+                await refreshJdStatus();
+            } catch (e) {
+                showBanner('error', 'Disconnect failed: ' + e.message);
+            }
+        });
+
+        function consumeJdQueryParam() {
+            const params = new URLSearchParams(window.location.search);
+            const jd = params.get('jd');
+            if (!jd) return;
+            if (jd === 'connected') {
+                showBanner('success', 'Connected to John Deere successfully.');
+            } else if (jd === 'error') {
+                const reason = params.get('reason') || 'unknown error';
+                showBanner('error', 'JD connection failed: ' + decodeURIComponent(reason));
+            }
+            // Clean the query param so a refresh doesn't re-show the banner.
+            params.delete('jd');
+            params.delete('reason');
+            const cleanQs = params.toString();
+            const cleanUrl = window.location.pathname + (cleanQs ? '?' + cleanQs : '');
+            window.history.replaceState({}, '', cleanUrl);
+        }
+
         // Initial load
         (async () => {
             if (!getToken()) {
                 window.location.href = '/admin/login';
                 return;
             }
+            consumeJdQueryParam();
             await loadFilterOptions();
             await loadFields();
+            await refreshJdStatus();
         })();
     </script>
 </body>
