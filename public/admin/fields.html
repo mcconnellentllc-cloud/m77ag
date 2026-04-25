@@ -417,6 +417,10 @@
                 <div class="stat-value green" id="statAcres">0</div>
             </div>
             <div class="stat-card">
+                <div class="stat-label">Lueking Acres</div>
+                <div class="stat-value gold" id="statLuekingAcres">0</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-label">Irrigated</div>
                 <div class="stat-value gold" id="statIrrigated">0</div>
             </div>
@@ -457,6 +461,10 @@
                 </select>
             </div>
             <div class="filter-group">
+                <label for="filterEnterprise">Enterprise</label>
+                <select id="filterEnterprise"><option value="">All</option></select>
+            </div>
+            <div class="filter-group">
                 <label for="filterRotation">Rotation Group</label>
                 <select id="filterRotation"><option value="">All</option></select>
             </div>
@@ -483,6 +491,7 @@
                         <th>County</th>
                         <th>Acres</th>
                         <th>Owner</th>
+                        <th>Enterprise</th>
                         <th>Irrigation</th>
                         <th>2026 Crop</th>
                         <th>Rotation</th>
@@ -492,7 +501,7 @@
                     </tr>
                 </thead>
                 <tbody id="fieldsTbody">
-                    <tr><td colspan="10" class="empty">Loading...</td></tr>
+                    <tr><td colspan="11" class="empty">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -565,6 +574,11 @@
                                 <option value="none">None</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="f_enterprise">Enterprise <span class="req">*</span></label>
+                            <input type="text" id="f_enterprise" value="M77 AG" required>
+                        </div>
+
                         <div class="form-group">
                             <label for="f_crop2026">2026 Crop</label>
                             <input type="text" id="f_crop2026" placeholder="corn, wheat, milo...">
@@ -663,7 +677,7 @@
 
         function renderRows(fields) {
             if (!fields.length) {
-                tbody.innerHTML = '<tr><td colspan="10" class="empty">No fields match the current filters.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="empty">No fields match the current filters.</td></tr>';
                 return;
             }
             tbody.innerHTML = fields.map(f => `
@@ -672,6 +686,7 @@
                     <td data-label="County">${escapeHtml(f.county || '-')}</td>
                     <td data-label="Acres">${fmtAcres(f.acres)}</td>
                     <td data-label="Owner">${escapeHtml(ownerLabel(f))}</td>
+                    <td data-label="Enterprise">${escapeHtml(f.enterprise || '-')}</td>
                     <td data-label="Irrigation">${escapeHtml(f.irrigation || '-')}</td>
                     <td data-label="2026 Crop">${escapeHtml(f.crop2026 || '-')}</td>
                     <td data-label="Rotation">${escapeHtml(f.rotationGroup || '-')}</td>
@@ -696,6 +711,10 @@
             document.getElementById('statCount').textContent = fields.length;
             const acres = fields.reduce((s, f) => s + (f.acres || 0), 0);
             document.getElementById('statAcres').textContent = fmtAcres(acres);
+            const luekingAcres = fields
+                .filter(f => f.enterprise === 'Lueking')
+                .reduce((s, f) => s + (f.acres || 0), 0);
+            document.getElementById('statLuekingAcres').textContent = fmtAcres(luekingAcres);
             const irrig = fields.filter(f =>
                 f.irrigation && !['dryland', 'none'].includes(f.irrigation)
             ).length;
@@ -717,6 +736,7 @@
                 fillSelect('filterCounty', data.counties || []);
                 fillSelect('filterRotation', data.rotationGroups || []);
                 fillSelect('filterCrop', data.crops || []);
+                fillSelect('filterEnterprise', data.enterprises || []);
             } catch (e) {
                 console.warn('filter-options load failed:', e.message);
             }
@@ -729,6 +749,7 @@
                 county: 'filterCounty',
                 irrigation: 'filterIrrigation',
                 owner: 'filterOwner',
+                enterprise: 'filterEnterprise',
                 rotationGroup: 'filterRotation',
                 crop2026: 'filterCrop',
                 status: 'filterStatus'
@@ -742,7 +763,7 @@
                 renderRows(data.fields || []);
                 updateStats(data.fields || []);
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="10" class="empty">Error: ${escapeHtml(e.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="empty">Error: ${escapeHtml(e.message)}</td></tr>`;
             }
         }
 
@@ -759,6 +780,7 @@
             document.getElementById('f_m77Share').value = field?.m77SharePercent ?? 100;
             document.getElementById('f_landlordShare').value = field?.landlordSharePercent ?? 0;
             document.getElementById('f_irrigation').value = field?.irrigation || 'dryland';
+            document.getElementById('f_enterprise').value = field?.enterprise || 'M77 AG';
             document.getElementById('f_crop2026').value = field?.crop2026 || '';
             document.getElementById('f_rotation').value = field?.rotationGroup || '';
             document.getElementById('f_notes').value = field?.notes || '';
@@ -790,6 +812,7 @@
                 m77SharePercent: parseInt(document.getElementById('f_m77Share').value, 10) || 0,
                 landlordSharePercent: parseInt(document.getElementById('f_landlordShare').value, 10) || 0,
                 irrigation: document.getElementById('f_irrigation').value,
+                enterprise: document.getElementById('f_enterprise').value.trim() || 'M77 AG',
                 crop2026: document.getElementById('f_crop2026').value.trim(),
                 rotationGroup: document.getElementById('f_rotation').value.trim(),
                 notes: document.getElementById('f_notes').value.trim()
@@ -868,7 +891,7 @@
         });
 
         ['filterSearch', 'filterCounty', 'filterIrrigation', 'filterOwner',
-         'filterRotation', 'filterCrop', 'filterStatus'].forEach(id => {
+         'filterEnterprise', 'filterRotation', 'filterCrop', 'filterStatus'].forEach(id => {
             const el = document.getElementById(id);
             const evt = el.tagName === 'SELECT' ? 'change' : 'input';
             el.addEventListener(evt, () => {

@@ -75,6 +75,7 @@ function fromField(doc) {
     m77SharePercent: split.m77,
     landlordSharePercent: split.landlord,
     irrigation: doc.irrigated ? 'pivot' : 'dryland',
+    enterprise: 'M77 AG',
     crop2026,
     rotationGroup: '',
     status: mapStatus(doc.status),
@@ -106,6 +107,7 @@ function fromCroppingField(doc) {
     m77SharePercent: split.m77,
     landlordSharePercent: split.landlord,
     irrigation: doc.soil?.irrigated ? 'pivot' : 'dryland',
+    enterprise: 'M77 AG',
     crop2026: doc.crop2026 || '',
     rotationGroup: doc.farm || '',
     status: 'active',
@@ -113,6 +115,23 @@ function fromCroppingField(doc) {
     legacySource: 'CroppingField',
     legacyId: doc._id
   };
+}
+
+// Backfills the `enterprise` field on previously-migrated rows that predate
+// the schema addition. Idempotent — only sets where the field is missing.
+async function backfillEnterprise() {
+  if (DRY_RUN) {
+    const missing = await M77Field.countDocuments({
+      $or: [{ enterprise: { $exists: false } }, { enterprise: null }, { enterprise: '' }]
+    });
+    console.log(`  ${missing} existing M77Field docs missing 'enterprise' (would set to 'M77 AG')`);
+    return { matched: missing, modified: 0 };
+  }
+  const result = await M77Field.updateMany(
+    { $or: [{ enterprise: { $exists: false } }, { enterprise: null }, { enterprise: '' }] },
+    { $set: { enterprise: 'M77 AG' } }
+  );
+  return { matched: result.matchedCount, modified: result.modifiedCount };
 }
 
 // ---- Migration --------------------------------------------------------------
@@ -228,6 +247,10 @@ async function migrateCroppingFields() {
     console.log(`  Field          : ${beforeField}`);
     console.log(`  CroppingField  : ${beforeCropping}`);
     console.log(`  M77Field       : ${beforeM77}`);
+
+    console.log('\nBackfilling enterprise=\'M77 AG\' on legacy M77Field docs ...');
+    const bf = await backfillEnterprise();
+    console.log(`  matched=${bf.matched} modified=${bf.modified}`);
 
     console.log('\nMigrating Field -> M77Field ...');
     const f = await migrateFields();
