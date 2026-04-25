@@ -600,10 +600,8 @@
         const API = '/api/m77-fields';
 
         function getToken() {
-            const cookieMatch = document.cookie.match(/(?:^|;\s*)token=([^;]+)/);
-            return (cookieMatch && decodeURIComponent(cookieMatch[1]))
-                || localStorage.getItem('authToken')
-                || localStorage.getItem('token');
+            // Match the storage key used by /admin/login and every other admin page.
+            return localStorage.getItem('adminToken');
         }
 
         function authHeaders() {
@@ -618,6 +616,11 @@
                 ...opts,
                 headers: { ...authHeaders(), ...(opts.headers || {}) }
             });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
             const data = await res.json().catch(() => ({}));
             if (!res.ok || data.success === false) {
                 throw new Error(data.message || 'Request failed (' + res.status + ')');
@@ -877,7 +880,7 @@
         // Initial load
         (async () => {
             if (!getToken()) {
-                tbody.innerHTML = '<tr><td colspan="10" class="empty">Not authenticated. <a href="/admin/login">Log in</a> to manage fields.</td></tr>';
+                window.location.href = '/admin/login';
                 return;
             }
             await loadFilterOptions();
