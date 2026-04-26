@@ -280,6 +280,11 @@ app.get('/admin/fields', (req, res) => {
 // registered at developer.deere.com — must remain exact: /admin/jd-callback.
 app.get('/admin/jd-callback', jdController.handleCallback);
 
+// JD sync review queue page
+app.get('/admin/jd-review', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/jd-review.html'));
+});
+
 // Soil analysis
 app.get('/admin/soil-samples', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/soil-samples.html'));

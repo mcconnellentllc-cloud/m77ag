@@ -95,6 +95,18 @@ const m77FieldSchema = new mongoose.Schema({
     index: true
   },
 
+  // Provenance + last-sync metadata for records touched by JD sync.
+  // createdFromJdSync = true means this M77Field was auto-created during a
+  // sync because no existing M77 field matched the JD field. Bulk-tag these
+  // for enterprise (e.g. Lueking) using the admin filter.
+  createdFromJdSync: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  jdLastSyncedAt: { type: Date, default: null },
+  jdSyncMatchScore: { type: Number, default: null },
+
   // Origin tracking for one-time migration from legacy Field / CroppingField
   // collections. Lets the migration script run idempotently — re-runs upsert
   // on (legacySource, legacyId) instead of duplicating rows.
