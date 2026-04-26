@@ -3,33 +3,61 @@
  *
  * Two signals combined into a single decision:
  *   1. Normalized name equality (case + whitespace insensitive)
- *   2. Bounding-box overlap as proxy for polygon overlap
+ *   2. True polygon overlap (turf intersect + area, in square meters)
  *
- * Bounding-box overlap is intersection_area / min(area_A, area_B). Real
- * fields are predominantly rectangular pivots and rectangular dryland
- * blocks, so bbox overlap closely tracks true polygon overlap. Sliver-
- * or L-shaped fields can underperform — those land in the review queue
- * by design rather than being auto-matched.
+ * Decision matrix (all thresholds in MATCHER_CONFIG):
+ *   - Auto-match: overlap >= AUTO_MATCH_OVERLAP, OR
+ *                 (overlap >= REVIEW_MIN_OVERLAP AND nameMatch
+ *                  AND acres ratio within ACRES_TOLERANCE)
+ *   - Review:     overlap in [REVIEW_MIN_OVERLAP, AUTO_MATCH_OVERLAP), OR
+ *                 nameMatch but at least one polygon missing
+ *   - None:       otherwise
  *
- * Decision matrix (all thresholds tuneable via the constants below):
- *   - Auto-match if: overlap >= AUTO_MATCH_OVERLAP, OR
- *                    (overlap >= REVIEW_MIN_OVERLAP AND nameMatch
- *                     AND acres ratio within ACRES_TOLERANCE)
- *   - Review queue if: overlap in [REVIEW_MIN_OVERLAP, AUTO_MATCH_OVERLAP), OR
- *                      nameMatch but at least one polygon missing
- *   - No match otherwise.
+ * When the matcher cannot decide with high confidence, the default is
+ * REVIEW — never silently auto-merge.
  */
 
-const AUTO_MATCH_OVERLAP   = 0.80;
-const REVIEW_MIN_OVERLAP   = 0.40;
-const ACRES_TOLERANCE      = 0.30;  // ±30 % means ratio in [0.7, 1.3]
+const intersect = require('@turf/intersect').default;
+const { area } = require('@turf/area');
+const { polygon: turfPolygon, featureCollection } = require('@turf/helpers');
+
+// All matcher constants live here, named, in one place.
+const MATCHER_CONFIG = Object.freeze({
+  // GeoJSON polygon overlap thresholds. Overlap is intersection_area /
+  // min(area_A, area_B), so a value of 0.80 means "at least 80% of the
+  // smaller field is inside the other field".
+  AUTO_MATCH_OVERLAP: 0.80,
+  REVIEW_MIN_OVERLAP: 0.40,
+
+  // Acres similarity (lo/hi). 0.70 means smaller is at least 70% of larger.
+  ACRES_TOLERANCE: 0.30,
+
+  // Score weights for ranking multiple candidates (overlap is base 0..1).
+  NAME_MATCH_SCORE_BONUS: 0.20,
+  ACRES_MATCH_SCORE_BONUS: 0.05,
+
+  // Score assigned when GPS data is missing but names match.
+  NAME_ONLY_REVIEW_SCORE: 0.50
+});
+
+// ---- Name normalization ----------------------------------------------------
+
+const NAME_NORMALIZATION_RULES = Object.freeze({
+  // Lowercase; collapse common separators (._-) to whitespace; collapse runs
+  // of whitespace to a single space; strip leading/trailing whitespace.
+  trim: true,
+  toLowerCase: true,
+  separatorsToSpace: /[._\-]+/g,
+  collapseWhitespace: /\s+/g
+});
 
 function normalizeName(s) {
-  return String(s || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[._\-]+/g, ' ')
-    .replace(/\s+/g, ' ');
+  let out = String(s == null ? '' : s);
+  if (NAME_NORMALIZATION_RULES.trim) out = out.trim();
+  if (NAME_NORMALIZATION_RULES.toLowerCase) out = out.toLowerCase();
+  out = out.replace(NAME_NORMALIZATION_RULES.separatorsToSpace, ' ');
+  out = out.replace(NAME_NORMALIZATION_RULES.collapseWhitespace, ' ');
+  return out;
 }
 
 function namesMatch(a, b) {
@@ -38,61 +66,45 @@ function namesMatch(a, b) {
   return na.length > 0 && na === nb;
 }
 
-function ringFromPolygon(poly) {
-  if (!poly || !Array.isArray(poly.coordinates) || poly.coordinates.length === 0) return null;
-  const ring = poly.coordinates[0];
-  if (!Array.isArray(ring) || ring.length < 3) return null;
-  return ring;
+// ---- Polygon overlap -------------------------------------------------------
+
+function isUsablePolygon(poly) {
+  if (!poly || poly.type !== 'Polygon') return false;
+  const ring = Array.isArray(poly.coordinates) ? poly.coordinates[0] : null;
+  return Array.isArray(ring) && ring.length >= 4; // closed ring = 4 pts min
 }
 
-function bbox(ring) {
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  for (const pt of ring) {
-    if (!Array.isArray(pt) || pt.length < 2) continue;
-    const x = Number(pt[0]);
-    const y = Number(pt[1]);
-    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
-  }
-  if (!Number.isFinite(minX) || !Number.isFinite(minY)) return null;
-  return { minX, minY, maxX, maxY };
-}
-
-function bboxArea(b) {
-  if (!b) return 0;
-  const w = b.maxX - b.minX;
-  const h = b.maxY - b.minY;
-  return Math.max(0, w) * Math.max(0, h);
-}
-
-function bboxIntersection(a, b) {
-  const minX = Math.max(a.minX, b.minX);
-  const maxX = Math.min(a.maxX, b.maxX);
-  const minY = Math.max(a.minY, b.minY);
-  const maxY = Math.min(a.maxY, b.maxY);
-  if (maxX <= minX || maxY <= minY) return null;
-  return { minX, minY, maxX, maxY };
-}
-
+// True polygon overlap percentage using turf intersect + area.
 // Returns 0..1, or null if either polygon is missing/invalid.
 function polygonOverlapPercent(polyA, polyB) {
-  const ringA = ringFromPolygon(polyA);
-  const ringB = ringFromPolygon(polyB);
-  if (!ringA || !ringB) return null;
-  const a = bbox(ringA);
-  const b = bbox(ringB);
-  if (!a || !b) return null;
-  const aArea = bboxArea(a);
-  const bArea = bboxArea(b);
-  if (aArea === 0 || bArea === 0) return null;
-  const inter = bboxIntersection(a, b);
+  if (!isUsablePolygon(polyA) || !isUsablePolygon(polyB)) return null;
+
+  let featA, featB;
+  try {
+    featA = turfPolygon(polyA.coordinates);
+    featB = turfPolygon(polyB.coordinates);
+  } catch (e) {
+    // Invalid GeoJSON (bad winding, self-intersection, etc.)
+    return null;
+  }
+
+  const aArea = area(featA);
+  const bArea = area(featB);
+  if (aArea <= 0 || bArea <= 0) return null;
+
+  let inter;
+  try {
+    inter = intersect(featureCollection([featA, featB]));
+  } catch (e) {
+    return null;
+  }
   if (!inter) return 0;
-  const interArea = bboxArea(inter);
+
+  const interArea = area(inter);
   return interArea / Math.min(aArea, bArea);
 }
+
+// ---- Acres similarity ------------------------------------------------------
 
 function acresRatio(a, b) {
   const x = Number(a) || 0;
@@ -105,54 +117,66 @@ function acresRatio(a, b) {
 
 function acresWithinTolerance(a, b) {
   const r = acresRatio(a, b);
-  return r !== null && r >= (1 - ACRES_TOLERANCE);
+  return r !== null && r >= (1 - MATCHER_CONFIG.ACRES_TOLERANCE);
 }
 
-// Pure scoring fn — used for both candidate ranking and decision-making.
-// Returns { overlap, nameMatch, acresMatch, score, decision } where decision
-// is 'auto' | 'review' | 'none'.
+// ---- Scoring + decision ----------------------------------------------------
+
 function scoreCandidate(m77Field, jdField) {
   const nameMatch = namesMatch(m77Field.name, jdField.name);
   const overlap = polygonOverlapPercent(m77Field.boundary, jdField.boundary);
   const acresMatch = acresWithinTolerance(m77Field.acres, jdField.acres);
+  const ratio = acresRatio(m77Field.acres, jdField.acres);
 
   let decision = 'none';
+  let reason = 'no usable signal';
   let score = 0;
 
   if (overlap !== null) {
-    if (overlap >= AUTO_MATCH_OVERLAP) {
+    if (overlap >= MATCHER_CONFIG.AUTO_MATCH_OVERLAP) {
       decision = 'auto';
-    } else if (overlap >= REVIEW_MIN_OVERLAP && nameMatch && acresMatch) {
+      reason = `overlap ${(overlap * 100).toFixed(1)}% >= auto threshold`;
+    } else if (overlap >= MATCHER_CONFIG.REVIEW_MIN_OVERLAP && nameMatch && acresMatch) {
       decision = 'auto';
-    } else if (overlap >= REVIEW_MIN_OVERLAP) {
+      reason = `overlap ${(overlap * 100).toFixed(1)}% + name match + acres match`;
+    } else if (overlap >= MATCHER_CONFIG.REVIEW_MIN_OVERLAP) {
       decision = 'review';
+      reason = `overlap ${(overlap * 100).toFixed(1)}% in review band`;
+    } else {
+      reason = `overlap ${(overlap * 100).toFixed(1)}% below review threshold`;
     }
-    score = overlap + (nameMatch ? 0.20 : 0) + (acresMatch ? 0.05 : 0);
+    score = overlap
+      + (nameMatch ? MATCHER_CONFIG.NAME_MATCH_SCORE_BONUS : 0)
+      + (acresMatch ? MATCHER_CONFIG.ACRES_MATCH_SCORE_BONUS : 0);
   } else if (nameMatch) {
-    // No GPS on at least one side — name match alone goes to review.
     decision = 'review';
-    score = 0.50 + (acresMatch ? 0.05 : 0);
+    reason = 'name match without usable GPS on at least one side';
+    score = MATCHER_CONFIG.NAME_ONLY_REVIEW_SCORE
+      + (acresMatch ? MATCHER_CONFIG.ACRES_MATCH_SCORE_BONUS : 0);
   }
 
   return {
     overlap: overlap === null ? null : Number(overlap.toFixed(4)),
     nameMatch,
     acresMatch,
-    acresRatio: acresRatio(m77Field.acres, jdField.acres),
+    acresRatio: ratio === null ? null : Number(ratio.toFixed(4)),
     score: Number(score.toFixed(4)),
-    decision
+    decision,
+    reason
   };
 }
 
-// For one M77 field, evaluate against an array of JD candidates and pick the best.
-// Returns { jdField, ...scoreFields } or null if none of the candidates rise
-// above 'none'.
+// For one M77 field, evaluate against an array of JD candidates and pick the
+// best non-'none'. If two candidates tie on score, prefers the one with
+// higher overlap (deterministic).
 function bestMatch(m77Field, jdCandidates) {
   let best = null;
   for (const jd of jdCandidates) {
     const s = scoreCandidate(m77Field, jd);
     if (s.decision === 'none') continue;
-    if (!best || s.score > best.score) {
+    if (!best
+        || s.score > best.score
+        || (s.score === best.score && (s.overlap || 0) > (best.overlap || 0))) {
       best = { jdField: jd, ...s };
     }
   }
@@ -160,13 +184,13 @@ function bestMatch(m77Field, jdCandidates) {
 }
 
 module.exports = {
-  AUTO_MATCH_OVERLAP,
-  REVIEW_MIN_OVERLAP,
-  ACRES_TOLERANCE,
+  MATCHER_CONFIG,
+  NAME_NORMALIZATION_RULES,
   normalizeName,
   namesMatch,
   polygonOverlapPercent,
   acresRatio,
+  acresWithinTolerance,
   scoreCandidate,
   bestMatch
 };

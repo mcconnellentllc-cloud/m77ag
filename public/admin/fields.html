@@ -383,6 +383,17 @@
         }
         .jd-dot.connected { background: #2d5016; }
         .jd-dot.error { background: #c0392b; }
+        .jd-dot.warning { background: #d4a54a; }
+
+        .bulk-bar {
+            background: #1a1a1a; color: #fff;
+            padding: 12px 20px; border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 16px; flex-wrap: wrap;
+        }
+        .bulk-bar .bulk-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .row-checkbox { width: 18px; height: 18px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .container { padding: 20px; }
@@ -432,8 +443,21 @@
                     <span id="jdStatusLabel">JD: checking...</span>
                 </div>
                 <button class="btn btn-secondary btn-sm" id="btnJdConnect" style="display:none;">Connect to John Deere</button>
+                <button class="btn btn-secondary btn-sm" id="btnJdSync" style="display:none;">Sync from JD</button>
+                <a href="/admin/jd-review" class="btn btn-secondary btn-sm" id="btnJdReview" style="display:none;">
+                    Review queue <span id="jdReviewBadge" style="display:none; margin-left:6px; background:#c0392b; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px;">0</span>
+                </a>
                 <button class="btn btn-secondary btn-sm" id="btnJdDisconnect" style="display:none;">Disconnect JD</button>
                 <button class="btn" id="btnNewField">Add Field</button>
+            </div>
+        </div>
+
+        <div class="bulk-bar" id="bulkBar" style="display:none;">
+            <span id="bulkSelectedLabel">0 selected</span>
+            <div class="bulk-controls">
+                <input type="text" id="bulkEnterprise" placeholder="Enterprise (e.g. Lueking)" style="padding:8px 12px; border:1px solid #ddd; border-radius:5px; font-size:14px; min-width:220px;">
+                <button class="btn btn-sm" id="btnBulkApply">Set Enterprise</button>
+                <button class="btn btn-secondary btn-sm" id="btnBulkClear">Clear selection</button>
             </div>
         </div>
 
@@ -511,12 +535,22 @@
                     <option value="retired">Retired</option>
                 </select>
             </div>
+            <div class="filter-group">
+                <label for="filterJd">JD source</label>
+                <select id="filterJd">
+                    <option value="">All</option>
+                    <option value="created">Created from JD</option>
+                    <option value="linked">Linked to JD</option>
+                    <option value="unlinked">Not linked</option>
+                </select>
+            </div>
         </div>
 
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
+                        <th style="width:36px;"><input type="checkbox" id="selectAll" class="row-checkbox" title="Select all"></th>
                         <th>Name</th>
                         <th>County</th>
                         <th>Acres</th>
@@ -531,7 +565,7 @@
                     </tr>
                 </thead>
                 <tbody id="fieldsTbody">
-                    <tr><td colspan="11" class="empty">Loading...</td></tr>
+                    <tr><td colspan="12" class="empty">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -707,12 +741,19 @@
 
         function renderRows(fields) {
             if (!fields.length) {
-                tbody.innerHTML = '<tr><td colspan="11" class="empty">No fields match the current filters.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" class="empty">No fields match the current filters.</td></tr>';
+                renderBulkBar();
                 return;
             }
-            tbody.innerHTML = fields.map(f => `
+            tbody.innerHTML = fields.map(f => {
+                const checked = selectedIds.has(f._id) ? 'checked' : '';
+                const jdSourceBadge = f.createdFromJdSync
+                    ? '<span class="badge badge-jd-linked" title="Auto-created during JD sync">JD-imported</span> '
+                    : '';
+                return `
                 <tr data-id="${f._id}">
-                    <td data-label="Name"><strong>${escapeHtml(f.name)}</strong></td>
+                    <td><input type="checkbox" class="row-checkbox row-select" data-id="${f._id}" ${checked}></td>
+                    <td data-label="Name"><strong>${escapeHtml(f.name)}</strong> ${jdSourceBadge}</td>
                     <td data-label="County">${escapeHtml(f.county || '-')}</td>
                     <td data-label="Acres">${fmtAcres(f.acres)}</td>
                     <td data-label="Owner">${escapeHtml(ownerLabel(f))}</td>
@@ -728,7 +769,9 @@
                         </div>
                     </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
+            renderBulkBar();
         }
 
         function escapeHtml(s) {
@@ -788,12 +831,17 @@
                 const v = document.getElementById(id).value.trim();
                 if (v) params.set(key, v);
             }
+            // Special filter: JD source
+            const jdFilter = document.getElementById('filterJd').value;
+            if (jdFilter === 'created') params.set('createdFromJdSync', 'true');
+            else if (jdFilter === 'linked') params.set('jdLinked', 'true');
+            else if (jdFilter === 'unlinked') params.set('jdLinked', 'false');
             try {
                 const data = await api('/' + (params.toString() ? '?' + params.toString() : ''));
                 renderRows(data.fields || []);
                 updateStats(data.fields || []);
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="11" class="empty">Error: ${escapeHtml(e.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="12" class="empty">Error: ${escapeHtml(e.message)}</td></tr>`;
             }
         }
 
@@ -917,11 +965,76 @@
 
         tbody.addEventListener('click', (e) => {
             const editBtn = e.target.closest('[data-edit]');
-            if (editBtn) editFieldById(editBtn.getAttribute('data-edit'));
+            if (editBtn) {
+                editFieldById(editBtn.getAttribute('data-edit'));
+                return;
+            }
+        });
+
+        // ----- Bulk selection -----
+
+        function renderBulkBar() {
+            const bar = document.getElementById('bulkBar');
+            const label = document.getElementById('bulkSelectedLabel');
+            if (selectedIds.size === 0) {
+                bar.style.display = 'none';
+            } else {
+                bar.style.display = 'flex';
+                label.textContent = `${selectedIds.size} selected`;
+            }
+            // Sync the header checkbox state
+            const visible = Array.from(tbody.querySelectorAll('.row-select')).map(c => c.getAttribute('data-id'));
+            const allSelected = visible.length > 0 && visible.every(id => selectedIds.has(id));
+            document.getElementById('selectAll').checked = allSelected;
+        }
+
+        tbody.addEventListener('change', (e) => {
+            const cb = e.target.closest('.row-select');
+            if (!cb) return;
+            const id = cb.getAttribute('data-id');
+            if (cb.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+            renderBulkBar();
+        });
+
+        document.getElementById('selectAll').addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            tbody.querySelectorAll('.row-select').forEach(cb => {
+                cb.checked = checked;
+                const id = cb.getAttribute('data-id');
+                if (checked) selectedIds.add(id);
+                else selectedIds.delete(id);
+            });
+            renderBulkBar();
+        });
+
+        document.getElementById('btnBulkClear').addEventListener('click', () => {
+            selectedIds.clear();
+            tbody.querySelectorAll('.row-select').forEach(cb => { cb.checked = false; });
+            renderBulkBar();
+        });
+
+        document.getElementById('btnBulkApply').addEventListener('click', async () => {
+            const value = document.getElementById('bulkEnterprise').value.trim();
+            if (!value) return showBanner('error', 'Enter an enterprise name first.');
+            if (selectedIds.size === 0) return showBanner('error', 'No fields selected.');
+            if (!confirm(`Set enterprise to "${value}" on ${selectedIds.size} field(s)?`)) return;
+            try {
+                const result = await api('/bulk-update', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: Array.from(selectedIds), update: { enterprise: value } })
+                });
+                showBanner('success', `Updated ${result.modified}/${result.matched} field(s).`);
+                selectedIds.clear();
+                await loadFilterOptions();
+                await loadFields();
+            } catch (e) {
+                showBanner('error', 'Bulk update failed: ' + e.message);
+            }
         });
 
         ['filterSearch', 'filterCounty', 'filterIrrigation', 'filterOwner',
-         'filterEnterprise', 'filterRotation', 'filterCrop', 'filterStatus'].forEach(id => {
+         'filterEnterprise', 'filterRotation', 'filterCrop', 'filterStatus', 'filterJd'].forEach(id => {
             const el = document.getElementById(id);
             const evt = el.tagName === 'SELECT' ? 'change' : 'input';
             el.addEventListener(evt, () => {
@@ -936,7 +1049,13 @@
         const jdStatusLabel = document.getElementById('jdStatusLabel');
         const btnJdConnect = document.getElementById('btnJdConnect');
         const btnJdDisconnect = document.getElementById('btnJdDisconnect');
+        const btnJdSync = document.getElementById('btnJdSync');
+        const btnJdReview = document.getElementById('btnJdReview');
+        const jdReviewBadge = document.getElementById('jdReviewBadge');
         const topBanner = document.getElementById('topBanner');
+
+        // Selection state for bulk operations
+        const selectedIds = new Set();
 
         function showBanner(kind, message) {
             topBanner.className = 'alert alert-' + kind + ' show';
@@ -964,9 +1083,29 @@
             }
             const data = await res.json().catch(() => ({}));
             if (!res.ok || data.success === false) {
-                throw new Error(data.message || 'JD request failed (' + res.status + ')');
+                const err = new Error(data.message || 'JD request failed (' + res.status + ')');
+                err.code = data.code;     // 'JD_AUTH_REQUIRED' | other
+                err.authCode = data.authCode; // 'NOT_CONNECTED' | 'REVOKED' | 'REFRESH_FAILED'
+                err.status = res.status;
+                throw err;
             }
             return data;
+        }
+
+        function handleJdAuthError(err) {
+            if (err.code === 'JD_AUTH_REQUIRED') {
+                jdDot.className = 'jd-dot warning';
+                jdStatusLabel.textContent = err.authCode === 'REVOKED'
+                    ? 'JD reconnect required — token revoked'
+                    : 'JD reconnect required';
+                btnJdConnect.style.display = '';
+                btnJdSync.style.display = 'none';
+                btnJdReview.style.display = 'none';
+                btnJdDisconnect.style.display = 'none';
+                showBanner('error', err.message);
+                return true;
+            }
+            return false;
         }
 
         async function refreshJdStatus() {
@@ -978,17 +1117,32 @@
                     jdStatusLabel.textContent = `JD connected (${env}) · token ${fmtRelative(s.expiresInSeconds)}`;
                     btnJdConnect.style.display = 'none';
                     btnJdDisconnect.style.display = '';
+                    btnJdSync.style.display = '';
+                    btnJdReview.style.display = '';
                 } else {
                     jdDot.className = 'jd-dot';
                     jdStatusLabel.textContent = `JD not connected (${s.environment || 'production'})`;
                     btnJdConnect.style.display = '';
                     btnJdDisconnect.style.display = 'none';
+                    btnJdSync.style.display = 'none';
+                    btnJdReview.style.display = 'none';
+                }
+                // Pending review badge
+                const pending = s.pendingReviews || 0;
+                if (pending > 0) {
+                    jdReviewBadge.textContent = pending;
+                    jdReviewBadge.style.display = '';
+                } else {
+                    jdReviewBadge.style.display = 'none';
                 }
             } catch (e) {
+                if (handleJdAuthError(e)) return;
                 jdDot.className = 'jd-dot error';
                 jdStatusLabel.textContent = 'JD: ' + e.message;
                 btnJdConnect.style.display = '';
                 btnJdDisconnect.style.display = 'none';
+                btnJdSync.style.display = 'none';
+                btnJdReview.style.display = 'none';
             }
         }
 
@@ -999,6 +1153,30 @@
                 window.location.href = data.url;
             } catch (e) {
                 showBanner('error', 'Could not start JD connection: ' + e.message);
+            }
+        });
+
+        btnJdSync.addEventListener('click', async () => {
+            if (!confirm('Run a sync from John Deere? Field-data will be pulled and matched against your M77 fields. Existing M77 names/acres will not be overwritten.')) return;
+            const originalLabel = btnJdSync.textContent;
+            btnJdSync.disabled = true;
+            btnJdSync.textContent = 'Syncing...';
+            try {
+                const result = await jdApi('/sync', { method: 'POST' });
+                const s = result.run?.summary || {};
+                showBanner(
+                    'success',
+                    `JD sync complete. Auto-matched: ${s.autoMatched || 0}, ` +
+                    `Review queued: ${s.reviewQueued || 0}, ` +
+                    `Created: ${s.autoCreated || 0}, ` +
+                    `Errors: ${s.errors || 0}.`
+                );
+                await Promise.all([refreshJdStatus(), loadFilterOptions(), loadFields()]);
+            } catch (e) {
+                if (!handleJdAuthError(e)) showBanner('error', 'Sync failed: ' + e.message);
+            } finally {
+                btnJdSync.disabled = false;
+                btnJdSync.textContent = originalLabel;
             }
         });
 

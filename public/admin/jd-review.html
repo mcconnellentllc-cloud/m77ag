@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Sync Review | M77 AG Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+
+        .admin-header {
+            background: #1a1a1a; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 20px;
+        }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 20px; flex-wrap: wrap; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 32px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; }
+
+        .btn { padding: 10px 20px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn:hover { background: #234012; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+        .btn-secondary:hover { background: #f0f0f0; }
+        .btn-danger { background: #c0392b; }
+        .btn-danger:hover { background: #962d22; }
+        .btn-sm { padding: 8px 14px; font-size: 12px; }
+
+        .alert { padding: 12px 16px; border-radius: 5px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert.show { display: block; }
+        .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
+        .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
+
+        .summary-bar {
+            background: #fff; padding: 16px 20px; border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 24px;
+            display: flex; gap: 24px; flex-wrap: wrap;
+        }
+        .summary-item .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-item .value { font-family: 'Oswald', sans-serif; font-size: 22px; color: #1a1a1a; }
+
+        .review-card {
+            background: #fff; border-radius: 8px; padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 16px;
+        }
+        .review-grid {
+            display: grid; grid-template-columns: 1fr auto 1fr;
+            gap: 24px; align-items: start;
+        }
+        .side-panel { padding: 16px; background: #fafafa; border-radius: 6px; border: 1px solid #eee; }
+        .side-panel.m77 { border-left: 3px solid #2d5016; }
+        .side-panel.jd  { border-left: 3px solid #d4af37; }
+        .side-panel h3 { font-family: 'Oswald', sans-serif; font-size: 16px; color: #1a1a1a; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .side-panel dl { font-size: 13px; }
+        .side-panel dt { color: #888; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; margin-top: 8px; }
+        .side-panel dd { color: #2c2c2c; word-break: break-word; }
+
+        .match-meta {
+            display: flex; flex-direction: column; gap: 8px; align-items: center;
+            padding: 8px; min-width: 130px;
+        }
+        .meta-pill {
+            font-size: 11px; padding: 4px 10px; border-radius: 14px; background: #eee; color: #555;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .meta-pill.ok { background: #e8f5e9; color: #1e3d10; }
+        .meta-pill.warn { background: #fff8e1; color: #8a6d00; }
+
+        .actions-row {
+            display: flex; gap: 10px; justify-content: flex-end;
+            margin-top: 16px; padding-top: 14px; border-top: 1px solid #eee;
+        }
+
+        .empty {
+            background: #fff; border-radius: 8px; padding: 60px 20px;
+            text-align: center; color: #888;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .review-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/fields">Fields</a>
+            <a href="/admin/jd-review" class="active">JD Review</a>
+            <a href="/admin/farming-dashboard">Farming</a>
+            <a href="/admin/equipment">Equipment</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="alert" id="topBanner"></div>
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">JD Sync Review</h1>
+                <p class="page-subtitle">Resolve match candidates the auto-matcher couldn't decide on its own.</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <a href="/admin/fields" class="btn btn-secondary btn-sm">Back to Fields</a>
+                <button class="btn btn-sm" id="btnRefresh">Refresh</button>
+            </div>
+        </div>
+
+        <div class="summary-bar" id="summaryBar">
+            <div class="summary-item">
+                <div class="label">Pending</div>
+                <div class="value" id="sumPending">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Last Sync</div>
+                <div class="value" id="sumLastSync" style="font-size:14px;">—</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Auto-matched</div>
+                <div class="value" id="sumAuto">—</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Created from JD</div>
+                <div class="value" id="sumCreated">—</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Errors</div>
+                <div class="value" id="sumErrors">—</div>
+            </div>
+        </div>
+
+        <div id="reviewsList">
+            <div class="empty">Loading review queue...</div>
+        </div>
+    </main>
+
+    <script>
+        function getToken() { return localStorage.getItem('adminToken'); }
+        function authHeaders() {
+            const t = getToken();
+            const h = { 'Content-Type': 'application/json' };
+            if (t) h.Authorization = 'Bearer ' + t;
+            return h;
+        }
+
+        async function api(path, opts = {}) {
+            const res = await fetch(path, { ...opts, headers: { ...authHeaders(), ...(opts.headers || {}) } });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) {
+                const err = new Error(data.message || 'Request failed (' + res.status + ')');
+                err.code = data.code;
+                err.status = res.status;
+                throw err;
+            }
+            return data;
+        }
+
+        const banner = document.getElementById('topBanner');
+        function showBanner(kind, msg) {
+            banner.className = 'alert alert-' + kind + ' show';
+            banner.textContent = msg;
+            setTimeout(() => banner.classList.remove('show'), 6000);
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+            }[c]));
+        }
+        function fmtAcres(n) {
+            if (n == null) return '—';
+            return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        }
+        function fmtPercent(n) {
+            if (n == null) return '—';
+            return (Number(n) * 100).toFixed(1) + '%';
+        }
+        function fmtDate(d) {
+            if (!d) return '—';
+            return new Date(d).toLocaleString();
+        }
+
+        function metaPills(r) {
+            const overlap = r.overlap == null ? '—' : fmtPercent(r.overlap);
+            const overlapCls = r.overlap == null ? '' : (r.overlap >= 0.6 ? 'ok' : 'warn');
+            return [
+                `<span class="meta-pill ${overlapCls}">overlap ${overlap}</span>`,
+                `<span class="meta-pill ${r.nameMatch ? 'ok' : ''}">${r.nameMatch ? 'name match' : 'name diff'}</span>`,
+                `<span class="meta-pill ${r.acresMatch ? 'ok' : 'warn'}">acres ${r.acresRatio == null ? '—' : (Number(r.acresRatio) * 100).toFixed(0) + '%'}</span>`,
+                `<span class="meta-pill">score ${Number(r.score || 0).toFixed(2)}</span>`
+            ].join('');
+        }
+
+        function renderReview(r) {
+            const m77 = r.m77 || {};
+            const jd = r.jd || {};
+            return `
+                <div class="review-card" data-id="${r._id}">
+                    <div class="review-grid">
+                        <div class="side-panel m77">
+                            <h3>M77 Field</h3>
+                            <dl>
+                                <dt>Name</dt><dd>${escapeHtml(m77.name || r.m77Name || '—')}</dd>
+                                <dt>County</dt><dd>${escapeHtml(m77.county || '—')}</dd>
+                                <dt>Acres</dt><dd>${fmtAcres(m77.acres ?? r.m77Acres)}</dd>
+                                <dt>Enterprise</dt><dd>${escapeHtml(m77.enterprise || '—')}</dd>
+                                <dt>Boundary</dt><dd>${m77.boundary && m77.boundary.coordinates ? 'Polygon present' : 'None'}</dd>
+                            </dl>
+                        </div>
+
+                        <div class="match-meta">
+                            ${metaPills(r)}
+                        </div>
+
+                        <div class="side-panel jd">
+                            <h3>John Deere Field</h3>
+                            <dl>
+                                <dt>Name</dt><dd>${escapeHtml(jd.name || r.jdName || '—')}</dd>
+                                <dt>JD Org</dt><dd>${escapeHtml(jd.jd_org_name || '—')}</dd>
+                                <dt>JD Farm</dt><dd>${escapeHtml(jd.jd_farm_name || '—')}</dd>
+                                <dt>Acres</dt><dd>${fmtAcres(jd.acres ?? r.jdAcres)}</dd>
+                                <dt>Boundary</dt><dd>${jd.boundary && jd.boundary.coordinates ? 'Polygon present' : 'None'}</dd>
+                                <dt>JD ID</dt><dd style="font-family:monospace; font-size:11px;">${escapeHtml(r.jd_field_id || '—')}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="actions-row">
+                        <button class="btn btn-secondary btn-sm" data-action="reject" data-id="${r._id}">Reject</button>
+                        <button class="btn btn-sm" data-action="accept" data-id="${r._id}">Link Fields</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function refreshSummary() {
+            try {
+                const status = await api('/api/jd/status');
+                document.getElementById('sumPending').textContent = status.pendingReviews ?? 0;
+                if (status.lastRun) {
+                    const r = status.lastRun;
+                    document.getElementById('sumLastSync').textContent = fmtDate(r.completedAt || r.startedAt);
+                    document.getElementById('sumAuto').textContent = r.summary?.autoMatched ?? 0;
+                    document.getElementById('sumCreated').textContent = r.summary?.autoCreated ?? 0;
+                    document.getElementById('sumErrors').textContent = r.summary?.errors ?? 0;
+                }
+            } catch (e) {
+                console.warn('summary load failed:', e.message);
+            }
+        }
+
+        async function loadReviews() {
+            const list = document.getElementById('reviewsList');
+            list.innerHTML = '<div class="empty">Loading review queue...</div>';
+            try {
+                const data = await api('/api/jd/reviews');
+                if (!data.reviews.length) {
+                    list.innerHTML = '<div class="empty">Review queue is empty. Run a sync from /admin/fields to repopulate.</div>';
+                    return;
+                }
+                list.innerHTML = data.reviews.map(renderReview).join('');
+            } catch (e) {
+                list.innerHTML = `<div class="empty">Error loading reviews: ${escapeHtml(e.message)}</div>`;
+            }
+        }
+
+        async function decide(id, decision) {
+            try {
+                await api(`/api/jd/reviews/${id}/decide`, {
+                    method: 'POST',
+                    body: JSON.stringify({ decision })
+                });
+                showBanner('success', decision === 'accept' ? 'Linked.' : 'Rejected.');
+                await loadReviews();
+                await refreshSummary();
+            } catch (e) {
+                showBanner('error', 'Failed: ' + e.message);
+            }
+        }
+
+        document.getElementById('reviewsList').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            decide(btn.getAttribute('data-id'), btn.getAttribute('data-action'));
+        });
+
+        document.getElementById('btnRefresh').addEventListener('click', async () => {
+            await Promise.all([loadReviews(), refreshSummary()]);
+        });
+
+        (async () => {
+            if (!getToken()) { window.location.href = '/admin/login'; return; }
+            await Promise.all([loadReviews(), refreshSummary()]);
+        })();
+    </script>
+</body>
+</html>

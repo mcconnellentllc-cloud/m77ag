@@ -12,6 +12,7 @@ router.get('/filter-options', authenticate, m77FieldController.getFilterOptions)
 router.get('/:id', authenticate, m77FieldController.getField);
 
 router.post('/', authenticate, isStaff, m77FieldController.createField);
+router.post('/bulk-update', authenticate, isStaff, m77FieldController.bulkUpdate);
 router.put('/:id', authenticate, isStaff, m77FieldController.updateField);
 router.delete('/:id', authenticate, isStaff, m77FieldController.deleteField);
 
