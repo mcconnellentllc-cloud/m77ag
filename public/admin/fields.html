@@ -181,6 +181,86 @@
         }
 
         /* Table */
+        /* Hierarchy view: Client → Farm → Field */
+        .hierarchy { display: flex; flex-direction: column; gap: 12px; }
+        .client-card {
+            background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden; border-left: 4px solid #2d5016;
+        }
+        .client-card[data-type="landlord"] { border-left-color: #d4af37; }
+        .client-card[data-type="custom"]   { border-left-color: #6b7280; }
+        .client-summary {
+            cursor: pointer; padding: 16px 22px; list-style: none;
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        }
+        .client-summary::-webkit-details-marker { display: none; }
+        .client-summary::before {
+            content: '▸'; transition: transform 0.15s ease;
+            font-size: 16px; color: #888; flex-shrink: 0; width: 16px;
+        }
+        details[open] > .client-summary::before { transform: rotate(90deg); }
+        .client-name { font-family: 'Oswald', sans-serif; font-size: 22px; color: #1a1a1a; letter-spacing: 0.5px; }
+        .client-meta { font-size: 13px; color: #666; margin-left: auto; display: flex; gap: 16px; flex-wrap: wrap; }
+        .client-meta strong { color: #1a1a1a; font-weight: 600; }
+
+        .farms-list { padding: 0 16px 16px 36px; display: flex; flex-direction: column; gap: 8px; }
+        .farm-card {
+            background: #fafafa; border-radius: 6px; border: 1px solid #eee;
+            overflow: hidden;
+        }
+        .farm-summary {
+            cursor: pointer; padding: 12px 16px; list-style: none;
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        }
+        .farm-summary::-webkit-details-marker { display: none; }
+        .farm-summary::before {
+            content: '▸'; transition: transform 0.15s ease;
+            font-size: 13px; color: #888; flex-shrink: 0; width: 14px;
+        }
+        details[open] > .farm-summary::before { transform: rotate(90deg); }
+        .farm-name { font-weight: 600; font-size: 15px; color: #1a1a1a; }
+        .farm-landlord { font-size: 12px; color: #666; padding: 3px 8px; background: #fff; border-radius: 10px; border: 1px solid #ddd; }
+        .farm-type { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+        .farm-type.owned { background: #e8f5e9; color: #2d5016; }
+        .farm-type.crop-share { background: #fff8e1; color: #8a6d00; }
+        .farm-type.custom { background: #ede9fe; color: #5b21b6; }
+        .farm-meta { font-size: 12px; color: #666; margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .fields-list { padding: 4px 12px 12px 32px; display: flex; flex-direction: column; gap: 6px; }
+        .field-card {
+            background: #fff; border-radius: 5px; border: 1px solid #e7e7e7;
+            overflow: hidden;
+        }
+        .field-summary {
+            cursor: pointer; padding: 10px 14px; list-style: none;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+        .field-summary::-webkit-details-marker { display: none; }
+        .field-summary::before {
+            content: '▸'; transition: transform 0.15s ease;
+            font-size: 12px; color: #aaa; flex-shrink: 0; width: 12px;
+        }
+        details[open] > .field-summary::before { transform: rotate(90deg); }
+        .field-summary .row-checkbox { margin-right: 4px; }
+        .field-name { font-weight: 600; font-size: 14px; color: #1a1a1a; }
+        .field-quick { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #666; margin-left: auto; align-items: center; }
+        .field-quick strong { color: #1a1a1a; }
+
+        .field-detail {
+            padding: 14px 18px 18px 30px; background: #fafafa;
+            border-top: 1px solid #eee;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            font-size: 13px;
+        }
+        .field-detail .group { display: flex; flex-direction: column; gap: 4px; }
+        .field-detail .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; }
+        .field-detail .value { color: #2c2c2c; word-break: break-word; }
+        .field-detail .value strong { color: #1a1a1a; }
+        .field-detail .actions { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid #eee; }
+
+        .hidden { display: none !important; }
+
         .table-wrap {
             background: #fff;
             border-radius: 8px;
@@ -546,28 +626,15 @@
             </div>
         </div>
 
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:36px;"><input type="checkbox" id="selectAll" class="row-checkbox" title="Select all"></th>
-                        <th>Name</th>
-                        <th>County</th>
-                        <th>Acres</th>
-                        <th>Owner</th>
-                        <th>Enterprise</th>
-                        <th>Irrigation</th>
-                        <th>2026 Crop</th>
-                        <th>Rotation</th>
-                        <th>Status</th>
-                        <th>JD</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="fieldsTbody">
-                    <tr><td colspan="12" class="empty">Loading...</td></tr>
-                </tbody>
-            </table>
+        <div id="hierarchy" class="hierarchy">
+            <div class="empty">Loading...</div>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <button class="btn btn-secondary btn-sm" id="btnExpandAll">Expand all</button>
+            <button class="btn btn-secondary btn-sm" id="btnCollapseAll">Collapse all</button>
+            <span style="flex:1;"></span>
+            <input type="checkbox" id="selectAll" class="row-checkbox" title="Select all visible fields" style="display:none;">
         </div>
     </main>
 
@@ -583,6 +650,15 @@
                 <form id="fieldForm">
                     <input type="hidden" id="fieldId">
                     <div class="form-grid">
+                        <div class="form-group">
+                            <label for="f_client">Client <span class="req">*</span></label>
+                            <select id="f_client" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_farm">Farm <span class="req">*</span></label>
+                            <select id="f_farm" required></select>
+                        </div>
+
                         <div class="form-group">
                             <label for="f_name">Name <span class="req">*</span></label>
                             <input type="text" id="f_name" required>
@@ -706,10 +782,13 @@
             return data;
         }
 
-        const tbody = document.getElementById('fieldsTbody');
+        const hierarchyEl = document.getElementById('hierarchy');
         const modal = document.getElementById('fieldModal');
         const modalError = document.getElementById('modalError');
         let editingId = null;
+        let lastFields = [];   // most recent /api/m77-fields response (for re-render)
+        let lastClients = [];  // most recent /api/clients response (for tab order + meta)
+        let lastFarms = [];    // most recent /api/m77-farms response (for landlord/type/share)
 
         function fmtAcres(n) {
             if (n == null) return '-';
@@ -739,39 +818,150 @@
                 : '<span class="badge badge-jd-unlinked">—</span>';
         }
 
-        function renderRows(fields) {
-            if (!fields.length) {
-                tbody.innerHTML = '<tr><td colspan="12" class="empty">No fields match the current filters.</td></tr>';
+        // Renders Client → Farm → Field hierarchy. Fields supplied are
+        // already filtered server-side (via /api/m77-fields query params);
+        // rendering just groups + nests them.
+        function renderHierarchy(fields) {
+            if (!lastClients.length) {
+                hierarchyEl.innerHTML = '<div class="empty">No clients found. Run the hierarchy migration on Render.</div>';
                 renderBulkBar();
                 return;
             }
-            tbody.innerHTML = fields.map(f => {
-                const checked = selectedIds.has(f._id) ? 'checked' : '';
-                const jdSourceBadge = f.createdFromJdSync
-                    ? '<span class="badge badge-jd-linked" title="Auto-created during JD sync">JD-imported</span> '
-                    : '';
+
+            // Build lookup: clientId → [fields], farmId → [fields].
+            const fieldsByFarm = new Map();
+            for (const f of fields) {
+                const farmId = f.farm?._id || f.farm;
+                if (!farmId) continue;
+                if (!fieldsByFarm.has(String(farmId))) fieldsByFarm.set(String(farmId), []);
+                fieldsByFarm.get(String(farmId)).push(f);
+            }
+
+            const farmsByClient = new Map();
+            for (const farm of lastFarms) {
+                const cid = String(farm.client?._id || farm.client);
+                if (!farmsByClient.has(cid)) farmsByClient.set(cid, []);
+                farmsByClient.get(cid).push(farm);
+            }
+
+            // Build the DOM in order: M77 AG, Allphin Farms, Custom (or whatever
+            // /api/clients returns sorted by name).
+            const clientCardsHtml = lastClients.map(c => {
+                const cid = String(c._id);
+                const farms = (farmsByClient.get(cid) || []).sort((a, b) => a.name.localeCompare(b.name));
+                const farmsHtml = farms.map(farm => {
+                    const fields = (fieldsByFarm.get(String(farm._id)) || [])
+                        .sort((a, b) => a.name.localeCompare(b.name));
+                    const farmFieldCount = fields.length;
+                    const farmAcres = fields.reduce((s, f) => s + (f.acres || 0), 0);
+                    if (farmFieldCount === 0 && hasActiveFilters()) {
+                        return ''; // hide empty farms when filtering
+                    }
+
+                    const farmType = farm.type || 'crop-share';
+                    const sharePctLabel = (farmType === 'crop-share' && farm.defaultShare !== null && farm.defaultShare !== undefined)
+                        ? ` · ${(farm.defaultShare * 100).toFixed(0)}%`
+                        : (farmType === 'crop-share' && (farm.defaultShare === null || farm.defaultShare === undefined))
+                            ? ' · share TBD'
+                            : '';
+
+                    const fieldsHtml = fields.map(renderFieldCard).join('');
+
+                    return `
+                        <details class="farm-card" data-farm-id="${farm._id}">
+                            <summary class="farm-summary">
+                                <span class="farm-name">${escapeHtml(farm.name)}</span>
+                                <span class="farm-type ${farmType}">${escapeHtml(farmType)}</span>
+                                <span class="farm-landlord">${escapeHtml(farm.landlordName || '—')}${sharePctLabel}</span>
+                                <span class="farm-meta"><strong>${farmFieldCount}</strong> fields · <strong>${fmtAcres(farmAcres)}</strong> ac</span>
+                            </summary>
+                            <div class="fields-list">
+                                ${fieldsHtml || '<div class="empty" style="padding:14px;">No fields in this farm.</div>'}
+                            </div>
+                        </details>
+                    `;
+                }).filter(Boolean).join('');
+
+                const totalFields = farms.reduce(
+                    (s, f) => s + (fieldsByFarm.get(String(f._id)) || []).length, 0
+                );
+                const totalAcres = farms.reduce((s, f) =>
+                    s + (fieldsByFarm.get(String(f._id)) || []).reduce((ss, fld) => ss + (fld.acres || 0), 0), 0
+                );
+
+                if (totalFields === 0 && hasActiveFilters()) return '';
+
                 return `
-                <tr data-id="${f._id}">
-                    <td><input type="checkbox" class="row-checkbox row-select" data-id="${f._id}" ${checked}></td>
-                    <td data-label="Name"><strong>${escapeHtml(f.name)}</strong> ${jdSourceBadge}</td>
-                    <td data-label="County">${escapeHtml(f.county || '-')}</td>
-                    <td data-label="Acres">${fmtAcres(f.acres)}</td>
-                    <td data-label="Owner">${escapeHtml(ownerLabel(f))}</td>
-                    <td data-label="Enterprise">${escapeHtml(f.enterprise || '-')}</td>
-                    <td data-label="Irrigation">${escapeHtml(f.irrigation || '-')}</td>
-                    <td data-label="2026 Crop">${escapeHtml(f.crop2026 || '-')}</td>
-                    <td data-label="Rotation">${escapeHtml(f.rotationGroup || '-')}</td>
-                    <td data-label="Status">${statusBadge(f.status)}</td>
-                    <td data-label="JD">${jdBadge(f)}</td>
-                    <td data-label="Actions">
-                        <div class="row-actions">
-                            <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit</button>
+                    <details class="client-card" data-client-id="${cid}" data-type="${escapeHtml(c.type)}">
+                        <summary class="client-summary">
+                            <span class="client-name">${escapeHtml(c.name)}</span>
+                            <span class="client-meta">
+                                <span><strong>${farms.length}</strong> farms</span>
+                                <span><strong>${totalFields}</strong> fields</span>
+                                <span><strong>${fmtAcres(totalAcres)}</strong> ac</span>
+                                <span style="color:#888;">${escapeHtml(c.type)}</span>
+                            </span>
+                        </summary>
+                        <div class="farms-list">
+                            ${farmsHtml || '<div class="empty" style="padding:14px;">No farms match the current filters.</div>'}
                         </div>
-                    </td>
-                </tr>
+                    </details>
                 `;
-            }).join('');
+            }).filter(Boolean).join('');
+
+            hierarchyEl.innerHTML = clientCardsHtml || '<div class="empty">No fields match the current filters.</div>';
             renderBulkBar();
+        }
+
+        function renderFieldCard(f) {
+            const checked = selectedIds.has(f._id) ? 'checked' : '';
+            const jdSourceBadge = f.createdFromJdSync
+                ? '<span class="badge badge-jd-linked" title="Auto-created during JD sync">JD-imported</span> '
+                : '';
+            return `
+                <details class="field-card" data-field-id="${f._id}">
+                    <summary class="field-summary">
+                        <input type="checkbox" class="row-checkbox row-select" data-id="${f._id}" ${checked} onclick="event.stopPropagation();">
+                        <span class="field-name">${escapeHtml(f.name)}</span>
+                        ${jdSourceBadge}
+                        <span class="field-quick">
+                            <span><strong>${fmtAcres(f.acres)}</strong> ac</span>
+                            <span>${escapeHtml(f.crop2026 || '—')}</span>
+                            <span>${escapeHtml(f.irrigation || '—')}</span>
+                            <span>${escapeHtml(f.enterprise || '—')}</span>
+                            ${statusBadge(f.status)}
+                            ${jdBadge(f)}
+                        </span>
+                    </summary>
+                    <div class="field-detail">
+                        <div class="group"><div class="label">Name</div><div class="value"><strong>${escapeHtml(f.name)}</strong></div></div>
+                        <div class="group"><div class="label">County</div><div class="value">${escapeHtml(f.county || '—')}</div></div>
+                        <div class="group"><div class="label">Acres</div><div class="value">${fmtAcres(f.acres)}</div></div>
+                        <div class="group"><div class="label">Owner</div><div class="value">${escapeHtml(ownerLabel(f))}</div></div>
+                        <div class="group"><div class="label">Enterprise</div><div class="value">${escapeHtml(f.enterprise || '—')}</div></div>
+                        <div class="group"><div class="label">Irrigation</div><div class="value">${escapeHtml(f.irrigation || '—')}</div></div>
+                        <div class="group"><div class="label">2026 Crop</div><div class="value">${escapeHtml(f.crop2026 || '—')}</div></div>
+                        <div class="group"><div class="label">Rotation Group</div><div class="value">${escapeHtml(f.rotationGroup || '—')}</div></div>
+                        <div class="group"><div class="label">Status</div><div class="value">${statusBadge(f.status)}</div></div>
+                        <div class="group"><div class="label">Share Override</div><div class="value">${f.shareOverride !== null && f.shareOverride !== undefined ? (f.shareOverride * 100).toFixed(1) + '%' : 'inherit from farm'}</div></div>
+                        <div class="group"><div class="label">JD Field ID</div><div class="value" style="font-family:monospace; font-size:11px;">${escapeHtml(f.jd_field_id || '—')}</div></div>
+                        <div class="group"><div class="label">JD Last Synced</div><div class="value">${f.jdLastSyncedAt ? new Date(f.jdLastSyncedAt).toLocaleString() : '—'}</div></div>
+                        ${f.notes ? `<div class="group" style="grid-column: 1 / -1;"><div class="label">Notes</div><div class="value">${escapeHtml(f.notes)}</div></div>` : ''}
+                        <div class="actions">
+                            <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit field</button>
+                        </div>
+                    </div>
+                </details>
+            `;
+        }
+
+        function hasActiveFilters() {
+            const ids = ['filterSearch','filterCounty','filterIrrigation','filterOwner',
+                'filterEnterprise','filterRotation','filterCrop','filterStatus','filterJd'];
+            return ids.some(id => {
+                const el = document.getElementById(id);
+                return el && el.value && el.value.trim() !== '';
+            });
         }
 
         function escapeHtml(s) {
@@ -815,6 +1005,32 @@
             }
         }
 
+        async function loadHierarchy() {
+            // Load Clients + Farms once per session refresh; both are small.
+            try {
+                const [clientsResp, farmsResp] = await Promise.all([
+                    fetch('/api/clients', { headers: authHeaders() }).then(r => r.json()),
+                    fetch('/api/m77-farms', { headers: authHeaders() }).then(r => r.json())
+                ]);
+                if (clientsResp.success) {
+                    // Order: M77 AG, Allphin Farms, Custom (canonical), then any others alphabetically.
+                    const order = ['M77 AG', 'Allphin Farms', 'Custom'];
+                    lastClients = (clientsResp.clients || []).slice().sort((a, b) => {
+                        const ai = order.indexOf(a.name); const bi = order.indexOf(b.name);
+                        if (ai !== -1 || bi !== -1) {
+                            if (ai === -1) return 1;
+                            if (bi === -1) return -1;
+                            return ai - bi;
+                        }
+                        return a.name.localeCompare(b.name);
+                    });
+                }
+                if (farmsResp.success) lastFarms = farmsResp.farms || [];
+            } catch (e) {
+                console.warn('Hierarchy load failed:', e.message);
+            }
+        }
+
         async function loadFields() {
             const params = new URLSearchParams();
             const map = {
@@ -837,18 +1053,49 @@
             else if (jdFilter === 'linked') params.set('jdLinked', 'true');
             else if (jdFilter === 'unlinked') params.set('jdLinked', 'false');
             try {
+                if (!lastClients.length) await loadHierarchy();
                 const data = await api('/' + (params.toString() ? '?' + params.toString() : ''));
-                renderRows(data.fields || []);
-                updateStats(data.fields || []);
+                lastFields = data.fields || [];
+                renderHierarchy(lastFields);
+                updateStats(lastFields);
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="12" class="empty">Error: ${escapeHtml(e.message)}</td></tr>`;
+                hierarchyEl.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message)}</div>`;
             }
         }
+
+        function populateClientSelect() {
+            const sel = document.getElementById('f_client');
+            sel.innerHTML = lastClients.map(c =>
+                `<option value="${c._id}">${escapeHtml(c.name)}</option>`
+            ).join('') || '<option value="">— no clients —</option>';
+        }
+
+        function populateFarmSelect(clientId) {
+            const sel = document.getElementById('f_farm');
+            const farms = lastFarms
+                .filter(f => String(f.client?._id || f.client) === String(clientId))
+                .sort((a, b) => a.name.localeCompare(b.name));
+            sel.innerHTML = farms.map(f =>
+                `<option value="${f._id}">${escapeHtml(f.name)} — ${escapeHtml(f.landlordName || '')}</option>`
+            ).join('') || '<option value="">— no farms under this client —</option>';
+        }
+
+        document.getElementById('f_client').addEventListener('change', (e) => {
+            populateFarmSelect(e.target.value);
+        });
 
         function openModal(field) {
             editingId = field ? field._id : null;
             document.getElementById('modalTitle').textContent = field ? 'Edit Field' : 'Add Field';
             document.getElementById('fieldId').value = field ? field._id : '';
+
+            populateClientSelect();
+            const clientId = field?.client?._id || field?.client || (lastClients[0] && lastClients[0]._id);
+            if (clientId) document.getElementById('f_client').value = clientId;
+            populateFarmSelect(clientId);
+            const farmId = field?.farm?._id || field?.farm;
+            if (farmId) document.getElementById('f_farm').value = farmId;
+
             document.getElementById('f_name').value = field?.name || '';
             document.getElementById('f_county').value = field?.county || '';
             document.getElementById('f_acres').value = field?.acres ?? '';
@@ -881,6 +1128,8 @@
 
         function buildPayload() {
             const payload = {
+                client: document.getElementById('f_client').value,
+                farm: document.getElementById('f_farm').value,
                 name: document.getElementById('f_name').value.trim(),
                 county: document.getElementById('f_county').value.trim(),
                 acres: parseFloat(document.getElementById('f_acres').value),
@@ -918,6 +1167,8 @@
             }
             if (!payload.name) return showError('Name is required.');
             if (!Number.isFinite(payload.acres)) return showError('Acres is required.');
+            if (!payload.client) return showError('Client is required.');
+            if (!payload.farm) return showError('Farm is required.');
 
             try {
                 if (editingId) {
@@ -963,7 +1214,7 @@
         document.getElementById('modalDelete').addEventListener('click', deleteField);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        tbody.addEventListener('click', (e) => {
+        hierarchyEl.addEventListener('click', (e) => {
             const editBtn = e.target.closest('[data-edit]');
             if (editBtn) {
                 editFieldById(editBtn.getAttribute('data-edit'));
@@ -983,12 +1234,12 @@
                 label.textContent = `${selectedIds.size} selected`;
             }
             // Sync the header checkbox state
-            const visible = Array.from(tbody.querySelectorAll('.row-select')).map(c => c.getAttribute('data-id'));
+            const visible = Array.from(hierarchyEl.querySelectorAll('.row-select')).map(c => c.getAttribute('data-id'));
             const allSelected = visible.length > 0 && visible.every(id => selectedIds.has(id));
             document.getElementById('selectAll').checked = allSelected;
         }
 
-        tbody.addEventListener('change', (e) => {
+        hierarchyEl.addEventListener('change', (e) => {
             const cb = e.target.closest('.row-select');
             if (!cb) return;
             const id = cb.getAttribute('data-id');
@@ -999,7 +1250,7 @@
 
         document.getElementById('selectAll').addEventListener('change', (e) => {
             const checked = e.target.checked;
-            tbody.querySelectorAll('.row-select').forEach(cb => {
+            hierarchyEl.querySelectorAll('.row-select').forEach(cb => {
                 cb.checked = checked;
                 const id = cb.getAttribute('data-id');
                 if (checked) selectedIds.add(id);
@@ -1008,9 +1259,16 @@
             renderBulkBar();
         });
 
+        document.getElementById('btnExpandAll').addEventListener('click', () => {
+            hierarchyEl.querySelectorAll('details').forEach(d => d.open = true);
+        });
+        document.getElementById('btnCollapseAll').addEventListener('click', () => {
+            hierarchyEl.querySelectorAll('details').forEach(d => d.open = false);
+        });
+
         document.getElementById('btnBulkClear').addEventListener('click', () => {
             selectedIds.clear();
-            tbody.querySelectorAll('.row-select').forEach(cb => { cb.checked = false; });
+            hierarchyEl.querySelectorAll('.row-select').forEach(cb => { cb.checked = false; });
             renderBulkBar();
         });
 

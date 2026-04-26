@@ -7,16 +7,11 @@ const mongoose = require('mongoose');
 // the LandManagement system, owned by LandManagementUser). M77Farm lives
 // in the m77farms collection and is part of the M77 field stack.
 //
-// M77 farms today:
-//   - Under Client M77 AG:        LAFARMS, KBFARMS, HDFARMS, MEFARMS,
-//                                 A1FARMS, PETERSON, Unassigned,
-//                                 Unassigned (JD imported)
-//   - Under Client Allphin Farms: Lueking
-//   - Under Client Custom:        Nelson, Eisenhard, RPM
-//
-// `landlordUser` is an optional per-Farm override of the Client-level user
-// list. Useful if a single landlord owns a specific farm under a
-// multi-farm Client. `shareOverride` overrides Client.defaultShare.
+// Financial split engine:
+//   M77 share      = 1 - (field.shareOverride ?? farm.defaultShare)
+//   Landlord share =      field.shareOverride ?? farm.defaultShare
+// Custom Farms (type='custom') are billed directly and skip the split
+// entirely — the engine should treat them as out-of-rotation.
 const m77FarmSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -31,17 +26,43 @@ const m77FarmSchema = new mongoose.Schema({
   },
   county: { type: String, trim: true },
 
-  landlordUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null
+  // Display name of the landlord/owner entity for this Farm.
+  // Examples: "M77 AG", "Kyle & Brandi McConnell", "Larry & Adele",
+  //           "Allphin Farms".
+  landlordName: {
+    type: String,
+    required: true,
+    trim: true
   },
 
-  shareOverride: {
+  // Users authorized to view this Farm via the landlord portal. Couples
+  // (e.g. "Kyle & Brandi") get one Farm record but two User refs here, so
+  // each spouse can have their own login.
+  landlordUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+
+  // Operating type:
+  //   'owned'      — M77 owns the land outright (e.g. MEFARMS); share=0.
+  //   'crop-share' — M77 farms it for a landlord on a crop-share lease.
+  //   'custom'     — M77 does custom field operations for an outside
+  //                  operator; not in the M77 rotation, no share split.
+  type: {
+    type: String,
+    required: true,
+    enum: ['owned', 'crop-share', 'custom'],
+    default: 'crop-share'
+  },
+
+  // Landlord's share of crop-share output, 0..1. Owned farms = 0.
+  // Custom farms = 0 (the field is not split). Per-field overrides go on
+  // M77Field.shareOverride.
+  defaultShare: {
     type: Number,
     min: 0,
     max: 1,
-    default: null
+    default: 0
   },
 
   active: { type: Boolean, default: true },

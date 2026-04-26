@@ -123,6 +123,15 @@ const m77FieldSchema = new mongoose.Schema({
     index: true
   },
 
+  // Optional per-field landlord-share override. When null, the financial
+  // split engine falls back to the parent Farm's defaultShare. Range 0..1.
+  shareOverride: {
+    type: Number,
+    min: 0,
+    max: 1,
+    default: null
+  },
+
   // Origin tracking for one-time migration from legacy Field / CroppingField
   // collections. Lets the migration script run idempotently — re-runs upsert
   // on (legacySource, legacyId) instead of duplicating rows.

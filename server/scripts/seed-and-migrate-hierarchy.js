@@ -32,39 +32,52 @@ const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true';
 
 // ---- Hierarchy definition (the source of truth) ----------------------------
 
-// All farm names that will exist after seeding. The first item in each
-// `farms` array is the "Unassigned" bucket per Client (used when an existing
-// or imported M77Field can't be assigned a more specific farm).
+// Hierarchy source-of-truth. Edit this when landlord names, shares, or
+// new farms change. Re-running the seed reconciles MongoDB to this list.
 const HIERARCHY = [
   {
     name: 'M77 AG',
     type: 'owner',
     contact: { name: 'M77 AG' },
-    defaultShare: 0,
+    defaultEnterprise: 'M77 AG',
     farms: [
-      'Unassigned',
-      'Unassigned (JD imported)',
-      'LAFARMS',
-      'KBFARMS',
-      'HDFARMS',
-      'MEFARMS',
-      'A1FARMS',
-      'PETERSON'
+      // type 'owned'      = M77 owns the land outright; share = 0
+      // type 'crop-share' = M77 farms it for a landlord; share = landlord %
+      // The "Unassigned" buckets exist so legacy and JD-imported fields
+      // always have a home until they're tagged correctly via the UI.
+      { name: 'MEFARMS',                  landlordName: 'M77 AG',                   type: 'owned',      defaultShare: 0    },
+      { name: 'KBFARMS',                  landlordName: 'Kyle & Brandi McConnell',  type: 'crop-share', defaultShare: 0.35 },
+      { name: 'LAFARMS',                  landlordName: 'Larry & Adele',            type: 'crop-share', defaultShare: 0.35 },
+      { name: 'HDFARMS',                  landlordName: 'Dorothy McConnell',        type: 'crop-share', defaultShare: 0.35 },
+      { name: 'A1FARMS',                  landlordName: 'Adele McConnell',          type: 'crop-share', defaultShare: 0.35 },
+      { name: 'PETERSON',                 landlordName: 'Lynn Peterson',            type: 'crop-share', defaultShare: 0.35 },
+      { name: 'Unassigned',               landlordName: 'M77 AG',                   type: 'owned',      defaultShare: 0    },
+      { name: 'Unassigned (JD imported)', landlordName: 'M77 AG',                   type: 'owned',      defaultShare: 0    }
     ]
   },
   {
     name: 'Allphin Farms',
     type: 'landlord',
     contact: { name: 'Allphin Farms' },
-    defaultShare: 0,
-    farms: ['Lueking']
+    defaultEnterprise: 'Lueking',
+    farms: [
+      // defaultShare = null means "set later via UI" — financial engine
+      // skips fields whose effective share is null until configured.
+      { name: 'Lueking', landlordName: 'Allphin Farms', type: 'crop-share', defaultShare: null }
+    ]
   },
   {
     name: 'Custom',
     type: 'custom',
     contact: { name: 'Custom (no portal)' },
-    defaultShare: 0,
-    farms: ['Nelson', 'Eisenhard', 'RPM']
+    defaultEnterprise: 'Custom',
+    farms: [
+      // Custom-type farms skip the crop-share split entirely; M77 bills
+      // these directly. landlordName captures the operator's name.
+      { name: 'Nelson',    landlordName: 'Nelson',    type: 'custom', defaultShare: 0 },
+      { name: 'Eisenhard', landlordName: 'Eisenhard', type: 'custom', defaultShare: 0 },
+      { name: 'RPM',       landlordName: 'RPM',       type: 'custom', defaultShare: 0 }
+    ]
   }
 ];
 
@@ -76,6 +89,16 @@ const M77_AG_FARM_NAMES = new Set([
 
 function normalizeFarmName(s) {
   return String(s || '').trim().toUpperCase();
+}
+
+function farmRecordFor(client, farmDef) {
+  return {
+    client: client._id,
+    name: farmDef.name,
+    landlordName: farmDef.landlordName,
+    type: farmDef.type,
+    defaultShare: farmDef.defaultShare
+  };
 }
 
 // ---- Main ------------------------------------------------------------------
@@ -90,14 +113,18 @@ async function seedClientsAndFarms() {
     if (DRY_RUN) {
       client = await Client.findOne({ name: c.name });
       if (!client) {
-        console.log(`  [dry] would create Client: ${c.name} (${c.type})`);
+        console.log(`  [dry] would create Client: ${c.name} (${c.type}, defaultEnterprise=${c.defaultEnterprise})`);
         client = { _id: null, name: c.name, type: c.type };
       }
     } else {
       client = await Client.findOneAndUpdate(
         { name: c.name },
         {
-          $set: { type: c.type, contact: c.contact, defaultShare: c.defaultShare },
+          $set: {
+            type: c.type,
+            contact: c.contact,
+            defaultEnterprise: c.defaultEnterprise
+          },
           $setOnInsert: { name: c.name }
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -105,24 +132,30 @@ async function seedClientsAndFarms() {
     }
     clientByName.set(c.name, client);
 
-    for (const farmName of c.farms) {
+    for (const farmDef of c.farms) {
       let farm;
       if (DRY_RUN) {
-        farm = client._id ? await M77Farm.findOne({ client: client._id, name: farmName }) : null;
+        farm = client._id ? await M77Farm.findOne({ client: client._id, name: farmDef.name }) : null;
         if (!farm) {
-          console.log(`  [dry] would create Farm: ${farmName} under ${c.name}`);
-          farm = { _id: null, name: farmName };
+          console.log(`  [dry] would create Farm: ${farmDef.name} under ${c.name} ` +
+            `(landlord=${farmDef.landlordName}, type=${farmDef.type}, share=${farmDef.defaultShare})`);
+          farm = { _id: null, name: farmDef.name };
         }
       } else {
         farm = await M77Farm.findOneAndUpdate(
-          { client: client._id, name: farmName },
+          { client: client._id, name: farmDef.name },
           {
-            $setOnInsert: { client: client._id, name: farmName }
+            $set: {
+              landlordName: farmDef.landlordName,
+              type:         farmDef.type,
+              defaultShare: farmDef.defaultShare
+            },
+            $setOnInsert: { client: client._id, name: farmDef.name }
           },
           { upsert: true, new: true, setDefaultsOnInsert: true }
         );
       }
-      farmByKey.set(`${c.name}::${farmName}`, farm);
+      farmByKey.set(`${c.name}::${farmDef.name}`, farm);
     }
   }
   return { clientByName, farmByKey };

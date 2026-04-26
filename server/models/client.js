@@ -30,12 +30,15 @@ const clientSchema = new mongoose.Schema({
     address: { type: String, trim: true }
   },
 
-  // Default landlord share (0..1). Overridable per Farm via farm.shareOverride.
-  defaultShare: {
-    type: Number,
-    min: 0,
-    max: 1,
-    default: 0
+  // Enterprise this Client's fields default to in P&L reporting:
+  //   M77 AG         → 'M77 AG'
+  //   Allphin Farms  → 'Lueking'
+  //   Custom         → 'Custom'
+  // M77Field.enterprise can override per-field if needed.
+  defaultEnterprise: {
+    type: String,
+    trim: true,
+    default: 'M77 AG'
   },
 
   // User accounts authorized to view this Client's data via the landlord
