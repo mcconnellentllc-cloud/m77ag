@@ -107,6 +107,22 @@ const m77FieldSchema = new mongoose.Schema({
   jdLastSyncedAt: { type: Date, default: null },
   jdSyncMatchScore: { type: Number, default: null },
 
+  // Hierarchy: Client → M77Farm → M77Field. Both required after the
+  // hierarchy migration runs. Existing 73 records are linked by
+  // server/scripts/seed-and-migrate-hierarchy.js.
+  client: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Client',
+    required: true,
+    index: true
+  },
+  farm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'M77Farm',
+    required: true,
+    index: true
+  },
+
   // Origin tracking for one-time migration from legacy Field / CroppingField
   // collections. Lets the migration script run idempotently — re-runs upsert
   // on (legacySource, legacyId) instead of duplicating rows.
@@ -137,6 +153,7 @@ const m77FieldSchema = new mongoose.Schema({
 m77FieldSchema.index({ name: 1, county: 1 });
 m77FieldSchema.index({ rotationGroup: 1 });
 m77FieldSchema.index({ owner: 1 });
+m77FieldSchema.index({ client: 1, farm: 1 });
 m77FieldSchema.index(
   { legacySource: 1, legacyId: 1 },
   { unique: true, partialFilterExpression: { legacyId: { $type: 'objectId' } } }

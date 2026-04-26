@@ -223,7 +223,50 @@ const M77Field = require('../models/m77Field');
 const JdField = require('../models/jdField');
 const JdSyncReview = require('../models/jdSyncReview');
 const JdSyncRun = require('../models/jdSyncRun');
+const Client = require('../models/client');
+const M77Farm = require('../models/m77Farm');
 const matcher = require('../utils/fieldMatcher');
+
+// JD organization-name → M77 Client routing for auto-create. The keys are
+// case-insensitive substring matches on the JD organization name.
+// Anything that doesn't match any rule defaults to (M77 AG, Unassigned (JD imported)).
+const JD_ORG_CLIENT_RULES = [
+  { match: /allphin/i, client: 'Allphin Farms', farm: 'Lueking',                  enterprise: 'Lueking' }
+];
+const DEFAULT_JD_CLIENT_NAME = 'M77 AG';
+const DEFAULT_JD_FARM_NAME   = 'Unassigned (JD imported)';
+
+// Resolve (clientId, farmId, enterprise) for a JD-originated field. The
+// target Farm is created on demand under the Client if it doesn't exist
+// yet — keeps sync robust against new orgs appearing in JD between runs.
+async function resolveClientFarmForJdField(jdField, session) {
+  const orgName = jdField.jd_org_name || '';
+  let clientName = DEFAULT_JD_CLIENT_NAME;
+  let farmName   = DEFAULT_JD_FARM_NAME;
+  let enterprise = 'M77 AG';
+
+  for (const rule of JD_ORG_CLIENT_RULES) {
+    if (rule.match.test(orgName)) {
+      clientName = rule.client;
+      farmName   = rule.farm;
+      enterprise = rule.enterprise;
+      break;
+    }
+  }
+
+  const client = await Client.findOneAndUpdate(
+    { name: clientName },
+    { $setOnInsert: { name: clientName, type: clientName === 'M77 AG' ? 'owner' : 'landlord' } },
+    { upsert: true, new: true, setDefaultsOnInsert: true, session }
+  );
+  const farm = await M77Farm.findOneAndUpdate(
+    { client: client._id, name: farmName },
+    { $setOnInsert: { client: client._id, name: farmName } },
+    { upsert: true, new: true, setDefaultsOnInsert: true, session }
+  );
+
+  return { clientId: client._id, farmId: farm._id, enterprise };
+}
 
 // JD API conventions
 const JD_API_VERSION_HEADER = 'application/vnd.deere.axiom.v3+json';
@@ -501,6 +544,9 @@ async function createM77FieldFromJd(jd, runId, syncedAt) {
   try {
     let createdId;
     await session.withTransaction(async () => {
+      // Map JD org → M77 Client + Farm. Creates the records on demand.
+      const { clientId, farmId, enterprise } = await resolveClientFarmForJdField(jd, session);
+
       const created = await M77Field.create([{
         name: jd.name || `JD field ${jd.jd_field_id}`,
         acres: jd.acres || 0,
@@ -509,9 +555,11 @@ async function createM77FieldFromJd(jd, runId, syncedAt) {
         m77SharePercent: 100,
         landlordSharePercent: 0,
         irrigation: 'dryland',
-        enterprise: 'M77 AG',
+        enterprise,
         crop2026: '',
         rotationGroup: jd.jd_farm_name || '',
+        client: clientId,
+        farm: farmId,
         boundary: jd.boundary || undefined,
         jd_field_id: jd.jd_field_id,
         createdFromJdSync: true,
@@ -592,7 +640,8 @@ async function syncAllFields({ triggeredBy, triggeredByEmail }) {
 
     // 3. Match every M77 field that doesn't already have a jd_field_id.
     const syncedAt = new Date();
-    const m77Fields = await M77Field.find({});
+    // Populate client.name so the matcher can compute the Client-alignment bonus.
+    const m77Fields = await M77Field.find({}).populate('client', 'name');
     const linkedJdIds = new Set(m77Fields.filter(f => f.jd_field_id).map(f => f.jd_field_id));
 
     const m77ToConsider = m77Fields.filter(f => !f.jd_field_id);

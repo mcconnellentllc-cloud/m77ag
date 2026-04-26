@@ -35,6 +35,11 @@ const MATCHER_CONFIG = Object.freeze({
   // Score weights for ranking multiple candidates (overlap is base 0..1).
   NAME_MATCH_SCORE_BONUS: 0.20,
   ACRES_MATCH_SCORE_BONUS: 0.05,
+  // Boost when M77 field's Client.name aligns with JD field's org name (case
+  // and whitespace insensitive). Mismatches do not auto-reject — they just
+  // miss the boost. This lets the matcher prefer same-Client pairings while
+  // still surfacing cross-Client candidates for manual review.
+  CLIENT_ALIGNED_SCORE_BONUS: 0.15,
 
   // Score assigned when GPS data is missing but names match.
   NAME_ONLY_REVIEW_SCORE: 0.50
@@ -122,11 +127,24 @@ function acresWithinTolerance(a, b) {
 
 // ---- Scoring + decision ----------------------------------------------------
 
+// Helper: do the M77 field's Client name and the JD field's org name align?
+// Both normalized via the same name-normalization rules.
+function clientsAlign(m77Field, jdField) {
+  // m77Field may carry the client name as either `clientName` (denormalized
+  // by the caller) or `client.name` if populated.
+  const m77ClientName = m77Field.clientName
+    || (m77Field.client && (m77Field.client.name || m77Field.client));
+  const jdOrgName = jdField.jd_org_name || (jdField.org && jdField.org.name);
+  if (!m77ClientName || !jdOrgName) return false;
+  return namesMatch(m77ClientName, jdOrgName);
+}
+
 function scoreCandidate(m77Field, jdField) {
   const nameMatch = namesMatch(m77Field.name, jdField.name);
   const overlap = polygonOverlapPercent(m77Field.boundary, jdField.boundary);
   const acresMatch = acresWithinTolerance(m77Field.acres, jdField.acres);
   const ratio = acresRatio(m77Field.acres, jdField.acres);
+  const clientAligned = clientsAlign(m77Field, jdField);
 
   let decision = 'none';
   let reason = 'no usable signal';
@@ -147,12 +165,14 @@ function scoreCandidate(m77Field, jdField) {
     }
     score = overlap
       + (nameMatch ? MATCHER_CONFIG.NAME_MATCH_SCORE_BONUS : 0)
-      + (acresMatch ? MATCHER_CONFIG.ACRES_MATCH_SCORE_BONUS : 0);
+      + (acresMatch ? MATCHER_CONFIG.ACRES_MATCH_SCORE_BONUS : 0)
+      + (clientAligned ? MATCHER_CONFIG.CLIENT_ALIGNED_SCORE_BONUS : 0);
   } else if (nameMatch) {
     decision = 'review';
     reason = 'name match without usable GPS on at least one side';
     score = MATCHER_CONFIG.NAME_ONLY_REVIEW_SCORE
-      + (acresMatch ? MATCHER_CONFIG.ACRES_MATCH_SCORE_BONUS : 0);
+      + (acresMatch ? MATCHER_CONFIG.ACRES_MATCH_SCORE_BONUS : 0)
+      + (clientAligned ? MATCHER_CONFIG.CLIENT_ALIGNED_SCORE_BONUS : 0);
   }
 
   return {
@@ -160,6 +180,7 @@ function scoreCandidate(m77Field, jdField) {
     nameMatch,
     acresMatch,
     acresRatio: ratio === null ? null : Number(ratio.toFixed(4)),
+    clientAligned,
     score: Number(score.toFixed(4)),
     decision,
     reason
