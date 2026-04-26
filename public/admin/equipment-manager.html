@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Manager | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #3d6b1f;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .summary-card.highlight {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+        }
+        .summary-card.highlight .summary-label {
+            color: rgba(255,255,255,0.8);
+        }
+        .summary-card.warning {
+            border-left: 4px solid #e67e22;
+        }
+        .summary-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+        }
+        .summary-value.green { color: #27ae60; }
+        .summary-value.red { color: #c0392b; }
+        .summary-value.gold { color: #d4af37; }
+        .summary-subtext {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .category-tab {
+            padding: 10px 18px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-tab:hover {
+            border-color: #2d5016;
+            color: #2d5016;
+        }
+        .category-tab.active {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .category-count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        .category-tab.active .category-count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Equipment Table */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .table-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+        }
+        .search-box {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 250px;
+        }
+        .equipment-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .equipment-table th,
+        .equipment-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .equipment-table th {
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .equipment-table th:hover {
+            background: #f0f0f0;
+        }
+        .equipment-table tr:hover {
+            background: #fafafa;
+        }
+        .equipment-title {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .equipment-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+        .value-cell {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+        }
+        .value-cell.positive { color: #27ae60; }
+        .value-cell.negative { color: #c0392b; }
+        .market-source {
+            font-size: 10px;
+            color: #888;
+            font-style: italic;
+        }
+        .loan-lender {
+            font-size: 10px;
+            color: #2d5016;
+            font-weight: 500;
+        }
+        .loan-payment {
+            font-size: 10px;
+            color: #c0392b;
+        }
+        .has-loan {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #666;
+        }
+        .category-select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .category-select:hover {
+            border-color: #2d5016;
+        }
+        .category-select:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.2);
+        }
+        .category-select.updating {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .update-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ddd;
+            border-top-color: #2d5016;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .edit-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .edit-btn:hover {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .sold-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #e67e22;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e67e22;
+            margin-left: 5px;
+        }
+        .sold-btn:hover {
+            background: #e67e22;
+            color: white;
+        }
+        .restore-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #27ae60;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #27ae60;
+            margin-left: 5px;
+        }
+        .restore-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .archived-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #f8d7da;
+            color: #721c24;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .category-tab.archived {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+        .category-tab.archived.active {
+            background: #c0392b;
+            color: white;
+            border-color: #c0392b;
+        }
+        /* For Sale toggle */
+        .for-sale-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .for-sale-toggle.private {
+            background: #f0f0f0;
+            color: #666;
+            border-color: #ddd;
+        }
+        .for-sale-toggle.private:hover {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+        .for-sale-toggle.for-sale {
+            background: #4caf50;
+            color: white;
+        }
+        .for-sale-toggle.for-sale:hover {
+            background: #43a047;
+        }
+        .for-sale-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #4caf50;
+            color: white;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        /* Category Summary Cards */
+        .category-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .cat-sum-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2d5016;
+        }
+        .cat-sum-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .cat-sum-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+        .cat-sum-count {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Upcoming Payments Panel */
+        .payments-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .payments-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .payments-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+        }
+        .payment-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+        .payment-info {
+            flex: 1;
+        }
+        .payment-equipment {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .payment-lender {
+            font-size: 12px;
+            color: #666;
+        }
+        .payment-amount {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #c0392b;
+            text-align: right;
+        }
+        .payment-date {
+            font-size: 12px;
+            color: #666;
+        }
+        .no-payments {
+            padding: 30px;
+            text-align: center;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .equipment-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .admin-nav { display: none; }
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #2d5016;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        .view-toggle-btn {
+            padding: 10px 16px;
+            background: white;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-toggle-btn:not(:last-child) {
+            border-right: 1px solid #ddd;
+        }
+        .view-toggle-btn:hover {
+            background: #f5f3f0;
+        }
+        .view-toggle-btn.active {
+            background: #2d5016;
+            color: white;
+        }
+        .view-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Equipment Cards Grid */
+        .equipment-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .equipment-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .equipment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        .equipment-card-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .equipment-card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .equipment-card-subtitle {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+        .equipment-card-category {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        .equipment-card-body {
+            padding: 20px;
+        }
+        .equipment-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+        .equipment-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .equipment-card-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .equipment-stat {
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .equipment-stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .equipment-stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+        }
+        .equipment-stat-value.positive { color: #27ae60; }
+        .equipment-stat-value.negative { color: #c0392b; }
+        .equipment-stat-value.gold { color: #d4af37; }
+        .equipment-card-details {
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .equipment-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #f8f8f8;
+        }
+        .equipment-detail-row:last-child {
+            border-bottom: none;
+        }
+        .equipment-detail-label {
+            color: #888;
+        }
+        .equipment-detail-value {
+            font-weight: 500;
+            color: #333;
+        }
+        .equipment-card-loan {
+            background: #fff8e5;
+            border: 1px solid #ffd96e;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        .equipment-loan-header {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .equipment-loan-lender {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+        .equipment-loan-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+        }
+        .equipment-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .equipment-card-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .card-edit-btn {
+            background: #2d5016;
+            color: white;
+            border: none;
+        }
+        .card-edit-btn:hover {
+            background: #3d6b1f;
+        }
+        .card-sold-btn {
+            background: white;
+            color: #e67e22;
+            border: 1px solid #e67e22;
+        }
+        .card-sold-btn:hover {
+            background: #e67e22;
+            color: white;
+        }
+        .card-restore-btn {
+            background: white;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        .card-restore-btn:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .equipment-card.archived .equipment-card-header {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+        }
+        .equipment-card.archived {
+            opacity: 0.9;
+        }
+        .no-equipment-cards {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .equipment-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .view-toggle {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .header-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/hunting-bookings.html">Hunting</a>
+            <a href="/admin/equipment.html">Equipment Sales</a>
+            <a href="/admin/equipment-manager.html" class="active">Equipment Manager</a>
+            <a href="/admin/financials/cattle.html">Cattle</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Equipment Manager</h1>
+            <div class="header-actions">
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" id="listViewBtn" onclick="setView('list')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                        List
+                    </button>
+                    <button class="view-toggle-btn" id="cardViewBtn" onclick="setView('cards')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                        </svg>
+                        Cards
+                    </button>
+                </div>
+                <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
+                <button class="btn btn-secondary" onclick="syncAllEquipment()" style="background:#d4a54a;color:#000;">Sync All</button>
+                <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
+            </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="summary-grid">
+            <div class="summary-card highlight">
+                <div class="summary-label">Total Equipment Value</div>
+                <div class="summary-value" id="totalValue">$0</div>
+                <div class="summary-subtext" id="equipmentCount">0 items</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Debt</div>
+                <div class="summary-value red" id="totalDebt">$0</div>
+                <div class="summary-subtext" id="loanCount">0 loans</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Net Equity</div>
+                <div class="summary-value green" id="netEquity">$0</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="summary-label">Upcoming Payments (30 days)</div>
+                <div class="summary-value gold" id="upcomingPayments">$0</div>
+                <div class="summary-subtext" id="paymentCount">0 payments</div>
+            </div>
+            <div class="summary-card" style="border-left: 4px solid #4caf50;">
+                <div class="summary-label">Listed For Sale</div>
+                <div class="summary-value" style="color: #4caf50;" id="forSaleCount">0</div>
+                <div class="summary-subtext" id="forSaleValue">$0 asking</div>
+            </div>
+        </div>
+
+        <!-- Upcoming Payments Panel -->
+        <div class="payments-panel" id="paymentsPanel" style="display: none;">
+            <div class="payments-header">
+                <h3 class="payments-title">Upcoming Loan Payments</h3>
+            </div>
+            <div id="paymentsList">
+                <!-- Payments loaded here -->
+            </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs" id="categoryTabs">
+            <button class="category-tab active" data-category="all">
+                All Equipment <span class="category-count" id="count-all">0</span>
+            </button>
+        </div>
+
+        <!-- Category Summary -->
+        <div class="category-summary" id="categorySummary">
+            <!-- Category cards loaded here -->
+        </div>
+
+        <!-- Equipment Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h3 class="table-title" id="tableTitle">All Equipment</h3>
+                <input type="text" class="search-box" placeholder="Search equipment..." id="searchBox" oninput="filterEquipment()">
+            </div>
+            <div id="tableContent">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Edit Equipment</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Equipment Name</label>
+                    <input type="text" id="editTitle" placeholder="Equipment name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="editCategory">
+                            <option value="Tractors">Tractors</option>
+                            <option value="Trucks">Trucks</option>
+                            <option value="Trailers">Trailers</option>
+                            <option value="Harvest Equipment">Harvest Equipment</option>
+                            <option value="Hay Equipment">Hay Equipment</option>
+                            <option value="Planting">Planting</option>
+                            <option value="Tillage">Tillage</option>
+                            <option value="Sprayer Equipment">Sprayer Equipment</option>
+                            <option value="Attachments">Attachments</option>
+                            <option value="Feed Truck">Feed Truck</option>
+                            <option value="Combine Parts">Combine Parts</option>
+                            <option value="Tech">Tech</option>
+                            <option value="Personal Vehicles">Personal Vehicles</option>
+                            <option value="Shop">Shop</option>
+                            <option value="Livestock Equipment">Livestock Equipment</option>
+                            <option value="Yard Equipment">Yard Equipment</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Serial Number</label>
+                        <input type="text" id="editSerial" placeholder="Serial number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Current Value ($)</label>
+                        <input type="number" id="editValue" placeholder="Current value">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Hours/Miles</label>
+                        <input type="number" id="editHours" placeholder="Hours or miles">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Market Value ($)</label>
+                        <input type="number" id="editMarketValue" placeholder="Comparable market value">
+                    </div>
+                    <div class="form-group">
+                        <label>Market Source</label>
+                        <input type="text" id="editMarketSource" placeholder="e.g., TractorHouse, MachineryPete">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="editForSale"> List For Sale (visible on public page)</label>
+                </div>
+                <div id="saleFields" style="display: none; background: #e8f5e9; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #2e7d32; margin-bottom: 12px; font-weight: 600;">Sale Settings</div>
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label>Asking Price ($)</label>
+                            <input type="number" id="editAskingPrice" placeholder="Public asking price">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label>Floor Price ($) - Private</label>
+                            <input type="number" id="editFloorPrice" placeholder="Minimum acceptable price">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Sale Description</label>
+                        <textarea id="editSaleDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; font-family: inherit; resize: vertical;" placeholder="Description shown on public for-sale page..."></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="editHasLoan"> Has Loan</label>
+                </div>
+                <div id="loanFields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount Owed ($)</label>
+                            <input type="number" id="editOwed" placeholder="Amount owed">
+                        </div>
+                        <div class="form-group">
+                            <label>Lender</label>
+                            <input type="text" id="editLender" placeholder="Lender name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Amount ($)</label>
+                            <input type="number" id="editPayment" placeholder="Payment amount">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Frequency</label>
+                            <select id="editFrequency">
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="semi-annual">Semi-Annual</option>
+                                <option value="annual">Annual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Next Payment Date</label>
+                        <input type="date" id="editNextPayment">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEquipment()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let allEquipment = [];
+        let filteredEquipment = [];
+        let currentCategory = 'all';
+        let showingArchived = false;
+        let summary = {};
+        let currentView = 'list'; // 'list' or 'cards'
+
+        // Categories with display names
+        const categories = [
+            { key: 'Tractors', name: 'Tractors' },
+            { key: 'Trucks', name: 'Trucks' },
+            { key: 'Trailers', name: 'Trailers' },
+            { key: 'Harvest Equipment', name: 'Harvest' },
+            { key: 'Hay Equipment', name: 'Hay Equipment' },
+            { key: 'Planting', name: 'Planting' },
+            { key: 'Tillage', name: 'Tillage' },
+            { key: 'Sprayer Equipment', name: 'Sprayer' },
+            { key: 'Attachments', name: 'Attachments' },
+            { key: 'Combine Parts', name: 'Combine Parts' },
+            { key: 'Feed Truck', name: 'Feed Truck' },
+            { key: 'Tech', name: 'Tech' },
+            { key: 'Personal Vehicles', name: 'Personal Vehicles' },
+            { key: 'Shop', name: 'Shop' },
+            { key: 'Livestock Equipment', name: 'Livestock Equipment' },
+            { key: 'Yard Equipment', name: 'Yard Equipment' },
+            { key: 'Other', name: 'Other' }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('editHasLoan').addEventListener('change', (e) => {
+                document.getElementById('loanFields').style.display = e.target.checked ? 'block' : 'none';
+            });
+            document.getElementById('editForSale').addEventListener('change', (e) => {
+                document.getElementById('saleFields').style.display = e.target.checked ? 'block' : 'none';
+            });
+        }
+
+        async function loadData() {
+            try {
+                // Load equipment and summary in parallel
+                const [equipmentRes, summaryRes] = await Promise.all([
+                    fetch('/api/equipment/inventory'),
+                    fetch('/api/equipment/inventory/summary')
+                ]);
+
+                const equipmentData = await equipmentRes.json();
+                const summaryData = await summaryRes.json();
+
+                if (equipmentData.success) {
+                    allEquipment = equipmentData.equipment;
+                    // Initially show only active (non-sold) equipment
+                    filteredEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+                }
+
+                if (summaryData.success) {
+                    summary = summaryData.summary;
+                    updateSummaryDisplay();
+                }
+
+                renderCategoryTabs();
+                renderCategorySummary();
+                renderView();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('tableContent').innerHTML = '<div class="no-payments">Error loading equipment data</div>';
+            }
+        }
+
+        // View toggle function
+        function setView(view) {
+            currentView = view;
+
+            // Update toggle button states
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            document.getElementById('cardViewBtn').classList.toggle('active', view === 'cards');
+
+            // Re-render current view
+            renderView();
+        }
+
+        // Render the appropriate view based on currentView state
+        function renderView() {
+            if (currentView === 'cards') {
+                renderCards();
+            } else {
+                renderTable();
+            }
+        }
+
+        function updateSummaryDisplay() {
+            // Calculate totals from active (non-sold) equipment only
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+
+            const totalValue = activeEquipment.reduce((sum, e) => sum + (e.currentValue || 0), 0);
+            const totalOwed = activeEquipment.reduce((sum, e) => sum + (e.amountOwed || 0), 0);
+            const netWorth = totalValue - totalOwed;
+
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('equipmentCount').textContent = `${activeEquipment.length} items`;
+            document.getElementById('totalDebt').textContent = formatCurrency(totalOwed);
+
+            const loansCount = activeEquipment.filter(e => e.hasLoan).length;
+            document.getElementById('loanCount').textContent = `${loansCount} loans`;
+
+            document.getElementById('netEquity').textContent = formatCurrency(netWorth);
+
+            // Upcoming payments (only from active equipment)
+            const upcomingPayments = summary.upcomingPayments || [];
+            const totalUpcoming = upcomingPayments.reduce((sum, p) => sum + (p.paymentAmount || 0), 0);
+            document.getElementById('upcomingPayments').textContent = formatCurrency(totalUpcoming);
+            document.getElementById('paymentCount').textContent = `${upcomingPayments.length} payments`;
+
+            // Show/hide payments panel
+            if (upcomingPayments.length > 0) {
+                document.getElementById('paymentsPanel').style.display = 'block';
+                renderPayments(upcomingPayments);
+            } else {
+                document.getElementById('paymentsPanel').style.display = 'none';
+            }
+
+            // For Sale stats
+            const forSaleEquipment = activeEquipment.filter(e => e.forSale && e.saleStatus === 'available');
+            const forSaleValue = forSaleEquipment.reduce((sum, e) => sum + (e.askingPrice || e.currentValue || 0), 0);
+            document.getElementById('forSaleCount').textContent = forSaleEquipment.length;
+            document.getElementById('forSaleValue').textContent = formatCurrency(forSaleValue) + ' asking';
+        }
+
+        function renderPayments(payments) {
+            const container = document.getElementById('paymentsList');
+            if (payments.length === 0) {
+                container.innerHTML = '<div class="no-payments">No upcoming payments in the next 30 days</div>';
+                return;
+            }
+
+            container.innerHTML = payments.map(p => `
+                <div class="payment-item">
+                    <div class="payment-info">
+                        <div class="payment-equipment">${p.title}</div>
+                        <div class="payment-lender">${p.lender || 'Unknown Lender'}</div>
+                    </div>
+                    <div>
+                        <div class="payment-amount">${formatCurrency(p.paymentAmount)}</div>
+                        <div class="payment-date">Due: ${formatDate(p.dueDate)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCategoryTabs() {
+            const container = document.getElementById('categoryTabs');
+            const counts = getCategoryCounts();
+
+            // Count active vs archived
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+            const archivedEquipment = allEquipment.filter(e => e.saleStatus === 'sold');
+
+            let html = `<button class="category-tab ${currentCategory === 'all' && !showingArchived ? 'active' : ''}" data-category="all" onclick="selectCategory('all')">
+                All Equipment <span class="category-count">${activeEquipment.length}</span>
+            </button>`;
+
+            categories.forEach(cat => {
+                const count = counts[cat.key] || 0;
+                if (count > 0) {
+                    html += `<button class="category-tab ${currentCategory === cat.key && !showingArchived ? 'active' : ''}" data-category="${cat.key}" onclick="selectCategory('${cat.key}')">
+                        ${cat.name} <span class="category-count">${count}</span>
+                    </button>`;
+                }
+            });
+
+            // Add Archived tab
+            html += `<button class="category-tab archived ${showingArchived ? 'active' : ''}" data-category="archived" onclick="showArchived()">
+                Archived/Sold <span class="category-count">${archivedEquipment.length}</span>
+            </button>`;
+
+            container.innerHTML = html;
+        }
+
+        function getCategoryCounts() {
+            const counts = {};
+            // Only count active (non-sold) equipment
+            allEquipment.filter(e => e.saleStatus !== 'sold').forEach(item => {
+                const cat = item.category || 'Other';
+                counts[cat] = (counts[cat] || 0) + 1;
+            });
+            return counts;
+        }
+
+        function getCategoryValues() {
+            const values = {};
+            // Only count active (non-sold) equipment for summary
+            allEquipment.filter(e => e.saleStatus !== 'sold').forEach(item => {
+                const cat = item.category || 'Other';
+                if (!values[cat]) {
+                    values[cat] = { value: 0, count: 0, owed: 0 };
+                }
+                values[cat].value += item.currentValue || 0;
+                values[cat].count++;
+                values[cat].owed += item.amountOwed || 0;
+            });
+            return values;
+        }
+
+        function renderCategorySummary() {
+            const container = document.getElementById('categorySummary');
+            const values = getCategoryValues();
+
+            let html = '';
+            categories.forEach(cat => {
+                if (values[cat.key]) {
+                    const data = values[cat.key];
+                    html += `<div class="cat-sum-card">
+                        <div class="cat-sum-name">${cat.name}</div>
+                        <div class="cat-sum-value">${formatCurrency(data.value)}</div>
+                        <div class="cat-sum-count">${data.count} items${data.owed > 0 ? ` | ${formatCurrency(data.owed)} owed` : ''}</div>
+                    </div>`;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectCategory(category) {
+            currentCategory = category;
+            showingArchived = false;
+
+            // Filter out sold/archived equipment for normal category views
+            const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+
+            if (category === 'all') {
+                filteredEquipment = [...activeEquipment];
+                document.getElementById('tableTitle').textContent = 'All Equipment';
+            } else {
+                filteredEquipment = activeEquipment.filter(e => e.category === category);
+                document.getElementById('tableTitle').textContent = category;
+            }
+
+            // Update tab styles
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.category === category) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Show category summary when not showing archived
+            document.getElementById('categorySummary').style.display = 'grid';
+
+            renderView();
+        }
+
+        function showArchived() {
+            showingArchived = true;
+            currentCategory = 'archived';
+
+            // Get only sold/archived equipment
+            filteredEquipment = allEquipment.filter(e => e.saleStatus === 'sold');
+            document.getElementById('tableTitle').textContent = 'Archived/Sold Equipment';
+
+            // Update tab styles
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.category === 'archived') {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Hide category summary when showing archived
+            document.getElementById('categorySummary').style.display = 'none';
+
+            renderView();
+        }
+
+        function filterEquipment() {
+            const search = document.getElementById('searchBox').value.toLowerCase();
+
+            // Determine base list based on archived view or category
+            let base;
+            if (showingArchived) {
+                base = allEquipment.filter(e => e.saleStatus === 'sold');
+            } else {
+                const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
+                base = currentCategory === 'all' ? activeEquipment : activeEquipment.filter(e => e.category === currentCategory);
+            }
+
+            if (search) {
+                filteredEquipment = base.filter(e =>
+                    (e.title || '').toLowerCase().includes(search) ||
+                    (e.subtitle || '').toLowerCase().includes(search) ||
+                    (e.make || '').toLowerCase().includes(search) ||
+                    (e.model || '').toLowerCase().includes(search) ||
+                    (e.serialNumber || '').toLowerCase().includes(search)
+                );
+            } else {
+                filteredEquipment = base;
+            }
+
+            renderView();
+        }
+
+        function renderTable() {
+            const container = document.getElementById('tableContent');
+
+            if (filteredEquipment.length === 0) {
+                container.innerHTML = '<div class="no-payments">No equipment found</div>';
+                return;
+            }
+
+            let html = `<table class="equipment-table">
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Category</th>
+                        <th>For Sale</th>
+                        <th>Hours/Miles</th>
+                        <th>Current Value</th>
+                        <th>Amount Owed</th>
+                        <th>Equity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            filteredEquipment.forEach(item => {
+                const value = item.currentValue || 0;
+                const owed = item.amountOwed || 0;
+                const equity = value - owed;
+                const marketVal = item.marketValue || 0;
+
+                // Build category dropdown options
+                const categoryOptions = categories.map(cat =>
+                    `<option value="${cat.key}" ${item.category === cat.key ? 'selected' : ''}>${cat.name}</option>`
+                ).join('');
+
+                const isForSale = item.forSale && item.saleStatus === 'available';
+                html += `<tr data-id="${item._id}">
+                    <td>
+                        <div class="equipment-title">${item.title}${isForSale ? '<span class="for-sale-badge">FOR SALE</span>' : ''}</div>
+                        <div class="equipment-subtitle">${item.subtitle || ''}</div>
+                    </td>
+                    <td>
+                        <select class="category-select" id="cat-${item._id}" onchange="changeCategory('${item._id}', this.value, this)">
+                            ${categoryOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <button class="for-sale-toggle ${isForSale ? 'for-sale' : 'private'}" onclick="toggleForSale('${item._id}', ${!isForSale})">
+                            ${isForSale ? 'Listed' : 'Private'}
+                        </button>
+                        ${isForSale && item.askingPrice ? '<div style="font-size:11px;color:#666;margin-top:4px;">' + formatCurrency(item.askingPrice) + '</div>' : ''}
+                    </td>
+                    <td>${item.currentHours ? item.currentHours.toLocaleString() + ' hrs' : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '-'}</td>
+                    <td class="value-cell positive">${formatCurrency(value)}</td>
+                    <td class="value-cell ${owed > 0 ? 'negative' : ''}">
+                        ${owed > 0 ? formatCurrency(owed) : '-'}
+                        ${item.hasLoan && item.lender ? '<br><span class="loan-lender">' + item.lender + '</span>' : ''}
+                    </td>
+                    <td class="value-cell ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editEquipment('${item._id}')">Edit</button>
+                        ${item.saleStatus === 'sold'
+                            ? `<button class="restore-btn" onclick="restoreEquipment('${item._id}')">Restore</button>`
+                            : `<button class="sold-btn" onclick="markAsSold('${item._id}')">Mark Sold</button>`}
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render equipment as cards
+        function renderCards() {
+            const container = document.getElementById('tableContent');
+
+            if (filteredEquipment.length === 0) {
+                container.innerHTML = '<div class="equipment-cards-grid"><div class="no-equipment-cards">No equipment found</div></div>';
+                return;
+            }
+
+            let html = '<div class="equipment-cards-grid">';
+
+            filteredEquipment.forEach(item => {
+                const value = item.currentValue || 0;
+                const owed = item.amountOwed || 0;
+                const equity = value - owed;
+                const marketVal = item.marketValue || 0;
+                const isArchived = item.saleStatus === 'sold';
+                const isForSale = item.forSale && item.saleStatus === 'available';
+                const hoursOrMiles = item.currentHours
+                    ? item.currentHours.toLocaleString() + ' hrs'
+                    : item.currentMiles
+                        ? item.currentMiles.toLocaleString() + ' mi'
+                        : '-';
+
+                // Build loan section if applicable
+                let loanHtml = '';
+                if (item.hasLoan && owed > 0) {
+                    loanHtml = `
+                        <div class="equipment-card-loan">
+                            <div class="equipment-loan-header">Loan Information</div>
+                            <div class="equipment-loan-lender">${item.lender || 'Unknown Lender'}</div>
+                            <div class="equipment-loan-details">
+                                <strong>${formatCurrency(owed)}</strong> owed
+                                ${item.paymentAmount ? ` | ${formatCurrency(item.paymentAmount)}/${item.paymentFrequency || 'monthly'}` : ''}
+                                ${item.nextPaymentDate ? ` | Due: ${formatDate(item.nextPaymentDate)}` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Build image section
+                let imageHtml = '';
+                if (item.images && item.images.length > 0) {
+                    imageHtml = `<div class="equipment-card-image"><img src="${item.images[0]}" alt="${item.title}" loading="lazy"></div>`;
+                } else {
+                    imageHtml = `<div class="equipment-card-image">No Image</div>`;
+                }
+
+                html += `
+                    <div class="equipment-card ${isArchived ? 'archived' : ''}" data-id="${item._id}">
+                        <div class="equipment-card-header" ${isForSale ? 'style="background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);"' : ''}>
+                            <div>
+                                <div class="equipment-card-title">${item.title}${isForSale ? ' <span style="font-size:11px;background:rgba(255,255,255,0.3);padding:2px 8px;border-radius:10px;">FOR SALE</span>' : ''}</div>
+                                <div class="equipment-card-subtitle">${item.subtitle || ''}</div>
+                            </div>
+                            <div class="equipment-card-category">${item.category || 'Other'}</div>
+                        </div>
+                        ${imageHtml}
+                        <div class="equipment-card-body">
+                            <div class="equipment-card-stats">
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Current Value</div>
+                                    <div class="equipment-stat-value positive">${formatCurrency(value)}</div>
+                                </div>
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Equity</div>
+                                    <div class="equipment-stat-value ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</div>
+                                </div>
+                                ${marketVal > 0 ? `
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Market Value</div>
+                                    <div class="equipment-stat-value gold">${formatCurrency(marketVal)}</div>
+                                </div>
+                                ` : ''}
+                                ${owed > 0 ? `
+                                <div class="equipment-stat">
+                                    <div class="equipment-stat-label">Amount Owed</div>
+                                    <div class="equipment-stat-value negative">${formatCurrency(owed)}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            <div class="equipment-card-details">
+                                <div class="equipment-detail-row">
+                                    <span class="equipment-detail-label">Serial/VIN</span>
+                                    <span class="equipment-detail-value">${item.serialNumber || item.vin || '-'}</span>
+                                </div>
+                                <div class="equipment-detail-row">
+                                    <span class="equipment-detail-label">Hours/Miles</span>
+                                    <span class="equipment-detail-value">${hoursOrMiles}</span>
+                                </div>
+                                ${item.marketValueSource ? `
+                                <div class="equipment-detail-row">
+                                    <span class="equipment-detail-label">Market Source</span>
+                                    <span class="equipment-detail-value">${item.marketValueSource}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            ${loanHtml}
+
+                            <div class="equipment-card-actions">
+                                <button class="card-edit-btn" onclick="editEquipment('${item._id}')">Edit</button>
+                                ${!isArchived ? `<button class="for-sale-toggle ${isForSale ? 'for-sale' : 'private'}" style="flex:1;" onclick="toggleForSale('${item._id}', ${!isForSale})">${isForSale ? 'Listed' : 'List For Sale'}</button>` : ''}
+                                ${isArchived
+                                    ? `<button class="card-restore-btn" onclick="restoreEquipment('${item._id}')">Restore</button>`
+                                    : `<button class="card-sold-btn" onclick="markAsSold('${item._id}')">Mark Sold</button>`}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Change equipment category inline
+        async function changeCategory(id, newCategory, selectElement) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            const oldCategory = item.category;
+            if (oldCategory === newCategory) return;
+
+            // Add updating state
+            selectElement.classList.add('updating');
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ category: newCategory })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.category = newCategory;
+
+                    // Show success briefly
+                    selectElement.style.borderColor = '#27ae60';
+                    setTimeout(() => {
+                        selectElement.style.borderColor = '';
+                    }, 1000);
+
+                    // Update category counts and summary
+                    renderCategoryTabs();
+                    renderCategorySummary();
+
+                    // If viewing a specific category and the item no longer belongs, remove it from view
+                    if (currentCategory !== 'all' && currentCategory !== newCategory) {
+                        // Remove the row with animation
+                        const row = selectElement.closest('tr');
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#fff3cd';
+                        row.style.opacity = '0';
+
+                        setTimeout(() => {
+                            // Update filtered list and re-render
+                            filteredEquipment = allEquipment.filter(e => e.category === currentCategory);
+                            renderView();
+                        }, 400);
+                    }
+                } else {
+                    // Revert on error
+                    selectElement.value = oldCategory;
+                    alert('Error updating category: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error changing category:', error);
+                selectElement.value = oldCategory;
+                alert('Error updating category');
+            } finally {
+                selectElement.classList.remove('updating');
+            }
+        }
+
+        // Mark equipment as sold/archived
+        async function markAsSold(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            if (!confirm(`Mark "${item.title}" as sold and move to archive?`)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        saleStatus: 'sold',
+                        soldDate: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.saleStatus = 'sold';
+                    item.soldDate = new Date().toISOString();
+
+                    // Animate row removal
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#f8d7da';
+                        row.style.opacity = '0';
+                    }
+
+                    setTimeout(() => {
+                        // Update counts and re-render
+                        renderCategoryTabs();
+                        renderCategorySummary();
+
+                        // Remove from current filtered list
+                        if (!showingArchived) {
+                            filteredEquipment = filteredEquipment.filter(e => e._id !== id);
+                            renderView();
+                        }
+                    }, 400);
+                } else {
+                    alert('Error marking as sold: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error marking as sold:', error);
+                alert('Error marking equipment as sold');
+            }
+        }
+
+        // Toggle equipment for-sale status
+        async function toggleForSale(id, makeForSale) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}/toggle-sale`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.forSale = result.equipment.forSale;
+                    item.saleStatus = result.equipment.saleStatus;
+
+                    // Re-render view and update stats
+                    renderView();
+                    updateSummaryDisplay();
+                    renderCategoryTabs();
+                } else {
+                    alert('Error toggling sale status: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error toggling sale status:', error);
+                alert('Error toggling sale status');
+            }
+        }
+
+        // Restore equipment from archive
+        async function restoreEquipment(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            if (!confirm(`Restore "${item.title}" from archive?`)) return;
+
+            try {
+                const response = await fetch(`/api/equipment/inventory/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        saleStatus: 'not-for-sale',
+                        soldDate: null,
+                        soldPrice: null,
+                        soldTo: null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local data
+                    item.saleStatus = 'not-for-sale';
+                    item.soldDate = null;
+
+                    // Animate row removal
+                    const row = document.querySelector(`tr[data-id="${id}"]`);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s, background-color 0.3s';
+                        row.style.backgroundColor = '#d4edda';
+                        row.style.opacity = '0';
+                    }
+
+                    setTimeout(() => {
+                        // Update counts and re-render
+                        renderCategoryTabs();
+                        renderCategorySummary();
+
+                        // Remove from archived list if viewing archived
+                        if (showingArchived) {
+                            filteredEquipment = filteredEquipment.filter(e => e._id !== id);
+                            renderView();
+                        }
+                    }, 400);
+                } else {
+                    alert('Error restoring equipment: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error restoring equipment:', error);
+                alert('Error restoring equipment');
+            }
+        }
+
+        function editEquipment(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+
+            document.getElementById('editId').value = id;
+            document.getElementById('editTitle').value = item.title || '';
+            document.getElementById('editCategory').value = item.category || 'Other';
+            document.getElementById('editSerial').value = item.serialNumber || '';
+            document.getElementById('editValue').value = item.currentValue || '';
+            document.getElementById('editHours').value = item.currentHours || item.currentMiles || '';
+            document.getElementById('editMarketValue').value = item.marketValue || '';
+            document.getElementById('editMarketSource').value = item.marketValueSource || '';
+
+            // Sale fields
+            const isForSale = item.forSale && item.saleStatus === 'available';
+            document.getElementById('editForSale').checked = isForSale;
+            document.getElementById('editAskingPrice').value = item.askingPrice || '';
+            document.getElementById('editFloorPrice').value = item.floorPrice || '';
+            document.getElementById('editSaleDescription').value = item.description || '';
+            document.getElementById('saleFields').style.display = isForSale ? 'block' : 'none';
+
+            // Loan fields
+            document.getElementById('editHasLoan').checked = item.hasLoan || false;
+            document.getElementById('editOwed').value = item.amountOwed || '';
+            document.getElementById('editLender').value = item.lender || '';
+            document.getElementById('editPayment').value = item.paymentAmount || '';
+            document.getElementById('editFrequency').value = item.paymentFrequency || 'monthly';
+            document.getElementById('editNextPayment').value = item.nextPaymentDate ? item.nextPaymentDate.split('T')[0] : '';
+
+            document.getElementById('loanFields').style.display = item.hasLoan ? 'block' : 'none';
+            document.getElementById('modalTitle').textContent = 'Edit Equipment';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function openAddModal() {
+            document.getElementById('editId').value = '';
+            document.getElementById('editTitle').value = '';
+            document.getElementById('editCategory').value = 'Other';
+            document.getElementById('editSerial').value = '';
+            document.getElementById('editValue').value = '';
+            document.getElementById('editHours').value = '';
+            document.getElementById('editMarketValue').value = '';
+            document.getElementById('editMarketSource').value = '';
+            // Sale fields
+            document.getElementById('editForSale').checked = false;
+            document.getElementById('editAskingPrice').value = '';
+            document.getElementById('editFloorPrice').value = '';
+            document.getElementById('editSaleDescription').value = '';
+            document.getElementById('saleFields').style.display = 'none';
+            // Loan fields
+            document.getElementById('editHasLoan').checked = false;
+            document.getElementById('editOwed').value = '';
+            document.getElementById('editLender').value = '';
+            document.getElementById('editPayment').value = '';
+            document.getElementById('editFrequency').value = 'monthly';
+            document.getElementById('editNextPayment').value = '';
+            document.getElementById('loanFields').style.display = 'none';
+            document.getElementById('modalTitle').textContent = 'Add Equipment';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        async function saveEquipment() {
+            const id = document.getElementById('editId').value;
+            const forSale = document.getElementById('editForSale').checked;
+            const hasLoan = document.getElementById('editHasLoan').checked;
+
+            const data = {
+                title: document.getElementById('editTitle').value,
+                category: document.getElementById('editCategory').value,
+                serialNumber: document.getElementById('editSerial').value,
+                currentValue: parseFloat(document.getElementById('editValue').value) || 0,
+                currentHours: parseFloat(document.getElementById('editHours').value) || 0,
+                marketValue: parseFloat(document.getElementById('editMarketValue').value) || 0,
+                marketValueSource: document.getElementById('editMarketSource').value || '',
+                // Sale fields
+                forSale: forSale,
+                saleStatus: forSale ? 'available' : 'not-for-sale',
+                askingPrice: forSale ? parseFloat(document.getElementById('editAskingPrice').value) || 0 : 0,
+                floorPrice: forSale ? parseFloat(document.getElementById('editFloorPrice').value) || 0 : 0,
+                description: document.getElementById('editSaleDescription').value || '',
+                // Loan fields
+                hasLoan: hasLoan,
+                amountOwed: hasLoan ? parseFloat(document.getElementById('editOwed').value) || 0 : 0,
+                lender: hasLoan ? document.getElementById('editLender').value : '',
+                paymentAmount: hasLoan ? parseFloat(document.getElementById('editPayment').value) || 0 : 0,
+                paymentFrequency: hasLoan ? document.getElementById('editFrequency').value : 'none',
+                nextPaymentDate: hasLoan && document.getElementById('editNextPayment').value ? document.getElementById('editNextPayment').value : null
+            };
+
+            try {
+                const url = id ? `/api/equipment/inventory/${id}` : '/api/equipment/inventory';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    closeModal();
+                    loadData(); // Refresh all data
+                } else {
+                    alert('Error saving equipment: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error saving equipment:', error);
+                alert('Error saving equipment');
+            }
+        }
+
+        function refreshData() {
+            document.getElementById('tableContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            loadData();
+        }
+
+        async function seedMissingEquipment() {
+            if (!confirm('This will add any missing equipment from the seed data. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/equipment/inventory/seed-missing', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.added > 0) {
+                        alert(`Added ${data.added} equipment items:\n\n${data.items.join('\n')}`);
+                        refreshData();
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to seed equipment'));
+                }
+            } catch (error) {
+                console.error('Error seeding equipment:', error);
+                alert('Error seeding equipment: ' + error.message);
+            }
+        }
+
+        async function syncAllEquipment() {
+            if (!confirm('This will UPDATE all equipment in the database with values from the seed file. This overwrites existing values. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/equipment/inventory/sync-from-seed', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let msg = `Sync Complete!\n\nUpdated: ${data.updated.length}\nAdded: ${data.added.length}`;
+                    if (data.errors.length > 0) {
+                        msg += `\nErrors: ${data.errors.length}`;
+                    }
+                    alert(msg);
+                    refreshData();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to sync equipment'));
+                }
+            } catch (error) {
+                console.error('Error syncing equipment:', error);
+                alert('Error syncing equipment: ' + error.message);
+            }
+        }
+
+        // Utility functions
+        function formatCurrency(amount) {
+            return '$' + (amount || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>

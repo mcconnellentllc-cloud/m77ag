@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net Worth by Entity - M77 AG Financial Overview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f3f0; color: #2c2c2c; }
+
+        .header { background: #0d3b66; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 30px; }
+        .logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #d4af37; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #d4af37; }
+        .header-right { display: flex; gap: 15px; align-items: center; }
+        .user-role { font-size: 11px; color: #d4af37; background: rgba(212,175,55,0.15); padding: 3px 10px; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; }
+        .user-name { font-size: 14px; color: #d4af37; }
+        .logout-btn { padding: 8px 18px; background: #d4af37; color: #0d3b66; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+
+        .container { max-width: 1500px; margin: 0 auto; padding: 30px 40px; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+        .breadcrumb { font-size: 14px; color: #666; margin-bottom: 8px; }
+        .breadcrumb a { color: #0d3b66; text-decoration: none; }
+        .page-title { font-size: 32px; color: #0d3b66; margin-bottom: 5px; }
+        .page-subtitle { font-size: 15px; color: #666; }
+        .generated-date { font-size: 13px; color: #999; text-align: right; }
+        .generated-date strong { color: #0d3b66; font-size: 15px; display: block; }
+        .print-btn { padding: 8px 18px; background: #0d3b66; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; margin-top: 8px; font-size: 13px; }
+
+        /* Combined Summary */
+        .combined-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .summary-card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+        .summary-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+        .summary-card.assets::before { background: #2d8f4a; }
+        .summary-card.liabilities::before { background: #dc3545; }
+        .summary-card.networth::before { background: #0d3b66; }
+        .summary-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .summary-value { font-size: 28px; font-weight: 700; }
+        .summary-value.green { color: #2d8f4a; }
+        .summary-value.red { color: #dc3545; }
+        .summary-value.blue { color: #0d3b66; }
+
+        /* Entity Card */
+        .entity-card { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: hidden; }
+        .entity-header { padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
+        .entity-header.business { background: linear-gradient(135deg, #0d3b66 0%, #1a6fb5 100%); color: white; }
+        .entity-header.personal { background: linear-gradient(135deg, #2d5016 0%, #4a8529 100%); color: white; }
+        .entity-header.enterprise { background: linear-gradient(135deg, #8b6914 0%, #d4af37 100%); color: #1a1a1a; }
+        .entity-name { font-size: 24px; font-weight: 700; }
+        .entity-type { font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+        .entity-totals { text-align: right; }
+        .entity-totals .big-number { font-size: 28px; font-weight: 700; }
+        .entity-totals .sub-text { font-size: 12px; opacity: 0.8; }
+
+        .entity-body { padding: 30px; }
+
+        /* Quick Stats Row */
+        .entity-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-box { text-align: center; padding: 15px; background: #f8f7f5; border-radius: 8px; }
+        .stat-box-value { font-size: 20px; font-weight: 700; color: #0d3b66; }
+        .stat-box-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+
+        /* Asset/Liability Sections */
+        .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .section-title { font-size: 16px; font-weight: 700; color: #0d3b66; padding: 10px 0; border-bottom: 2px solid #0d3b66; margin-bottom: 15px; }
+        .section-title.liab { color: #dc3545; border-bottom-color: #dc3545; }
+
+        .line-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        .line-item:last-child { border-bottom: none; }
+        .line-item .label { color: #444; }
+        .line-item .value { font-weight: 600; }
+        .line-item .value.green { color: #2d8f4a; }
+        .line-item .value.red { color: #dc3545; }
+
+        .line-total { display: flex; justify-content: space-between; padding: 12px 0; font-weight: 700; font-size: 16px; border-top: 2px solid #e0e0e0; margin-top: 10px; }
+
+        .sub-section { margin-bottom: 20px; }
+        .sub-section-title { font-size: 13px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #d4af37; }
+
+        .empty-state { text-align: center; padding: 20px; color: #999; font-size: 14px; }
+
+        @media print {
+            .header, .print-btn, .logout-btn, .nav-links { display: none !important; }
+            .container { padding: 0; }
+            .entity-card { box-shadow: none; border: 1px solid #ddd; }
+            body { background: white; }
+        }
+        @media (max-width: 768px) {
+            .combined-summary { grid-template-columns: 1fr; }
+            .section-grid { grid-template-columns: 1fr; }
+            .entity-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">M77 AG</div>
+            <nav class="nav-links">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/financials">Financials</a>
+                <a href="/admin/banking">Banking</a>
+                <a href="/admin/financials/banking">Banker's View</a>
+                <a href="/admin/financials/net-worth" class="active">Net Worth</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <span class="user-role" id="userRole">Admin</span>
+            <span class="user-name" id="userName">Welcome</span>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/admin/dashboard">Admin</a> / <a href="/admin/financials">Financials</a> / Net Worth by Entity
+                </div>
+                <h1 class="page-title">Net Worth by Entity</h1>
+                <p class="page-subtitle">Complete asset & liability breakdown by entity - McConnell Enterprises LLC</p>
+            </div>
+            <div class="generated-date">
+                <strong id="reportDate"></strong>
+                <button class="print-btn" onclick="window.print()">Print Report</button>
+            </div>
+        </div>
+
+        <!-- Combined Summary -->
+        <div class="combined-summary">
+            <div class="summary-card assets">
+                <div class="summary-label">Combined Total Assets</div>
+                <div class="summary-value green" id="combinedAssets">--</div>
+            </div>
+            <div class="summary-card liabilities">
+                <div class="summary-label">Combined Total Liabilities</div>
+                <div class="summary-value red" id="combinedLiabilities">--</div>
+            </div>
+            <div class="summary-card networth">
+                <div class="summary-label">Combined Net Worth</div>
+                <div class="summary-value blue" id="combinedNetWorth">--</div>
+            </div>
+        </div>
+
+        <!-- Entity Cards Container -->
+        <div id="entitiesContainer">
+            <div class="empty-state">Loading entity data...</div>
+        </div>
+    </div>
+
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) { window.location.href = '/admin/login'; return null; }
+            return token;
+        }
+        function getToken() { return localStorage.getItem('adminToken'); }
+
+        function fmt(amount) {
+            if (amount === null || amount === undefined) return '--';
+            const n = Math.abs(amount);
+            const sign = amount < 0 ? '-' : '';
+            return sign + '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function fmtShort(amount) {
+            if (amount === null || amount === undefined) return '--';
+            const n = Math.abs(amount);
+            const sign = amount < 0 ? '-' : '';
+            if (n >= 1000000) return sign + '$' + (n / 1000000).toFixed(2) + 'M';
+            if (n >= 1000) return sign + '$' + (n / 1000).toFixed(1) + 'K';
+            return sign + '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function renderEntity(entity) {
+            const headerClass = entity.type === 'business' ? 'business' : entity.type === 'enterprise' ? 'enterprise' : 'personal';
+            const s = entity.summary;
+
+            let statsHtml = '';
+            if (entity.type === 'business') {
+                statsHtml = `
+                    <div class="stat-box"><div class="stat-box-value">${s.equipmentCount || 0}</div><div class="stat-box-label">Equipment</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${s.cattleHead || 0}</div><div class="stat-box-label">Cattle Head</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${s.propertyCount || 0}</div><div class="stat-box-label">Properties</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${fmtShort(s.totalAssets)}</div><div class="stat-box-label">Total Assets</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${fmtShort(s.totalLiabilities)}</div><div class="stat-box-label">Total Liabilities</div></div>
+                `;
+            } else {
+                statsHtml = `
+                    <div class="stat-box"><div class="stat-box-value">${s.vehicleCount || 0}</div><div class="stat-box-label">Vehicles</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${s.propertyCount || 0}</div><div class="stat-box-label">Properties</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${fmtShort(s.totalAssets)}</div><div class="stat-box-label">Total Assets</div></div>
+                    <div class="stat-box"><div class="stat-box-value">${fmtShort(s.totalLiabilities)}</div><div class="stat-box-label">Total Liabilities</div></div>
+                `;
+            }
+
+            // Build assets section
+            let assetsHtml = '';
+
+            // Equipment
+            if (entity.assets.equipment && entity.assets.equipment.value > 0) {
+                assetsHtml += `<div class="sub-section"><div class="sub-section-title">Equipment (${entity.assets.equipment.count} units)</div>`;
+                assetsHtml += `<div class="line-item"><span class="label">Equipment Value</span><span class="value green">${fmt(entity.assets.equipment.value)}</span></div>`;
+                assetsHtml += '</div>';
+            }
+
+            // Cattle
+            if (entity.assets.cattle && entity.assets.cattle.value > 0) {
+                assetsHtml += `<div class="sub-section"><div class="sub-section-title">Cattle (${entity.assets.cattle.totalHead} head)</div>`;
+                const byType = entity.assets.cattle.byType || {};
+                Object.entries(byType).forEach(([type, data]) => {
+                    assetsHtml += `<div class="line-item"><span class="label">${type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} (${data.count} head)</span><span class="value green">${fmt(data.value)}</span></div>`;
+                });
+                if (Object.keys(byType).length === 0) {
+                    assetsHtml += `<div class="line-item"><span class="label">Herd Value</span><span class="value green">${fmt(entity.assets.cattle.value)}</span></div>`;
+                }
+                assetsHtml += '</div>';
+            }
+
+            // Crops
+            if (entity.assets.crops && entity.assets.crops.value > 0) {
+                assetsHtml += `<div class="sub-section"><div class="sub-section-title">Crops & Grain Inventory</div>`;
+                (entity.assets.crops.details || []).forEach(c => {
+                    assetsHtml += `<div class="line-item"><span class="label">${c.crop ? c.crop.charAt(0).toUpperCase() + c.crop.slice(1) : 'Crop'} (${(c.acres || 0).toLocaleString()} ac)</span><span class="value green">${fmt(c.estimatedValue)}</span></div>`;
+                });
+                if ((entity.assets.crops.details || []).length === 0) {
+                    assetsHtml += `<div class="line-item"><span class="label">Crop Value</span><span class="value green">${fmt(entity.assets.crops.value)}</span></div>`;
+                }
+                assetsHtml += '</div>';
+            }
+
+            // Real Estate
+            if (entity.assets.realEstate) {
+                const re = entity.assets.realEstate;
+                assetsHtml += `<div class="sub-section"><div class="sub-section-title">Real Estate</div>`;
+                if ((re.properties || []).length > 0) {
+                    re.properties.forEach(p => {
+                        assetsHtml += `<div class="line-item"><span class="label">${p.name} (${(p.totalAcres || 0).toLocaleString()} ac)</span><span class="value green">${fmt(p.estimatedValue)}</span></div>`;
+                    });
+                } else if (re.value > 0) {
+                    assetsHtml += `<div class="line-item"><span class="label">Real Estate Value (${(re.totalAcres || 0).toLocaleString()} ac)</span><span class="value green">${fmt(re.value)}</span></div>`;
+                } else {
+                    assetsHtml += '<div class="line-item"><span class="label" style="color:#999;">No properties found</span><span class="value">$0</span></div>';
+                }
+                if ((re.buildings || []).length > 0) {
+                    re.buildings.forEach(b => {
+                        assetsHtml += `<div class="line-item"><span class="label">${b.name}</span><span class="value green">${fmt(b.estimatedValue)}</span></div>`;
+                    });
+                }
+                if (re.annualTaxes > 0) {
+                    assetsHtml += `<div class="line-item"><span class="label" style="font-size:12px; color:#999;">Annual Property Taxes</span><span class="value" style="font-size:12px; color:#999;">${fmt(re.annualTaxes)}/yr</span></div>`;
+                }
+                assetsHtml += '</div>';
+            }
+
+            // Vehicles (personal)
+            if (entity.assets.vehicles && entity.assets.vehicles.length > 0) {
+                assetsHtml += `<div class="sub-section"><div class="sub-section-title">Vehicles</div>`;
+                entity.assets.vehicles.forEach(v => {
+                    assetsHtml += `<div class="line-item"><span class="label">${v.name}${v.description ? ' - ' + v.description : ''}</span><span class="value green">${fmt(v.estimatedValue)}</span></div>`;
+                });
+                assetsHtml += '</div>';
+            }
+
+            if (!assetsHtml) {
+                assetsHtml = '<div class="empty-state">No assets recorded</div>';
+            }
+
+            // Build liabilities section
+            let liabHtml = '';
+
+            if (entity.liabilities.equipmentLoans && entity.liabilities.equipmentLoans.total > 0) {
+                liabHtml += `<div class="sub-section"><div class="sub-section-title">Equipment Loans (${entity.liabilities.equipmentLoans.count})</div>`;
+                (entity.liabilities.equipmentLoans.loans || []).forEach(l => {
+                    liabHtml += `<div class="line-item"><span class="label">${l.name}${l.lender ? ' (' + l.lender + ')' : ''}</span><span class="value red">${fmt(l.currentBalance)}</span></div>`;
+                });
+                if (!(entity.liabilities.equipmentLoans.loans || []).length) {
+                    liabHtml += `<div class="line-item"><span class="label">Equipment Loans</span><span class="value red">${fmt(entity.liabilities.equipmentLoans.total)}</span></div>`;
+                }
+                liabHtml += '</div>';
+            }
+
+            if (entity.liabilities.realEstateLoans && entity.liabilities.realEstateLoans.total > 0) {
+                liabHtml += `<div class="sub-section"><div class="sub-section-title">Real Estate Loans (${entity.liabilities.realEstateLoans.count})</div>`;
+                liabHtml += `<div class="line-item"><span class="label">Real Estate Loans</span><span class="value red">${fmt(entity.liabilities.realEstateLoans.total)}</span></div>`;
+                liabHtml += '</div>';
+            }
+
+            if (entity.liabilities.vehicleLoans && entity.liabilities.vehicleLoans.total > 0) {
+                liabHtml += `<div class="sub-section"><div class="sub-section-title">Vehicle Loans (${entity.liabilities.vehicleLoans.count})</div>`;
+                liabHtml += `<div class="line-item"><span class="label">Vehicle Loans</span><span class="value red">${fmt(entity.liabilities.vehicleLoans.total)}</span></div>`;
+                liabHtml += '</div>';
+            }
+
+            if (!liabHtml) {
+                liabHtml = '<div class="empty-state">No liabilities recorded</div>';
+            }
+
+            return `
+                <div class="entity-card">
+                    <div class="entity-header ${headerClass}">
+                        <div>
+                            <div class="entity-name">${entity.name}</div>
+                            <div class="entity-type">${entity.description || entity.type}</div>
+                        </div>
+                        <div class="entity-totals">
+                            <div class="big-number">${fmtShort(s.netWorth)}</div>
+                            <div class="sub-text">Net Worth</div>
+                        </div>
+                    </div>
+                    <div class="entity-body">
+                        <div class="entity-stats">${statsHtml}</div>
+                        <div class="section-grid">
+                            <div>
+                                <div class="section-title">Assets</div>
+                                ${assetsHtml}
+                                <div class="line-total">
+                                    <span>Total Assets</span>
+                                    <span class="green">${fmt(s.totalAssets)}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="section-title liab">Liabilities</div>
+                                ${liabHtml}
+                                <div class="line-total">
+                                    <span>Total Liabilities</span>
+                                    <span class="red">${fmt(s.totalLiabilities)}</span>
+                                </div>
+                                <div class="line-total" style="border-top: 3px double #0d3b66; margin-top: 20px; padding-top: 15px;">
+                                    <span style="font-size: 18px;">NET WORTH</span>
+                                    <span style="font-size: 18px;" class="${s.netWorth >= 0 ? 'green' : 'red'}">${fmt(s.netWorth)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadNetWorth() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/banking/net-worth-by-entity', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const result = await res.json();
+
+                if (!result.success) {
+                    document.getElementById('entitiesContainer').innerHTML = '<div class="empty-state">Error loading data: ' + (result.message || 'Unknown error') + '</div>';
+                    return;
+                }
+
+                const d = result.data;
+
+                // Report date
+                document.getElementById('reportDate').textContent = 'Generated: ' + new Date(d.generatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+                // Combined summary
+                document.getElementById('combinedAssets').textContent = fmtShort(d.combined.totalAssets);
+                document.getElementById('combinedLiabilities').textContent = fmtShort(d.combined.totalLiabilities);
+                document.getElementById('combinedNetWorth').textContent = fmtShort(d.combined.netWorth);
+                if (d.combined.netWorth < 0) document.getElementById('combinedNetWorth').className = 'summary-value red';
+
+                // Render entities
+                const container = document.getElementById('entitiesContainer');
+                container.innerHTML = d.entities.map(entity => renderEntity(entity)).join('');
+
+            } catch (err) {
+                console.error('Load error:', err);
+                document.getElementById('entitiesContainer').innerHTML = '<div class="empty-state">Failed to load net worth data</div>';
+            }
+        }
+
+        async function loadUserInfo() {
+            try {
+                const res = await fetch('/api/auth/verify', { headers: { 'Authorization': 'Bearer ' + getToken() } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.user) {
+                        document.getElementById('userName').textContent = 'Welcome, ' + data.user.name;
+                        document.getElementById('userRole').textContent = data.user.role;
+                    }
+                }
+            } catch (err) {}
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+            loadUserInfo();
+            loadNetWorth();
+        });
+    </script>
+</body>
+</html>

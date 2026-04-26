@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Operations | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .summary-card h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .summary-card .value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #2d5016;
+        }
+        .summary-card .sub {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Crop Summary */
+        .crop-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .crop-summary h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        .crop-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .crop-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .crop-bar .crop-name {
+            width: 140px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .crop-bar .bar-container {
+            flex: 1;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .crop-bar .bar {
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+        .crop-bar .acres {
+            width: 100px;
+            text-align: right;
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+        }
+        /* Crop colors */
+        .bar.CORN { background: #f4a020; }
+        .bar.WHEAT { background: #d4a54a; }
+        .bar.SORGHUM { background: #8B4513; }
+        .bar.FALLOW { background: #a0a0a0; }
+        .bar.PASTURE { background: #4a7c23; }
+        .bar.TRITICALE { background: #6b8e23; }
+        .bar.PEARL-MILLET, .bar.PEARL_MILLET { background: #9370db; }
+        .bar.SORGHUM-SUDAN, .bar.SORGHUM_SUDAN { background: #cd853f; }
+        .bar.WASTE { background: #808080; }
+        .bar.BUILDING-SITE, .bar.BUILDING_SITE { background: #2c2c2c; }
+
+        /* Farms Section */
+        .farms-section {
+            margin-bottom: 30px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #1a1a1a;
+        }
+        .farm-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .farm-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .farm-tab:hover {
+            border-color: #2d5016;
+        }
+        .farm-tab.active {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .farm-tab .acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-left: 8px;
+        }
+
+        /* Crop Filter Tabs */
+        .crop-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .crop-filter {
+            padding: 6px 14px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .crop-filter:hover {
+            border-color: #2d5016;
+        }
+        .crop-filter.active {
+            color: white;
+            border-color: transparent;
+        }
+        .crop-filter .count {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        .crop-filter[data-crop="all"].active { background: #2d5016; }
+        .crop-filter[data-crop="CORN"].active { background: #e65100; }
+        .crop-filter[data-crop="WHEAT"].active { background: #ff8f00; color: #333; }
+        .crop-filter[data-crop="SORGHUM"].active { background: #5d4037; }
+        .crop-filter[data-crop="FALLOW"].active { background: #757575; }
+        .crop-filter[data-crop="PASTURE"].active { background: #2d5016; }
+        .crop-filter[data-crop="TRITICALE"].active { background: #558b2f; }
+        .crop-filter[data-crop="PEARL MILLET"].active { background: #7b1fa2; }
+        .crop-filter[data-crop="SORGHUM SUDAN"].active { background: #bf360c; }
+        .crop-filter[data-crop="WASTE"].active { background: #607d8b; }
+        .crop-filter[data-crop="BUILDING SITE"].active { background: #263238; }
+        .filter-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .active-filters {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .active-filters .filter-count {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+        }
+
+        /* Fields Table */
+        .fields-table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .fields-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .fields-table th, .fields-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .fields-table th {
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .fields-table tr:hover {
+            background: #fafafa;
+        }
+        .fields-table .field-name {
+            font-weight: 600;
+            color: #2d5016;
+        }
+        .fields-table .legal {
+            font-size: 12px;
+            color: #666;
+        }
+        .fields-table .acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+        }
+        .crop-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .crop-badge.CORN { background: #fff3e0; color: #e65100; }
+        .crop-badge.WHEAT { background: #fff8e1; color: #ff8f00; }
+        .crop-badge.SORGHUM { background: #efebe9; color: #5d4037; }
+        .crop-badge.FALLOW { background: #f5f5f5; color: #616161; }
+        .crop-badge.PASTURE { background: #e8f5e9; color: #2e7d32; }
+        .crop-badge.TRITICALE { background: #f1f8e9; color: #558b2f; }
+        .crop-badge.PEARL-MILLET, .crop-badge.PEARL_MILLET { background: #f3e5f5; color: #7b1fa2; }
+        .crop-badge.SORGHUM-SUDAN, .crop-badge.SORGHUM_SUDAN { background: #fff3e0; color: #bf360c; }
+        .crop-badge.WASTE { background: #eceff1; color: #455a64; }
+        .crop-badge.BUILDING-SITE, .crop-badge.BUILDING_SITE { background: #263238; color: white; }
+
+        .crop-code {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 0.5px;
+            background: #f0f0f0;
+            color: #333;
+        }
+        .crop-code.has-code {
+            background: #e8f0e3;
+            color: #2d5016;
+        }
+
+        /* Field Card Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+        .field-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .field-detail-row:last-child {
+            border-bottom: none;
+        }
+        .field-detail-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+        .field-detail-value {
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .admin-nav { display: none; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .fields-table { font-size: 12px; }
+            .fields-table th, .fields-table td { padding: 8px 10px; }
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .view-toggle-btn {
+            padding: 10px 16px;
+            background: white;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .view-toggle-btn:not(:last-child) {
+            border-right: 1px solid #ddd;
+        }
+        .view-toggle-btn:hover {
+            background: #f5f3f0;
+        }
+        .view-toggle-btn.active {
+            background: #2d5016;
+            color: white;
+        }
+        .view-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Field Cards Grid */
+        .field-cards-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .field-cards-grid.active {
+            display: grid;
+        }
+        .field-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border-left: 5px solid transparent;
+        }
+        .field-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        /* Farm color - left border */
+        .field-card.farm-LAFARMS { border-left-color: #1a5276; }
+        .field-card.farm-KBFARMS { border-left-color: #7d3c98; }
+        .field-card.farm-PETERSON { border-left-color: #922b21; }
+        .field-card.farm-HDFARMS { border-left-color: #117864; }
+        .field-card.farm-MEFARMS { border-left-color: #b9770e; }
+        .field-card.farm-A1FARMS { border-left-color: #2c3e50; }
+
+        .field-card-header {
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* Crop color - header bar */
+        .field-card-header.CORN { background: #e65100; color: white; }
+        .field-card-header.WHEAT { background: #f4a020; color: #333; }
+        .field-card-header.SORGHUM { background: #5d4037; color: white; }
+        .field-card-header.FALLOW { background: #757575; color: white; }
+        .field-card-header.PASTURE { background: #2d5016; color: white; }
+        .field-card-header.TRITICALE { background: #558b2f; color: white; }
+        .field-card-header.PEARL-MILLET, .field-card-header.PEARL_MILLET { background: #7b1fa2; color: white; }
+        .field-card-header.SORGHUM-SUDAN, .field-card-header.SORGHUM_SUDAN { background: #bf360c; color: white; }
+        .field-card-header.WASTE { background: #607d8b; color: white; }
+        .field-card-header.BUILDING-SITE, .field-card-header.BUILDING_SITE { background: #263238; color: white; }
+        .field-card-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            line-height: 1.2;
+        }
+        .field-card-farm-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+        .field-card-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .field-card-crop-code {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.25);
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .field-card-acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* Financial metrics row */
+        .field-card-financials {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .fin-metric {
+            padding: 12px 10px;
+            text-align: center;
+            border-right: 1px solid #f0f0f0;
+        }
+        .fin-metric:last-child { border-right: none; }
+        .fin-metric-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        .fin-metric-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            color: #2d5016;
+        }
+        .fin-metric-value.no-data {
+            color: #ccc;
+            font-size: 13px;
+        }
+        .fin-metric-value.negative { color: #c0392b; }
+        .fin-metric-value.positive { color: #2d5016; }
+
+        /* Cost split bar */
+        .cost-split-row {
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .cost-split-label {
+            color: #999;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cost-split-values {
+            display: flex;
+            gap: 16px;
+        }
+        .cost-m77 {
+            font-weight: 600;
+            color: #2d5016;
+        }
+        .cost-landlord {
+            font-weight: 600;
+            color: #7d3c98;
+        }
+        .lease-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .lease-badge.owned { background: #e8f5e9; color: #2d5016; }
+        .lease-badge.cash-rent { background: #fff3e0; color: #e65100; }
+        .lease-badge.crop-share { background: #f3e5f5; color: #7b1fa2; }
+        .lease-badge.flex-lease { background: #e3f2fd; color: #1565c0; }
+
+        /* Market value row */
+        .market-value-row {
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 12px;
+        }
+        .mv-label {
+            color: #999;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .mv-values {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .mv-per-acre {
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            color: #1a5276;
+        }
+        .mv-total {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #999;
+        }
+        .mv-edit-btn {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 10px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mv-edit-btn:hover { border-color: #2d5016; color: #2d5016; }
+        .mv-not-set {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        /* Bottom details (legal, fsa, tract) */
+        .field-card-footer {
+            padding: 10px 18px;
+            font-size: 11px;
+            color: #aaa;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .field-card-footer span {
+            white-space: nowrap;
+        }
+
+        .no-fields-card {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        /* Expense Input Panel */
+        .expense-panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .expense-panel-toggle {
+            width: 100%;
+            padding: 16px 25px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .expense-panel-toggle:hover { background: #2c2c2c; }
+        .expense-panel-toggle .toggle-arrow {
+            transition: transform 0.3s;
+            font-size: 14px;
+        }
+        .expense-panel-toggle.open .toggle-arrow {
+            transform: rotate(180deg);
+        }
+        .expense-panel-body {
+            display: none;
+            padding: 25px;
+        }
+        .expense-panel-body.open {
+            display: block;
+        }
+        .expense-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .expense-form-row.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+        .expense-form-group label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .expense-form-group input,
+        .expense-form-group select,
+        .expense-form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+        .expense-form-group input:focus,
+        .expense-form-group select:focus {
+            border-color: #2d5016;
+            outline: none;
+        }
+        .field-select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+        }
+        .field-select-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .field-select-item:hover { background: #e8f0e3; }
+        .field-select-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #2d5016;
+        }
+        .field-select-item .fsi-name {
+            font-weight: 600;
+            flex: 1;
+        }
+        .field-select-item .fsi-acres {
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            color: #666;
+        }
+        .field-select-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .field-select-actions button {
+            padding: 6px 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+        .field-select-actions button:hover {
+            background: #f0f0f0;
+        }
+        .field-select-actions button.crop-select {
+            border-color: #2d5016;
+            color: #2d5016;
+        }
+        .expense-submit-btn {
+            padding: 14px 40px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .expense-submit-btn:hover { background: #1e3a0f; }
+        .expense-submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .expense-recent {
+            margin-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 20px;
+        }
+        .expense-recent h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .expense-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f8f8f8;
+            font-size: 13px;
+        }
+        .expense-list-item .eli-desc {
+            font-weight: 500;
+        }
+        .expense-list-item .eli-meta {
+            color: #999;
+            font-size: 11px;
+        }
+        .expense-list-item .eli-cost {
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            color: #2d5016;
+        }
+        .expense-list-item .eli-delete {
+            background: none;
+            border: none;
+            color: #c0392b;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 8px;
+        }
+        /* Quarter Card Sub-Fields */
+        .quarter-subfields {
+            padding: 0 18px 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .quarter-subfield-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #fafafa;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin: 0 -18px;
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+        .quarter-subfield-row:last-child { border-bottom: none; }
+        .quarter-subfield-row:hover { background: #f8f8f8; }
+        .qsf-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qsf-direction {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.06);
+            border-radius: 3px;
+        }
+        .qsf-name {
+            font-weight: 500;
+            color: #555;
+        }
+        .qsf-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Oswald', sans-serif;
+        }
+        .qsf-crop {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+        .qsf-crop.CORN { background: #fff3e0; color: #e65100; }
+        .qsf-crop.WHEAT { background: #fff8e1; color: #f57f17; }
+        .qsf-crop.SORGHUM { background: #efebe9; color: #5d4037; }
+        .qsf-crop.FALLOW { background: #f5f5f5; color: #757575; }
+        .qsf-crop.PEARL-MILLET { background: #f3e5f5; color: #7b1fa2; }
+        .qsf-crop.TRITICALE { background: #e8f5e9; color: #558b2f; }
+        .qsf-crop.SORGHUM-SUDAN { background: #fbe9e7; color: #bf360c; }
+        .qsf-acres {
+            font-size: 12px;
+            color: #666;
+            min-width: 55px;
+            text-align: right;
+        }
+        /* Quarter card header - multiple crop badges */
+        .field-card-crops {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .field-card-crops .field-card-crop-code {
+            font-size: 11px;
+            padding: 2px 7px;
+        }
+
+        @media (max-width: 768px) {
+            .expense-form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .field-select-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .field-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .field-card-financials {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .fin-metric:nth-child(2) { border-right: none; }
+            .fin-metric:nth-child(1), .fin-metric:nth-child(2) { border-bottom: 1px solid #f0f0f0; }
+            .view-toggle {
+                margin-bottom: 15px;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard.html">Dashboard</a>
+            <a href="/admin/farm-operations.html" class="active">Farm Operations</a>
+            <a href="/admin/farm-projections">2026 Projections</a>
+            <a href="/admin/equipment-manager.html">Equipment</a>
+            <a href="/admin/financials/cattle.html">Cattle</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Farm Operations - 2026 Cropping</h1>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid" id="summaryCards">
+            <div class="summary-card">
+                <h3>Total Acres</h3>
+                <div class="value" id="totalAcres">--</div>
+                <div class="sub" id="totalFields">-- fields</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Farms</h3>
+                <div class="value" id="totalFarms">6</div>
+                <div class="sub">Operating farms</div>
+            </div>
+            <div class="summary-card">
+                <h3>Crop Types</h3>
+                <div class="value" id="cropTypes">--</div>
+                <div class="sub">2026 rotation</div>
+            </div>
+            <div class="summary-card">
+                <h3>Productive Acres</h3>
+                <div class="value" id="productiveAcres">--</div>
+                <div class="sub">Excluding waste/sites</div>
+            </div>
+        </div>
+
+        <!-- Crop Summary -->
+        <div class="crop-summary">
+            <h2>2026 Crop Allocation</h2>
+            <div class="crop-bars" id="cropBars">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Expense Input Panel -->
+        <div class="expense-panel">
+            <button class="expense-panel-toggle" id="expenseToggle" onclick="toggleExpensePanel()">
+                Add Expense / Input
+                <span class="toggle-arrow">&#9660;</span>
+            </button>
+            <div class="expense-panel-body" id="expensePanelBody">
+                <!-- Field Selection -->
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#666;margin-bottom:8px;font-weight:600;">Select Fields</label>
+                    <div class="field-select-actions" id="fieldSelectActions">
+                        <!-- Crop code quick-select buttons populated by JS -->
+                    </div>
+                    <div class="field-select-grid" id="fieldSelectGrid">
+                        <!-- Field checkboxes populated by JS -->
+                    </div>
+                    <div style="margin-top:8px;font-size:12px;color:#666;">
+                        Selected: <strong id="selectedCount">0</strong> fields / <strong id="selectedAcres">0</strong> acres
+                    </div>
+                </div>
+
+                <!-- Expense Details -->
+                <div class="expense-form-row">
+                    <div class="expense-form-group">
+                        <label>Date</label>
+                        <input type="date" id="expDate" value="">
+                    </div>
+                    <div class="expense-form-group">
+                        <label>Category</label>
+                        <select id="expCategory">
+                            <option value="chemicals">Chemicals</option>
+                            <option value="seed">Seed</option>
+                            <option value="fertilizer">Fertilizer</option>
+                            <option value="cropInsurance">Crop Insurance</option>
+                            <option value="fuelOil">Fuel & Oil</option>
+                            <option value="repairs">Repairs</option>
+                            <option value="customHire">Custom Hire</option>
+                            <option value="landRent">Land Rent</option>
+                            <option value="dryingHauling">Drying/Hauling</option>
+                            <option value="taxes">Taxes</option>
+                            <option value="misc">Misc</option>
+                        </select>
+                    </div>
+                    <div class="expense-form-group">
+                        <label>Cost Per Acre</label>
+                        <input type="number" id="expCostPerAcre" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="expense-form-group">
+                        <label>Status</label>
+                        <select id="expStatus">
+                            <option value="projected">Projected</option>
+                            <option value="applied">Applied</option>
+                            <option value="invoiced">Invoiced</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="expense-form-row two-col">
+                    <div class="expense-form-group">
+                        <label>Description</label>
+                        <input type="text" id="expDescription" placeholder="e.g., Fall Atrazine 1qt/ac">
+                    </div>
+                    <div class="expense-form-group">
+                        <label>Vendor (optional)</label>
+                        <input type="text" id="expVendor" placeholder="e.g., Nutrien Ag Solutions">
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+                    <div id="expTotalPreview" style="font-size:14px;color:#666;"></div>
+                    <button class="expense-submit-btn" id="expSubmitBtn" onclick="submitExpense()">Add Expense</button>
+                </div>
+
+                <!-- Recent Expenses -->
+                <div class="expense-recent" id="expenseRecent">
+                    <h3>Recent Expenses</h3>
+                    <div id="recentExpensesList">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farms Section -->
+        <div class="farms-section">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <h2 class="section-title">Fields by Farm</h2>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" id="listViewBtn" onclick="setView('list')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                        List
+                    </button>
+                    <button class="view-toggle-btn" id="cardViewBtn" onclick="setView('cards')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                        </svg>
+                        Cards
+                    </button>
+                </div>
+            </div>
+            <div class="filter-label">Filter by Farm</div>
+            <div class="farm-tabs" id="farmTabs">
+                <button class="farm-tab active" data-farm="all">All Farms</button>
+                <!-- Farm tabs populated by JS -->
+            </div>
+            <div class="filter-label" style="margin-top: 15px;">Filter by Crop</div>
+            <div class="crop-filters" id="cropFilters">
+                <button class="crop-filter active" data-crop="all">All Crops</button>
+                <!-- Crop filters populated by JS -->
+            </div>
+            <div class="active-filters" id="activeFilters"></div>
+        </div>
+
+        <!-- Fields Table -->
+        <div class="fields-table-container" id="fieldsTableContainer">
+            <table class="fields-table">
+                <thead>
+                    <tr>
+                        <th>Farm</th>
+                        <th>Field</th>
+                        <th>Legal</th>
+                        <th>FSA Farm</th>
+                        <th>Tract</th>
+                        <th>Acres</th>
+                        <th>2026 Crop</th>
+                        <th>Crop Code</th>
+                    </tr>
+                </thead>
+                <tbody id="fieldsTable">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Fields Cards -->
+        <div class="field-cards-grid" id="fieldsCardsContainer">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- Field Detail Modal -->
+    <div class="modal-overlay" id="fieldModal">
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header" id="modalHeader">
+                <div>
+                    <h2 class="modal-title" id="modalFieldName">Field Name</h2>
+                    <div id="modalSubtitle" style="font-size:13px;color:#666;margin-top:4px;"></div>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allFields = [];
+        let cropSummary = {};
+        let farmSummary = [];
+        let currentFarm = 'all';
+        let currentCrop = 'all';
+        let currentView = 'list'; // 'list' or 'cards'
+
+        const NON_PRODUCTIVE = ['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'];
+        function getCropCode(crop, year) {
+            if (!crop || !year) return '';
+            if (NON_PRODUCTIVE.includes(crop.toUpperCase())) return '';
+            return crop.toUpperCase().replace(/\s+/g, '-') + String(year).slice(-2);
+        }
+
+        // Farm color map for reference
+        const FARM_COLORS = {
+            LAFARMS: '#1a5276',
+            KBFARMS: '#7d3c98',
+            PETERSON: '#922b21',
+            HDFARMS: '#117864',
+            MEFARMS: '#b9770e',
+            A1FARMS: '#2c3e50'
+        };
+
+        function fmtDollar(val) {
+            if (!val && val !== 0) return '--';
+            return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtBushels(val) {
+            if (!val) return '--';
+            return val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' bu';
+        }
+
+        // Client-side cost split calc (mirrors server virtual)
+        const SHARED_COSTS = ['seed', 'fertilizer', 'chemicals', 'cropInsurance', 'dryingHauling'];
+        const OPERATOR_COSTS = ['fuelOil', 'repairs', 'customHire'];
+        function calcCostSplit(f) {
+            const c = f.costs || {};
+            const leaseType = (f.lease && f.lease.type) || 'owned';
+            const sharePct = (f.lease && f.lease.sharePercentage) || 0;
+            const landlordShare = sharePct / 100;
+
+            // Land payment per acre (loan carrying cost for KBFARMS owned ground)
+            // M77 AG pays this as rent to KB Farms to cover the land note
+            const landPayment = f.landPaymentPerAcre || 0;
+
+            const allKeys = ['seed','fertilizer','chemicals','cropInsurance','fuelOil','repairs','customHire','landRent','dryingHauling','taxes','misc'];
+            const budgetCosts = allKeys.reduce((sum, k) => sum + (c[k] || 0), 0);
+            const totalPerAcre = budgetCosts + landPayment;
+
+            let m77Costs = 0, landlordCosts = 0;
+            if (leaseType === 'crop-share' && landlordShare > 0) {
+                SHARED_COSTS.forEach(k => {
+                    m77Costs += (c[k] || 0) * (1 - landlordShare);
+                    landlordCosts += (c[k] || 0) * landlordShare;
+                });
+                OPERATOR_COSTS.forEach(k => { m77Costs += (c[k] || 0); });
+                landlordCosts += (c.taxes || 0);
+                m77Costs += (c.misc || 0) * (1 - landlordShare);
+                landlordCosts += (c.misc || 0) * landlordShare;
+            } else {
+                m77Costs = totalPerAcre;
+            }
+
+            const revPerAcre = ((f.projectedYield || 0) * (f.projectedPrice || 0)) + (f.governmentPayment || 0);
+            let m77Rev = revPerAcre, landlordRev = 0;
+            if (leaseType === 'crop-share' && landlordShare > 0) {
+                landlordRev = revPerAcre * landlordShare;
+                m77Rev = revPerAcre * (1 - landlordShare);
+            }
+
+            let breakEvenPrice = 0;
+            const projYield = f.projectedYield || 0;
+            if (projYield > 0) {
+                if (leaseType === 'crop-share' && landlordShare > 0) {
+                    breakEvenPrice = m77Costs / (projYield * (1 - landlordShare));
+                } else {
+                    breakEvenPrice = totalPerAcre / projYield;
+                }
+            }
+
+            return {
+                leaseType,
+                landlordName: (f.lease && f.lease.landlord) || '',
+                sharePct,
+                totalPerAcre,
+                landPayment,
+                m77Costs, m77Rev,
+                m77Net: m77Rev - m77Costs,
+                landlordCosts, landlordRev,
+                landlordNet: landlordRev - landlordCosts,
+                breakEvenPrice
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
+
+        async function loadData() {
+            try {
+                // Load all fields
+                const fieldsRes = await fetch('/api/cropping-fields');
+                const fieldsData = await fieldsRes.json();
+                if (fieldsData.success) {
+                    allFields = fieldsData.fields;
+                }
+
+                // Load crop summary
+                const cropsRes = await fetch('/api/cropping-fields/summary/crops');
+                const cropsData = await cropsRes.json();
+                if (cropsData.success) {
+                    cropSummary = cropsData;
+                }
+
+                // Load farm summary
+                const farmsRes = await fetch('/api/cropping-fields/summary/farms');
+                const farmsData = await farmsRes.json();
+                if (farmsData.success) {
+                    farmSummary = farmsData.farms;
+                }
+
+                renderSummary();
+                renderCropBars();
+                renderFarmTabs();
+                renderCropFilters();
+                renderView();
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+
+        function renderSummary() {
+            document.getElementById('totalAcres').textContent = cropSummary.totalAcres ? cropSummary.totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '--';
+            document.getElementById('totalFields').textContent = `${allFields.length} fields`;
+            document.getElementById('cropTypes').textContent = cropSummary.crops ? cropSummary.crops.length : '--';
+
+            // Calculate productive acres (exclude WASTE, BUILDING SITE, PASTURE)
+            const nonProductive = ['WASTE', 'BUILDING SITE', 'PASTURE'];
+            const productiveAcres = allFields.reduce((sum, f) => {
+                if (f.acres && !nonProductive.includes(f.crop2026)) {
+                    return sum + f.acres;
+                }
+                return sum;
+            }, 0);
+            document.getElementById('productiveAcres').textContent = productiveAcres.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        function renderCropBars() {
+            const container = document.getElementById('cropBars');
+            if (!cropSummary.crops) {
+                container.innerHTML = '<p>Loading...</p>';
+                return;
+            }
+
+            const maxAcres = Math.max(...cropSummary.crops.map(c => c.totalAcres));
+
+            container.innerHTML = cropSummary.crops.map(crop => {
+                const pct = (crop.totalAcres / maxAcres) * 100;
+                const cropClass = crop.crop.replace(/\s+/g, '-');
+                return `
+                    <div class="crop-bar">
+                        <div class="crop-name">${crop.crop}</div>
+                        <div class="bar-container">
+                            <div class="bar ${cropClass}" style="width: ${pct}%">${crop.fieldCount} fields</div>
+                        </div>
+                        <div class="acres">${crop.totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })} ac</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFarmTabs() {
+            const container = document.getElementById('farmTabs');
+            const totalAcres = farmSummary.reduce((sum, f) => sum + f.totalAcres, 0);
+
+            let html = `<button class="farm-tab active" data-farm="all" onclick="selectFarm('all')">All Farms<span class="acres">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 0 })} ac</span></button>`;
+
+            farmSummary.sort((a, b) => b.totalAcres - a.totalAcres).forEach(farm => {
+                html += `<button class="farm-tab" data-farm="${farm.farm}" onclick="selectFarm('${farm.farm}')">${farm.farm}<span class="acres">${farm.totalAcres.toLocaleString('en-US', { minimumFractionDigits: 0 })} ac</span></button>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectFarm(farm) {
+            currentFarm = farm;
+            document.querySelectorAll('.farm-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.farm === farm);
+            });
+            updateActiveFilters();
+            renderView();
+        }
+
+        function renderCropFilters() {
+            const container = document.getElementById('cropFilters');
+            // Build crop list from actual data
+            const cropCounts = {};
+            allFields.forEach(f => {
+                const crop = f.crop2026 || 'UNKNOWN';
+                if (!cropCounts[crop]) cropCounts[crop] = { count: 0, acres: 0 };
+                cropCounts[crop].count++;
+                cropCounts[crop].acres += f.acres || 0;
+            });
+
+            const sortedCrops = Object.entries(cropCounts).sort((a, b) => b[1].acres - a[1].acres);
+
+            let html = `<button class="crop-filter active" data-crop="all" onclick="selectCrop('all')">All Crops <span class="count">${allFields.length}</span></button>`;
+            sortedCrops.forEach(([crop, data]) => {
+                html += `<button class="crop-filter" data-crop="${crop}" onclick="selectCrop('${crop}')">${crop} <span class="count">${data.count}</span></button>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectCrop(crop) {
+            currentCrop = crop;
+            document.querySelectorAll('.crop-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.crop === crop);
+            });
+            updateActiveFilters();
+            renderView();
+        }
+
+        function getFilteredFields() {
+            let fields = allFields;
+            if (currentFarm !== 'all') {
+                fields = fields.filter(f => f.farm === currentFarm);
+            }
+            if (currentCrop !== 'all') {
+                fields = fields.filter(f => f.crop2026 === currentCrop);
+            }
+            return fields;
+        }
+
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            const fields = getFilteredFields();
+            const totalAcres = fields.reduce((sum, f) => sum + (f.acres || 0), 0);
+            const quarters = groupIntoQuarters(fields);
+
+            if (currentFarm === 'all' && currentCrop === 'all') {
+                container.innerHTML = '';
+                return;
+            }
+
+            let parts = [];
+            if (currentFarm !== 'all') parts.push(currentFarm);
+            if (currentCrop !== 'all') parts.push(currentCrop);
+
+            container.innerHTML = `Showing <span class="filter-count">${quarters.length}</span> quarters / <span class="filter-count">${fields.length}</span> fields / <span class="filter-count">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> acres${parts.length ? ' -- ' + parts.join(' + ') : ''}`;
+        }
+
+        // View toggle
+        function setView(view) {
+            currentView = view;
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            document.getElementById('cardViewBtn').classList.toggle('active', view === 'cards');
+            document.getElementById('fieldsTableContainer').style.display = view === 'list' ? 'block' : 'none';
+            document.getElementById('fieldsCardsContainer').classList.toggle('active', view === 'cards');
+            renderView();
+        }
+
+        function renderView() {
+            if (currentView === 'cards') {
+                renderFieldsCards();
+            } else {
+                renderFieldsTable();
+            }
+        }
+
+        // Parse a field name into quarter number, direction, and name
+        // "10.S OURS" => { num: "10", dir: "S", name: "OURS" }
+        // "22 TOP HILL" => { num: "22", dir: null, name: "TOP HILL" }
+        // "1001 ROSCOE HOME" => { num: "1001", dir: null, name: "ROSCOE HOME" }
+        function parseFieldName(fieldName) {
+            const match = fieldName.match(/^(\d+)(?:\.([A-Z]))?\s*(.*)$/i);
+            if (!match) return { num: null, dir: null, name: fieldName };
+            return { num: match[1], dir: match[2] ? match[2].toUpperCase() : null, name: match[3].trim() };
+        }
+
+        // Group filtered fields into quarter objects
+        function groupIntoQuarters(fields) {
+            const quarterMap = {};
+
+            fields.forEach(f => {
+                const parsed = parseFieldName(f.field);
+                // Quarter key = farm + number (e.g., "LAFARMS-10")
+                const key = f.farm + '-' + (parsed.num || f.field);
+
+                if (!quarterMap[key]) {
+                    quarterMap[key] = {
+                        key,
+                        num: parsed.num,
+                        name: parsed.name,
+                        farm: f.farm,
+                        fields: [],
+                        totalAcres: 0
+                    };
+                }
+                quarterMap[key].fields.push({ ...f, _parsed: parsed });
+                quarterMap[key].totalAcres += (f.acres || 0);
+                // Use the name from any sub-field (they share the same location name)
+                if (parsed.name && (!quarterMap[key].name || quarterMap[key].name.length < parsed.name.length)) {
+                    quarterMap[key].name = parsed.name;
+                }
+            });
+
+            // Sort fields within each quarter by direction (N/W/E/S/M/C/P)
+            const dirOrder = { N: 0, W: 1, M: 2, C: 3, E: 4, S: 5, P: 6 };
+            Object.values(quarterMap).forEach(q => {
+                q.fields.sort((a, b) => {
+                    const da = a._parsed.dir ? (dirOrder[a._parsed.dir] ?? 9) : 9;
+                    const db = b._parsed.dir ? (dirOrder[b._parsed.dir] ?? 9) : 9;
+                    return da - db;
+                });
+            });
+
+            // Sort quarters by number within farm
+            return Object.values(quarterMap).sort((a, b) => {
+                if (a.farm !== b.farm) return a.farm.localeCompare(b.farm);
+                return (parseInt(a.num) || 999) - (parseInt(b.num) || 999);
+            });
+        }
+
+        // Compute weighted-average cost split across all fields in a quarter
+        function calcQuarterSplit(fields) {
+            let totalAcres = 0;
+            let wtdCost = 0, wtdYield = 0, wtdBE = 0, wtdM77Net = 0;
+            let wtdM77Costs = 0, wtdLLCosts = 0;
+            let hasAnyFinancials = false;
+            let hasAnyYield = false;
+            let leaseType = 'owned';
+            let landlordName = '';
+            let sharePct = 0;
+
+            fields.forEach(f => {
+                const ac = f.acres || 0;
+                totalAcres += ac;
+                const split = calcCostSplit(f);
+                const hasFin = split.totalPerAcre > 0 || (f.projectedYield && f.projectedYield > 0);
+                if (hasFin) hasAnyFinancials = true;
+                if (f.projectedYield > 0) hasAnyYield = true;
+
+                wtdCost += split.totalPerAcre * ac;
+                wtdYield += (f.projectedYield || 0) * ac;
+                wtdM77Net += split.m77Net * ac;
+                wtdM77Costs += split.m77Costs * ac;
+                wtdLLCosts += split.landlordCosts * ac;
+
+                // Use the dominant lease type
+                if (split.leaseType !== 'owned') {
+                    leaseType = split.leaseType;
+                    landlordName = split.landlordName;
+                    sharePct = split.sharePct;
+                }
+            });
+
+            const costPerAcre = totalAcres > 0 ? wtdCost / totalAcres : 0;
+            const avgYield = totalAcres > 0 ? wtdYield / totalAcres : 0;
+            const m77Net = totalAcres > 0 ? wtdM77Net / totalAcres : 0;
+            const m77Costs = totalAcres > 0 ? wtdM77Costs / totalAcres : 0;
+            const llCosts = totalAcres > 0 ? wtdLLCosts / totalAcres : 0;
+
+            let breakEvenPrice = 0;
+            if (avgYield > 0 && costPerAcre > 0) {
+                if (leaseType === 'crop-share' && sharePct > 0) {
+                    breakEvenPrice = m77Costs / (avgYield * (1 - sharePct / 100));
+                } else {
+                    breakEvenPrice = costPerAcre / avgYield;
+                }
+            }
+
+            return {
+                totalPerAcre: costPerAcre,
+                avgYield,
+                breakEvenPrice,
+                m77Net,
+                m77Costs,
+                landlordCosts: llCosts,
+                leaseType,
+                landlordName,
+                sharePct,
+                hasFinancials: hasAnyFinancials,
+                hasYield: hasAnyYield,
+                totalAcres
+            };
+        }
+
+        function renderFieldsCards() {
+            const container = document.getElementById('fieldsCardsContainer');
+            let fields = getFilteredFields();
+
+            if (fields.length === 0) {
+                container.innerHTML = '<div class="no-fields-card">No fields found</div>';
+                return;
+            }
+
+            const quarters = groupIntoQuarters(fields);
+
+            container.innerHTML = quarters.map(q => {
+                const isMulti = q.fields.length > 1;
+                const qSplit = isMulti ? calcQuarterSplit(q.fields) : null;
+                const firstField = q.fields[0];
+
+                // For single-field quarters, use the field directly
+                const displayName = isMulti
+                    ? `${q.num} ${q.name}`
+                    : firstField.field;
+
+                const totalAcres = q.totalAcres;
+                const acresStr = totalAcres ? totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
+
+                // Determine crop codes present in this quarter
+                const cropCodes = {};
+                q.fields.forEach(f => {
+                    const code = getCropCode(f.crop2026, 2026);
+                    const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                    if (code) cropCodes[code] = cropClass;
+                });
+                const codeEntries = Object.entries(cropCodes);
+                const primaryCrop = firstField.crop2026 ? firstField.crop2026.replace(/\s+/g, '-') : '';
+
+                // Financials
+                let split, hasFinancials, hasYield;
+                if (isMulti) {
+                    split = qSplit;
+                    hasFinancials = split.hasFinancials;
+                    hasYield = split.hasYield;
+                } else {
+                    const s = calcCostSplit(firstField);
+                    split = {
+                        totalPerAcre: s.totalPerAcre,
+                        avgYield: firstField.projectedYield || 0,
+                        breakEvenPrice: s.breakEvenPrice,
+                        m77Net: s.m77Net,
+                        m77Costs: s.m77Costs,
+                        landlordCosts: s.landlordCosts,
+                        leaseType: s.leaseType,
+                        landlordName: s.landlordName,
+                        sharePct: s.sharePct
+                    };
+                    hasFinancials = split.totalPerAcre > 0 || split.avgYield > 0;
+                    hasYield = split.avgYield > 0;
+                }
+
+                const leaseType = split.leaseType || 'owned';
+                const leaseLabel = leaseType === 'crop-share'
+                    ? `${split.sharePct}% share${split.landlordName ? ' - ' + split.landlordName : ''}`
+                    : leaseType === 'cash-rent'
+                    ? `Cash rent${split.landlordName ? ' - ' + split.landlordName : ''}`
+                    : 'Owned - M77 AG';
+
+                // Sub-field rows for multi-field quarters
+                let subFieldsHtml = '';
+                if (isMulti) {
+                    subFieldsHtml = `<div class="quarter-subfields">${q.fields.map(f => {
+                        const dir = f._parsed.dir || '';
+                        const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                        const code = getCropCode(f.crop2026, 2026);
+                        const fAcres = f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
+                        return `<div class="quarter-subfield-row" onclick="event.stopPropagation(); openFieldModal('${f._id}')">
+                            <div class="qsf-left">
+                                ${dir ? `<span class="qsf-direction">${dir}</span>` : ''}
+                                <span class="qsf-name">${f.field}</span>
+                            </div>
+                            <div class="qsf-right">
+                                ${code ? `<span class="qsf-crop ${cropClass}">${code}</span>` : ''}
+                                <span class="qsf-acres">${fAcres} ac</span>
+                            </div>
+                        </div>`;
+                    }).join('')}</div>`;
+                }
+
+                // For single field quarters, clicking opens modal
+                const cardClick = !isMulti ? `onclick="openFieldModal('${firstField._id}')"` : '';
+
+                return `
+                    <div class="field-card farm-${q.farm}" ${cardClick}>
+                        <div class="field-card-header ${primaryCrop}">
+                            <div>
+                                <div class="field-card-name">${displayName}</div>
+                                <div class="field-card-farm-badge">${q.farm}${isMulti ? ' -- ' + q.fields.length + ' fields' : ''}</div>
+                            </div>
+                            <div class="field-card-right">
+                                ${codeEntries.length === 1
+                                    ? `<div class="field-card-crop-code">${codeEntries[0][0]}</div>`
+                                    : codeEntries.length > 1
+                                    ? `<div class="field-card-crops">${codeEntries.map(([c, cls]) => `<div class="field-card-crop-code">${c}</div>`).join('')}</div>`
+                                    : `<div class="field-card-crop-code">${firstField.crop2026 || '--'}</div>`}
+                                <div class="field-card-acres">${acresStr} ac</div>
+                            </div>
+                        </div>
+                        ${subFieldsHtml}
+                        <div class="field-card-financials">
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Cost/Ac</div>
+                                <div class="fin-metric-value ${hasFinancials ? '' : 'no-data'}">${hasFinancials ? fmtDollar(split.totalPerAcre) : 'TBD'}</div>
+                            </div>
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Est Yield</div>
+                                <div class="fin-metric-value ${hasYield ? '' : 'no-data'}">${hasYield ? fmtBushels(split.avgYield) : 'TBD'}</div>
+                            </div>
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Break-Even</div>
+                                <div class="fin-metric-value ${split.breakEvenPrice > 0 ? '' : 'no-data'}">${split.breakEvenPrice > 0 ? fmtDollar(split.breakEvenPrice) + '/bu' : 'TBD'}</div>
+                            </div>
+                            <div class="fin-metric">
+                                <div class="fin-metric-label">Net/Ac</div>
+                                <div class="fin-metric-value ${!hasFinancials ? 'no-data' : split.m77Net >= 0 ? 'positive' : 'negative'}">${hasFinancials ? fmtDollar(split.m77Net) : 'TBD'}</div>
+                            </div>
+                        </div>
+                        <div class="cost-split-row">
+                            <div>
+                                <span class="lease-badge ${leaseType}">${leaseLabel}</span>
+                            </div>
+                            <div class="cost-split-values">
+                                <span class="cost-m77">M77: ${fmtDollar(split.m77Costs)}/ac</span>
+                                ${leaseType === 'crop-share' ? `<span class="cost-landlord">LL: ${fmtDollar(split.landlordCosts)}/ac</span>` : ''}
+                            </div>
+                        </div>
+                        ${(() => {
+                            const mvPerAcre = q.fields.reduce((v, f) => v || (f.marketValuePerAcre || 0), 0);
+                            const mvTotal = mvPerAcre * totalAcres;
+                            const qKey = q.farm + '|' + q.num;
+                            return `<div class="market-value-row">
+                                <div class="mv-label">Market Value</div>
+                                <div class="mv-values">
+                                    ${mvPerAcre > 0
+                                        ? `<span class="mv-per-acre">${fmtDollar(mvPerAcre)}/ac</span>
+                                           <span class="mv-total">${fmtDollar(mvTotal)} total</span>`
+                                        : `<span class="mv-not-set">Not set</span>`}
+                                    <button class="mv-edit-btn" onclick="event.stopPropagation(); editMarketValue('${qKey}', ${mvPerAcre}, '${displayName.replace(/'/g, "\\'")}', ${totalAcres})">Edit</button>
+                                </div>
+                            </div>`;
+                        })()}
+                        <div class="field-card-footer">
+                            <span>Legal: ${firstField.legal || '-'}</span>
+                            <span>FSA: ${firstField.fsaFarm || '-'}</span>
+                            <span>Tract: ${firstField.tract || '-'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFieldsTable() {
+            const tbody = document.getElementById('fieldsTable');
+            let fields = getFilteredFields();
+
+            if (fields.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = fields.map(f => {
+                const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
+                const code = getCropCode(f.crop2026, 2026);
+                return `
+                    <tr onclick="openFieldModal('${f._id}')" style="cursor:pointer">
+                        <td>${f.farm}</td>
+                        <td class="field-name">${f.field}</td>
+                        <td class="legal">${f.legal || '-'}</td>
+                        <td>${f.fsaFarm || '-'}</td>
+                        <td>${f.tract || '-'}</td>
+                        <td class="acres">${f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
+                        <td><span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span></td>
+                        <td>${code ? `<span class="crop-code has-code">${code}</span>` : '<span class="crop-code">--</span>'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openFieldModal(id) {
+            const f = allFields.find(x => x._id === id);
+            if (!f) return;
+
+            const code = getCropCode(f.crop2026, 2026);
+            const split = calcCostSplit(f);
+            const cropClass = (f.crop2026 || '').replace(/\s+/g, '-');
+            const c = f.costs || {};
+            const acres = f.acres || 0;
+            const isShare = split.leaseType === 'crop-share' && split.sharePct > 0;
+            const operatorPct = isShare ? (100 - split.sharePct) : 100;
+
+            document.getElementById('modalFieldName').textContent = f.field;
+            document.getElementById('modalSubtitle').innerHTML =
+                `<span style="color:${FARM_COLORS[f.farm] || '#333'};font-weight:600">${f.farm}</span>` +
+                ` -- <span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span>` +
+                (code ? ` -- <span class="crop-code has-code">${code}</span>` : '') +
+                ` -- ${acres.toLocaleString('en-US', { minimumFractionDigits: 2 })} ac`;
+
+            const costRows = [
+                { label: 'Seed', key: 'seed', shared: true },
+                { label: 'Fertilizer', key: 'fertilizer', shared: true },
+                { label: 'Chemicals', key: 'chemicals', shared: true },
+                { label: 'Crop Insurance', key: 'cropInsurance', shared: true },
+                { label: 'Fuel & Oil', key: 'fuelOil', shared: false },
+                { label: 'Repairs', key: 'repairs', shared: false },
+                { label: 'Custom Hire', key: 'customHire', shared: false },
+                { label: 'Land Rent', key: 'landRent', shared: false },
+                { label: 'Drying/Hauling', key: 'dryingHauling', shared: true },
+                { label: 'Taxes', key: 'taxes', shared: false },
+                { label: 'Misc', key: 'misc', shared: true }
+            ];
+
+            let costTableHtml = costRows.map(r => {
+                const total = c[r.key] || 0;
+                let m77Val, llVal;
+                if (isShare && r.shared) {
+                    m77Val = total * (operatorPct / 100);
+                    llVal = total * (split.sharePct / 100);
+                } else if (r.key === 'taxes' && isShare) {
+                    m77Val = 0;
+                    llVal = total;
+                } else {
+                    m77Val = total;
+                    llVal = 0;
+                }
+                return `<tr>
+                    <td style="padding:6px 0;font-size:13px;">${r.label}</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;">${fmtDollar(total)}</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#2d5016;">${fmtDollar(m77Val)}</td>
+                    ${isShare ? `<td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#7d3c98;">${fmtDollar(llVal)}</td>` : ''}
+                </tr>`;
+            }).join('');
+
+            // Add land payment row for KBFARMS owned fields
+            if (split.landPayment > 0) {
+                costTableHtml += `<tr style="border-top:1px dashed #e0e0e0;">
+                    <td style="padding:6px 0;font-size:13px;color:#1a5276;font-weight:600;">Land Payment</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#1a5276;">${fmtDollar(split.landPayment)}</td>
+                    <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;color:#1a5276;">${fmtDollar(split.landPayment)}</td>
+                    ${isShare ? '<td></td>' : ''}
+                </tr>`;
+            }
+
+            const leaseLabel = isShare
+                ? `Crop Share: ${split.sharePct}% landlord / ${operatorPct}% M77 AG${split.landlordName ? ' -- ' + split.landlordName : ''}`
+                : split.leaseType === 'cash-rent'
+                ? `Cash Rent${split.landlordName ? ' -- ' + split.landlordName : ''}`
+                : 'Owned -- M77 AG 100%';
+
+            document.getElementById('modalBody').innerHTML = `
+                <!-- Key Metrics -->
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px;">
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">Cost/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#2d5016;">${split.totalPerAcre > 0 ? fmtDollar(split.totalPerAcre) : 'TBD'}</div>
+                    </div>
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">Est Yield</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#2d5016;">${f.projectedYield ? fmtBushels(f.projectedYield) : 'TBD'}</div>
+                    </div>
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">Break-Even</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:#2d5016;">${split.breakEvenPrice > 0 ? fmtDollar(split.breakEvenPrice) + '/bu' : 'TBD'}</div>
+                    </div>
+                    <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:4px;">M77 Net/Ac</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:20px;color:${split.m77Net >= 0 ? '#2d5016' : '#c0392b'};">${split.totalPerAcre > 0 || f.projectedYield ? fmtDollar(split.m77Net) : 'TBD'}</div>
+                    </div>
+                </div>
+
+                <!-- Lease Info -->
+                <div style="padding:10px 14px;background:#fafafa;border-radius:6px;margin-bottom:20px;font-size:13px;">
+                    <span class="lease-badge ${split.leaseType}">${split.leaseType.toUpperCase()}</span>
+                    <span style="margin-left:8px;color:#666;">${leaseLabel}</span>
+                </div>
+
+                <!-- Expense Breakdown -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Expense Breakdown (per acre)</h3>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                    <thead>
+                        <tr style="border-bottom:2px solid #e0e0e0;">
+                            <th style="text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#999;padding:6px 0;">Category</th>
+                            <th style="text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Total</th>
+                            <th style="text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#2d5016;">M77 AG</th>
+                            ${isShare ? `<th style="text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#7d3c98;">Landlord</th>` : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${costTableHtml}
+                    </tbody>
+                    <tfoot>
+                        <tr style="border-top:2px solid #e0e0e0;font-weight:700;">
+                            <td style="padding:8px 0;font-size:13px;">Total</td>
+                            <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;">${fmtDollar(split.totalPerAcre)}</td>
+                            <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#2d5016;">${fmtDollar(split.m77Costs)}</td>
+                            ${isShare ? `<td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#7d3c98;">${fmtDollar(split.landlordCosts)}</td>` : ''}
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Revenue -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Revenue (per acre)</h3>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;">Yield x Price</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;">${f.projectedYield && f.projectedPrice ? fmtBushels(f.projectedYield) + ' x ' + fmtDollar(f.projectedPrice) : 'TBD'}</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;">Govt Payment</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:13px;">${fmtDollar(f.governmentPayment || 0)}</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;font-weight:600;">M77 AG Revenue</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#2d5016;font-weight:600;">${fmtDollar(split.m77Rev)}</td>
+                    </tr>
+                    ${isShare ? `<tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:6px 0;font-size:13px;">Landlord Revenue (${split.sharePct}%)</td>
+                        <td style="text-align:right;font-family:'Oswald',sans-serif;font-size:14px;color:#7d3c98;">${fmtDollar(split.landlordRev)}</td>
+                    </tr>` : ''}
+                </table>
+
+                <!-- Market Value -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Land Value</h3>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#f0f4f8;border-radius:6px;margin-bottom:20px;">
+                    <div>
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#666;margin-bottom:4px;">Market Value</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:22px;color:#1a5276;">
+                            ${f.marketValuePerAcre ? fmtDollar(f.marketValuePerAcre) + '/ac' : 'Not set'}
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#666;margin-bottom:4px;">Total Value</div>
+                        <div style="font-family:'Oswald',sans-serif;font-size:22px;color:#1a5276;">
+                            ${f.marketValuePerAcre ? fmtDollar(f.marketValuePerAcre * acres) : '--'}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Field Details -->
+                <h3 style="font-family:'Oswald',sans-serif;font-size:16px;margin-bottom:10px;color:#1a1a1a;">Field Details</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#666;">
+                    <div>Legal: <strong style="color:#333;">${f.legal || '-'}</strong></div>
+                    <div>FSA Farm: <strong style="color:#333;">${f.fsaFarm || '-'}</strong></div>
+                    <div>Tract: <strong style="color:#333;">${f.tract || '-'}</strong></div>
+                    <div>County: <strong style="color:#333;">${f.county || '-'}</strong></div>
+                </div>
+            `;
+            document.getElementById('fieldModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('fieldModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('fieldModal').addEventListener('click', (e) => {
+            if (e.target.id === 'fieldModal') closeModal();
+        });
+
+        // =============================================
+        // EXPENSE INPUT PANEL
+        // =============================================
+        let selectedFieldIds = new Set();
+        let recentExpenses = [];
+
+        function toggleExpensePanel() {
+            const btn = document.getElementById('expenseToggle');
+            const body = document.getElementById('expensePanelBody');
+            btn.classList.toggle('open');
+            body.classList.toggle('open');
+            if (body.classList.contains('open')) {
+                renderFieldSelectGrid();
+                loadRecentExpenses();
+                // Set default date to today
+                document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        function renderFieldSelectGrid() {
+            const actionsEl = document.getElementById('fieldSelectActions');
+            const gridEl = document.getElementById('fieldSelectGrid');
+
+            // Build crop code quick-select buttons
+            const cropCodes = {};
+            allFields.forEach(f => {
+                const code = getCropCode(f.crop2026, 2026);
+                if (!code) return;
+                if (!cropCodes[code]) cropCodes[code] = { count: 0, acres: 0, ids: [] };
+                cropCodes[code].count++;
+                cropCodes[code].acres += f.acres || 0;
+                cropCodes[code].ids.push(f._id);
+            });
+
+            let actionsHtml = `<button onclick="selectAllFields()">Select All</button>`;
+            actionsHtml += `<button onclick="deselectAllFields()">Clear</button>`;
+            Object.entries(cropCodes).sort((a, b) => b[1].acres - a[1].acres).forEach(([code, data]) => {
+                actionsHtml += `<button class="crop-select" onclick="selectByCropCode('${code}')">${code} (${data.count})</button>`;
+            });
+            actionsEl.innerHTML = actionsHtml;
+
+            // Build field checkboxes grouped by farm
+            const byFarm = {};
+            allFields.forEach(f => {
+                const code = getCropCode(f.crop2026, 2026);
+                if (!code) return; // skip non-productive
+                if (!byFarm[f.farm]) byFarm[f.farm] = [];
+                byFarm[f.farm].push(f);
+            });
+
+            let gridHtml = '';
+            Object.keys(byFarm).sort().forEach(farm => {
+                byFarm[farm].sort((a, b) => a.field.localeCompare(b.field)).forEach(f => {
+                    const code = getCropCode(f.crop2026, 2026);
+                    const checked = selectedFieldIds.has(f._id) ? 'checked' : '';
+                    gridHtml += `
+                        <label class="field-select-item" data-crop-code="${code}" data-farm="${f.farm}">
+                            <input type="checkbox" value="${f._id}" ${checked}
+                                   onchange="toggleFieldSelect(this, '${f._id}', ${f.acres || 0})">
+                            <span class="fsi-name">${f.field}</span>
+                            <span class="fsi-acres">${f.acres || 0} ac</span>
+                        </label>`;
+                });
+            });
+            gridEl.innerHTML = gridHtml;
+            updateSelectedCount();
+        }
+
+        function toggleFieldSelect(checkbox, fieldId, acres) {
+            if (checkbox.checked) {
+                selectedFieldIds.add(fieldId);
+            } else {
+                selectedFieldIds.delete(fieldId);
+            }
+            updateSelectedCount();
+        }
+
+        function selectByCropCode(code) {
+            // First deselect all, then select matching
+            selectedFieldIds.clear();
+            document.querySelectorAll('#fieldSelectGrid input[type="checkbox"]').forEach(cb => {
+                const item = cb.closest('.field-select-item');
+                if (item.dataset.cropCode === code) {
+                    cb.checked = true;
+                    selectedFieldIds.add(cb.value);
+                } else {
+                    cb.checked = false;
+                }
+            });
+            updateSelectedCount();
+
+            // Auto-set the crop code context for preview
+            updateExpensePreview();
+        }
+
+        function selectAllFields() {
+            document.querySelectorAll('#fieldSelectGrid input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+                selectedFieldIds.add(cb.value);
+            });
+            updateSelectedCount();
+        }
+
+        function deselectAllFields() {
+            selectedFieldIds.clear();
+            document.querySelectorAll('#fieldSelectGrid input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            let count = 0, acres = 0;
+            selectedFieldIds.forEach(id => {
+                const f = allFields.find(x => x._id === id);
+                if (f) { count++; acres += f.acres || 0; }
+            });
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('selectedAcres').textContent = acres.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            updateExpensePreview();
+        }
+
+        function updateExpensePreview() {
+            const cost = parseFloat(document.getElementById('expCostPerAcre').value) || 0;
+            let totalAcres = 0;
+            selectedFieldIds.forEach(id => {
+                const f = allFields.find(x => x._id === id);
+                if (f) totalAcres += f.acres || 0;
+            });
+            const total = cost * totalAcres;
+            document.getElementById('expTotalPreview').innerHTML = cost > 0 && totalAcres > 0
+                ? `Total: <strong>${fmtDollar(total)}</strong> across ${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })} acres`
+                : '';
+        }
+
+        // Listen for cost input changes
+        document.addEventListener('DOMContentLoaded', () => {
+            const costInput = document.getElementById('expCostPerAcre');
+            if (costInput) costInput.addEventListener('input', updateExpensePreview);
+        });
+
+        async function submitExpense() {
+            const fieldIds = Array.from(selectedFieldIds);
+            if (fieldIds.length === 0) {
+                alert('Select at least one field');
+                return;
+            }
+
+            const description = document.getElementById('expDescription').value.trim();
+            const costPerAcre = parseFloat(document.getElementById('expCostPerAcre').value);
+            const date = document.getElementById('expDate').value;
+            const category = document.getElementById('expCategory').value;
+            const status = document.getElementById('expStatus').value;
+            const vendor = document.getElementById('expVendor').value.trim();
+
+            if (!description) { alert('Enter a description'); return; }
+            if (!costPerAcre || costPerAcre <= 0) { alert('Enter a cost per acre'); return; }
+            if (!date) { alert('Select a date'); return; }
+
+            // Determine crop code from selected fields
+            const selectedField = allFields.find(f => f._id === fieldIds[0]);
+            const cropCode = getCropCode(selectedField.crop2026, 2026);
+            if (!cropCode) { alert('Selected fields have no crop code'); return; }
+
+            const btn = document.getElementById('expSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                const resp = await fetch('/api/crop-expenses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cropCode, date, description, category, costPerAcre,
+                        fieldIds, status, vendor
+                    })
+                });
+                const data = await resp.json();
+
+                if (data.success) {
+                    // Clear form
+                    document.getElementById('expDescription').value = '';
+                    document.getElementById('expCostPerAcre').value = '';
+                    document.getElementById('expVendor').value = '';
+                    document.getElementById('expTotalPreview').innerHTML = '';
+
+                    // Reload data to reflect updated costs
+                    await loadData();
+                    renderFieldSelectGrid();
+                    loadRecentExpenses();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to save'));
+                }
+            } catch (e) {
+                alert('Error saving expense: ' + e.message);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Add Expense';
+        }
+
+        async function loadRecentExpenses() {
+            try {
+                const resp = await fetch('/api/crop-expenses?year=2026');
+                const data = await resp.json();
+                if (!data.success) return;
+
+                recentExpenses = data.expenses;
+                const listEl = document.getElementById('recentExpensesList');
+
+                if (recentExpenses.length === 0) {
+                    listEl.innerHTML = '<div style="color:#999;font-size:13px;padding:10px 0;">No expenses entered yet</div>';
+                    return;
+                }
+
+                listEl.innerHTML = recentExpenses.slice(0, 20).map(exp => {
+                    const totalAcres = (exp.fields || []).reduce((s, f) => s + (f.acres || 0), 0);
+                    const total = exp.costPerAcre * totalAcres;
+                    const dateStr = new Date(exp.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const statusBadge = exp.status === 'paid' ? 'color:#2d5016' :
+                        exp.status === 'applied' ? 'color:#e65100' : 'color:#999';
+                    return `
+                        <div class="expense-list-item">
+                            <div>
+                                <div class="eli-desc">${exp.description}</div>
+                                <div class="eli-meta">
+                                    ${dateStr} -- <span class="crop-code has-code" style="font-size:10px;padding:2px 6px;">${exp.cropCode}</span>
+                                    -- ${exp.category} -- ${(exp.fields || []).length} fields
+                                    -- <span style="${statusBadge};font-weight:600;text-transform:uppercase;font-size:10px;">${exp.status}</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div>
+                                    <div class="eli-cost">${fmtDollar(exp.costPerAcre)}/ac</div>
+                                    <div style="font-size:11px;color:#999;text-align:right;">${fmtDollar(total)} total</div>
+                                </div>
+                                <button class="eli-delete" onclick="deleteExpense('${exp._id}')" title="Delete">&times;</button>
+                            </div>
+                        </div>`;
+                }).join('');
+            } catch (e) {
+                console.error('Error loading expenses:', e);
+            }
+        }
+
+        async function deleteExpense(id) {
+            if (!confirm('Delete this expense?')) return;
+            try {
+                const resp = await fetch('/api/crop-expenses/' + id, { method: 'DELETE' });
+                const data = await resp.json();
+                if (data.success) {
+                    await loadData();
+                    renderFieldSelectGrid();
+                    loadRecentExpenses();
+                }
+            } catch (e) {
+                alert('Error deleting: ' + e.message);
+            }
+        }
+
+        // =============================================
+        // MARKET VALUE
+        // =============================================
+        function editMarketValue(qKey, currentValue, quarterName, totalAcres) {
+            const parts = qKey.split('|');
+            const farm = parts[0];
+            const quarterNum = parts[1];
+
+            const input = prompt(
+                `Market value per acre for ${quarterName} (${farm}, ${totalAcres.toFixed(2)} ac):\n\nCurrent: ${currentValue > 0 ? '$' + currentValue.toFixed(2) + '/ac' : 'Not set'}`,
+                currentValue > 0 ? currentValue.toString() : ''
+            );
+
+            if (input === null) return;
+            const val = parseFloat(input.replace(/[$,]/g, ''));
+            if (isNaN(val) || val < 0) {
+                alert('Enter a valid dollar amount');
+                return;
+            }
+
+            saveMarketValue(farm, quarterNum, val);
+        }
+
+        async function saveMarketValue(farm, quarterNum, marketValuePerAcre) {
+            try {
+                const resp = await fetch('/api/cropping-fields/quarter/market-value', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ farm, quarterNum, marketValuePerAcre })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    // Reload and re-render
+                    await loadData();
+                    renderView();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to save'));
+                }
+            } catch (e) {
+                alert('Error saving market value: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

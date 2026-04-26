@@ -26,8 +26,45 @@ const userSchema = new mongoose.Schema({
   // User Type
   role: {
     type: String,
-    enum: ['customer', 'admin'],
+    enum: ['customer', 'admin', 'landlord', 'farmer', 'employee', 'banker'],
     default: 'customer'
+  },
+
+  // Employee-specific permissions (when role is 'employee')
+  employeePermissions: {
+    // Data Entry Permissions
+    canAddCattleRecords: { type: Boolean, default: true },
+    canEditCattleRecords: { type: Boolean, default: false },
+    canDeleteCattleRecords: { type: Boolean, default: false },
+
+    canAddEquipmentLogs: { type: Boolean, default: true },
+    canEditEquipmentLogs: { type: Boolean, default: false },
+
+    canAddTransactions: { type: Boolean, default: false },
+    canEditTransactions: { type: Boolean, default: false },
+
+    canViewFinancials: { type: Boolean, default: true },
+    canViewReports: { type: Boolean, default: true },
+
+    // Specific access areas
+    accessAreas: [{
+      type: String,
+      enum: ['cattle', 'crops', 'equipment', 'capital', 'hunting', 'rentals']
+    }]
+  },
+
+  // Employee Details
+  employeeDetails: {
+    position: String,
+    hireDate: Date,
+    supervisor: String,
+    department: String,
+    phone: String,
+    emergencyContact: {
+      name: String,
+      phone: String,
+      relationship: String
+    }
   },
 
   // Profile
@@ -84,6 +121,57 @@ const userSchema = new mongoose.Schema({
     }]
   },
 
+  // Landlord-specific fields
+  landlordPreferences: {
+    // Grain sale price target (per bushel)
+    grainSalePrice: {
+      corn: Number,
+      soybeans: Number,
+      wheat: Number,
+      milo: Number
+    },
+    // When landlord wants to be paid
+    paymentTiming: {
+      type: String,
+      enum: ['immediately', 'after_harvest', 'end_of_year', 'custom'],
+      default: 'after_harvest'
+    },
+    customPaymentDate: Date,
+    // Payment method preferences
+    paymentMethod: {
+      type: String,
+      enum: ['check', 'ach', 'wire'],
+      default: 'check'
+    },
+    // ACH/Bank info (encrypted in production)
+    bankInfo: {
+      accountName: String,
+      routingNumber: String,
+      accountNumber: String,
+      accountType: {
+        type: String,
+        enum: ['checking', 'savings']
+      }
+    },
+    // Stripe customer ID for ACH payments
+    stripeCustomerId: String,
+    stripeBankAccountId: String,
+    // Notes from landlord
+    specialInstructions: String
+  },
+
+  // Properties owned (for landlords)
+  properties: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property'
+  }],
+
+  // Farm codes this landlord owns (maps to CroppingField.farm)
+  landlordFarms: [{
+    type: String,
+    enum: ['LAFARMS', 'KBFARMS', 'PETERSON', 'HDFARMS', 'MEFARMS', 'A1FARMS']
+  }],
+
   // Customer Loyalty / Spending Tracker
   lifetimeSpend: {
     type: Number,
@@ -98,6 +186,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+
 
   // Timestamps
   createdAt: {
@@ -144,22 +233,59 @@ async function createDefaultAdmin() {
     if (!adminExists) {
       const defaultAdmin = new User({
         name: 'M77 AG Admin',
-        email: 'admin@m77ag.com',
+        email: 'office@m77ag.com',
         phone: '970-571-1015',
-        password: 'M77ag2024!Admin', // Change this after first login!
+        password: 'M77admin2025!', // Change this after first login!
         role: 'admin',
         emailVerified: true,
         isActive: true
       });
 
       await defaultAdmin.save();
-      console.log('Default admin user created: admin@m77ag.com');
-      console.log('WARNING: Default password is M77ag2024!Admin - Change this immediately!');
+      console.log('Default admin user created: office@m77ag.com');
+      console.log('WARNING: Default password is M77admin2025! - Change this immediately!');
     }
   } catch (error) {
     console.error('Error creating default admin:', error.message);
   }
 }
 
+// Create default farmer user if none exists
+async function createDefaultFarmer() {
+  try {
+    const farmerExists = await User.findOne({ email: 'matt@togoag.com' });
+
+    if (!farmerExists) {
+      const defaultFarmer = new User({
+        name: 'Matt',
+        email: 'matt@togoag.com',
+        phone: '000-000-0000',
+        password: 'm77ag1',
+        role: 'farmer',
+        isActive: true,
+        emailVerified: true,
+        employeePermissions: {
+          canAddCattleRecords: true,
+          canEditCattleRecords: true,
+          canDeleteCattleRecords: false,
+          canAddEquipmentLogs: true,
+          canEditEquipmentLogs: true,
+          canAddTransactions: false,
+          canEditTransactions: false,
+          canViewFinancials: true,
+          canViewReports: true,
+          accessAreas: ['cattle', 'crops', 'equipment']
+        }
+      });
+
+      await defaultFarmer.save();
+      console.log('Default farmer user created: matt@togoag.com');
+    }
+  } catch (error) {
+    console.error('Error creating default farmer:', error.message);
+  }
+}
+
 module.exports = User;
 module.exports.createDefaultAdmin = createDefaultAdmin;
+module.exports.createDefaultFarmer = createDefaultFarmer;

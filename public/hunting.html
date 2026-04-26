@@ -443,9 +443,9 @@
                     <li><a href="/services" class="nav-link">Services</a></li>
                     <li><a href="/forsale" class="nav-link">Equipment</a></li>
                     <li><a href="/hunting" class="nav-link active">Hunting</a></li>
-                    <li><a href="/season-pass" class="nav-link">Season Pass</a></li>
+                    <li><a href="/rentals" class="nav-link">Rentals</a></li>
                     <li><a href="/about" class="nav-link">About</a></li>
-                    <li><a href="/admin" class="nav-link">Admin</a></li>
+                    <li><a href="/internal" class="nav-link">Internal</a></li>
                 </ul>
             </div>
         </nav>
@@ -956,7 +956,8 @@
             'BEEF': 100,
             'REVIEW': 75,
             'KIDS1ST': 100,
-            'HUNTAGAIN': 25
+            'HUNTAGAIN': 25,
+            'BOERNER#1': 100
         };
         
         // PHEASANT SEASON: Sept 1 - Jan 31
@@ -1269,6 +1270,8 @@
                         freeMessage = 'FREE - BEEF Program';
                     } else if (codeInput === 'KIDS1ST') {
                         freeMessage = 'FREE - Youth Hunter Program';
+                    } else if (codeInput === 'BOERNER#1') {
+                        freeMessage = 'FREE - Thank you Bryce!';
                     } else if (codeInput.startsWith('KCP') || codeInput === 'BEEF100') {
                         freeMessage = 'FREE - Kyle Cares Program';
                     }

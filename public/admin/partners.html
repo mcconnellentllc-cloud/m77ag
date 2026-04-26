@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Management | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .admin-nav {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: #2d5016; color: white; }
+        .btn-primary:hover { background: #3d6b1f; }
+        .btn-gold { background: #d4af37; color: #1a1a1a; }
+        .btn-gold:hover { background: #e0c05c; }
+        .btn-danger { background: #c0392b; color: white; }
+        .btn-danger:hover { background: #a93226; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .stat-card .stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #2d5016;
+        }
+        .stat-card .stat-value.pending { color: #e67e22; }
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-tab {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+        .filter-tab.active {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        .filter-tab:hover:not(.active) {
+            border-color: #2d5016;
+            color: #2d5016;
+        }
+        .filter-tab .count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 6px;
+            font-size: 11px;
+        }
+        .filter-tab.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Partner Table */
+        .partner-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .partner-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .partner-table th {
+            text-align: left;
+            padding: 14px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            border-bottom: 2px solid #f0f0f0;
+            background: #fafafa;
+        }
+        .partner-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+        .partner-table tr:last-child td { border-bottom: none; }
+        .partner-table tr:hover { background: #fafaf8; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-badge.active {
+            background: rgba(45, 80, 22, 0.1);
+            color: #2d5016;
+        }
+        .status-badge.pending {
+            background: rgba(230, 126, 34, 0.1);
+            color: #e67e22;
+        }
+        .status-badge.inactive {
+            background: rgba(192, 57, 43, 0.1);
+            color: #c0392b;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state p {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            width: 95%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-cancel:hover { background: #d0d0d0; }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        .alert-success {
+            background: rgba(45, 80, 22, 0.1);
+            color: #2d5016;
+            border: 1px solid rgba(45, 80, 22, 0.2);
+        }
+        .alert-error {
+            background: rgba(192, 57, 43, 0.1);
+            color: #c0392b;
+            border: 1px solid rgba(192, 57, 43, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .stats-row { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .partner-table { overflow-x: auto; }
+            .partner-table table { min-width: 600px; }
+            .admin-nav { gap: 12px; }
+            .filter-tabs { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/employees.html">Employees</a>
+            <a href="/admin/partners.html" class="active">Partners</a>
+            <a href="/admin/hunting-bookings.html">Hunting</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="alertSuccess" class="alert alert-success"></div>
+        <div id="alertError" class="alert alert-error"></div>
+
+        <div class="page-header">
+            <h1 class="page-title">Partner Accounts</h1>
+            <button class="btn btn-primary" onclick="openCreateModal()">Add Partner</button>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPartners">--</div>
+                <div class="stat-label">Total Partners</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value pending" id="pendingCount">--</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeCount">--</div>
+                <div class="stat-label">Active</div>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">All<span class="count" id="countAll">0</span></button>
+            <button class="filter-tab" data-filter="pending" onclick="setFilter('pending')">Pending<span class="count" id="countPending">0</span></button>
+            <button class="filter-tab" data-filter="active" onclick="setFilter('active')">Active<span class="count" id="countActive">0</span></button>
+            <button class="filter-tab" data-filter="inactive" onclick="setFilter('inactive')">Deactivated<span class="count" id="countInactive">0</span></button>
+        </div>
+
+        <div class="partner-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Registered</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="partnerTableBody">
+                    <tr><td colspan="7" class="empty-state"><p>Loading...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Create Partner Modal -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <h2>Create Partner Account</h2>
+            <form id="createForm" onsubmit="createPartner(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="createName" placeholder="First and last name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="createEmail" placeholder="partner@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="createPhone" placeholder="Phone number">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="text" id="createPassword" placeholder="Minimum 6 characters" required minlength="6">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="createBtn">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <h2>Reset Password</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Resetting password for: <strong id="resetName"></strong></p>
+            <form id="resetForm" onsubmit="resetPassword(event)">
+                <input type="hidden" id="resetId">
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="text" id="resetPassword" placeholder="Minimum 6 characters" required minlength="6">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeResetModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="resetBtn">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let allPartners = [];
+        let currentFilter = 'all';
+
+        function getToken() {
+            return localStorage.getItem('adminToken');
+        }
+
+        function headers() {
+            return {
+                'Authorization': 'Bearer ' + getToken(),
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Auth check
+        if (!getToken()) {
+            window.location.href = '/admin/login';
+        }
+
+        async function loadPartners() {
+            try {
+                const response = await fetch(`${API_URL}/api/auth/partners`, {
+                    headers: headers()
+                });
+                const data = await response.json();
+
+                if (!data.success) {
+                    showAlert('error', data.message || 'Failed to load partners');
+                    return;
+                }
+
+                allPartners = data.partners;
+                updateStats();
+                renderTable();
+            } catch (error) {
+                console.error('Error loading partners:', error);
+                showAlert('error', 'Failed to load partners');
+            }
+        }
+
+        function updateStats() {
+            const total = allPartners.length;
+            const pending = allPartners.filter(p => !p.isActive && !p.emailVerified).length;
+            const active = allPartners.filter(p => p.isActive).length;
+            const inactive = allPartners.filter(p => !p.isActive && p.emailVerified).length;
+
+            document.getElementById('totalPartners').textContent = total;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('activeCount').textContent = active;
+
+            document.getElementById('countAll').textContent = total;
+            document.getElementById('countPending').textContent = pending;
+            document.getElementById('countActive').textContent = active;
+            document.getElementById('countInactive').textContent = inactive;
+        }
+
+        function getStatus(partner) {
+            if (partner.isActive) return 'active';
+            if (!partner.emailVerified) return 'pending';
+            return 'inactive';
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('partnerTableBody');
+            let filtered = allPartners;
+
+            if (currentFilter === 'pending') {
+                filtered = allPartners.filter(p => !p.isActive && !p.emailVerified);
+            } else if (currentFilter === 'active') {
+                filtered = allPartners.filter(p => p.isActive);
+            } else if (currentFilter === 'inactive') {
+                filtered = allPartners.filter(p => !p.isActive && p.emailVerified);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><p>No partners found.</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const status = getStatus(p);
+                const statusLabel = status === 'active' ? 'Active' : status === 'pending' ? 'Pending' : 'Deactivated';
+                const created = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '--';
+                const lastLogin = p.lastLogin ? new Date(p.lastLogin).toLocaleDateString() : 'Never';
+
+                let actions = '';
+                if (status === 'pending') {
+                    actions = `
+                        <button class="btn btn-primary btn-sm" onclick="approvePartner('${p._id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePartner('${p._id}', '${p.name}')">Delete</button>
+                    `;
+                } else if (status === 'active') {
+                    actions = `
+                        <button class="btn btn-gold btn-sm" onclick="openResetModal('${p._id}', '${p.name}')">Reset PW</button>
+                        <button class="btn btn-danger btn-sm" onclick="deactivatePartner('${p._id}')">Deactivate</button>
+                    `;
+                } else {
+                    actions = `
+                        <button class="btn btn-primary btn-sm" onclick="approvePartner('${p._id}')">Reactivate</button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePartner('${p._id}', '${p.name}')">Delete</button>
+                    `;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.email}</td>
+                        <td>${p.phone || '--'}</td>
+                        <td><span class="status-badge ${status}">${statusLabel}</span></td>
+                        <td>${created}</td>
+                        <td>${lastLogin}</td>
+                        <td><div class="action-btns">${actions}</div></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.filter-tab[data-filter="${filter}"]`).classList.add('active');
+            renderTable();
+        }
+
+        // Create Partner
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+            document.getElementById('createForm').reset();
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+        }
+
+        async function createPartner(e) {
+            e.preventDefault();
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/partners`, {
+                    method: 'POST',
+                    headers: headers(),
+                    body: JSON.stringify({
+                        name: document.getElementById('createName').value.trim(),
+                        email: document.getElementById('createEmail').value.trim(),
+                        phone: document.getElementById('createPhone').value.trim(),
+                        password: document.getElementById('createPassword').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', 'Partner account created successfully');
+                    closeCreateModal();
+                    loadPartners();
+                } else {
+                    showAlert('error', data.message || 'Failed to create partner');
+                }
+            } catch (error) {
+                showAlert('error', 'An error occurred');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+        }
+
+        // Approve Partner
+        async function approvePartner(id) {
+            try {
+                const response = await fetch(`${API_URL}/api/auth/partners/${id}`, {
+                    method: 'PUT',
+                    headers: headers(),
+                    body: JSON.stringify({ isActive: true })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', 'Partner approved successfully');
+                    loadPartners();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to approve partner');
+            }
+        }
+
+        // Deactivate Partner
+        async function deactivatePartner(id) {
+            if (!confirm('Deactivate this partner account? They will not be able to log in.')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/partners/${id}`, {
+                    method: 'PUT',
+                    headers: headers(),
+                    body: JSON.stringify({ isActive: false })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', 'Partner deactivated');
+                    loadPartners();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to deactivate partner');
+            }
+        }
+
+        // Delete Partner
+        async function deletePartner(id, name) {
+            if (!confirm(`Permanently delete the account for ${name}? This cannot be undone.`)) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/partners/${id}`, {
+                    method: 'DELETE',
+                    headers: headers()
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', 'Partner account deleted');
+                    loadPartners();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to delete partner');
+            }
+        }
+
+        // Reset Password
+        function openResetModal(id, name) {
+            document.getElementById('resetId').value = id;
+            document.getElementById('resetName').textContent = name;
+            document.getElementById('resetPassword').value = '';
+            document.getElementById('resetModal').classList.add('active');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+
+        async function resetPassword(e) {
+            e.preventDefault();
+            const btn = document.getElementById('resetBtn');
+            btn.disabled = true;
+            btn.textContent = 'Resetting...';
+
+            const id = document.getElementById('resetId').value;
+            const password = document.getElementById('resetPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/partners/${id}/reset-password`, {
+                    method: 'PUT',
+                    headers: headers(),
+                    body: JSON.stringify({ password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', 'Password reset successfully');
+                    closeResetModal();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Failed to reset password');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Reset Password';
+        }
+
+        // Alert
+        function showAlert(type, message) {
+            const el = document.getElementById(type === 'success' ? 'alertSuccess' : 'alertError');
+            const other = document.getElementById(type === 'success' ? 'alertError' : 'alertSuccess');
+            other.style.display = 'none';
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        // Init
+        loadPartners();
+    </script>
+</body>
+</html>

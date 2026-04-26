@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Estate Management - M77 AG Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --m77-green: #2d5a27;
+      --m77-gold: #d4a84b;
+      --m77-dark: #1a1a1a;
+    }
+    body {
+      background-color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar {
+      background: linear-gradient(135deg, var(--m77-dark) 0%, var(--m77-green) 100%);
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--m77-gold) !important;
+    }
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .summary-card:hover {
+      transform: translateY(-2px);
+    }
+    .summary-card .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--m77-green);
+    }
+    .summary-card .label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .summary-card.gold .value {
+      color: var(--m77-gold);
+    }
+    .summary-card.danger .value {
+      color: #dc3545;
+    }
+    .property-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-left: 4px solid var(--m77-green);
+    }
+    .property-card.for-sale {
+      border-left-color: var(--m77-gold);
+    }
+    .property-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .property-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--m77-dark);
+      margin-bottom: 5px;
+    }
+    .property-subtitle {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .property-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--m77-green);
+    }
+    .stat-value.negative {
+      color: #dc3545;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+    }
+    .btn-m77 {
+      background-color: var(--m77-green);
+      border-color: var(--m77-green);
+      color: white;
+    }
+    .btn-m77:hover {
+      background-color: #1e3d1a;
+      border-color: #1e3d1a;
+      color: white;
+    }
+    .btn-gold {
+      background-color: var(--m77-gold);
+      border-color: var(--m77-gold);
+      color: white;
+    }
+    .btn-gold:hover {
+      background-color: #b8923f;
+      border-color: #b8923f;
+      color: white;
+    }
+    .badge-for-sale {
+      background-color: var(--m77-gold);
+      color: white;
+    }
+    .badge-private {
+      background-color: #6c757d;
+      color: white;
+    }
+    .legal-desc {
+      font-size: 0.85rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .nav-pills .nav-link.active {
+      background-color: var(--m77-green);
+    }
+    .nav-pills .nav-link {
+      color: var(--m77-green);
+    }
+    .payment-due {
+      background: #fff3cd;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .payment-due.overdue {
+      background: #f8d7da;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/dashboard">
+        <i class="bi bi-building"></i> M77 AG Admin
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/equipment-manager.html">Equipment</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/real-estate.html">Real Estate</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/hunting-bookings">Hunting</a>
+          </li>
+        </ul>
+        <button class="btn btn-outline-light btn-sm" onclick="logout()">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2><i class="bi bi-geo-alt-fill text-success"></i> Real Estate Portfolio</h2>
+        <p class="text-muted mb-0">Manage land holdings, values, and payments</p>
+      </div>
+      <button class="btn btn-m77" onclick="openAddModal()">
+        <i class="bi bi-plus-lg"></i> Add Property
+      </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="summary-card">
+          <div class="value" id="totalProperties">0</div>
+          <div class="label">Properties</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="summary-card">
+          <div class="value" id="totalAcres">0</div>
+          <div class="label">Total Acres</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="summary-card gold">
+          <div class="value" id="totalValue">$0</div>
+          <div class="label">Total Value</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="summary-card danger">
+          <div class="value" id="totalOwed">$0</div>
+          <div class="label">Total Owed</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="summary-card">
+          <div class="value" id="netWorth">$0</div>
+          <div class="label">Net Equity</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="summary-card">
+          <div class="value" id="totalTaxes">$0</div>
+          <div class="label">Annual Taxes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4" id="propertyTabs">
+      <li class="nav-item">
+        <a class="nav-link active" href="#" data-filter="all">All Properties</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-filter="forsale">For Sale</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-filter="payments">Upcoming Payments</a>
+      </li>
+    </ul>
+
+    <!-- Property List -->
+    <div id="propertyList">
+      <div class="text-center py-5">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading properties...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal fade" id="propertyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Add Property</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="propertyForm">
+            <input type="hidden" id="propertyId">
+
+            <!-- Basic Info -->
+            <h6 class="text-muted mb-3"><i class="bi bi-info-circle"></i> Basic Information</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Property Name *</label>
+                <input type="text" class="form-control" id="name" required placeholder="e.g., Pauli Section">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Property Type</label>
+                <select class="form-select" id="propertyType">
+                  <option value="Pasture">Pasture</option>
+                  <option value="Farmland">Farmland</option>
+                  <option value="Residential">Residential</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Mixed Use">Mixed Use</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Acres</label>
+                <input type="number" class="form-control" id="acres" step="0.01" placeholder="640">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">County</label>
+                <input type="text" class="form-control" id="county" value="Phillips County">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">State</label>
+                <input type="text" class="form-control" id="state" value="CO">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Legal Description</label>
+                <textarea class="form-control" id="legalDescription" rows="2" placeholder="Section, Township, Range..."></textarea>
+              </div>
+            </div>
+
+            <!-- Valuation -->
+            <h6 class="text-muted mb-3"><i class="bi bi-currency-dollar"></i> Valuation</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <label class="form-label">Current Value</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="currentValue" step="0.01" placeholder="500000">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Purchase Price</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="purchasePrice" step="0.01">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Purchase Date</label>
+                <input type="date" class="form-control" id="purchaseDate">
+              </div>
+            </div>
+
+            <!-- Loan Information -->
+            <h6 class="text-muted mb-3"><i class="bi bi-bank"></i> Loan Information</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3">
+                <div class="form-check form-switch mt-4">
+                  <input class="form-check-input" type="checkbox" id="hasLoan" onchange="toggleLoanFields()">
+                  <label class="form-check-label" for="hasLoan">Has Loan</label>
+                </div>
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Amount Owed</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="amountOwed" step="0.01">
+                </div>
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Lender</label>
+                <input type="text" class="form-control" id="lender" placeholder="e.g., First Bank">
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Account Number</label>
+                <input type="text" class="form-control" id="loanAccountNumber">
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Interest Rate (%)</label>
+                <input type="number" class="form-control" id="interestRate" step="0.01">
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Payment Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="paymentAmount" step="0.01">
+                </div>
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Payment Frequency</label>
+                <select class="form-select" id="paymentFrequency">
+                  <option value="none">None</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="semi-annual">Semi-Annual</option>
+                  <option value="annual">Annual</option>
+                </select>
+              </div>
+              <div class="col-md-3 loan-field">
+                <label class="form-label">Next Payment Date</label>
+                <input type="date" class="form-control" id="nextPaymentDate">
+              </div>
+            </div>
+
+            <!-- Tax Information -->
+            <h6 class="text-muted mb-3"><i class="bi bi-receipt"></i> Tax Information</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <label class="form-label">Annual Taxes</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="annualTaxes" step="0.01">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tax Due Date</label>
+                <input type="date" class="form-control" id="taxDueDate">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tax Account Number</label>
+                <input type="text" class="form-control" id="taxAccountNumber">
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <h6 class="text-muted mb-3"><i class="bi bi-sticky"></i> Notes</h6>
+            <div class="mb-3">
+              <textarea class="form-control" id="notes" rows="3" placeholder="Additional notes about this property..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-m77" onclick="saveProperty()">
+            <i class="bi bi-check-lg"></i> Save Property
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = '/api/real-estate';
+    let properties = [];
+    let currentFilter = 'all';
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSummary();
+      loadProperties();
+      setupTabs();
+      toggleLoanFields();
+    });
+
+    function setupTabs() {
+      document.querySelectorAll('#propertyTabs .nav-link').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelectorAll('#propertyTabs .nav-link').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentFilter = tab.dataset.filter;
+          renderProperties();
+        });
+      });
+    }
+
+    async function loadSummary() {
+      try {
+        const response = await fetch(`${API_BASE}/summary`);
+        const data = await response.json();
+
+        document.getElementById('totalProperties').textContent = data.totalProperties || 0;
+        document.getElementById('totalAcres').textContent = (data.totalAcres || 0).toLocaleString();
+        document.getElementById('totalValue').textContent = '$' + (data.totalValue || 0).toLocaleString();
+        document.getElementById('totalOwed').textContent = '$' + (data.totalOwed || 0).toLocaleString();
+        document.getElementById('netWorth').textContent = '$' + (data.netWorth || 0).toLocaleString();
+        document.getElementById('totalTaxes').textContent = '$' + (data.totalTaxes || 0).toLocaleString();
+      } catch (error) {
+        console.error('Error loading summary:', error);
+      }
+    }
+
+    async function loadProperties() {
+      try {
+        const response = await fetch(API_BASE);
+        properties = await response.json();
+        renderProperties();
+      } catch (error) {
+        console.error('Error loading properties:', error);
+        document.getElementById('propertyList').innerHTML = `
+          <div class="alert alert-danger">Error loading properties. Please try again.</div>
+        `;
+      }
+    }
+
+    function renderProperties() {
+      let filtered = properties;
+
+      if (currentFilter === 'forsale') {
+        filtered = properties.filter(p => p.forSale);
+      } else if (currentFilter === 'payments') {
+        filtered = properties.filter(p => p.hasLoan && p.nextPaymentDate);
+        filtered.sort((a, b) => new Date(a.nextPaymentDate) - new Date(b.nextPaymentDate));
+      }
+
+      if (filtered.length === 0) {
+        document.getElementById('propertyList').innerHTML = `
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-geo-alt" style="font-size: 3rem;"></i>
+            <p class="mt-3">No properties found</p>
+            <button class="btn btn-m77" onclick="openAddModal()">Add Your First Property</button>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('propertyList').innerHTML = filtered.map(property => {
+        const equity = (property.currentValue || 0) - (property.amountOwed || 0);
+        const valuePerAcre = property.acres ? Math.round(property.currentValue / property.acres) : 0;
+        const isOverdue = property.nextPaymentDate && new Date(property.nextPaymentDate) < new Date();
+
+        return `
+          <div class="property-card ${property.forSale ? 'for-sale' : ''}">
+            <div class="property-header">
+              <div>
+                <div class="property-title">
+                  ${property.name}
+                  ${property.forSale ? '<span class="badge badge-for-sale ms-2">For Sale</span>' : '<span class="badge badge-private ms-2">Private</span>'}
+                </div>
+                <div class="property-subtitle">
+                  <i class="bi bi-geo-alt"></i> ${property.county || 'Phillips County'}, ${property.state || 'CO'}
+                  ${property.acres ? ` | ${property.acres.toLocaleString()} acres` : ''}
+                  ${property.propertyType ? ` | ${property.propertyType}` : ''}
+                </div>
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" onclick="editProperty('${property._id}')">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm ${property.forSale ? 'btn-gold' : 'btn-outline-success'}" onclick="toggleForSale('${property._id}')">
+                  <i class="bi bi-tag"></i> ${property.forSale ? 'Remove Listing' : 'List for Sale'}
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteProperty('${property._id}')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="property-stats">
+              <div class="stat-item">
+                <div class="stat-value">$${(property.currentValue || 0).toLocaleString()}</div>
+                <div class="stat-label">Current Value</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value ${(property.amountOwed || 0) > 0 ? 'negative' : ''}">$${(property.amountOwed || 0).toLocaleString()}</div>
+                <div class="stat-label">Amount Owed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value ${equity < 0 ? 'negative' : ''}">$${equity.toLocaleString()}</div>
+                <div class="stat-label">Equity</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">$${(property.annualTaxes || 0).toLocaleString()}</div>
+                <div class="stat-label">Annual Taxes</div>
+              </div>
+              ${property.acres ? `
+              <div class="stat-item">
+                <div class="stat-value">$${valuePerAcre.toLocaleString()}</div>
+                <div class="stat-label">$/Acre</div>
+              </div>
+              ` : ''}
+            </div>
+
+            ${property.legalDescription ? `
+            <div class="legal-desc">
+              <strong>Legal:</strong> ${property.legalDescription}
+            </div>
+            ` : ''}
+
+            ${property.hasLoan && property.nextPaymentDate ? `
+            <div class="payment-due ${isOverdue ? 'overdue' : ''}">
+              <i class="bi bi-calendar-event"></i>
+              <strong>Payment Due:</strong> ${new Date(property.nextPaymentDate).toLocaleDateString()}
+              ${property.paymentAmount ? `- $${property.paymentAmount.toLocaleString()}` : ''}
+              ${property.lender ? ` to ${property.lender}` : ''}
+              ${isOverdue ? ' <span class="badge bg-danger">OVERDUE</span>' : ''}
+            </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleLoanFields() {
+      const hasLoan = document.getElementById('hasLoan').checked;
+      document.querySelectorAll('.loan-field').forEach(field => {
+        field.style.display = hasLoan ? 'block' : 'none';
+      });
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add Property';
+      document.getElementById('propertyForm').reset();
+      document.getElementById('propertyId').value = '';
+      document.getElementById('county').value = 'Phillips County';
+      document.getElementById('state').value = 'CO';
+      toggleLoanFields();
+      new bootstrap.Modal(document.getElementById('propertyModal')).show();
+    }
+
+    function editProperty(id) {
+      const property = properties.find(p => p._id === id);
+      if (!property) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Property';
+      document.getElementById('propertyId').value = property._id;
+      document.getElementById('name').value = property.name || '';
+      document.getElementById('propertyType').value = property.propertyType || 'Pasture';
+      document.getElementById('acres').value = property.acres || '';
+      document.getElementById('county').value = property.county || 'Phillips County';
+      document.getElementById('state').value = property.state || 'CO';
+      document.getElementById('legalDescription').value = property.legalDescription || '';
+      document.getElementById('currentValue').value = property.currentValue || '';
+      document.getElementById('purchasePrice').value = property.purchasePrice || '';
+      document.getElementById('purchaseDate').value = property.purchaseDate ? property.purchaseDate.split('T')[0] : '';
+      document.getElementById('hasLoan').checked = property.hasLoan || false;
+      document.getElementById('amountOwed').value = property.amountOwed || '';
+      document.getElementById('lender').value = property.lender || '';
+      document.getElementById('loanAccountNumber').value = property.loanAccountNumber || '';
+      document.getElementById('interestRate').value = property.interestRate || '';
+      document.getElementById('paymentAmount').value = property.paymentAmount || '';
+      document.getElementById('paymentFrequency').value = property.paymentFrequency || 'none';
+      document.getElementById('nextPaymentDate').value = property.nextPaymentDate ? property.nextPaymentDate.split('T')[0] : '';
+      document.getElementById('annualTaxes').value = property.annualTaxes || '';
+      document.getElementById('taxDueDate').value = property.taxDueDate ? property.taxDueDate.split('T')[0] : '';
+      document.getElementById('taxAccountNumber').value = property.taxAccountNumber || '';
+      document.getElementById('notes').value = property.notes || '';
+
+      toggleLoanFields();
+      new bootstrap.Modal(document.getElementById('propertyModal')).show();
+    }
+
+    async function saveProperty() {
+      const id = document.getElementById('propertyId').value;
+      const data = {
+        name: document.getElementById('name').value,
+        propertyType: document.getElementById('propertyType').value,
+        acres: parseFloat(document.getElementById('acres').value) || 0,
+        county: document.getElementById('county').value,
+        state: document.getElementById('state').value,
+        legalDescription: document.getElementById('legalDescription').value,
+        currentValue: parseFloat(document.getElementById('currentValue').value) || 0,
+        purchasePrice: parseFloat(document.getElementById('purchasePrice').value) || 0,
+        purchaseDate: document.getElementById('purchaseDate').value || null,
+        hasLoan: document.getElementById('hasLoan').checked,
+        amountOwed: parseFloat(document.getElementById('amountOwed').value) || 0,
+        lender: document.getElementById('lender').value,
+        loanAccountNumber: document.getElementById('loanAccountNumber').value,
+        interestRate: parseFloat(document.getElementById('interestRate').value) || 0,
+        paymentAmount: parseFloat(document.getElementById('paymentAmount').value) || 0,
+        paymentFrequency: document.getElementById('paymentFrequency').value,
+        nextPaymentDate: document.getElementById('nextPaymentDate').value || null,
+        annualTaxes: parseFloat(document.getElementById('annualTaxes').value) || 0,
+        taxDueDate: document.getElementById('taxDueDate').value || null,
+        taxAccountNumber: document.getElementById('taxAccountNumber').value,
+        notes: document.getElementById('notes').value
+      };
+
+      try {
+        const url = id ? `${API_BASE}/${id}` : API_BASE;
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          bootstrap.Modal.getInstance(document.getElementById('propertyModal')).hide();
+          loadSummary();
+          loadProperties();
+        } else {
+          const error = await response.json();
+          alert('Error saving property: ' + error.message);
+        }
+      } catch (error) {
+        console.error('Error saving property:', error);
+        alert('Error saving property. Please try again.');
+      }
+    }
+
+    async function toggleForSale(id) {
+      try {
+        const response = await fetch(`${API_BASE}/${id}/toggle-sale`, {
+          method: 'PATCH'
+        });
+        if (response.ok) {
+          loadProperties();
+        }
+      } catch (error) {
+        console.error('Error toggling sale status:', error);
+      }
+    }
+
+    async function deleteProperty(id) {
+      if (!confirm('Are you sure you want to delete this property?')) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/${id}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          loadSummary();
+          loadProperties();
+        }
+      } catch (error) {
+        console.error('Error deleting property:', error);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin/login';
+    }
+  </script>
+</body>
+</html>

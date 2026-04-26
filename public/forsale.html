@@ -569,7 +569,7 @@
         }
 
         .research-title::before {
-            content: '📊';
+            content: '';
         }
 
         .research-item {
@@ -1019,8 +1019,9 @@
                     <li><a href="services.html" class="nav-link">Services</a></li>
                     <li><a href="forsale.html" class="nav-link active">Equipment</a></li>
                     <li><a href="hunting.html" class="nav-link">Hunting</a></li>
+                    <li><a href="rentals.html" class="nav-link">Rentals</a></li>
                     <li><a href="about.html" class="nav-link">About</a></li>
-                    <li><a href="/admin" class="nav-link">Admin</a></li>
+                    <li><a href="/internal" class="nav-link">Internal</a></li>
                 </ul>
             </div>
         </nav>
@@ -1063,15 +1064,14 @@
 
                     <!-- Price Box -->
                     <div class="price-box">
-                        <div class="price-label">Buy Now Price</div>
-                        <div class="price-value" id="itemPrice"></div>
-                        <div class="price-note">Includes all taxes. Ready for pickup in Phillips County, CO</div>
-                        <button class="buy-now-btn" id="buyNowBtn">BUY NOW</button>
+                        <div class="price-label">Ready to Deal!</div>
+                        <div class="price-value" style="font-size: 28px;">Make an Offer</div>
+                        <div class="price-note">We're ready to negotiate. Submit your best offer below!</div>
                     </div>
 
                     <!-- Make Offer -->
                     <div class="offer-section">
-                        <div class="offer-title">Or Make an Offer</div>
+                        <div class="offer-title">Start Negotiating</div>
                         <div class="offer-input-group">
                             <input type="text" class="offer-input" id="offerInput" placeholder="$0.00">
                             <button class="offer-btn" id="offerBtn">Submit Offer</button>
@@ -1130,13 +1130,76 @@
             <li><a href="about.html">About</a></li>
         </ul>
         <div class="footer-copyright">
-            &copy; 2025 M77 AG. All rights reserved. McConnell Enterprises LLC.
+            &copy; 2026 M77 AG. All rights reserved. McConnell Enterprises LLC.
         </div>
     </footer>
 
     <script>
-        // Equipment inventory data
-        const equipment = [
+        // Equipment loaded from API
+        let equipment = [];
+
+        // Load equipment from database
+        async function loadEquipmentFromAPI() {
+            try {
+                const response = await fetch('/api/equipment/inventory/public');
+                const data = await response.json();
+
+                if (data.success && data.equipment.length > 0) {
+                    // Map database format to display format
+                    equipment = data.equipment.map(item => ({
+                        id: item._id,
+                        title: item.title,
+                        subtitle: item.subtitle || item.description?.substring(0, 50) || '',
+                        category: item.category || 'Other',
+                        year: item.year,
+                        buyNowPrice: item.currentValue || item.marketValue || 0, // Public price
+                        floorPrice: item.floorPrice || item.currentValue || 10000, // Used for negotiation
+                        images: item.images || [],
+                        videos: item.videos || [],
+                        specs: item.specs ? Object.fromEntries(item.specs) : {
+                            'Make': item.make || '-',
+                            'Model': item.model || '-',
+                            'Year': item.year || '-',
+                            'Hours': item.currentHours ? item.currentHours.toLocaleString() : '-',
+                            'Location': item.location || 'Phillips County, CO'
+                        },
+                        marketResearch: item.marketTrends ? {
+                            'Average Sale Price': item.marketTrends.avgSalePrice ? `$${item.marketTrends.avgSalePrice.toLocaleString()}` : '-',
+                            'Price Range': item.marketTrends.priceRangeLow && item.marketTrends.priceRangeHigh
+                                ? `$${item.marketTrends.priceRangeLow.toLocaleString()} - $${item.marketTrends.priceRangeHigh.toLocaleString()}`
+                                : '-',
+                            'Avg Days to Sell': item.marketTrends.avgDaysToSell || '-',
+                            'Market Demand': item.marketTrends.demandLevel?.toUpperCase() || 'MEDIUM'
+                        } : {},
+                        description: item.description || '',
+                        status: item.saleStatus === 'sold' ? 'sold' : 'available'
+                    }));
+
+                    renderEquipmentGrid();
+                } else {
+                    // No equipment from API, show empty state
+                    document.getElementById('equipmentGrid').innerHTML = `
+                        <div style="grid-column: 1/-1; text-align:center; padding:60px; color:#666;">
+                            <h3 style="font-family:'Oswald',sans-serif; font-size:28px; margin-bottom:10px;">No Equipment Currently Listed</h3>
+                            <p>Check back soon for new listings, or contact us directly.</p>
+                            <p style="margin-top:20px;"><a href="tel:9707743276" style="color:#d4af37;">Call: (970) 774-3276</a></p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading equipment:', error);
+                // Show fallback message
+                document.getElementById('equipmentGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align:center; padding:60px; color:#666;">
+                        <h3 style="font-family:'Oswald',sans-serif; font-size:28px; margin-bottom:10px;">Equipment Loading...</h3>
+                        <p>Please refresh the page or contact us directly at (970) 774-3276</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Legacy hardcoded equipment - keeping as fallback
+        const legacyEquipment = [
             {
                 id: 'fk-2450',
                 title: 'Farm King 2450 Round Bale Carrier',
@@ -1173,7 +1236,6 @@
                     'Average Listing Price': '$36,800',
                     'Price Range': '$31,000 - $42,000',
                     'Similar Units Sold (90 days)': '14',
-                    'Our Price vs Market': '-6% Below Average',
                     'Fair Value Assessment': 'GREAT DEAL'
                 },
                 description: 'This Farm King 2450 is in excellent working condition. Hydraulics are tight, tires are good, and it\'s ready to go to work. We\'ve used this carrier for 3 seasons and it has been reliable. Selling because we upgraded to a larger capacity unit.',
@@ -1188,18 +1250,11 @@
                 buyNowPrice: 12500,
                 floorPrice: 10700,
                 images: [
-                    'assets/equipment/schaben-90/IMG_1701.JPEG',
-                    'assets/equipment/schaben-90/IMG_1703.JPEG',
-                    'assets/equipment/schaben-90/IMG_1705.JPEG',
-                    'assets/equipment/schaben-90/IMG_1706.JPEG',
-                    'assets/equipment/schaben-90/IMG_1707.JPEG',
-                    'assets/equipment/schaben-90/IMG_1708.JPEG',
-                    'assets/equipment/schaben-90/IMG_1709.JPEG',
-                    'assets/equipment/schaben-90/IMG_1710.JPEG'
+                    'assets/equipment/fk-2450/Schaben 1.JPEG',
+                    'assets/equipment/fk-2450/Schaben 4.JPEG'
                 ],
                 videos: [
-                    'assets/equipment/schaben-90/IMG_1702.MP4',
-                    'assets/equipment/schaben-90/IMG_1704.MP4'
+                    'assets/equipment/fk-2450/Schaben 2.MP4'
                 ],
                 specs: {
                     'Make': 'Schaben',
@@ -1217,82 +1272,9 @@
                     'Average Listing Price': '$14,500',
                     'Price Range': '$8,000 - $18,000',
                     'Similar Units Sold (90 days)': '8',
-                    'Our Price vs Market': '-14% Below Average',
                     'Fair Value Assessment': 'GOOD DEAL'
                 },
                 description: 'Schaben 90-foot 3-point mounted sprayer boom with 5-section Raven control for precision application. 30-inch nozzle spacing. Boom only - pump not included. As authorized JD Skiles dealers, we can set up a pump system to your exact specifications. Option to re-nozzle and install all new hoses for an additional agreed-upon cost. Priced to sell.',
-                status: 'available'
-            },
-            {
-                id: 'drago-1230',
-                title: '2012 Drago Series 1 12-Row Corn Head',
-                subtitle: '30" spacing, New Holland adapter, Headsight',
-                category: 'Harvest Equipment',
-                year: 2012,
-                buyNowPrice: 31000,
-                floorPrice: 26000,
-                images: [
-                    'assets/equipment/drago-1230/img1.jpg',
-                    'assets/equipment/drago-1230/img2.jpg',
-                    'assets/equipment/drago-1230/img3.jpg',
-                    'assets/equipment/drago-1230/img4.jpg',
-                    'assets/equipment/drago-1230/img5.jpg'
-                ],
-                videos: [],
-                specs: {
-                    'Make': 'Drago (Olimac)',
-                    'Model': 'Series 1 - 1230',
-                    'Year': '2012',
-                    'Rows': '12',
-                    'Row Spacing': '30 inches',
-                    'Adapter': 'New Holland Large Frame',
-                    'Height Control': 'Headsight Auto-Height',
-                    'Condition': 'Fair - Low Acres',
-                    'Location': 'Phillips County, CO'
-                },
-                marketResearch: {
-                    'Average Listing Price': '$35,000',
-                    'Price Range': '$28,000 - $45,000',
-                    'Similar Units Sold (90 days)': '6',
-                    'Our Price vs Market': '-11% Below Average',
-                    'Fair Value Assessment': 'GOOD DEAL'
-                },
-                description: 'Drago Series 1 12-row corn head with 30-inch spacing. Set up for New Holland large frame combines. Includes Headsight auto-height control system. Low acres - great dryland corn head. Note: Flighting bent in 2 places, can be repaired. Priced accordingly and ready to deal.',
-                status: 'available'
-            },
-            {
-                id: 'demco-sidequest',
-                title: 'Demco SideQuest 1000 Gallon Saddle Tanks',
-                subtitle: 'Case Magnum mounts, hydraulic agitation',
-                category: 'Sprayer Equipment',
-                year: 2015,
-                buyNowPrice: 11500,
-                floorPrice: 10200,
-                images: [
-                    'assets/equipment/demco-sidequest/img1.jpg',
-                    'assets/equipment/demco-sidequest/img2.jpg',
-                    'assets/equipment/demco-sidequest/img3.jpg',
-                    'assets/equipment/demco-sidequest/img4.jpg'
-                ],
-                videos: [],
-                specs: {
-                    'Make': 'Demco',
-                    'Model': 'SideQuest',
-                    'Year': '2015',
-                    'Capacity': '1000 Gallons (per side)',
-                    'Mounts': 'Case Magnum',
-                    'Agitation': 'Hydraulic',
-                    'Condition': 'Good',
-                    'Location': 'Phillips County, CO'
-                },
-                marketResearch: {
-                    'Average Listing Price': '$13,500',
-                    'Price Range': '$9,000 - $16,000',
-                    'Similar Units Sold (90 days)': '4',
-                    'Our Price vs Market': '-15% Below Average',
-                    'Fair Value Assessment': 'GOOD DEAL'
-                },
-                description: 'Demco SideQuest 1000 gallon saddle tank system with Case Magnum mounting brackets. Includes hydraulic agitation system with pumps. Great for adding sprayer capacity to your tractor. Clean tanks, ready to work.',
                 status: 'available'
             },
             {
@@ -1304,8 +1286,8 @@
                 buyNowPrice: 3000,
                 floorPrice: 2777,
                 images: [
-                    'assets/equipment/danuser-auger/img1.jpg',
-                    'assets/equipment/danuser-auger/img2.jpg'
+                    'assets/equipment/fk-2450/Danuser Post Hole Digger.JPEG',
+                    'assets/equipment/fk-2450/Danuser Post 2.JPEG'
                 ],
                 videos: [],
                 specs: {
@@ -1321,7 +1303,6 @@
                     'Average Listing Price': '$2,800',
                     'Price Range': '$1,800 - $3,500',
                     'Similar Units Sold (90 days)': '12',
-                    'Our Price vs Market': 'At Market',
                     'Fair Value Assessment': 'FAIR PRICE'
                 },
                 description: 'Danuser hydraulic post hole digger with universal skid steer quick-attach mount. Includes both 14-inch and 8-inch auger bits. Good working condition, ready to dig. Great for fence posts, tree planting, and more.',
@@ -1336,10 +1317,9 @@
                 buyNowPrice: 2500,
                 floorPrice: 2277,
                 images: [
-                    'assets/equipment/stout-grapple/img1.jpg',
-                    'assets/equipment/stout-grapple/img2.jpg',
-                    'assets/equipment/stout-grapple/img3.jpg',
-                    'assets/equipment/stout-grapple/img4.jpg'
+                    'assets/equipment/fk-2450/STOUT 84.JPEG',
+                    'assets/equipment/fk-2450/Stout 84 back.JPEG',
+                    'assets/equipment/fk-2450/Stout 84 side.JPEG'
                 ],
                 videos: [],
                 specs: {
@@ -1355,7 +1335,6 @@
                     'Average Listing Price': '$2,800',
                     'Price Range': '$2,000 - $4,000',
                     'Similar Units Sold (90 days)': '9',
-                    'Our Price vs Market': '-11% Below Average',
                     'Fair Value Assessment': 'GOOD DEAL'
                 },
                 description: 'Stout 84-inch grapple bucket with universal skid steer quick-attach mount. Heavy duty construction with dual hydraulic cylinders. Good working condition. Great for moving brush, logs, debris, and more.',
@@ -1370,8 +1349,8 @@
                 buyNowPrice: 3700,
                 floorPrice: 3377,
                 images: [
-                    'assets/equipment/equipall-backhoe/img1.jpg',
-                    'assets/equipment/equipall-backhoe/img2.jpg'
+                    'assets/equipment/fk-2450/EquipAll 860 1.JPEG',
+                    'assets/equipment/fk-2450/EquipAll 860 2.JPEG'
                 ],
                 videos: [],
                 specs: {
@@ -1387,7 +1366,6 @@
                     'Average Listing Price': '$4,000',
                     'Price Range': '$2,500 - $4,500',
                     'Similar Units Sold (90 days)': '5',
-                    'Our Price vs Market': '-8% Below Average',
                     'Fair Value Assessment': 'GOOD DEAL'
                 },
                 description: 'EquipAll 860 skid steer backhoe attachment with swing arm. Very handy for digging trenches, footings, and general excavation work. Universal skid steer quick-attach mount. Fair-good working condition. Selling because we no longer own a skid steer.',
@@ -1402,7 +1380,7 @@
                 buyNowPrice: 750,
                 floorPrice: 700,
                 images: [
-                    'assets/equipment/nh-concaves/img1.jpg'
+                    'assets/equipment/fk-2450/NH Round .JPEG'
                 ],
                 videos: [],
                 specs: {
@@ -1416,7 +1394,6 @@
                 marketResearch: {
                     'New Price': '$4,000+',
                     'Used Price Range': '$500 - $1,000',
-                    'Our Price vs Market': 'At Market',
                     'Fair Value Assessment': 'FAIR PRICE'
                 },
                 description: 'New Holland round bar concaves for large frame CR series combines. Good condition - not bent. Save big over new prices. Great spare or replacement set.',
@@ -1431,10 +1408,15 @@
                 buyNowPrice: 15700,
                 floorPrice: 13200,
                 images: [
-                    'assets/equipment/haybuster-bigbite/img1.jpg',
-                    'assets/equipment/haybuster-bigbite/img2.jpg',
-                    'assets/equipment/haybuster-bigbite/img3.jpg',
-                    'assets/equipment/haybuster-bigbite/img4.jpg'
+                    'assets/equipment/fk-2450/haybuster 1.JPEG',
+                    'assets/equipment/fk-2450/haybuster 2.JPEG',
+                    'assets/equipment/fk-2450/haybuster 3.JPEG',
+                    'assets/equipment/fk-2450/haybuster 4.JPEG',
+                    'assets/equipment/fk-2450/haybuster 5.JPEG',
+                    'assets/equipment/fk-2450/haybuster 6.JPEG',
+                    'assets/equipment/fk-2450/haybuster 7.JPEG',
+                    'assets/equipment/fk-2450/haybuster 8.JPEG',
+                    'assets/equipment/fk-2450/haybuster 9.JPEG'
                 ],
                 videos: [],
                 specs: {
@@ -1452,12 +1434,11 @@
                     'Auction Price Range': '$7,000 - $15,000',
                     'Private Sale Range': '$15,000 - $28,000',
                     'Recent Auction Sale': '$7,250 (2021)',
-                    'Our Price vs Market': 'At Private Sale Value',
                     'Fair Value Assessment': 'FAIR PRICE'
                 },
                 description: 'Haybuster Big Bite H-1100 tub grinder in good working condition. PTO driven - requires large 1000 PTO. Good screens and newer folding discharge conveyor. Great for grinding hay, corn stalks, and roughage. Consignment sale.',
                 status: 'available'
-            }
+            },
             // Add more equipment items here
         ];
 
@@ -1472,29 +1453,80 @@
         let offerHistory = [];
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Start with legacy data as the reliable base (has full specs, market research, etc.)
+            equipment = [...legacyEquipment];
+
+            // Try to load from database and merge any additional items
+            try {
+                const response = await fetch('/api/equipment/inventory/public');
+                const data = await response.json();
+
+                if (data.success && data.equipment.length > 0) {
+                    const legacyTitles = new Set(legacyEquipment.map(e => e.title.toLowerCase().trim()));
+
+                    // Add any API items not already in legacy data
+                    data.equipment.forEach(item => {
+                        const titleLower = item.title.toLowerCase().trim();
+                        if (!legacyTitles.has(titleLower)) {
+                            equipment.push({
+                                id: item._id,
+                                title: item.title,
+                                subtitle: item.subtitle || item.description?.substring(0, 50) || '',
+                                category: item.category || 'Other',
+                                year: item.year,
+                                buyNowPrice: item.currentValue || item.marketValue || 0,
+                                floorPrice: item.floorPrice || item.currentValue || 10000,
+                                images: item.images || [],
+                                videos: item.videos || [],
+                                specs: item.specs ? Object.fromEntries(item.specs) : {
+                                    'Make': item.make || '-',
+                                    'Model': item.model || '-',
+                                    'Year': item.year || '-',
+                                    'Hours': item.currentHours ? item.currentHours.toLocaleString() : '-',
+                                    'Location': item.location || 'Phillips County, CO'
+                                },
+                                marketResearch: {},
+                                description: item.description || '',
+                                status: item.saleStatus === 'sold' ? 'sold' : 'available'
+                            });
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading from API, using local data:', error);
+            }
+
             renderEquipmentGrid();
             checkUrlParams();
         });
 
         // Render equipment cards
         function renderEquipmentGrid() {
-            equipmentGrid.innerHTML = equipment.map(item => `
+            if (equipment.length === 0) return;
+
+            equipmentGrid.innerHTML = equipment.map(item => {
+                const imageUrl = item.images && item.images.length > 0
+                    ? item.images[0]
+                    : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220"><rect fill="%23e0e0e0" width="400" height="220"/><text fill="%23999" x="200" y="110" text-anchor="middle" dy=".3em" font-family="sans-serif">Image Coming Soon</text></svg>';
+
+                return `
                 <div class="equipment-card" onclick="openModal('${item.id}')">
                     <div class="card-image">
-                        <img src="${item.images[0]}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22220%22/><text fill=%22%23999%22 x=%22200%22 y=%22110%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>Image Coming Soon</text></svg>'">
+                        <img src="${imageUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22><rect fill=%22%23e0e0e0%22 width=%22400%22 height=%22220%22/><text fill=%22%23999%22 x=%22200%22 y=%22110%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22sans-serif%22>Image Coming Soon</text></svg>'">
                         <div class="card-badge ${item.status === 'sold' ? 'sold' : ''}">${item.status === 'sold' ? 'SOLD' : item.category}</div>
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">${item.title}</h3>
-                        <p class="card-details">${item.year} | ${item.subtitle}</p>
+                        <p class="card-details">${item.year ? item.year + ' | ' : ''}${item.subtitle}</p>
                         <div class="card-price">
-                            <span class="price-amount">$${item.buyNowPrice.toLocaleString()}</span>
-                            <button class="view-btn">View Details</button>
+                            <span class="price-amount" style="color: #d4af37;">Make an Offer</span>
+                            <button class="view-btn">View & Negotiate</button>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Check URL params for direct linking
@@ -1518,8 +1550,7 @@
 
             // Populate modal
             document.getElementById('itemTitle').textContent = currentItem.title;
-            document.getElementById('itemSubtitle').textContent = `${currentItem.year} | ${currentItem.subtitle}`;
-            document.getElementById('itemPrice').textContent = '$' + currentItem.buyNowPrice.toLocaleString();
+            document.getElementById('itemSubtitle').textContent = currentItem.year ? `${currentItem.year} | ${currentItem.subtitle}` : currentItem.subtitle;
 
             // Gallery
             renderGallery();
@@ -1530,11 +1561,16 @@
             // Market Research
             renderMarketResearch();
 
-            // Reset chat
-            document.getElementById('chatBox').classList.remove('active');
+            // Initialize chat with welcome message
+            document.getElementById('chatBox').classList.add('active');
             document.getElementById('chatMessages').innerHTML = '';
             document.getElementById('offerInput').value = '';
             offerHistory = [];
+
+            // Show welcome message
+            setTimeout(() => {
+                addChatMessage('bot', `Hi there! I'm ready to negotiate on the ${currentItem.title}. This is quality equipment and we're motivated to sell. What's your best offer?`);
+            }, 500);
 
             // Show modal
             modalOverlay.classList.add('active');
@@ -1677,38 +1713,32 @@
         }
 
         function processOffer(offer) {
-            const buyNow = currentItem.buyNowPrice;
             const floor = currentItem.floorPrice;
-            const percentOfBuyNow = (offer / buyNow) * 100;
             const percentOfFloor = (offer / floor) * 100;
 
             let response;
 
-            if (offer >= buyNow) {
-                // At or above buy now - accept immediately
-                response = `Excellent! Your offer of $${offer.toLocaleString()} has been ACCEPTED! I'll send you the purchase details right away. Thank you for your business!`;
-                acceptOffer(offer);
-            } else if (offer >= floor) {
-                // Between floor and buy now - accept with enthusiasm
-                response = `You've got yourself a deal! I can accept $${offer.toLocaleString()}. That's a fair price for this quality equipment. Let me get the paperwork started!`;
+            if (offer >= floor) {
+                // At or above floor - accept the deal!
+                response = `You've got yourself a deal! I can accept $${offer.toLocaleString()}. That's a fair offer for this quality equipment. Let me get the paperwork started!`;
                 acceptOffer(offer);
             } else if (percentOfFloor >= 95) {
                 // Very close to floor - strong encouragement
-                response = `You're very close! I might be able to work with you at $${floor.toLocaleString()}. Can you come up just a bit?`;
+                response = `You're very close! Come up just a little bit and we can make this happen. What do you say?`;
             } else if (percentOfFloor >= 90) {
                 // Close to floor - encourage higher
                 const suggested = Math.round(floor * 1.02 / 100) * 100;
-                response = `I appreciate the offer, but we're a bit apart. The lowest I could consider is around $${suggested.toLocaleString()}. This unit is priced well below market already.`;
+                response = `I appreciate the offer, but we're a bit apart. I could work with something around $${suggested.toLocaleString()}. This is quality equipment at a fair price.`;
             } else if (percentOfFloor >= 80) {
                 // Getting warmer
                 const suggested = Math.round(floor * 1.05 / 100) * 100;
-                response = `Thanks for your interest! That's a bit low considering the condition and market value. Could you come up to $${suggested.toLocaleString()}? Check out the market research - we're already below average.`;
+                response = `Thanks for your interest! That's a bit low considering the condition and market value. Could you come up closer to $${suggested.toLocaleString()}? Check out the market research below.`;
             } else if (percentOfFloor >= 70) {
                 // Too low but engaging
-                response = `I understand you're looking for a good deal - who isn't? But at $${offer.toLocaleString()}, we're pretty far apart. This is a solid piece of equipment. What's the best you can do?`;
+                response = `I understand you're looking for a good deal - who isn't? But at $${offer.toLocaleString()}, we're still pretty far apart. This is solid equipment. What's your best offer?`;
             } else {
                 // Way too low
-                response = `I appreciate the offer, but $${offer.toLocaleString()} is significantly below what we can accept for this equipment. Take another look at the specs and condition - this is a quality unit priced to sell. What can you realistically offer?`;
+                response = `I appreciate the offer, but $${offer.toLocaleString()} is quite a bit below what we can accept. Take another look at the specs and condition - this is quality equipment. What can you realistically offer?`;
             }
 
             addChatMessage('bot', response);
@@ -1838,14 +1868,12 @@
                 // Update UI
                 const priceBox = document.querySelector('.price-box');
                 priceBox.classList.add('offer-accepted');
-                document.getElementById('itemPrice').textContent = '$' + amount.toLocaleString();
+                document.querySelector('.price-value').textContent = '$' + amount.toLocaleString();
                 document.querySelector('.price-label').textContent = 'ACCEPTED PRICE';
 
                 // Disable further offers
                 document.getElementById('offerBtn').disabled = true;
                 document.getElementById('offerInput').disabled = true;
-                document.getElementById('buyNowBtn').textContent = 'SOLD!';
-                document.getElementById('buyNowBtn').disabled = true;
 
                 // Add confirmation message
                 addChatMessage('bot', `Thank you ${buyerInfo.name}! Your offer has been accepted! Check below for payment details.`);
@@ -2079,15 +2107,6 @@
 
             document.body.insertAdjacentHTML('beforeend', bannerHtml);
         }
-
-        // Buy Now button
-        document.getElementById('buyNowBtn').addEventListener('click', () => {
-            if (confirm(`Buy Now for $${currentItem.buyNowPrice.toLocaleString()}?`)) {
-                addChatMessage('bot', `Excellent choice! Let's get your information to complete this purchase at $${currentItem.buyNowPrice.toLocaleString()}.`);
-                document.getElementById('chatBox').classList.add('active');
-                showBuyerInfoForm(currentItem.buyNowPrice);
-            }
-        });
 
         // Share functionality
         document.getElementById('shareFacebook').addEventListener('click', () => {

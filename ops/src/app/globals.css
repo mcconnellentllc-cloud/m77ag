@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --sidebar-width: 260px;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Priority badge colors */
+.priority-critical { background: #dc2626; color: white; }
+.priority-high { background: #f59e0b; color: #1a1a1a; }
+.priority-medium { background: #3b82f6; color: white; }
+.priority-low { background: #94a3b8; color: white; }
+.priority-none { background: #e2e8f0; color: #64748b; }
+
+/* Entity dot indicator */
+.entity-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Email row hover */
+.email-row {
+  transition: background-color 0.15s ease;
+}
+.email-row:hover {
+  background-color: #f1f5f9;
+}
+.email-row.unread {
+  font-weight: 600;
+  background-color: #fefefe;
+}
+
+/* Mobile sidebar */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+}

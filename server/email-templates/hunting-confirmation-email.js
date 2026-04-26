@@ -160,6 +160,28 @@ function getHuntingConfirmationEmail(booking) {
           </p>
         </div>
       </div>
+      ` : booking.discountCode === 'BOERNER#1' ? `
+      <div style="background: linear-gradient(135deg, #d4a54a 0%, #c09440 100%); border: 3px solid #d4a54a; padding: 25px; margin-top: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(212, 165, 74, 0.3);">
+        <h3 style="color: white; margin: 0 0 15px 0; text-align: center; font-size: 28px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">⭐ BRYCE BOERNER - VIP GUEST ⭐</h3>
+        <p style="margin: 0 0 20px 0; color: white; font-size: 18px; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+          <strong>FREE HUNT - 100% Discount Applied</strong><br>
+          ${booking.originalPrice ? `<span style="text-decoration: line-through;">Original: $${booking.originalPrice}</span>` : ''}
+        </p>
+        <div style="background: rgba(255,255,255,0.95); padding: 20px; border-radius: 8px; border-left: 5px solid #2c5530;">
+          <p style="margin: 0 0 15px 0; color: #2c5530; font-size: 18px; line-height: 1.7; font-weight: bold; text-align: center;">
+            Bryce, you are absolutely AMAZING!
+          </p>
+          <p style="margin: 10px 0; color: #1a3d1f; line-height: 1.8; font-size: 16px;">
+            We cannot express how much we appreciate everything you do. Your support, friendship, and presence mean the world to us and the M77 AG family. Having you out here at the farm is always a privilege and an honor.
+          </p>
+          <p style="margin: 15px 0; color: #2c5530; line-height: 1.8; font-size: 16px;">
+            This hunt is completely on us - our way of saying thank you for being such an incredible person and valued friend. We're grateful for you and everything you bring to our operation.
+          </p>
+          <p style="margin: 15px 0 0 0; color: #d4a54a; font-weight: bold; font-size: 18px; text-align: center; font-style: italic;">
+            Thank you, Bryce. We truly appreciate you! 🙏
+          </p>
+        </div>
+      </div>
       ` : booking.discountCode ? `
       <div style="background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; margin-top: 15px; border-radius: 8px; text-align: center;">
         <h3 style="color: #2e7d32; margin: 0 0 10px 0;">${booking.discountCode === 'BEEF' ? 'BEEF PROGRAM' : booking.discountCode === 'REVIEW' ? 'THANK YOU FOR YOUR REVIEW!' : 'KYLE CARES PROGRAM'}</h3>
@@ -202,13 +224,26 @@ function getHuntingConfirmationEmail(booking) {
       </ul>
     </div>
 
+    <div style="background: linear-gradient(135deg, #d4a54a 0%, #c09440 100%); padding: 25px; border-radius: 8px; text-align: center; margin: 30px 0;">
+      <h3 style="color: white; margin: 0 0 15px 0;">Had a Great Hunt?</h3>
+      <p style="color: white; margin: 0 0 20px 0; font-size: 16px;">
+        Share your experience and get <strong>75% off</strong> your next hunt!
+      </p>
+      <a href="https://m77ag.com/submit-review" style="background-color: white; color: #2c5530; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+        Leave a Review & Get 75% Off
+      </a>
+      <p style="color: white; font-size: 14px; margin: 15px 0 0 0;">
+        Positive reviews automatically receive the REVIEW discount code!
+      </p>
+    </div>
+
     <p>If you have any questions or need to make changes to your reservation, please contact us:</p>
     <p>
       <strong>Kyle McConnell</strong><br>
       Phone: 970-571-1015<br>
       Email: hunting@m77ag.com
     </p>
-    
+
     <p>We look forward to hosting you!</p>
     
     <p>Best regards,<br>
@@ -267,6 +302,12 @@ function getAdminNotificationEmail(booking) {
       <div class="detail" style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-left: 3px solid #1976d2;">
         <span class="label" style="color: #1565c0;">🎯 Youth Hunter Program:</span> ${booking.discountCode} (${booking.discountPercent}% off - FREE)
         ${booking.originalPrice ? `<br><span style="color: #666;">Original Price: $${booking.originalPrice}</span>` : ''}
+      </div>
+      ` : booking.discountCode === 'BOERNER#1' ? `
+      <div class="detail" style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, #fff9e6 0%, #ffe8a8 100%); border-left: 5px solid #d4a54a;">
+        <span class="label" style="color: #d4a54a; font-weight: bold;">⭐ BRYCE BOERNER - VIP GUEST:</span> ${booking.discountCode} (${booking.discountPercent}% off - FREE)
+        ${booking.originalPrice ? `<br><span style="color: #666;">Original Price: $${booking.originalPrice}</span>` : ''}
+        <br><span style="color: #c09440; font-style: italic; font-size: 14px;">Amazing guest - we truly appreciate him!</span>
       </div>
       ` : booking.discountCode ? `
       <div class="detail" style="margin-top: 15px; padding: 10px; background: #e8f5e9; border-left: 3px solid #4caf50;">

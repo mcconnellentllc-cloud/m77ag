@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Management | M77 AG Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            min-height: 100vh;
+        }
+        .header {
+            background: #1a1a1a;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .header-nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+        }
+        .header-nav a:hover { color: #d4af37; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: #1a1a1a; }
+        .tab.active {
+            color: #2d5016;
+            border-bottom-color: #2d5016;
+        }
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .summary-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .summary-card.alert {
+            background: linear-gradient(135deg, #c62828 0%, #8e0000 100%);
+            color: #fff;
+        }
+        .summary-card.success {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            color: #fff;
+        }
+        .summary-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+        .summary-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+        }
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Card */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .table th {
+            background: #f8f8f8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+        .table tr:hover { background: #fafafa; }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-badge.active, .status-badge.completed { background: #e8f5e9; color: #2d5016; }
+        .status-badge.pending { background: #fff3e0; color: #f57c00; }
+        .status-badge.overdue { background: #ffebee; color: #c62828; }
+        .status-badge.available { background: #e3f2fd; color: #1976d2; }
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2d5016;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #3d6520; }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #444;
+        }
+        .btn-secondary:hover { background: #d0d0d0; }
+        .btn-gold {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .action-btn:hover {
+            background: #f5f5f5;
+        }
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        /* Print Styles */
+        .print-btn {
+            background: #444;
+            color: #fff;
+        }
+        @media print {
+            .header, .tabs, .btn, .action-btns { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+        }
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+        .tab-badge {
+            background: #c62828;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .summary-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .table { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/admin" class="logo">M77 AG Admin</a>
+        <nav class="header-nav">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/hunting-bookings">Hunting</a>
+            <a href="/admin/equipment">Equipment</a>
+            <a href="/admin/rentals">Rentals</a>
+            <a href="/">View Site</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Property Management</h1>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card success">
+                <div class="summary-label">Collected (YTD)</div>
+                <div class="summary-value" id="totalCollected">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Properties</div>
+                <div class="summary-value" id="totalProperties">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Active Tenants</div>
+                <div class="summary-value" id="activeTenants">0</div>
+            </div>
+            <div class="summary-card alert" id="overdueCard" style="display: none;">
+                <div class="summary-label">Overdue</div>
+                <div class="summary-value" id="overdueAmount">$0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Pending Repairs</div>
+                <div class="summary-value" id="pendingRepairs">0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">Overview</button>
+            <button class="tab" onclick="showTab('applications')" id="applicationsTab">Applications <span id="appBadge" class="tab-badge" style="display:none;"></span></button>
+            <button class="tab" onclick="showTab('tenants')">Tenants</button>
+            <button class="tab" onclick="showTab('payments')">Payments</button>
+            <button class="tab" onclick="showTab('messages')">Messages</button>
+            <button class="tab" onclick="showTab('repairs')">Repairs</button>
+            <button class="tab" onclick="showTab('reports')">Reports</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overviewTab">
+            <div class="card">
+                <h3 class="card-title">Properties</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Address</th>
+                            <th>Rent</th>
+                            <th>Status</th>
+                            <th>Tenant</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="propertiesTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" style="margin-top: 20px;" onclick="showAddPropertyModal()">+ Add Property</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Recent Activity</h3>
+                <div id="recentActivity">
+                    <p style="color: #999; text-align: center; padding: 20px;">No recent activity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications Tab -->
+        <div class="tab-content" id="applicationsTab">
+            <div class="card">
+                <h3 class="card-title">Showing Requests</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Preferred Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="showingsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <h3 class="card-title">Rental Applications</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Move-in Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tenants Tab -->
+        <div class="tab-content" id="tenantsTab">
+            <div class="card">
+                <h3 class="card-title">All Tenants</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Property</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tenantsTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div class="tab-content" id="paymentsTab">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 class="card-title" style="margin-bottom: 0; border: none; padding: 0;">Payment History</h3>
+                    <button class="btn btn-primary" onclick="showRecordPaymentModal()">+ Record Payment</button>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <select id="paymentFilter" onchange="loadPayments()" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">All Statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                    <input type="month" id="paymentMonth" onchange="loadPayments()" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Tenant</th>
+                            <th>Property</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Messages Tab -->
+        <div class="tab-content" id="messagesTab">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 class="card-title" style="margin-bottom: 0; border: none; padding: 0;">Communications</h3>
+                    <button class="btn btn-primary" onclick="showSendMessageModal()">+ Send Message</button>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Tenant</th>
+                            <th>Type</th>
+                            <th>Subject</th>
+                            <th>Direction</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messagesTable">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Repairs Tab -->
+        <div class="tab-content" id="repairsTab">
+            <div class="card">
+                <h3 class="card-title">Repair Requests</h3>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Tenant</th>
+                            <th>Category</th>
+                            <th>Urgency</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repairsTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #999;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div class="tab-content" id="reportsTab">
+            <div class="card">
+                <h3 class="card-title">Export Communication History</h3>
+                <p style="color: #666; margin-bottom: 20px;">Generate a complete record of all communications, payments, and activity for a lease - useful for legal documentation.</p>
+
+                <div class="form-group">
+                    <label>Select Tenant/Lease</label>
+                    <select id="exportLeaseSelect" style="max-width: 400px;">
+                        <option value="">Select a lease...</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="exportCommunicationHistory()">Generate Report</button>
+                <button class="btn print-btn" onclick="window.print()" style="margin-left: 10px;">Print Report</button>
+            </div>
+
+            <div class="card" id="exportReport" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 class="card-title" style="margin: 0; border: none; padding: 0;">Communication History Report</h3>
+                    <span id="reportDate"></span>
+                </div>
+
+                <div id="reportContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Property Modal -->
+    <div class="modal-overlay" id="addPropertyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Property</h3>
+                <button class="modal-close" onclick="closeModal('addPropertyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addPropertyForm">
+                    <div class="form-group">
+                        <label>Property Name</label>
+                        <input type="text" id="propName" required placeholder="e.g., 123 Main St House">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Street Address</label>
+                            <input type="text" id="propStreet" required>
+                        </div>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="propCity" required value="Haxtun">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="propState" value="CO" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>ZIP</label>
+                            <input type="text" id="propZip" required>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Month-to-Month Rent</label>
+                            <input type="number" id="propRentMTM" required placeholder="1400">
+                        </div>
+                        <div class="form-group">
+                            <label>6-Month Rent</label>
+                            <input type="number" id="propRent6" placeholder="1300">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>12-Month Rent</label>
+                            <input type="number" id="propRent12" placeholder="1250">
+                        </div>
+                        <div class="form-group">
+                            <label>Bedrooms</label>
+                            <input type="number" id="propBeds" value="3">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="propUtilities" checked> Utilities Included
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Property</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record Payment Modal -->
+    <div class="modal-overlay" id="recordPaymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Record Payment</h3>
+                <button class="modal-close" onclick="closeModal('recordPaymentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="recordPaymentForm">
+                    <div class="form-group">
+                        <label>Tenant</label>
+                        <select id="payTenant" required>
+                            <option value="">Select tenant...</option>
+                        </select>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" id="payAmount" required step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select id="payMethod" required>
+                                <option value="check">Check</option>
+                                <option value="cash">Cash</option>
+                                <option value="venmo">Venmo</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="ach">ACH Transfer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" id="payDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>For Month</label>
+                            <input type="month" id="payForMonth" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (optional)</label>
+                        <input type="text" id="payNotes" placeholder="e.g., Check #1234">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Record Payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Message Modal -->
+    <div class="modal-overlay" id="sendMessageModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Send Message to Tenant</h3>
+                <button class="modal-close" onclick="closeModal('sendMessageModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="sendMessageForm">
+                    <div class="form-group">
+                        <label>To (Tenant)</label>
+                        <select id="msgTenant" required>
+                            <option value="">Select tenant...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message Type</label>
+                        <select id="msgType">
+                            <option value="general">General</option>
+                            <option value="payment_reminder">Payment Reminder</option>
+                            <option value="lease_notice">Lease Notice</option>
+                            <option value="inspection_notice">Inspection Notice</option>
+                            <option value="violation_notice">Violation Notice</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="msgSubject" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="msgBody" rows="5" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="msgImportant"> Mark as Important (for legal documentation)
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const adminToken = localStorage.getItem('token');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSummary();
+            loadProperties();
+            loadTenants();
+            loadPayments();
+            loadMessages();
+            loadRepairs();
+            loadLeasesForExport();
+            loadApplications();
+            loadShowings();
+        });
+
+        // Tab switching
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        // Load summary data
+        async function loadSummary() {
+            try {
+                const response = await fetch('/api/rentals/admin/summary');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('totalCollected').textContent = '$' + data.summary.totalCollectedYTD.toLocaleString();
+                    document.getElementById('totalProperties').textContent = data.summary.totalProperties;
+                    document.getElementById('activeTenants').textContent = data.summary.totalTenants;
+                    document.getElementById('pendingRepairs').textContent = data.summary.pendingRepairs;
+
+                    if (data.summary.overdueAmount > 0) {
+                        document.getElementById('overdueCard').style.display = 'block';
+                        document.getElementById('overdueAmount').textContent = '$' + data.summary.overdueAmount.toLocaleString();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading summary:', error);
+            }
+        }
+
+        // Load properties
+        async function loadProperties() {
+            try {
+                const response = await fetch('/api/rentals/admin/properties');
+                const data = await response.json();
+
+                const tbody = document.getElementById('propertiesTable');
+                if (!data.success || data.properties.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No properties found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.properties.map(p => `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.address?.street || ''}, ${p.address?.city || ''}</td>
+                        <td>$${(p.pricing?.monthToMonth || 0).toLocaleString()}/mo</td>
+                        <td><span class="status-badge ${p.status}">${p.status}</span></td>
+                        <td>${p.currentTenant ? `${p.currentTenant.firstName} ${p.currentTenant.lastName}` : '-'}</td>
+                        <td class="action-btns">
+                            <button class="action-btn" onclick="editProperty('${p._id}')">Edit</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading properties:', error);
+            }
+        }
+
+        // Load tenants
+        async function loadTenants() {
+            try {
+                const response = await fetch('/api/rentals/admin/tenants');
+                const data = await response.json();
+
+                const tbody = document.getElementById('tenantsTable');
+                const tenantSelect = document.getElementById('payTenant');
+                const msgTenantSelect = document.getElementById('msgTenant');
+
+                if (!data.success || data.tenants.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No tenants found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.tenants.map(t => `
+                    <tr>
+                        <td><strong>${t.firstName} ${t.lastName}</strong></td>
+                        <td>${t.email}</td>
+                        <td>${t.phone || '-'}</td>
+                        <td>${t.currentProperty?.name || '-'}</td>
+                        <td><span class="status-badge ${t.status}">${t.status}</span></td>
+                        <td class="action-btns">
+                            <button class="action-btn" onclick="viewTenant('${t._id}')">View</button>
+                            <button class="action-btn" onclick="messageTenant('${t._id}')">Message</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Populate select dropdowns
+                const options = data.tenants.map(t =>
+                    `<option value="${t._id}" data-property="${t.currentProperty?._id || ''}" data-lease="${t.currentLease || ''}">${t.firstName} ${t.lastName}</option>`
+                ).join('');
+
+                tenantSelect.innerHTML = '<option value="">Select tenant...</option>' + options;
+                msgTenantSelect.innerHTML = '<option value="">Select tenant...</option>' + options;
+            } catch (error) {
+                console.error('Error loading tenants:', error);
+            }
+        }
+
+        // Load payments
+        async function loadPayments() {
+            const status = document.getElementById('paymentFilter').value;
+            const month = document.getElementById('paymentMonth').value;
+
+            let url = '/api/rentals/admin/payments?';
+            if (status) url += `status=${status}&`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const tbody = document.getElementById('paymentsTable');
+                if (!data.success || data.payments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No payments found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.payments.map(p => `
+                    <tr>
+                        <td>${new Date(p.paidDate || p.createdAt).toLocaleDateString()}</td>
+                        <td>${p.tenant?.firstName || ''} ${p.tenant?.lastName || ''}</td>
+                        <td>${p.property?.name || '-'}</td>
+                        <td><strong>$${p.amount.toLocaleString()}</strong></td>
+                        <td>${p.paymentMethod}</td>
+                        <td><span class="status-badge ${p.status}">${p.status}</span></td>
+                        <td class="action-btns">
+                            <button class="action-btn">Receipt</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading payments:', error);
+            }
+        }
+
+        // Load messages
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/rentals/admin/messages');
+                const data = await response.json();
+
+                const tbody = document.getElementById('messagesTable');
+                if (!data.success || data.messages.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No messages found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.messages.map(m => `
+                    <tr>
+                        <td>${new Date(m.createdAt).toLocaleDateString()}</td>
+                        <td>${m.tenant?.firstName || ''} ${m.tenant?.lastName || ''}</td>
+                        <td>${m.messageType}</td>
+                        <td>${m.subject || '-'}</td>
+                        <td>${m.direction === 'tenant_to_landlord' ? '← From Tenant' : '→ To Tenant'}</td>
+                        <td class="action-btns">
+                            <button class="action-btn" onclick="viewMessage('${m._id}')">View</button>
+                            <button class="action-btn" onclick="replyMessage('${m._id}')">Reply</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        // Load repairs
+        async function loadRepairs() {
+            try {
+                const response = await fetch('/api/rentals/admin/messages?type=repair_request');
+                const data = await response.json();
+
+                const tbody = document.getElementById('repairsTable');
+                if (!data.success || data.messages.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No repair requests</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.messages.map(m => `
+                    <tr>
+                        <td>${new Date(m.createdAt).toLocaleDateString()}</td>
+                        <td>${m.tenant?.firstName || ''} ${m.tenant?.lastName || ''}</td>
+                        <td>${m.repairDetails?.category || '-'}</td>
+                        <td><span class="status-badge ${m.repairDetails?.urgency === 'emergency' ? 'overdue' : ''}">${m.repairDetails?.urgency || 'normal'}</span></td>
+                        <td>${(m.repairDetails?.description || m.message || '').substring(0, 50)}...</td>
+                        <td><span class="status-badge ${m.repairDetails?.status || 'pending'}">${m.repairDetails?.status || 'reported'}</span></td>
+                        <td class="action-btns">
+                            <button class="action-btn" onclick="updateRepair('${m._id}')">Update</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading repairs:', error);
+            }
+        }
+
+        // Load leases for export
+        async function loadLeasesForExport() {
+            try {
+                const response = await fetch('/api/rentals/admin/leases');
+                const data = await response.json();
+
+                const select = document.getElementById('exportLeaseSelect');
+                if (data.success && data.leases.length > 0) {
+                    select.innerHTML = '<option value="">Select a lease...</option>' +
+                        data.leases.map(l =>
+                            `<option value="${l._id}">${l.tenant?.firstName || ''} ${l.tenant?.lastName || ''} - ${l.property?.name || ''}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading leases:', error);
+            }
+        }
+
+        // Load rental applications
+        async function loadApplications() {
+            try {
+                const response = await fetch('/api/rentals/admin/applications');
+                const data = await response.json();
+
+                const tbody = document.getElementById('applicationsTable');
+                if (!data.success || !data.applications || data.applications.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No applications yet</td></tr>';
+                    return;
+                }
+
+                // Update badge
+                const pending = data.applications.filter(a => a.status === 'pending').length;
+                if (pending > 0) {
+                    document.getElementById('appBadge').textContent = pending;
+                    document.getElementById('appBadge').style.display = 'inline';
+                }
+
+                tbody.innerHTML = data.applications.map(a => `
+                    <tr>
+                        <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+                        <td><strong>${a.firstName} ${a.lastName}</strong></td>
+                        <td><a href="tel:${a.phone}">${a.phone}</a></td>
+                        <td><a href="mailto:${a.email}">${a.email}</a></td>
+                        <td>${a.moveInDate ? new Date(a.moveInDate).toLocaleDateString() : '-'}</td>
+                        <td><span class="status-badge status-${a.status || 'pending'}">${a.status || 'Pending'}</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="updateApplicationStatus('${a._id}', 'reviewed')">Mark Reviewed</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                document.getElementById('applicationsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No applications yet</td></tr>';
+            }
+        }
+
+        // Load showing requests
+        async function loadShowings() {
+            try {
+                const response = await fetch('/api/rentals/admin/showings');
+                const data = await response.json();
+
+                const tbody = document.getElementById('showingsTable');
+                if (!data.success || !data.showings || data.showings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No showing requests yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.showings.map(s => `
+                    <tr>
+                        <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+                        <td><strong>${s.name}</strong></td>
+                        <td><a href="tel:${s.phone}">${s.phone}</a></td>
+                        <td><a href="mailto:${s.email}">${s.email}</a></td>
+                        <td>${s.preferredDate ? new Date(s.preferredDate).toLocaleDateString() : '-'} ${s.preferredTime || ''}</td>
+                        <td><span class="status-badge status-${s.status || 'pending'}">${s.status || 'Pending'}</span></td>
+                        <td>
+                            <button class="btn btn-sm" onclick="updateShowingStatus('${s._id}', 'contacted')">Mark Contacted</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading showings:', error);
+                document.getElementById('showingsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No showing requests yet</td></tr>';
+            }
+        }
+
+        // Update application status
+        async function updateApplicationStatus(id, status) {
+            try {
+                await fetch(`/api/rentals/admin/applications/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                loadApplications();
+            } catch (error) {
+                console.error('Error updating application:', error);
+            }
+        }
+
+        // Update showing status
+        async function updateShowingStatus(id, status) {
+            try {
+                await fetch(`/api/rentals/admin/showings/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                loadShowings();
+            } catch (error) {
+                console.error('Error updating showing:', error);
+            }
+        }
+
+        // Export communication history
+        async function exportCommunicationHistory() {
+            const leaseId = document.getElementById('exportLeaseSelect').value;
+            if (!leaseId) {
+                alert('Please select a lease');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/rentals/admin/export/communication/${leaseId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('exportReport').style.display = 'block';
+                    document.getElementById('reportDate').textContent = `Generated: ${new Date().toLocaleString()}`;
+
+                    const report = data.exportData;
+                    let html = `
+                        <div style="margin-bottom: 30px; padding: 20px; background: #f8f8f8; border-radius: 8px;">
+                            <h4>Lease Summary</h4>
+                            <p><strong>Tenant:</strong> ${report.lease?.tenant?.firstName || ''} ${report.lease?.tenant?.lastName || ''}</p>
+                            <p><strong>Property:</strong> ${report.lease?.property?.name || ''}</p>
+                            <p><strong>Lease Period:</strong> ${new Date(report.lease?.startDate).toLocaleDateString()} - ${report.lease?.endDate ? new Date(report.lease.endDate).toLocaleDateString() : 'Month-to-Month'}</p>
+                            <p><strong>Monthly Rent:</strong> $${report.lease?.monthlyRent?.toLocaleString() || 0}</p>
+                        </div>
+
+                        <div style="margin-bottom: 30px; padding: 20px; background: #e8f5e9; border-radius: 8px;">
+                            <h4>Summary Statistics</h4>
+                            <p><strong>Total Messages:</strong> ${report.summary.totalMessages}</p>
+                            <p><strong>Total Payments:</strong> ${report.summary.totalPayments}</p>
+                            <p><strong>Total Amount Paid:</strong> $${report.summary.totalPaid.toLocaleString()}</p>
+                            <p><strong>Late Payments:</strong> ${report.summary.latePayments}</p>
+                            <p><strong>Repair Requests:</strong> ${report.summary.repairRequests}</p>
+                        </div>
+
+                        <h4>Communication History</h4>
+                        <table class="table" style="margin-bottom: 30px;">
+                            <thead>
+                                <tr><th>Date</th><th>Type</th><th>Direction</th><th>Subject</th><th>Message</th></tr>
+                            </thead>
+                            <tbody>
+                                ${report.communicationHistory.map(m => `
+                                    <tr>
+                                        <td>${new Date(m.createdAt).toLocaleString()}</td>
+                                        <td>${m.messageType}</td>
+                                        <td>${m.direction}</td>
+                                        <td>${m.subject || '-'}</td>
+                                        <td>${m.message}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+
+                        <h4>Payment History</h4>
+                        <table class="table">
+                            <thead>
+                                <tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Late?</th></tr>
+                            </thead>
+                            <tbody>
+                                ${report.paymentHistory.map(p => `
+                                    <tr>
+                                        <td>${new Date(p.paidDate || p.createdAt).toLocaleString()}</td>
+                                        <td>$${p.amount.toLocaleString()}</td>
+                                        <td>${p.paymentMethod}</td>
+                                        <td>${p.status}</td>
+                                        <td>${p.isLate ? 'Yes' : 'No'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+
+                    document.getElementById('reportContent').innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error exporting:', error);
+            }
+        }
+
+        // Modal functions
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function showAddPropertyModal() {
+            document.getElementById('addPropertyModal').classList.add('active');
+        }
+
+        function showRecordPaymentModal() {
+            document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('recordPaymentModal').classList.add('active');
+        }
+
+        function showSendMessageModal() {
+            document.getElementById('sendMessageModal').classList.add('active');
+        }
+
+        // Form submissions
+        document.getElementById('addPropertyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const propertyData = {
+                name: document.getElementById('propName').value,
+                address: {
+                    street: document.getElementById('propStreet').value,
+                    city: document.getElementById('propCity').value,
+                    state: 'CO',
+                    zip: document.getElementById('propZip').value
+                },
+                pricing: {
+                    monthToMonth: parseInt(document.getElementById('propRentMTM').value),
+                    sixMonth: parseInt(document.getElementById('propRent6').value) || null,
+                    twelveMonth: parseInt(document.getElementById('propRent12').value) || null,
+                    securityDeposit: parseInt(document.getElementById('propRentMTM').value)
+                },
+                features: {
+                    bedrooms: parseInt(document.getElementById('propBeds').value),
+                    utilitiesIncluded: document.getElementById('propUtilities').checked
+                },
+                disclosures: {
+                    uninhabitableReportingEmail: 'office@m77ag.com',
+                    uninhabitableReportingAddress: 'M77 AG, 34549 HWY 59, Haxtun, CO 80731'
+                }
+            };
+
+            try {
+                const response = await fetch('/api/rentals/admin/properties', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(propertyData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Property added!');
+                    closeModal('addPropertyModal');
+                    loadProperties();
+                    loadSummary();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        document.getElementById('recordPaymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tenantSelect = document.getElementById('payTenant');
+            const selectedOption = tenantSelect.options[tenantSelect.selectedIndex];
+
+            const paymentData = {
+                tenant: document.getElementById('payTenant').value,
+                property: selectedOption.dataset.property,
+                lease: selectedOption.dataset.lease,
+                amount: parseFloat(document.getElementById('payAmount').value),
+                paymentMethod: document.getElementById('payMethod').value,
+                paidDate: document.getElementById('payDate').value,
+                paymentType: 'rent',
+                rentPeriod: {
+                    month: parseInt(document.getElementById('payForMonth').value.split('-')[1]),
+                    year: parseInt(document.getElementById('payForMonth').value.split('-')[0])
+                },
+                status: 'completed',
+                notes: document.getElementById('payNotes').value
+            };
+
+            try {
+                const response = await fetch('/api/rentals/admin/payments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(paymentData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Payment recorded!');
+                    closeModal('recordPaymentModal');
+                    loadPayments();
+                    loadSummary();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        document.getElementById('sendMessageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tenantSelect = document.getElementById('msgTenant');
+            const selectedOption = tenantSelect.options[tenantSelect.selectedIndex];
+
+            const messageData = {
+                tenantId: document.getElementById('msgTenant').value,
+                propertyId: selectedOption.dataset.property,
+                leaseId: selectedOption.dataset.lease,
+                messageType: document.getElementById('msgType').value,
+                subject: document.getElementById('msgSubject').value,
+                message: document.getElementById('msgBody').value,
+                isImportant: document.getElementById('msgImportant').checked
+            };
+
+            try {
+                const response = await fetch('/api/rentals/admin/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(messageData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Message sent!');
+                    closeModal('sendMessageModal');
+                    loadMessages();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        // Placeholder functions
+        function editProperty(id) { alert('Edit property: ' + id); }
+        function viewTenant(id) { alert('View tenant: ' + id); }
+        function messageTenant(id) { showSendMessageModal(); document.getElementById('msgTenant').value = id; }
+        function viewMessage(id) { alert('View message: ' + id); }
+        function replyMessage(id) { alert('Reply to message: ' + id); }
+        function updateRepair(id) { alert('Update repair: ' + id); }
+    </script>
+</body>
+</html>

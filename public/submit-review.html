@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Review - M77 AG</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .review-form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .review-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .review-header h1 {
+            color: #2c5530;
+            margin-bottom: 10px;
+        }
+
+        .review-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c5530;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 10px;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        .rating-stars span {
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .rating-stars span.selected,
+        .rating-stars span:hover {
+            color: #d4a54a;
+        }
+
+        .recommend-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .recommend-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .recommend-btn.selected {
+            background: #2c5530;
+            border-color: #2c5530;
+            color: white;
+        }
+
+        .recommend-btn:hover {
+            border-color: #2c5530;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #d4a54a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #c09440;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            display: none;
+            background: #e7f5e7;
+            border: 2px solid #2d7a2d;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .success-message h2 {
+            color: #2d7a2d;
+            margin-bottom: 15px;
+        }
+
+        .success-message .discount-code {
+            background: white;
+            border: 2px dashed #d4a54a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success-message .discount-code h3 {
+            color: #d4a54a;
+            font-size: 32px;
+            margin: 0;
+        }
+
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #721c24;
+        }
+
+        .photo-upload {
+            margin-top: 10px;
+        }
+
+        .photo-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .photo-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="/">M77 AG</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/hunting">Hunting</a></li>
+                <li><a href="/season-pass">Season Pass</a></li>
+                <li><a href="/services">Services</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="review-form-container">
+        <div class="review-header">
+            <h1>Share Your Experience</h1>
+            <p>We'd love to hear about your time at M77 AG!</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="reviewForm">
+            <div class="form-group">
+                <label for="customerName">Your Name *</label>
+                <input type="text" id="customerName" name="customerName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="property">Property Visited *</label>
+                <select id="property" name="property" required>
+                    <option value="">Select a property...</option>
+                    <option value="Heritage Farm">Heritage Farm</option>
+                    <option value="Prairie Peace">Prairie Peace</option>
+                    <option value="Both Properties">Both Properties</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="huntDate">Hunt Date (Optional)</label>
+                <input type="date" id="huntDate" name="huntDate">
+            </div>
+
+            <div class="form-group">
+                <label>Rating *</label>
+                <div class="rating-stars" id="ratingStars">
+                    <span data-rating="1">★</span>
+                    <span data-rating="2">★</span>
+                    <span data-rating="3">★</span>
+                    <span data-rating="4">★</span>
+                    <span data-rating="5">★</span>
+                </div>
+                <input type="hidden" id="rating" name="rating" required>
+            </div>
+
+            <div class="form-group">
+                <label>Would you recommend M77 AG to others? *</label>
+                <div class="recommend-buttons">
+                    <button type="button" class="recommend-btn" data-recommend="true">
+                        👍 Yes, I'd Recommend
+                    </button>
+                    <button type="button" class="recommend-btn" data-recommend="false">
+                        👎 No
+                    </button>
+                </div>
+                <input type="hidden" id="wouldRecommend" name="wouldRecommend" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reviewText">Your Review *</label>
+                <textarea id="reviewText" name="reviewText" required placeholder="Tell us about your experience..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="photos">Photos (Optional)</label>
+                <p style="color: #666; font-size: 14px; margin-bottom: 10px;">Share your harvest photos! (Max 5 photos)</p>
+                <input type="file" id="photos" name="photos" accept="image/*" multiple class="photo-upload">
+                <div id="photoPreview" class="photo-preview"></div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Submit Review</button>
+        </form>
+
+        <div id="successMessage" class="success-message">
+            <h2>Thank You! 🎉</h2>
+            <p style="font-size: 18px; color: #2c5530; margin-bottom: 20px;">
+                We truly appreciate you taking the time to share your experience with us!
+            </p>
+            <div class="discount-code">
+                <p style="color: #666; margin: 0 0 10px 0;">Here's a special thank you gift:</p>
+                <h3>REVIEW</h3>
+                <p style="color: #2c5530; font-size: 20px; font-weight: bold; margin: 10px 0 0 0;">
+                    75% Off Your Next Hunt!
+                </p>
+            </div>
+            <p style="color: #666; font-size: 16px; line-height: 1.6;">
+                We've sent you an email with your discount code.<br>
+                Use code <strong>REVIEW</strong> when booking your next hunting trip.
+            </p>
+            <button onclick="window.location.href='/hunting'" style="margin-top: 20px; padding: 12px 30px; background: #2c5530; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
+                Book Your Next Hunt
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 0;
+        let selectedRecommend = null;
+
+        // Rating stars functionality
+        const stars = document.querySelectorAll('.rating-stars span');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                ratingInput.value = selectedRating;
+                updateStars();
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const hoverRating = parseInt(this.dataset.rating);
+                stars.forEach((s, index) => {
+                    if (index < hoverRating) {
+                        s.classList.add('selected');
+                    } else {
+                        s.classList.remove('selected');
+                    }
+                });
+            });
+        });
+
+        document.querySelector('.rating-stars').addEventListener('mouseleave', updateStars);
+
+        function updateStars() {
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        // Recommend buttons functionality
+        const recommendBtns = document.querySelectorAll('.recommend-btn');
+        const recommendInput = document.getElementById('wouldRecommend');
+
+        recommendBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                recommendBtns.forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedRecommend = this.dataset.recommend === 'true';
+                recommendInput.value = selectedRecommend;
+            });
+        });
+
+        // Photo preview
+        const photoInput = document.getElementById('photos');
+        const photoPreview = document.getElementById('photoPreview');
+
+        photoInput.addEventListener('change', function() {
+            photoPreview.innerHTML = '';
+            const files = Array.from(this.files).slice(0, 5);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    photoPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Form submission
+        const reviewForm = document.getElementById('reviewForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        reviewForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Validate rating and recommendation
+            if (!selectedRating) {
+                showError('Please select a rating');
+                return;
+            }
+
+            if (selectedRecommend === null) {
+                showError('Please let us know if you would recommend us');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const formData = new FormData();
+                formData.append('customerName', document.getElementById('customerName').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('property', document.getElementById('property').value);
+                formData.append('rating', selectedRating);
+                formData.append('wouldRecommend', selectedRecommend);
+                formData.append('reviewText', document.getElementById('reviewText').value);
+
+                const huntDate = document.getElementById('huntDate').value;
+                if (huntDate) {
+                    formData.append('huntDate', huntDate);
+                }
+
+                // Add photos
+                const photos = document.getElementById('photos').files;
+                for (let i = 0; i < Math.min(photos.length, 5); i++) {
+                    formData.append('photos', photos[i]);
+                }
+
+                const response = await fetch('/api/reviews/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success message
+                    reviewForm.style.display = 'none';
+                    errorMessage.style.display = 'none';
+
+                    // Show or hide discount code based on whether it was sent
+                    if (data.discountCodeSent) {
+                        successMessage.style.display = 'block';
+                    } else {
+                        // Show generic thank you without discount code
+                        successMessage.innerHTML = `
+                            <h2>Thank You!</h2>
+                            <p style="font-size: 18px; color: #2c5530;">
+                                We appreciate you taking the time to share your feedback with us.
+                            </p>
+                        `;
+                        successMessage.style.display = 'block';
+                    }
+                } else {
+                    showError(data.message || 'Failed to submit review');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Review';
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                showError('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Review';
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

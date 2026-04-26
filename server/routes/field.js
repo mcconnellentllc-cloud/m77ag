@@ -319,6 +319,45 @@ router.patch('/:id/current-crop', authenticate, async (req, res) => {
   }
 });
 
+// Update crop plan for future years
+router.post('/:id/crop-plan', authenticate, async (req, res) => {
+  try {
+    // Only admin and farmer can update crop plan
+    if (req.user.role !== 'admin' && req.user.role !== 'farmer') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only farmers and admins can update crop plans'
+      });
+    }
+
+    const field = await Field.findById(req.params.id);
+
+    if (!field) {
+      return res.status(404).json({
+        success: false,
+        message: 'Field not found'
+      });
+    }
+
+    const { year, cropType, variety, notes } = req.body;
+
+    await field.updateCropPlan(year, { cropType, variety, notes });
+
+    res.json({
+      success: true,
+      message: 'Crop plan updated successfully',
+      field
+    });
+  } catch (error) {
+    console.error('Error updating crop plan:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating crop plan',
+      error: error.message
+    });
+  }
+});
+
 // Get fields by property
 router.get('/property/:propertyId', authenticate, async (req, res) => {
   try {

@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 // Connect to MongoDB
 const mongoose = require('mongoose');
-const { createDefaultAdmin } = require('./models/user');
+const { createDefaultAdmin, createDefaultFarmer } = require('./models/user');
 const { createDefaultFarm } = require('./controllers/landManagementAuthController');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
@@ -28,6 +28,8 @@ mongoose.connect(MONGODB_URI)
     console.log('Database:', MONGODB_URI.split('@')[1] || 'localhost');
     // Create default admin user
     createDefaultAdmin();
+    // Create default farmer user
+    createDefaultFarmer();
     // Create default farm and super admin for land management
     createDefaultFarm();
   })
@@ -49,10 +51,40 @@ const chemicalRoutes = require('./routes/chemicals');
 const landManagementRoutes = require('./routes/landManagement');
 const testimonialRoutes = require('./routes/testimonials');
 const equipmentRoutes = require('./routes/equipment');
+const equipmentInventoryRoutes = require('./routes/equipmentInventory');
+const rentalRoutes = require('./routes/rentals');
 const seasonPassRoutes = require('./routes/seasonPass');
+const landlordRoutes = require('./routes/landlord');
+const farmerRoutes = require('./routes/farmer');
+const reviewRoutes = require('./routes/reviews');
 const financialReportsRoutes = require('./routes/financialReports');
-const rentalRoutes = require('./routes/rental');
+const realEstateRoutes = require('./routes/realEstate');
+const netWorthRoutes = require('./routes/netWorth');
+const cattleRoutes = require('./routes/cattle');
+const invoiceRoutes = require('./routes/invoices');
+const bankingRoutes = require('./routes/banking');
+const capitalRoutes = require('./routes/capital');
+const cropInsuranceRoutes = require('./routes/cropInsurance');
+const cropInventoryRoutes = require('./routes/cropInventory');
+const farmingDashboardRoutes = require('./routes/farmingDashboard');
+const seedOrderRoutes = require('./routes/seedOrder');
+const imageUploadRoutes = require('./routes/imageUpload');
+const employeeRoutes = require('./routes/employees');
+const croppingFieldRoutes = require('./routes/croppingFields');
+const cropExpenseRoutes = require('./routes/cropExpenses');
+const stripeRoutes = require('./routes/stripe');
+const stripeController = require('./controllers/stripeController');
+const mailCenterRoutes = require('./routes/mailCenter');
+const m77FieldRoutes = require('./routes/m77Fields');
+const jdRoutes = require('./routes/jd');
+const jdController = require('./controllers/jdController');
+// Rental management (PR #191) — note: distinct from rentalRoutes above
+// (which is ./routes/rentals plural). These are renamed to avoid collision.
+const rentalApplicationRoutes = require('./routes/rental');
 const rentalBillingRoutes = require('./routes/rentalBilling');
+
+// Stripe webhook needs raw body - must be before express.json()
+// This is handled separately below after static files
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -68,10 +100,41 @@ app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/land-management', landManagementRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/equipment', equipmentRoutes);
+app.use('/api/equipment/inventory', equipmentInventoryRoutes);
+app.use('/api/rentals', rentalRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
+app.use('/api/landlord', landlordRoutes);
+app.use('/api/farmer', farmerRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/financial-reports', financialReportsRoutes);
-app.use('/api', rentalRoutes);
+app.use('/api/real-estate', realEstateRoutes);
+app.use('/api/net-worth', netWorthRoutes);
+app.use('/api/cattle', cattleRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/banking', bankingRoutes);
+app.use('/api/capital', capitalRoutes);
+app.use('/api/crop-insurance', cropInsuranceRoutes);
+app.use('/api/crop-inventory', cropInventoryRoutes);
+app.use('/api/farming-dashboard', farmingDashboardRoutes);
+app.use('/api/seed-orders', seedOrderRoutes);
+app.use('/api/upload', imageUploadRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/cropping-fields', croppingFieldRoutes);
+app.use('/api/crop-expenses', cropExpenseRoutes);
+app.use('/api/stripe', stripeRoutes);
+app.use('/api/mail-center', mailCenterRoutes);
+app.use('/api/m77-fields', m77FieldRoutes);
+app.use('/api/jd', jdRoutes);
+// Rental management (PR #191): mounted at /api so the inner paths resolve
+// to /api/rental-applications/* and /api/billing/invoices/*.
+app.use('/api', rentalApplicationRoutes);
 app.use('/api', rentalBillingRoutes);
+
+// Stripe webhook endpoint (needs raw body)
+app.post('/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeController.handleWebhook
+);
 
 // Health check / test route
 app.get('/api/test', (req, res) => {
@@ -116,8 +179,59 @@ app.get('/admin/testimonials', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/testimonials.html'));
 });
 
+app.get('/admin/mail-center', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/mail-center.html'));
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/dashboard.html'));
+});
+
+// Financial Command Center routes
+app.get('/admin/financials', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials.html'));
+});
+
+app.get('/admin/financials/crops', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/crops.html'));
+});
+
+app.get('/admin/financials/cattle', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/cattle.html'));
+});
+
+app.get('/admin/financials/equipment', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/equipment.html'));
+});
+
+app.get('/admin/financials/capital', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/capital.html'));
+});
+
+app.get('/admin/financials/banking', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/banking.html'));
+});
+
+app.get('/admin/financials/net-worth', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/financials/net-worth.html'));
+});
+
+// Banking Dashboard route
+app.get('/admin/banking', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/banking.html'));
+});
+
+// Farming Dashboard routes
+app.get('/admin/farming', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
+});
+
+app.get('/admin/farming-dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming-dashboard.html'));
+});
+
+app.get('/admin/farming/seed-orders', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming/seed-orders.html'));
 });
 
 // User routes
@@ -129,6 +243,10 @@ app.get('/user/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/user/login.html'));
 });
 
+app.get('/user/payments', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/user/payments.html'));
+});
+
 // Farmer routes
 app.get('/farmer/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/dashboard.html'));
@@ -138,8 +256,46 @@ app.get('/farmer/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
 });
 
+app.get('/farmer/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farmer/signup.html'));
+});
+
 app.get('/farmer', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/farmer/login.html'));
+});
+
+// Admin partner management
+app.get('/admin/partners', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/partners.html'));
+});
+
+// Farm projections
+app.get('/admin/farm-projections', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farm-projections.html'));
+});
+
+// Field manager
+app.get('/admin/field-manager', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
+});
+
+// M77 master field registry (Phase 1)
+app.get('/admin/fields', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/fields.html'));
+});
+
+// John Deere OAuth callback (Phase 2). The path matches the redirect URI
+// registered at developer.deere.com — must remain exact: /admin/jd-callback.
+app.get('/admin/jd-callback', jdController.handleCallback);
+
+// JD sync review queue page
+app.get('/admin/jd-review', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/jd-review.html'));
+});
+
+// Soil analysis
+app.get('/admin/soil-samples', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/soil-samples.html'));
 });
 
 // Public page routes
@@ -192,12 +348,36 @@ app.get('/forsale', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/forsale.html'));
 });
 
+app.get('/rentals', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/rentals.html'));
+});
+
+app.get('/tenant', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/tenant/portal.html'));
+});
+
+app.get('/tenant/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/tenant/login.html'));
+});
+
+app.get('/admin/rentals', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/rentals.html'));
+});
+
 app.get('/season-pass', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/season-pass.html'));
 });
 
 app.get('/my-account', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/my-account.html'));
+});
+
+app.get('/submit-review', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/submit-review.html'));
+});
+
+app.get('/internal', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/internal.html'));
 });
 
 // Main route - must come last among GET routes

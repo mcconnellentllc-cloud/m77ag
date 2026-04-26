@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banker's Dashboard - M77 AG Financial Overview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f3f0; color: #2c2c2c; }
+
+        .header { background: #0d3b66; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 30px; }
+        .logo { font-size: 28px; font-weight: 700; letter-spacing: 2px; color: #d4af37; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #d4af37; }
+        .header-right { display: flex; gap: 15px; align-items: center; }
+        .user-role { font-size: 11px; color: #d4af37; background: rgba(212,175,55,0.15); padding: 3px 10px; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; }
+        .user-name { font-size: 14px; color: #d4af37; }
+        .logout-btn { padding: 8px 18px; background: #d4af37; color: #0d3b66; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+
+        .container { max-width: 1500px; margin: 0 auto; padding: 30px 40px; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+        .breadcrumb { font-size: 14px; color: #666; margin-bottom: 8px; }
+        .breadcrumb a { color: #0d3b66; text-decoration: none; }
+        .page-title { font-size: 32px; color: #0d3b66; margin-bottom: 5px; }
+        .page-subtitle { font-size: 15px; color: #666; }
+        .generated-date { font-size: 13px; color: #999; text-align: right; }
+        .generated-date strong { color: #0d3b66; font-size: 15px; display: block; }
+        .print-btn { padding: 8px 18px; background: #0d3b66; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; margin-top: 8px; font-size: 13px; }
+        .print-btn:hover { background: #1a6fb5; }
+
+        /* KPI Row */
+        .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px; }
+        .kpi { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+        .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .kpi.green::before { background: #2d8f4a; }
+        .kpi.blue::before { background: #0d3b66; }
+        .kpi.gold::before { background: #d4af37; }
+        .kpi.red::before { background: #dc3545; }
+        .kpi-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .kpi-value { font-size: 24px; font-weight: 700; }
+        .kpi-value.positive { color: #2d8f4a; }
+        .kpi-value.negative { color: #dc3545; }
+        .kpi-value.neutral { color: #0d3b66; }
+        .kpi-sub { font-size: 11px; color: #999; margin-top: 4px; }
+        .kpi-rating { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .rating-excellent { background: #e8f5e9; color: #2d8f4a; }
+        .rating-good { background: #e3f2fd; color: #1565c0; }
+        .rating-fair { background: #fff3cd; color: #856404; }
+        .rating-poor { background: #fce4ec; color: #c62828; }
+
+        /* Panels */
+        .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .panel-row.full { grid-template-columns: 1fr; }
+        .panel { background: white; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); overflow: hidden; }
+        .panel-header { padding: 15px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .panel-title { font-size: 16px; font-weight: 700; color: #0d3b66; }
+        .panel-badge { font-size: 11px; padding: 3px 10px; border-radius: 3px; font-weight: 600; }
+        .badge-blue { background: #e3f2fd; color: #0d3b66; }
+        .panel-body { padding: 20px; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #999; border-bottom: 2px solid #f0f0f0; background: #fafaf8; }
+        td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f5f5f5; }
+        tr:hover td { background: #fafaf8; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .text-green { color: #2d8f4a; }
+        .text-red { color: #dc3545; }
+        .text-blue { color: #0d3b66; }
+        .row-total { background: #f8f7f5; font-weight: 700; }
+        .row-total td { border-top: 2px solid #e0e0e0; padding: 12px; }
+
+        /* Balance Sheet */
+        .bs-section { margin-bottom: 15px; }
+        .bs-section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #0d3b66; padding: 8px 12px; background: #f0f4f8; border-left: 3px solid #0d3b66; margin-bottom: 8px; }
+        .bs-row { display: flex; justify-content: space-between; padding: 6px 12px 6px 24px; font-size: 14px; }
+        .bs-row:hover { background: #fafaf8; }
+        .bs-total { display: flex; justify-content: space-between; padding: 10px 12px; font-weight: 700; font-size: 15px; border-top: 2px solid #0d3b66; margin-top: 5px; }
+        .bs-grand-total { display: flex; justify-content: space-between; padding: 12px; font-weight: 700; font-size: 18px; border-top: 3px double #0d3b66; background: #f0f4f8; margin-top: 10px; }
+
+        /* Cash Flow Bar Chart */
+        .cf-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; align-items: end; height: 200px; padding: 10px 0; }
+        .cf-bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+        .cf-bar-income { background: #2d8f4a; border-radius: 3px 3px 0 0; min-height: 2px; width: 100%; }
+        .cf-bar-expense { background: #dc3545; border-radius: 0 0 3px 3px; min-height: 2px; width: 100%; opacity: 0.7; }
+        .cf-month { font-size: 11px; color: #999; margin-top: 6px; text-transform: uppercase; }
+        .cf-amount { font-size: 10px; color: #666; margin-top: 2px; }
+        .cf-legend { display: flex; gap: 20px; justify-content: center; margin-top: 15px; }
+        .cf-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+        .cf-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* Comment Box */
+        .comment-section { margin-top: 20px; }
+        .comment-form { display: flex; gap: 10px; margin-bottom: 15px; }
+        .comment-input { flex: 1; padding: 12px 15px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 14px; font-family: inherit; resize: none; }
+        .comment-input:focus { outline: none; border-color: #0d3b66; }
+        .comment-btn { padding: 12px 25px; background: #0d3b66; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .comment-btn:hover { background: #1a6fb5; }
+        .comment-list { max-height: 300px; overflow-y: auto; }
+        .comment-item { padding: 12px 15px; border-left: 3px solid #0d3b66; background: #f8f7f5; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+        .comment-meta { font-size: 12px; color: #999; margin-bottom: 4px; }
+        .comment-text { font-size: 14px; color: #333; }
+
+        .empty-state { text-align: center; padding: 30px; color: #999; font-size: 14px; }
+
+        .footer { text-align: center; padding: 25px; color: #999; font-size: 13px; }
+
+        @media print {
+            .header, .print-btn, .comment-section, .logout-btn, .nav-links { display: none !important; }
+            .container { padding: 0; }
+            .panel { box-shadow: none; border: 1px solid #e0e0e0; }
+            body { background: white; }
+        }
+
+        @media (max-width: 1200px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .kpi-row { grid-template-columns: 1fr 1fr; } .panel-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">M77 AG</div>
+            <nav class="nav-links">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/financials">Financials</a>
+                <a href="/admin/banking">Banking</a>
+                <a href="/admin/financials/banking" class="active">Banker's View</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <span class="user-role" id="userRole">Admin</span>
+            <span class="user-name" id="userName">Welcome</span>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/admin/dashboard">Admin</a> / <a href="/admin/financials">Financials</a> / Banker's Dashboard
+                </div>
+                <h1 class="page-title">Banker's Financial Overview</h1>
+                <p class="page-subtitle">M77 AG - McConnell Enterprises LLC - Complete Financial Position</p>
+            </div>
+            <div class="generated-date">
+                <strong id="reportYear"></strong>
+                <span id="reportDate"></span>
+                <button class="print-btn" onclick="window.print()">Print Report</button>
+            </div>
+        </div>
+
+        <!-- KEY RATIOS -->
+        <div class="kpi-row" id="kpiRow">
+            <div class="kpi green">
+                <div class="kpi-label">Net Worth</div>
+                <div class="kpi-value positive" id="kpiNetWorth">--</div>
+                <div class="kpi-sub">Total Assets - Total Liabilities</div>
+            </div>
+            <div class="kpi blue">
+                <div class="kpi-label">DSCR</div>
+                <div class="kpi-value neutral" id="kpiDSCR">--</div>
+                <div class="kpi-sub">Debt Service Coverage Ratio</div>
+                <div id="dscrRating"></div>
+            </div>
+            <div class="kpi gold">
+                <div class="kpi-label">Debt-to-Asset</div>
+                <div class="kpi-value neutral" id="kpiDebtToAsset">--</div>
+                <div class="kpi-sub">Total Debt / Total Assets</div>
+                <div id="dtaRating"></div>
+            </div>
+            <div class="kpi blue">
+                <div class="kpi-label">Current Ratio</div>
+                <div class="kpi-value neutral" id="kpiCurrentRatio">--</div>
+                <div class="kpi-sub">Current Assets / Current Liabilities</div>
+            </div>
+            <div class="kpi green">
+                <div class="kpi-label">Working Capital</div>
+                <div class="kpi-value positive" id="kpiWorkingCapital">--</div>
+                <div class="kpi-sub">Current Assets - Current Liabilities</div>
+            </div>
+            <div class="kpi gold">
+                <div class="kpi-label">Equity-to-Asset</div>
+                <div class="kpi-value neutral" id="kpiEquityToAsset">--</div>
+                <div class="kpi-sub">Net Worth / Total Assets</div>
+            </div>
+        </div>
+
+        <!-- BALANCE SHEET + INCOME STATEMENT -->
+        <div class="panel-row">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Balance Sheet</div>
+                    <span class="panel-badge badge-blue" id="bsDate"></span>
+                </div>
+                <div class="panel-body" id="balanceSheet">
+                    <div class="empty-state">Loading balance sheet...</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Income Statement (YTD)</div>
+                    <span class="panel-badge badge-blue" id="isYear"></span>
+                </div>
+                <div class="panel-body" id="incomeStatement">
+                    <div class="empty-state">Loading income data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEBT SCHEDULE -->
+        <div class="panel-row full">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Complete Debt Schedule</div>
+                    <span class="panel-badge badge-blue" id="debtTotal"></span>
+                </div>
+                <div class="panel-body" style="overflow-x: auto;">
+                    <table id="debtTable">
+                        <thead>
+                            <tr>
+                                <th>Loan Name</th>
+                                <th>Lender</th>
+                                <th>Type</th>
+                                <th class="text-right">Original</th>
+                                <th class="text-right">Balance</th>
+                                <th class="text-center">Rate</th>
+                                <th class="text-right">Payment</th>
+                                <th>Frequency</th>
+                                <th>Maturity</th>
+                                <th>Collateral</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debtTableBody">
+                            <tr><td colspan="10" class="empty-state">Loading debts...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASSET SCHEDULE -->
+        <div class="panel-row full">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Complete Asset Schedule</div>
+                    <span class="panel-badge badge-blue" id="assetTotal"></span>
+                </div>
+                <div class="panel-body" id="assetSchedule">
+                    <div class="empty-state">Loading assets...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASH FLOW + PROJECTIONS -->
+        <div class="panel-row">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">12-Month Cash Flow</div>
+                </div>
+                <div class="panel-body">
+                    <div class="cf-grid" id="cashFlowChart"></div>
+                    <div class="cf-legend">
+                        <div class="cf-legend-item"><div class="cf-dot" style="background:#2d8f4a;"></div> Income</div>
+                        <div class="cf-legend-item"><div class="cf-dot" style="background:#dc3545;"></div> Expenses</div>
+                    </div>
+                    <table style="margin-top: 15px;" id="cashFlowTable">
+                        <thead>
+                            <tr><th>Month</th><th class="text-right">Income</th><th class="text-right">Expenses</th><th class="text-right">Debt Svc</th><th class="text-right">Net</th></tr>
+                        </thead>
+                        <tbody id="cashFlowTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Revenue Projections</div>
+                </div>
+                <div class="panel-body" id="projections">
+                    <div class="empty-state">Loading projections...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLLATERAL + PAYMENT HISTORY -->
+        <div class="panel-row">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Collateral Coverage</div>
+                </div>
+                <div class="panel-body" style="overflow-x: auto;">
+                    <table id="collateralTable">
+                        <thead>
+                            <tr><th>Loan</th><th>Lender</th><th class="text-right">Balance</th><th>Collateral</th><th class="text-right">Value</th><th class="text-center">LTV</th><th class="text-right">Equity</th></tr>
+                        </thead>
+                        <tbody id="collateralBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Payment History Summary</div>
+                </div>
+                <div class="panel-body" id="paymentHistory">
+                    <div class="empty-state">Loading payment history...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BANKER COMMENTS -->
+        <div class="panel-row full">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Banker Notes & Comments</div>
+                </div>
+                <div class="panel-body comment-section">
+                    <div class="comment-form">
+                        <textarea class="comment-input" id="commentInput" rows="2" placeholder="Add a note or comment about this financial position..."></textarea>
+                        <button class="comment-btn" onclick="addComment()">Add Note</button>
+                    </div>
+                    <div class="comment-list" id="commentList">
+                        <div class="empty-state">No comments yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        M77 AG - McConnell Enterprises LLC. Banker's Financial Overview. Generated <span id="footerDate"></span>. All data from live records.
+    </div>
+
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) { window.location.href = '/admin/login'; return null; }
+            return token;
+        }
+        function getToken() { return localStorage.getItem('adminToken'); }
+
+        function fmt(amount) {
+            if (amount === null || amount === undefined) return '--';
+            const n = Math.abs(amount);
+            const sign = amount < 0 ? '-' : '';
+            if (n >= 1000000) return sign + '$' + (n / 1000000).toFixed(2) + 'M';
+            if (n >= 1000) return sign + '$' + (n / 1000).toFixed(1) + 'K';
+            return sign + '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function fmtFull(amount) {
+            if (amount === null || amount === undefined) return '--';
+            return (amount < 0 ? '-' : '') + '$' + Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function fmtDate(d) {
+            if (!d) return '--';
+            return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function fmtPct(v) {
+            if (v === null || v === undefined) return '--';
+            return v.toFixed(1) + '%';
+        }
+
+        function dscrRating(v) {
+            if (!v) return '';
+            if (v >= 1.5) return '<div class="kpi-rating rating-excellent">Excellent</div>';
+            if (v >= 1.25) return '<div class="kpi-rating rating-good">Good</div>';
+            if (v >= 1.0) return '<div class="kpi-rating rating-fair">Adequate</div>';
+            return '<div class="kpi-rating rating-poor">Below Standard</div>';
+        }
+
+        function dtaRating(v) {
+            if (!v && v !== 0) return '';
+            if (v <= 30) return '<div class="kpi-rating rating-excellent">Strong</div>';
+            if (v <= 50) return '<div class="kpi-rating rating-good">Acceptable</div>';
+            if (v <= 70) return '<div class="kpi-rating rating-fair">Watch</div>';
+            return '<div class="kpi-rating rating-poor">High Leverage</div>';
+        }
+
+        async function loadDashboard() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/banking/bankers-overview', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const result = await res.json();
+
+                if (!result.success) {
+                    console.error('API Error:', result.message);
+                    return;
+                }
+
+                const d = result.data;
+
+                // Report metadata
+                document.getElementById('reportYear').textContent = 'FY ' + d.year;
+                document.getElementById('reportDate').textContent = 'Generated: ' + fmtDate(d.generatedAt);
+                document.getElementById('footerDate').textContent = fmtDate(d.generatedAt);
+                document.getElementById('bsDate').textContent = 'As of ' + fmtDate(d.generatedAt);
+                document.getElementById('isYear').textContent = d.year + ' YTD';
+
+                // KPIs
+                const bs = d.balanceSheet;
+                const kr = d.keyRatios;
+                document.getElementById('kpiNetWorth').textContent = fmt(bs.netWorth);
+                document.getElementById('kpiDSCR').textContent = kr.dscr !== null ? kr.dscr.toFixed(2) + 'x' : 'N/A';
+                document.getElementById('dscrRating').innerHTML = dscrRating(kr.dscr);
+                document.getElementById('kpiDebtToAsset').textContent = fmtPct(kr.debtToAsset);
+                document.getElementById('dtaRating').innerHTML = dtaRating(kr.debtToAsset);
+                document.getElementById('kpiCurrentRatio').textContent = kr.currentRatio !== null ? kr.currentRatio.toFixed(2) + 'x' : 'N/A';
+                document.getElementById('kpiWorkingCapital').textContent = fmt(kr.workingCapital);
+                document.getElementById('kpiEquityToAsset').textContent = fmtPct(kr.equityToAsset);
+
+                // Net worth color
+                if (bs.netWorth < 0) document.getElementById('kpiNetWorth').className = 'kpi-value negative';
+
+                // BALANCE SHEET
+                renderBalanceSheet(bs);
+
+                // INCOME STATEMENT
+                renderIncomeStatement(d.incomeStatement);
+
+                // DEBT SCHEDULE
+                renderDebtSchedule(d.debtSchedule);
+                document.getElementById('debtTotal').textContent = 'Total: ' + fmtFull(bs.liabilities.totalLiabilities);
+
+                // ASSET SCHEDULE
+                renderAssetSchedule(d.assetSchedule, bs.assets);
+                document.getElementById('assetTotal').textContent = 'Total: ' + fmtFull(bs.assets.totalAssets);
+
+                // CASH FLOW
+                renderCashFlow(d.monthlyCashFlow);
+
+                // PROJECTIONS
+                renderProjections(d.projectedRevenue, d.operationOverview);
+
+                // COLLATERAL
+                renderCollateral(d.collateralSchedule);
+
+                // PAYMENT HISTORY
+                renderPaymentHistory(d.paymentHistory);
+
+            } catch (err) {
+                console.error('Dashboard load error:', err);
+            }
+
+            // Load comments
+            loadComments();
+        }
+
+        function renderBalanceSheet(bs) {
+            const a = bs.assets;
+            const l = bs.liabilities;
+            let html = '';
+
+            html += '<div class="bs-section">';
+            html += '<div class="bs-section-title">Current Assets</div>';
+            html += '<div class="bs-row"><span>Cash & Bank Accounts</span><span>' + fmtFull(a.current.cash) + '</span></div>';
+            html += '<div class="bs-row"><span>Accounts Receivable</span><span>' + fmtFull(a.current.accountsReceivable) + '</span></div>';
+            html += '<div class="bs-total"><span>Total Current Assets</span><span>' + fmtFull(a.current.totalCurrent) + '</span></div>';
+            html += '</div>';
+
+            html += '<div class="bs-section">';
+            html += '<div class="bs-section-title">Fixed Assets</div>';
+            html += '<div class="bs-row"><span>Land</span><span>' + fmtFull(a.fixed.land) + '</span></div>';
+            html += '<div class="bs-row"><span>Buildings</span><span>' + fmtFull(a.fixed.buildings) + '</span></div>';
+            html += '<div class="bs-row"><span>Infrastructure</span><span>' + fmtFull(a.fixed.infrastructure) + '</span></div>';
+            html += '<div class="bs-row"><span>Equipment</span><span>' + fmtFull(a.fixed.equipment) + '</span></div>';
+            html += '<div class="bs-row"><span>Livestock</span><span>' + fmtFull(a.fixed.livestock) + '</span></div>';
+            html += '<div class="bs-total"><span>Total Fixed Assets</span><span>' + fmtFull(a.fixed.totalFixed) + '</span></div>';
+            html += '</div>';
+
+            html += '<div class="bs-grand-total"><span>TOTAL ASSETS</span><span class="text-blue">' + fmtFull(a.totalAssets) + '</span></div>';
+
+            html += '<div class="bs-section" style="margin-top:15px;">';
+            html += '<div class="bs-section-title">Liabilities</div>';
+            html += '<div class="bs-row"><span>Current Liabilities (Due &lt; 1 yr)</span><span>' + fmtFull(l.currentLiabilities) + '</span></div>';
+            html += '<div class="bs-row"><span>Long-Term Liabilities</span><span>' + fmtFull(l.longTermLiabilities) + '</span></div>';
+            html += '<div class="bs-total"><span>Total Liabilities</span><span class="text-red">' + fmtFull(l.totalLiabilities) + '</span></div>';
+            html += '</div>';
+
+            html += '<div class="bs-grand-total"><span>NET WORTH (EQUITY)</span><span class="' + (bs.netWorth >= 0 ? 'text-green' : 'text-red') + '">' + fmtFull(bs.netWorth) + '</span></div>';
+
+            document.getElementById('balanceSheet').innerHTML = html;
+        }
+
+        function renderIncomeStatement(is) {
+            let html = '';
+
+            html += '<div class="bs-section">';
+            html += '<div class="bs-section-title">Revenue</div>';
+            const incCats = Object.entries(is.incomeByCategory).sort((a, b) => b[1] - a[1]);
+            if (incCats.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No income recorded YTD</span><span>$0</span></div>';
+            incCats.forEach(([cat, amt]) => {
+                html += '<div class="bs-row"><span>' + cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + '</span><span>' + fmtFull(amt) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Income</span><span class="text-green">' + fmtFull(is.ytdIncome) + '</span></div>';
+            html += '</div>';
+
+            html += '<div class="bs-section">';
+            html += '<div class="bs-section-title">Expenses</div>';
+            const expCats = Object.entries(is.expenseByCategory).sort((a, b) => b[1] - a[1]);
+            if (expCats.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No expenses recorded YTD</span><span>$0</span></div>';
+            expCats.forEach(([cat, amt]) => {
+                html += '<div class="bs-row"><span>' + cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + '</span><span>' + fmtFull(amt) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Expenses</span><span class="text-red">' + fmtFull(is.ytdExpenses) + '</span></div>';
+            html += '</div>';
+
+            html += '<div class="bs-grand-total"><span>NET OPERATING INCOME</span><span class="' + (is.netOperatingIncome >= 0 ? 'text-green' : 'text-red') + '">' + fmtFull(is.netOperatingIncome) + '</span></div>';
+
+            document.getElementById('incomeStatement').innerHTML = html;
+        }
+
+        function renderDebtSchedule(debts) {
+            const tbody = document.getElementById('debtTableBody');
+            if (!debts.length) {
+                tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No active loans</td></tr>';
+                return;
+            }
+
+            let totalOriginal = 0, totalBalance = 0, totalPayment = 0;
+            let html = debts.map(d => {
+                totalOriginal += d.originalAmount || 0;
+                totalBalance += d.currentBalance || 0;
+                totalPayment += d.paymentAmount || 0;
+                return `<tr>
+                    <td class="font-bold">${d.name}</td>
+                    <td>${d.lender}</td>
+                    <td>${d.type.replace(/_/g, ' ')}</td>
+                    <td class="text-right">${fmtFull(d.originalAmount)}</td>
+                    <td class="text-right font-bold">${fmtFull(d.currentBalance)}</td>
+                    <td class="text-center">${d.interestRate}% ${d.interestType}</td>
+                    <td class="text-right">${fmtFull(d.paymentAmount)}</td>
+                    <td>${d.paymentFrequency}</td>
+                    <td>${fmtDate(d.maturityDate)}</td>
+                    <td>${d.collateral ? d.collateral.description || d.collateral.type || '--' : 'None'}</td>
+                </tr>`;
+            }).join('');
+
+            html += `<tr class="row-total">
+                <td colspan="3">TOTALS</td>
+                <td class="text-right">${fmtFull(totalOriginal)}</td>
+                <td class="text-right">${fmtFull(totalBalance)}</td>
+                <td></td>
+                <td class="text-right">${fmtFull(totalPayment)}</td>
+                <td colspan="3"></td>
+            </tr>`;
+
+            tbody.innerHTML = html;
+        }
+
+        function renderAssetSchedule(assets, assetTotals) {
+            let html = '';
+
+            // Cash
+            html += '<div class="bs-section"><div class="bs-section-title">Cash & Bank Accounts</div>';
+            if (assets.cash.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No bank accounts on file</span><span>$0</span></div>';
+            assets.cash.forEach(a => {
+                html += '<div class="bs-row"><span>' + a.name + ' (' + a.bank + ' ****' + (a.last4 || '----') + ')' + (a.isPrimary ? ' [PRIMARY]' : '') + '</span><span>' + fmtFull(a.balance) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Cash</span><span>' + fmtFull(assetTotals.current.cash) + '</span></div></div>';
+
+            // AR
+            html += '<div class="bs-section"><div class="bs-section-title">Accounts Receivable</div>';
+            if (assets.accountsReceivable.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No outstanding invoices</span><span>$0</span></div>';
+            assets.accountsReceivable.forEach(i => {
+                html += '<div class="bs-row"><span>' + i.invoiceNumber + ' - ' + (i.customer || 'Customer') + ' (' + i.status + ')</span><span>' + fmtFull(i.balanceDue) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total A/R</span><span>' + fmtFull(assetTotals.current.accountsReceivable) + '</span></div></div>';
+
+            // Land
+            html += '<div class="bs-section"><div class="bs-section-title">Land</div>';
+            if (assets.land.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No land records</span><span>$0</span></div>';
+            assets.land.forEach(a => {
+                const acres = a.totalAcres ? ' (' + a.totalAcres.toLocaleString() + ' ac)' : '';
+                html += '<div class="bs-row"><span>' + a.name + acres + '</span><span>' + fmtFull(a.estimatedValue) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Land</span><span>' + fmtFull(assetTotals.fixed.land) + '</span></div></div>';
+
+            // Buildings
+            html += '<div class="bs-section"><div class="bs-section-title">Buildings & Structures</div>';
+            if (assets.buildings.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No building records</span><span>$0</span></div>';
+            assets.buildings.forEach(a => {
+                const detail = a.squareFeet ? ' (' + a.squareFeet.toLocaleString() + ' sqft)' : '';
+                html += '<div class="bs-row"><span>' + a.name + detail + '</span><span>' + fmtFull(a.estimatedValue) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Buildings</span><span>' + fmtFull(assetTotals.fixed.buildings) + '</span></div></div>';
+
+            // Equipment
+            html += '<div class="bs-section"><div class="bs-section-title">Equipment (' + assets.equipment.length + ' units)</div>';
+            if (assets.equipment.length === 0) html += '<div class="bs-row" style="color:#999;"><span>No equipment records</span><span>$0</span></div>';
+            assets.equipment.forEach(e => {
+                const desc = [e.year, e.make, e.model].filter(Boolean).join(' ');
+                html += '<div class="bs-row"><span>' + e.name + (desc ? ' - ' + desc : '') + '</span><span>' + fmtFull(e.currentValue) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Equipment</span><span>' + fmtFull(assetTotals.fixed.equipment) + '</span></div></div>';
+
+            // Livestock
+            html += '<div class="bs-section"><div class="bs-section-title">Livestock (' + assets.livestock.totalHead + ' head)</div>';
+            const types = Object.entries(assets.livestock.byType);
+            if (types.length === 0 && assets.livestock.totalHead === 0) html += '<div class="bs-row" style="color:#999;"><span>No livestock records</span><span>$0</span></div>';
+            types.forEach(([type, data]) => {
+                html += '<div class="bs-row"><span>' + type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' (' + data.count + ' head)</span><span>' + fmtFull(data.value) + '</span></div>';
+            });
+            html += '<div class="bs-total"><span>Total Livestock</span><span>' + fmtFull(assetTotals.fixed.livestock) + '</span></div></div>';
+
+            html += '<div class="bs-grand-total"><span>TOTAL ASSETS</span><span class="text-blue">' + fmtFull(assetTotals.totalAssets) + '</span></div>';
+
+            document.getElementById('assetSchedule').innerHTML = html;
+        }
+
+        function renderCashFlow(months) {
+            // Find max for scaling
+            const maxVal = Math.max(...months.map(m => Math.max(m.income, m.expenses)), 1);
+
+            const chart = document.getElementById('cashFlowChart');
+            chart.innerHTML = months.map(m => {
+                const incH = Math.max(2, (m.income / maxVal) * 150);
+                const expH = Math.max(2, (m.expenses / maxVal) * 150);
+                return `<div class="cf-bar">
+                    <div class="cf-bar-income" style="height:${incH}px;" title="Income: ${fmtFull(m.income)}"></div>
+                    <div class="cf-bar-expense" style="height:${expH}px;" title="Expenses: ${fmtFull(m.expenses)}"></div>
+                    <div class="cf-month">${m.monthName}</div>
+                </div>`;
+            }).join('');
+
+            const tbody = document.getElementById('cashFlowTableBody');
+            let totalInc = 0, totalExp = 0, totalDS = 0, totalNet = 0;
+            tbody.innerHTML = months.map(m => {
+                totalInc += m.income;
+                totalExp += m.expenses;
+                totalDS += m.loanPayments;
+                totalNet += m.netCashFlow;
+                const netClass = m.netCashFlow >= 0 ? 'text-green' : 'text-red';
+                return `<tr>
+                    <td>${m.monthName}</td>
+                    <td class="text-right">${fmtFull(m.income)}</td>
+                    <td class="text-right">${fmtFull(m.expenses)}</td>
+                    <td class="text-right">${fmtFull(m.loanPayments)}</td>
+                    <td class="text-right font-bold ${netClass}">${fmtFull(m.netCashFlow)}</td>
+                </tr>`;
+            }).join('') + `<tr class="row-total">
+                <td>TOTAL</td>
+                <td class="text-right">${fmtFull(totalInc)}</td>
+                <td class="text-right">${fmtFull(totalExp)}</td>
+                <td class="text-right">${fmtFull(totalDS)}</td>
+                <td class="text-right font-bold ${totalNet >= 0 ? 'text-green' : 'text-red'}">${fmtFull(totalNet)}</td>
+            </tr>`;
+        }
+
+        function renderProjections(proj, overview) {
+            let html = '';
+
+            html += '<div class="bs-section"><div class="bs-section-title">Operation Summary</div>';
+            html += '<div class="bs-row"><span>Farms</span><span>' + overview.farms + '</span></div>';
+            html += '<div class="bs-row"><span>Active Fields</span><span>' + overview.activeFields + '</span></div>';
+            html += '<div class="bs-row"><span>Total Acres</span><span>' + overview.totalAcres.toLocaleString() + '</span></div>';
+            html += '<div class="bs-row"><span>Equipment Units</span><span>' + overview.equipmentUnits + '</span></div>';
+            html += '<div class="bs-row"><span>Cattle Head</span><span>' + overview.cattleHead + '</span></div>';
+            html += '</div>';
+
+            if (proj.totalAcres === 0 && Object.keys(proj.byCrop).length === 0) {
+                html += '<div class="empty-state" style="padding:20px;">No production projections entered for ' + overview.year + '</div>';
+            } else {
+                html += '<div class="bs-section"><div class="bs-section-title">Production Projections (' + overview.year + ')</div>';
+                html += '<div class="bs-row"><span>Projected Acres</span><span>' + proj.totalAcres.toLocaleString() + '</span></div>';
+                html += '<div class="bs-row"><span>Projected Bushels</span><span>' + proj.totalProjectedBushels.toLocaleString() + '</span></div>';
+                html += '</div>';
+
+                html += '<div class="bs-section"><div class="bs-section-title">Revenue Scenarios</div>';
+                html += '<div class="bs-row"><span>Conservative</span><span>' + fmtFull(proj.conservative.revenue) + '</span></div>';
+                html += '<div class="bs-row"><span>Expected</span><span class="font-bold">' + fmtFull(proj.expected.revenue) + '</span></div>';
+                html += '<div class="bs-row"><span>Optimistic</span><span>' + fmtFull(proj.optimistic.revenue) + '</span></div>';
+                html += '<div class="bs-total"><span>Expected Net Profit</span><span class="' + (proj.expected.profit >= 0 ? 'text-green' : 'text-red') + '">' + fmtFull(proj.expected.profit) + '</span></div>';
+                html += '</div>';
+
+                const crops = Object.entries(proj.byCrop);
+                if (crops.length > 0) {
+                    html += '<div class="bs-section"><div class="bs-section-title">By Crop</div>';
+                    crops.forEach(([crop, data]) => {
+                        html += '<div class="bs-row"><span>' + crop.charAt(0).toUpperCase() + crop.slice(1) + ' (' + data.acres.toLocaleString() + ' ac)</span><span>' + fmtFull(data.expectedRevenue) + '</span></div>';
+                    });
+                    html += '</div>';
+                }
+            }
+
+            document.getElementById('projections').innerHTML = html;
+        }
+
+        function renderCollateral(schedule) {
+            const tbody = document.getElementById('collateralBody');
+            if (!schedule.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No collateral data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = schedule.map(c => {
+                const ltvClass = c.ltv <= 70 ? 'text-green' : c.ltv <= 90 ? 'text-red' : 'text-red font-bold';
+                return `<tr>
+                    <td class="font-bold">${c.loanName}</td>
+                    <td>${c.lender}</td>
+                    <td class="text-right">${fmtFull(c.balance)}</td>
+                    <td>${c.collateralDescription || c.collateralType || '--'}</td>
+                    <td class="text-right">${fmtFull(c.collateralValue)}</td>
+                    <td class="text-center ${ltvClass}">${c.ltv ? c.ltv + '%' : '--'}</td>
+                    <td class="text-right text-green">${fmtFull(c.equity)}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderPaymentHistory(ph) {
+            let html = '<div class="bs-section"><div class="bs-section-title">Loan Payments</div>';
+            html += '<div class="bs-row"><span>Total Payments Made</span><span>' + ph.totalLoanPaymentsMade + '</span></div>';
+            html += '<div class="bs-row"><span>Total Principal Paid</span><span>' + fmtFull(ph.totalPrincipalPaid) + '</span></div>';
+            html += '<div class="bs-row"><span>Total Interest Paid</span><span>' + fmtFull(ph.totalInterestPaid) + '</span></div>';
+            html += '<div class="bs-row"><span>YTD Principal Paid</span><span>' + fmtFull(ph.ytdPrincipalPaid) + '</span></div>';
+            html += '<div class="bs-row"><span>YTD Interest Paid</span><span>' + fmtFull(ph.ytdInterestPaid) + '</span></div>';
+            html += '</div>';
+
+            html += '<div class="bs-section"><div class="bs-section-title">Invoice Collections (YTD)</div>';
+            html += '<div class="bs-row"><span>Invoices Paid</span><span>' + ph.invoicesPaidYTD + '</span></div>';
+            html += '<div class="bs-row"><span>Revenue Collected</span><span>' + fmtFull(ph.invoiceRevenuePaidYTD) + '</span></div>';
+            html += '</div>';
+
+            document.getElementById('paymentHistory').innerHTML = html;
+        }
+
+        // COMMENTS
+        async function loadComments() {
+            try {
+                const res = await fetch('/api/banking/bankers-comments', {
+                    headers: { 'Authorization': 'Bearer ' + getToken() }
+                });
+                const result = await res.json();
+                const list = document.getElementById('commentList');
+
+                if (result.success && result.data.length > 0) {
+                    list.innerHTML = result.data.map(c => `
+                        <div class="comment-item">
+                            <div class="comment-meta">${c.createdByName || 'User'} - ${fmtDate(c.createdAt)}${c.section ? ' [' + c.section + ']' : ''}</div>
+                            <div class="comment-text">${c.comment}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<div class="empty-state">No comments yet</div>';
+                }
+            } catch (err) {
+                console.error('Load comments error:', err);
+            }
+        }
+
+        async function addComment() {
+            const input = document.getElementById('commentInput');
+            const comment = input.value.trim();
+            if (!comment) return;
+
+            try {
+                const res = await fetch('/api/banking/bankers-comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + getToken()
+                    },
+                    body: JSON.stringify({ comment })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    input.value = '';
+                    loadComments();
+                }
+            } catch (err) {
+                console.error('Add comment error:', err);
+            }
+        }
+
+        async function loadUserInfo() {
+            try {
+                const res = await fetch('/api/auth/verify', { headers: { 'Authorization': 'Bearer ' + getToken() } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.user) {
+                        document.getElementById('userName').textContent = 'Welcome, ' + data.user.name;
+                        document.getElementById('userRole').textContent = data.user.role;
+                    }
+                }
+            } catch (err) {}
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+            loadUserInfo();
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1311 @@
+const express = require('express');
+const router = express.Router();
+const Cattle = require('../models/cattle');
+const { authenticate, isAdmin, isFarmerOrAdmin } = require('../middleware/auth');
+
+// All routes require authentication
+router.use(authenticate);
+
+/**
+ * GET /api/cattle
+ * Get all cattle with optional filters
+ */
+router.get('/', async (req, res) => {
+  try {
+    const {
+      status = 'active',
+      type,
+      pasture,
+      search,
+      limit = 100,
+      skip = 0,
+      sortBy = 'tagNumber',
+      sortOrder = 'asc'
+    } = req.query;
+
+    const query = {};
+
+    if (status) query.status = status;
+    if (type) query.type = type;
+    if (pasture) query.currentPasture = pasture;
+    if (search) {
+      query.$or = [
+        { tagNumber: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    const cattle = await Cattle.find(query)
+      .sort(sortOptions)
+      .skip(parseInt(skip))
+      .limit(parseInt(limit))
+      .populate('createdBy', 'name')
+      .populate('lastModifiedBy', 'name');
+
+    const total = await Cattle.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: cattle,
+      total,
+      limit: parseInt(limit),
+      skip: parseInt(skip)
+    });
+  } catch (error) {
+    console.error('Error fetching cattle:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/summary
+ * Get herd summary statistics
+ */
+router.get('/summary', async (req, res) => {
+  try {
+    const summary = await Cattle.getHerdSummary();
+    res.json({ success: true, data: summary });
+  } catch (error) {
+    console.error('Error fetching herd summary:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/attention
+ * Get cattle needing attention (calving due, in withdrawal, etc.)
+ */
+router.get('/attention', async (req, res) => {
+  try {
+    const attention = await Cattle.getNeedingAttention();
+    res.json({ success: true, data: attention });
+  } catch (error) {
+    console.error('Error fetching attention items:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/:id
+ * Get single cattle record
+ */
+router.get('/:id', async (req, res) => {
+  try {
+    const cattle = await Cattle.findById(req.params.id)
+      .populate('dam.cattleId', 'tagNumber name')
+      .populate('sire.cattleId', 'tagNumber name')
+      .populate('weightRecords.recordedBy', 'name')
+      .populate('healthRecords.recordedBy', 'name');
+
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    res.json({ success: true, data: cattle });
+  } catch (error) {
+    console.error('Error fetching cattle:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle
+ * Create new cattle record
+ */
+router.post('/', async (req, res) => {
+  try {
+    const cattleData = {
+      ...req.body,
+      createdBy: req.userId,
+      lastModifiedBy: req.userId
+    };
+
+    const cattle = new Cattle(cattleData);
+    await cattle.save();
+
+    res.status(201).json({ success: true, data: cattle });
+  } catch (error) {
+    console.error('Error creating cattle:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: 'Tag number already exists' });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * PUT /api/cattle/:id
+ * Update cattle record
+ */
+router.put('/:id', async (req, res) => {
+  try {
+    const cattle = await Cattle.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        lastModifiedBy: req.userId
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    res.json({ success: true, data: cattle });
+  } catch (error) {
+    console.error('Error updating cattle:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/cattle/:id
+ * Delete cattle record (admin only)
+ */
+router.delete('/:id', isAdmin, async (req, res) => {
+  try {
+    const cattle = await Cattle.findByIdAndDelete(req.params.id);
+
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    res.json({ success: true, message: 'Cattle deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting cattle:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/weight
+ * Add weight record (employee-friendly)
+ */
+router.post('/:id/weight', async (req, res) => {
+  try {
+    const { weight, condition, notes, date } = req.body;
+
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    cattle.weightRecords.push({
+      date: date || new Date(),
+      weight,
+      condition,
+      notes,
+      recordedBy: req.userId
+    });
+    cattle.lastModifiedBy = req.userId;
+
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Weight record added' });
+  } catch (error) {
+    console.error('Error adding weight record:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/health
+ * Add health record (employee-friendly)
+ */
+router.post('/:id/health', async (req, res) => {
+  try {
+    const healthRecord = {
+      ...req.body,
+      date: req.body.date || new Date(),
+      recordedBy: req.userId
+    };
+
+    // Calculate withdrawal date if withdrawalDays provided
+    if (healthRecord.withdrawalDays) {
+      const date = new Date(healthRecord.date);
+      date.setDate(date.getDate() + healthRecord.withdrawalDays);
+      healthRecord.withdrawalDate = date;
+    }
+
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    cattle.healthRecords.push(healthRecord);
+    cattle.lastModifiedBy = req.userId;
+
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Health record added' });
+  } catch (error) {
+    console.error('Error adding health record:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/breeding
+ * Add breeding record
+ */
+router.post('/:id/breeding', async (req, res) => {
+  try {
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    cattle.breedingRecords.push({
+      ...req.body,
+      date: req.body.date || new Date(),
+      recordedBy: req.userId
+    });
+    cattle.lastModifiedBy = req.userId;
+
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Breeding record added' });
+  } catch (error) {
+    console.error('Error adding breeding record:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/calving
+ * Record calving event - creates new calf record and updates dam
+ */
+router.post('/:id/calving', async (req, res) => {
+  try {
+    const dam = await Cattle.findById(req.params.id);
+    if (!dam) {
+      return res.status(404).json({ success: false, message: 'Dam not found' });
+    }
+
+    const { calfTag, calfSex, birthWeight, birthEase, sireTag, notes, date } = req.body;
+
+    // Create new calf record
+    const calf = new Cattle({
+      tagNumber: calfTag,
+      type: calfSex === 'heifer' ? 'heifer' : 'calf',
+      birthDate: date || new Date(),
+      birthWeight,
+      birthEase,
+      birthType: 'single',
+      dam: {
+        tagNumber: dam.tagNumber,
+        cattleId: dam._id
+      },
+      sire: {
+        tagNumber: sireTag
+      },
+      status: 'active',
+      createdBy: req.userId,
+      lastModifiedBy: req.userId
+    });
+
+    await calf.save();
+
+    // Update dam's calving history
+    dam.calvingHistory.push({
+      date: date || new Date(),
+      calfTag,
+      calfSex,
+      birthWeight,
+      birthEase,
+      notes,
+      calfId: calf._id
+    });
+    dam.lastModifiedBy = req.userId;
+
+    await dam.save();
+
+    res.status(201).json({
+      success: true,
+      data: { calf, dam },
+      message: 'Calving recorded successfully'
+    });
+  } catch (error) {
+    console.error('Error recording calving:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: 'Calf tag number already exists' });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/:id/offspring
+ * Get all offspring of a cow or bull
+ */
+router.get('/:id/offspring', async (req, res) => {
+  try {
+    const offspring = await Cattle.getOffspring(req.params.id);
+    res.json({ success: true, data: offspring });
+  } catch (error) {
+    console.error('Error fetching offspring:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/:id/production
+ * Get production report for a cow
+ */
+router.get('/:id/production', async (req, res) => {
+  try {
+    const report = await Cattle.getProductionReport(req.params.id);
+    if (!report) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error fetching production report:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/:id/progeny
+ * Get progeny report for a bull
+ */
+router.get('/:id/progeny', async (req, res) => {
+  try {
+    const report = await Cattle.getBullProgenyReport(req.params.id);
+    if (!report) {
+      return res.status(404).json({ success: false, message: 'Bull not found' });
+    }
+    res.json({ success: true, data: report });
+  } catch (error) {
+    console.error('Error fetching progeny report:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/genetics/summary
+ * Get genetics summary for the herd
+ */
+router.get('/genetics/summary', async (req, res) => {
+  try {
+    const summary = await Cattle.getGeneticsSummary();
+    res.json({ success: true, data: summary });
+  } catch (error) {
+    console.error('Error fetching genetics summary:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/genetics
+ * Add or update genetic test results
+ */
+router.post('/:id/genetics', async (req, res) => {
+  try {
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    // Update genetics object
+    cattle.genetics = {
+      ...cattle.genetics,
+      ...req.body,
+      tested: true
+    };
+    cattle.lastModifiedBy = req.userId;
+
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Genetic data updated' });
+  } catch (error) {
+    console.error('Error updating genetics:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/annual-calving
+ * Add annual calving record with weaning info
+ */
+router.post('/:id/annual-calving', async (req, res) => {
+  try {
+    const cattle = await Cattle.findById(req.params.id);
+    if (!cattle) {
+      return res.status(404).json({ success: false, message: 'Cattle not found' });
+    }
+
+    const {
+      year, hadCalf, calfSurvived, calfTag, calfSex, calfBirthDate, birthWeight,
+      weaningWeight, weaningDate, sireTag, calvingEase, calfVigor, cowBCS,
+      maternalScore, comments, notes
+    } = req.body;
+
+    // Check if year record already exists
+    const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === year);
+
+    const record = {
+      year,
+      hadCalf: hadCalf !== false,
+      calfSurvived: calfSurvived !== false,
+      calfTag,
+      calfSex,
+      calfBirthDate: calfBirthDate ? new Date(calfBirthDate) : undefined,
+      birthWeight: birthWeight ? parseInt(birthWeight) : undefined,
+      weaningWeight: weaningWeight ? parseInt(weaningWeight) : undefined,
+      weaningDate: weaningDate ? new Date(weaningDate) : undefined,
+      sireTag,
+      calvingEase: calvingEase ? parseInt(calvingEase) : undefined,
+      calfVigor: calfVigor ? parseInt(calfVigor) : undefined,
+      cowBCS: cowBCS ? parseInt(cowBCS) : undefined,
+      maternalScore: maternalScore ? parseInt(maternalScore) : undefined,
+      comments,
+      notes
+    };
+
+    if (existingIndex >= 0) {
+      // Update existing
+      cattle.annualCalvingRecords[existingIndex] = record;
+    } else {
+      // Add new
+      cattle.annualCalvingRecords.push(record);
+    }
+
+    cattle.lastModifiedBy = req.userId;
+    await cattle.save();
+
+    res.json({ success: true, data: cattle, message: 'Calving record updated' });
+  } catch (error) {
+    console.error('Error updating calving record:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/:id/link-offspring
+ * Link an offspring to this parent (updates offspringIds array)
+ */
+router.post('/:id/link-offspring', async (req, res) => {
+  try {
+    const { offspringId } = req.body;
+
+    const parent = await Cattle.findById(req.params.id);
+    if (!parent) {
+      return res.status(404).json({ success: false, message: 'Parent not found' });
+    }
+
+    const offspring = await Cattle.findById(offspringId);
+    if (!offspring) {
+      return res.status(404).json({ success: false, message: 'Offspring not found' });
+    }
+
+    // Add to parent's offspring array if not already there
+    if (!parent.offspringIds.includes(offspringId)) {
+      parent.offspringIds.push(offspringId);
+      parent.lastModifiedBy = req.userId;
+      await parent.save();
+    }
+
+    res.json({ success: true, data: parent, message: 'Offspring linked' });
+  } catch (error) {
+    console.error('Error linking offspring:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/import/csv
+ * Import cattle from the CSV file in /data/imports/cattle.csv
+ */
+router.post('/import/csv', isFarmerOrAdmin, async (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+
+  try {
+    const csvPath = path.join(__dirname, '../../data/imports/cattle.csv');
+
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ success: false, message: 'CSV file not found at /data/imports/cattle.csv' });
+    }
+
+    const content = fs.readFileSync(csvPath, 'utf-8');
+    const lines = content.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+
+    const records = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      const record = {};
+      headers.forEach((header, idx) => {
+        record[header] = values[idx] || '';
+      });
+      records.push(record);
+    }
+
+    let imported = 0;
+    let skipped = 0;
+    let errors = 0;
+    const errorDetails = [];
+
+    for (const row of records) {
+      const tagNumber = row.tag_number;
+
+      if (!tagNumber) {
+        errors++;
+        continue;
+      }
+
+      // Check if already exists
+      const exists = await Cattle.findOne({ tagNumber: String(tagNumber) });
+      if (exists) {
+        skipped++;
+        continue;
+      }
+
+      // Build calving records
+      const annualCalvingRecords = [];
+
+      // 2024 calving - "31" means had calf that survived to weaning
+      if (row.calf_wt_2024 === '31') {
+        annualCalvingRecords.push({
+          year: 2024,
+          hadCalf: true,
+          calfSurvived: true,
+          notes: 'Calf survived to weaning'
+        });
+      }
+
+      // 2023 weaning weight
+      const ww2023 = parseInt(row.ww_2023);
+      if (ww2023 > 0) {
+        annualCalvingRecords.push({
+          year: 2023,
+          hadCalf: true,
+          calfSurvived: true,
+          weaningWeight: ww2023
+        });
+      }
+
+      // Calculate birth date from birth_year
+      let birthDate = null;
+      const birthYear = parseInt(row.birth_year);
+      if (birthYear > 0) {
+        birthDate = new Date(`${birthYear}-03-01`);
+      } else {
+        const tag = parseInt(tagNumber);
+        if (tag >= 6000 && tag < 7000) {
+          birthDate = new Date('2016-03-01');
+        } else if (tag >= 2316 && tag <= 2325) {
+          birthDate = new Date('2023-03-01');
+        } else if (tag >= 2426 && tag <= 2432) {
+          birthDate = new Date('2024-03-01');
+        } else if (tag >= 2201 && tag <= 2215) {
+          birthDate = new Date('2022-03-01');
+        } else {
+          birthDate = new Date('2018-03-01');
+        }
+      }
+
+      // Map tag color
+      const colorMap = {
+        'Yellow': 'Yellow', 'Blue': 'Blue', 'Green': 'Green',
+        'White': 'White', 'Purple': 'Purple', 'Orange': 'Orange',
+        'Red': 'Red', 'Pink': 'Pink', 'Black': 'Black'
+      };
+
+      const cattleData = {
+        tagNumber: String(tagNumber),
+        type: 'cow',
+        breed: 'Angus',
+        owner: row.owner || 'M77',
+        tagColor: colorMap[row.tag_color] || 'Other',
+        calvingGroup: row.group_name === 'SPRING' ? 'SPRING' : 'FALL',
+        birthDate: birthDate,
+        status: 'active',
+        annualCalvingRecords: annualCalvingRecords.length > 0 ? annualCalvingRecords : undefined
+      };
+
+      // Add dam info if available
+      if (row.dam_tag && row.dam_tag !== 'NT' && row.dam_tag !== '') {
+        cattleData.dam = { tagNumber: String(row.dam_tag) };
+      }
+
+      // Add sire info if available (sire column contains tag number, not color)
+      if (row.sire && row.sire !== '' && row.sire !== 'NT') {
+        cattleData.sire = { tagNumber: String(row.sire) };
+      }
+
+      // Add yearling weight if available
+      const yw = parseInt(row.yearling_weight);
+      if (yw > 0) {
+        cattleData.weightRecords = [{
+          date: new Date(`${birthYear + 1}-10-01`),
+          weight: yw,
+          notes: 'Yearling weight'
+        }];
+      }
+
+      try {
+        const cattle = new Cattle(cattleData);
+        await cattle.save();
+        imported++;
+      } catch (err) {
+        errors++;
+        errorDetails.push({ tag: tagNumber, error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Import complete: ${imported} imported, ${skipped} skipped, ${errors} errors`,
+      data: { imported, skipped, errors, errorDetails }
+    });
+
+  } catch (error) {
+    console.error('Error importing CSV:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/seed/calves-2026
+ * Update all 50 cattle records with 2026 spring calving season data
+ * Data from M77 Angus calving spreadsheet (Feb 2026)
+ * Summary: 50 head, 23 calves (6 heifers, 17 bulls), 0 dead, 27 left to calve
+ */
+router.post('/seed/calves-2026', isFarmerOrAdmin, async (req, res) => {
+  try {
+    const { force } = req.body;
+
+    // All 50 cattle records from the calving spreadsheet
+    const cattleRecords = [
+      { tagNumber: '1', owner: 'M77', tagColor: 'Yellow', calfSex: 'bull', calfBirthDate: '2026-02-25', cowBCS: null, maternalScore: null },
+      { tagNumber: '2', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '7', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '12', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '13', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '24', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '28', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: '2026-02-05', cowBCS: 6, maternalScore: 5 },
+      { tagNumber: '36', owner: 'M77', tagColor: 'Blue', calfSex: 'bull', calfBirthDate: '2026-02-15', cowBCS: 7, maternalScore: 2 },
+      { tagNumber: '39', owner: 'GAGE', tagColor: 'White', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '45', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '55', owner: 'M77', tagColor: 'Blue', calfSex: 'bull', calfBirthDate: '2026-02-27', cowBCS: 6, maternalScore: 3 },
+      { tagNumber: '75', owner: 'M77', tagColor: 'Blue', calfSex: 'heifer', calfBirthDate: '2026-02-05', cowBCS: 6, maternalScore: 5 },
+      { tagNumber: '84', owner: 'M77', tagColor: 'Purple', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '88', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 6, maternalScore: 3 },
+      { tagNumber: '94', owner: 'M77', tagColor: 'Purple', calfSex: 'heifer', calfBirthDate: '2026-02-28', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '95', owner: 'M77', tagColor: 'Purple', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '104', owner: 'M77', tagColor: 'Purple', calfSex: 'bull', calfBirthDate: '2026-02-08', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '110', owner: 'M77', tagColor: 'Blue', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: null, maternalScore: null },
+      { tagNumber: '1113', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-17', cowBCS: null, maternalScore: null },
+      { tagNumber: '1032', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-13', cowBCS: null, maternalScore: null },
+      { tagNumber: '2201', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2203', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 6, maternalScore: null },
+      { tagNumber: '2206', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: 5, maternalScore: null },
+      { tagNumber: '2210', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2214', owner: 'M77', tagColor: 'Red', calfSex: 'bull', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '2215', owner: 'M77', tagColor: 'Red', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2316', owner: 'M77', tagColor: 'Orange', calfSex: 'bull', calfBirthDate: '2026-02-10', cowBCS: 6, maternalScore: 3 },
+      { tagNumber: '2317', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2318', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: null, maternalScore: null },
+      { tagNumber: '2319', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2321', owner: 'M77', tagColor: 'Orange', calfSex: 'heifer', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '2322', owner: 'M77', tagColor: 'Orange', calfSex: null, calfBirthDate: '2026-02-01', cowBCS: null, maternalScore: null },
+      { tagNumber: '2324', owner: 'M77', tagColor: 'Orange', calfSex: 'heifer', calfBirthDate: '2026-02-12', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '2325', owner: 'M77', tagColor: 'Orange', calfSex: 'heifer', calfBirthDate: '2026-02-12', cowBCS: null, maternalScore: null },
+      { tagNumber: '2426', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2427', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2428', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2429', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2430', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: '2026-02-04', cowBCS: null, maternalScore: null },
+      { tagNumber: '2431', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '2432', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6059', owner: 'M77', tagColor: 'Green', calfSex: 'bull', calfBirthDate: '2026-02-15', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '6064', owner: 'M77', tagColor: 'Purple', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6069', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '6070', owner: 'M77', tagColor: 'Yellow', calfSex: 'bull', calfBirthDate: '2026-02-11', cowBCS: null, maternalScore: null },
+      { tagNumber: '6072', owner: 'M77', tagColor: 'Green', calfSex: 'heifer', calfBirthDate: '2026-02-14', cowBCS: 6, maternalScore: 2 },
+      { tagNumber: '6078', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6084', owner: 'M77', tagColor: 'Green', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6085', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null },
+      { tagNumber: '6086', owner: 'M77', tagColor: 'Yellow', calfSex: null, calfBirthDate: null, cowBCS: null, maternalScore: null }
+    ];
+
+    let updated = 0;
+    let created = 0;
+    let notChanged = 0;
+    let errorCount = 0;
+    const results = [];
+
+    for (const record of cattleRecords) {
+      try {
+        let cattle = await Cattle.findOne({ tagNumber: record.tagNumber });
+        const hadCalf = !!(record.calfBirthDate || record.calfSex || record.cowBCS);
+
+        if (!cattle) {
+          // Create new record
+          let birthDate;
+          const tag = parseInt(record.tagNumber);
+          if (tag >= 6000 && tag < 7000) birthDate = new Date('2016-03-01');
+          else if (tag >= 2316 && tag <= 2325) birthDate = new Date('2023-03-01');
+          else if (tag >= 2426 && tag <= 2432) birthDate = new Date('2024-03-01');
+          else if (tag >= 2201 && tag <= 2215) birthDate = new Date('2022-03-01');
+          else if (tag >= 1000 && tag < 2000) birthDate = new Date('2019-03-01');
+          else birthDate = new Date('2018-03-01');
+
+          cattle = new Cattle({
+            tagNumber: record.tagNumber,
+            type: 'cow',
+            breed: 'Angus',
+            owner: record.owner,
+            tagColor: record.tagColor,
+            calvingGroup: 'SPRING',
+            birthDate: birthDate,
+            status: 'active',
+            annualCalvingRecords: []
+          });
+          created++;
+        }
+
+        // Update owner and tag color
+        cattle.owner = record.owner;
+        cattle.tagColor = record.tagColor;
+
+        if (hadCalf) {
+          if (!cattle.annualCalvingRecords) {
+            cattle.annualCalvingRecords = [];
+          }
+
+          const calvingRecord = {
+            year: 2026,
+            hadCalf: true,
+            calfSurvived: true,
+            calfSex: record.calfSex || undefined,
+            calfBirthDate: record.calfBirthDate ? new Date(record.calfBirthDate) : undefined,
+            cowBCS: record.cowBCS || undefined,
+            maternalScore: record.maternalScore || undefined,
+            notes: '2026 spring calving season'
+          };
+
+          const existingIndex = cattle.annualCalvingRecords.findIndex(r => r.year === 2026);
+          if (existingIndex >= 0) {
+            if (force) {
+              cattle.annualCalvingRecords[existingIndex] = calvingRecord;
+            } else {
+              results.push({ tag: record.tagNumber, status: 'exists (use force=true to overwrite)' });
+              continue;
+            }
+          } else {
+            cattle.annualCalvingRecords.push(calvingRecord);
+          }
+          updated++;
+        } else {
+          notChanged++;
+        }
+
+        await cattle.save();
+        results.push({
+          tag: record.tagNumber,
+          owner: record.owner,
+          tagColor: record.tagColor,
+          status: hadCalf ? (created > 0 ? 'created with calf' : 'calf recorded') : 'no calf yet',
+          calfSex: record.calfSex || null,
+          calfBirthDate: record.calfBirthDate || null,
+          cowBCS: record.cowBCS || null,
+          maternalScore: record.maternalScore || null
+        });
+      } catch (err) {
+        errorCount++;
+        results.push({ tag: record.tagNumber, status: 'error', error: err.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `2026 calving update: ${updated} calves recorded, ${created} new records created, ${notChanged} still waiting to calve, ${errorCount} errors`,
+      data: {
+        updated,
+        created,
+        notChanged,
+        errors: errorCount,
+        totalProcessed: cattleRecords.length,
+        summary: {
+          totalHead: 50,
+          m77Owned: 49,
+          totalCalves: 23,
+          liveCalves: 23,
+          deadCalves: 0,
+          percentCalved: '46%',
+          heifers: 6,
+          bulls: 17,
+          leftToCalve: 27
+        },
+        results
+      }
+    });
+
+  } catch (error) {
+    console.error('Error updating 2026 calves:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ===========================================
+// FEED & CATTLE LOCATIONS ROUTES
+// ===========================================
+
+// In-memory storage for feed data (TODO: Create models for production)
+let feedLocations = [];
+let feedInventory = [];
+let feedUsage = [];
+let feedPurchases = [];
+
+/**
+ * GET /api/cattle/feed/locations
+ * Get cattle locations by year
+ */
+router.get('/feed/locations', async (req, res) => {
+  try {
+    const { year } = req.query;
+    let data = feedLocations;
+    if (year) {
+      data = data.filter(l => l.year === parseInt(year));
+    }
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('Error fetching feed locations:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/locations
+ * Add cattle location record
+ */
+router.post('/feed/locations', async (req, res) => {
+  try {
+    const location = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    feedLocations.push(location);
+    res.status(201).json({ success: true, data: location });
+  } catch (error) {
+    console.error('Error creating feed location:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/cattle/feed/locations/:id
+ * Delete cattle location record
+ */
+router.delete('/feed/locations/:id', async (req, res) => {
+  try {
+    feedLocations = feedLocations.filter(l => l._id !== req.params.id);
+    res.json({ success: true, message: 'Location deleted' });
+  } catch (error) {
+    console.error('Error deleting feed location:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/feed/inventory
+ * Get feed inventory
+ */
+router.get('/feed/inventory', async (req, res) => {
+  try {
+    res.json({ success: true, data: feedInventory });
+  } catch (error) {
+    console.error('Error fetching feed inventory:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/inventory
+ * Add feed inventory item
+ */
+router.post('/feed/inventory', async (req, res) => {
+  try {
+    const item = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    feedInventory.push(item);
+    res.status(201).json({ success: true, data: item });
+  } catch (error) {
+    console.error('Error creating feed inventory:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/feed/usage
+ * Get feed usage log
+ */
+router.get('/feed/usage', async (req, res) => {
+  try {
+    res.json({ success: true, data: feedUsage });
+  } catch (error) {
+    console.error('Error fetching feed usage:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/usage
+ * Log feed usage and deduct from inventory
+ */
+router.post('/feed/usage', async (req, res) => {
+  try {
+    const { itemId, quantity, date, location, notes } = req.body;
+
+    // Find and update inventory item
+    const item = feedInventory.find(i => i._id === itemId);
+    if (!item) {
+      return res.status(404).json({ success: false, message: 'Feed item not found' });
+    }
+
+    if (item.quantity < quantity) {
+      return res.status(400).json({ success: false, message: 'Not enough inventory' });
+    }
+
+    item.quantity -= quantity;
+
+    const usage = {
+      _id: Date.now().toString(),
+      itemId,
+      itemName: item.name,
+      unit: item.unit,
+      quantity,
+      date: date || new Date(),
+      location,
+      notes,
+      loggedBy: req.user?.name || 'Unknown',
+      createdAt: new Date()
+    };
+    feedUsage.push(usage);
+
+    res.status(201).json({ success: true, data: usage });
+  } catch (error) {
+    console.error('Error logging feed usage:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/feed/purchases
+ * Get feed purchases
+ */
+router.get('/feed/purchases', async (req, res) => {
+  try {
+    res.json({ success: true, data: feedPurchases });
+  } catch (error) {
+    console.error('Error fetching feed purchases:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/feed/purchases
+ * Record feed purchase and optionally add to inventory
+ */
+router.post('/feed/purchases', async (req, res) => {
+  try {
+    const { type, description, quantity, cost, date, vendor, addToInventory, notes } = req.body;
+
+    const purchase = {
+      _id: Date.now().toString(),
+      type,
+      description,
+      quantity,
+      cost,
+      date: date || new Date(),
+      vendor,
+      notes,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    feedPurchases.push(purchase);
+
+    // Optionally add to inventory
+    if (addToInventory) {
+      const inventoryItem = {
+        _id: (Date.now() + 1).toString(),
+        type,
+        name: description,
+        quantity,
+        unit: type === 'hay' ? 'bales' : 'tubs',
+        location: '',
+        notes: `Purchased from ${vendor || 'vendor'}`,
+        createdBy: req.userId,
+        createdAt: new Date()
+      };
+      feedInventory.push(inventoryItem);
+    }
+
+    res.status(201).json({ success: true, data: purchase });
+  } catch (error) {
+    console.error('Error recording feed purchase:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ===========================================
+// VET & SUPPLIES ROUTES
+// ===========================================
+
+// In-memory storage for vet data (TODO: Create models for production)
+let vetVisits = [];
+let vetSupplies = [];
+let vetPurchases = [];
+
+/**
+ * GET /api/cattle/vet/visits
+ * Get vet visits with optional filters
+ */
+router.get('/vet/visits', async (req, res) => {
+  try {
+    const { year, status } = req.query;
+    let data = vetVisits;
+    if (year) {
+      data = data.filter(v => new Date(v.date).getFullYear() === parseInt(year));
+    }
+    if (status) {
+      data = data.filter(v => v.status === status);
+    }
+    // Sort by date descending
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('Error fetching vet visits:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/visits
+ * Add vet visit record
+ */
+router.post('/vet/visits', async (req, res) => {
+  try {
+    const visit = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    vetVisits.push(visit);
+    res.status(201).json({ success: true, data: visit });
+  } catch (error) {
+    console.error('Error creating vet visit:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * DELETE /api/cattle/vet/visits/:id
+ * Delete vet visit record
+ */
+router.delete('/vet/visits/:id', async (req, res) => {
+  try {
+    vetVisits = vetVisits.filter(v => v._id !== req.params.id);
+    res.json({ success: true, message: 'Visit deleted' });
+  } catch (error) {
+    console.error('Error deleting vet visit:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/vet/supplies
+ * Get supply inventory
+ */
+router.get('/vet/supplies', async (req, res) => {
+  try {
+    res.json({ success: true, data: vetSupplies });
+  } catch (error) {
+    console.error('Error fetching supplies:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/supplies
+ * Add supply inventory item
+ */
+router.post('/vet/supplies', async (req, res) => {
+  try {
+    const supply = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    vetSupplies.push(supply);
+    res.status(201).json({ success: true, data: supply });
+  } catch (error) {
+    console.error('Error creating supply:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/supplies/:id/use
+ * Deduct from supply inventory
+ */
+router.post('/vet/supplies/:id/use', async (req, res) => {
+  try {
+    const { quantity } = req.body;
+    const supply = vetSupplies.find(s => s._id === req.params.id);
+
+    if (!supply) {
+      return res.status(404).json({ success: false, message: 'Supply not found' });
+    }
+
+    if (supply.quantity < quantity) {
+      return res.status(400).json({ success: false, message: 'Not enough inventory' });
+    }
+
+    supply.quantity -= quantity;
+    res.json({ success: true, data: supply });
+  } catch (error) {
+    console.error('Error using supply:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/vet/purchases
+ * Get supply purchases
+ */
+router.get('/vet/purchases', async (req, res) => {
+  try {
+    // Sort by date descending
+    const sorted = [...vetPurchases].sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json({ success: true, data: sorted });
+  } catch (error) {
+    console.error('Error fetching purchases:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * POST /api/cattle/vet/purchases
+ * Record supply purchase and optionally add to inventory
+ */
+router.post('/vet/purchases', async (req, res) => {
+  try {
+    const { date, category, description, quantity, cost, vendor, addToInventory, supplyItemId, notes } = req.body;
+
+    const purchase = {
+      _id: Date.now().toString(),
+      date: date || new Date(),
+      category,
+      description,
+      quantity,
+      cost,
+      vendor,
+      notes,
+      createdBy: req.userId,
+      createdAt: new Date()
+    };
+    vetPurchases.push(purchase);
+
+    // Update existing inventory or create new item
+    if (addToInventory) {
+      if (supplyItemId) {
+        // Update existing supply item
+        const supply = vetSupplies.find(s => s._id === supplyItemId);
+        if (supply) {
+          supply.quantity += quantity;
+        }
+      } else {
+        // Create new supply item
+        const supply = {
+          _id: (Date.now() + 1).toString(),
+          category,
+          name: description,
+          quantity,
+          unit: 'doses',
+          reorderLevel: 0,
+          location: '',
+          notes: `Purchased from ${vendor || 'vendor'}`,
+          createdBy: req.userId,
+          createdAt: new Date()
+        };
+        vetSupplies.push(supply);
+      }
+    }
+
+    res.status(201).json({ success: true, data: purchase });
+  } catch (error) {
+    console.error('Error recording purchase:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/**
+ * GET /api/cattle/vet/expenses
+ * Get all vet and supply expenses combined
+ */
+router.get('/vet/expenses', async (req, res) => {
+  try {
+    const { year, category } = req.query;
+    let expenses = [];
+
+    // Add vet visits as expenses
+    for (const visit of vetVisits) {
+      if (visit.status === 'completed') {
+        expenses.push({
+          date: visit.date,
+          description: `Vet Visit - ${visit.vetName || 'Vet'} (${visit.serviceType || 'Service'})`,
+          category: 'vet',
+          amount: (visit.cost || 0) + (visit.mileage || 0),
+          vendor: visit.vetName
+        });
+      }
+    }
+
+    // Add purchases as expenses
+    for (const purchase of vetPurchases) {
+      expenses.push({
+        date: purchase.date,
+        description: purchase.description,
+        category: purchase.category,
+        amount: purchase.cost || 0,
+        vendor: purchase.vendor
+      });
+    }
+
+    // Filter by year
+    if (year) {
+      expenses = expenses.filter(e => new Date(e.date).getFullYear() === parseInt(year));
+    }
+
+    // Filter by category
+    if (category) {
+      expenses = expenses.filter(e => e.category === category);
+    }
+
+    // Sort by date descending
+    expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.json({ success: true, data: expenses });
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+module.exports = router;

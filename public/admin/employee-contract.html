@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Independent Contractor Agreement | M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            line-height: 1.6;
+        }
+        .admin-header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+        .contract-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .contract-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        .contract-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+        .company-info {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .company-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+        .company-address {
+            color: #666;
+            font-size: 14px;
+        }
+        .parties-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .party-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .party-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .party-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+        }
+        .party-detail {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .contract-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .section-number {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+        .section-content {
+            color: #444;
+            font-size: 15px;
+        }
+        .section-content p {
+            margin-bottom: 15px;
+        }
+        .section-content ul {
+            margin: 15px 0 15px 25px;
+        }
+        .section-content li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background: #f8f8f8;
+            border-left: 4px solid #2d5016;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        .compensation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .compensation-table th,
+        .compensation-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .compensation-table th {
+            background: #f8f8f8;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .compensation-table .amount {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #2d5016;
+        }
+        .acknowledgment-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 2px solid #e0e0e0;
+        }
+        .acknowledgment-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .checkbox-text {
+            font-size: 14px;
+            color: #444;
+        }
+        .signature-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 2px solid #2d5016;
+        }
+        .signature-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .signature-canvas-container {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            margin-bottom: 15px;
+        }
+        #signatureCanvas {
+            display: block;
+            width: 100%;
+            height: 200px;
+            cursor: crosshair;
+        }
+        .signature-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+        .btn-submit {
+            background: #2d5016;
+            color: white;
+            flex: 1;
+        }
+        .btn-submit:hover {
+            background: #3d6b1f;
+        }
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .signature-date {
+            font-size: 14px;
+            color: #666;
+        }
+        .already-signed {
+            text-align: center;
+            padding: 40px;
+        }
+        .already-signed h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        .signed-signature {
+            max-width: 300px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+        }
+        .signed-signature img {
+            max-width: 100%;
+        }
+        .print-btn {
+            margin-top: 20px;
+        }
+        @media print {
+            .admin-header, .btn, .signature-actions { display: none; }
+            .contract-section, .acknowledgment-section, .signature-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+        @media (max-width: 768px) {
+            .parties-section { grid-template-columns: 1fr; }
+            .container { padding: 20px 15px; }
+        }
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard.html" class="admin-logo">M77 AG</a>
+    </header>
+
+    <div class="container">
+        <div id="loadingState" class="loading">
+            <p>Loading contract...</p>
+        </div>
+
+        <div id="contractContent" style="display: none;">
+            <!-- Contract Header -->
+            <div class="contract-header">
+                <h1 class="contract-title">INDEPENDENT CONTRACTOR AGREEMENT</h1>
+                <p class="contract-subtitle">State of Colorado | Effective Date: <span id="effectiveDate">--</span></p>
+            </div>
+
+            <!-- Company Info -->
+            <div class="company-info">
+                <div class="company-name">M77 AG, LLC</div>
+                <div class="company-address">
+                    Phillips County, Colorado<br>
+                    Agricultural Services & Farm Management
+                </div>
+            </div>
+
+            <!-- Parties -->
+            <div class="parties-section">
+                <div class="party-card">
+                    <div class="party-label">Company</div>
+                    <div class="party-name">M77 AG, LLC</div>
+                    <div class="party-detail">("Company")</div>
+                </div>
+                <div class="party-card">
+                    <div class="party-label">Contractor</div>
+                    <div class="party-name" id="contractorName">--</div>
+                    <div class="party-detail" id="contractorPosition">--</div>
+                </div>
+            </div>
+
+            <!-- Section 1: Engagement -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 1</div>
+                <h2 class="section-title">Engagement of Services</h2>
+                <div class="section-content">
+                    <p>The Company hereby engages the Contractor, and the Contractor hereby accepts engagement, as an independent contractor to perform the services described herein, subject to the terms and conditions of this Agreement.</p>
+                    <p>The Contractor shall provide services in the capacity of <strong id="positionText">--</strong> for M77 AG, LLC, performing duties related to agricultural operations, farm management, and related business activities as directed by the Company.</p>
+                </div>
+            </div>
+
+            <!-- Section 2: Compensation -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 2</div>
+                <h2 class="section-title">Compensation</h2>
+                <div class="section-content">
+                    <p>In consideration for the services rendered, the Company agrees to compensate the Contractor as follows:</p>
+
+                    <table class="compensation-table">
+                        <tr>
+                            <th>Compensation Type</th>
+                            <th>Amount</th>
+                            <th>Payment Schedule</th>
+                        </tr>
+                        <tr>
+                            <td>Base Compensation</td>
+                            <td class="amount" id="baseCompensation">$0.00</td>
+                            <td id="paymentSchedule">Monthly</td>
+                        </tr>
+                        <tr id="profitShareRow" style="display: none;">
+                            <td>Profit Share</td>
+                            <td class="amount" id="profitSharePercent">0%</td>
+                            <td>As profits are distributed</td>
+                        </tr>
+                    </table>
+
+                    <div class="highlight-box" id="profitShareDetails" style="display: none;">
+                        <strong>Profit Sharing Agreement:</strong> Contractor shall receive <span id="profitShareAmount">0%</span> of net profits from M77 AG operations, calculated and distributed according to the Company's standard profit distribution schedule.
+                    </div>
+
+                    <p>Payment shall be made on or before the last business day of each month for services rendered during that month. The Contractor acknowledges that as an independent contractor, they are responsible for their own tax obligations.</p>
+                </div>
+            </div>
+
+            <!-- Section 3: Independent Contractor Status -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 3</div>
+                <h2 class="section-title">Independent Contractor Status</h2>
+                <div class="section-content">
+                    <p>The Contractor is engaged as an independent contractor and not as an employee of the Company. The Contractor acknowledges and agrees that:</p>
+                    <ul>
+                        <li>The Contractor shall not be entitled to any employee benefits, including but not limited to health insurance, retirement benefits, paid vacation, or sick leave.</li>
+                        <li>The Contractor is solely responsible for payment of all federal, state, and local taxes, including self-employment taxes, arising from compensation received under this Agreement.</li>
+                        <li>The Company will not withhold any taxes from payments made to the Contractor.</li>
+                        <li>The Contractor will receive an IRS Form 1099 for all compensation paid during the tax year.</li>
+                        <li>The Contractor maintains the right to perform services for other clients, provided such services do not conflict with the Contractor's obligations under this Agreement.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 4: Term and Termination (Colorado At-Will) -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 4</div>
+                <h2 class="section-title">Term and Termination</h2>
+                <div class="section-content">
+                    <p>This Agreement shall commence on the Effective Date and shall continue until terminated by either party.</p>
+
+                    <div class="highlight-box">
+                        <strong>Colorado At-Will Relationship:</strong> In accordance with Colorado law, this Agreement creates an at-will relationship. Either party may terminate this Agreement at any time, with or without cause, and with or without notice. This at-will relationship cannot be modified except by a written agreement signed by both parties.
+                    </div>
+
+                    <p>Upon termination:</p>
+                    <ul>
+                        <li>The Contractor shall be entitled to compensation for all services rendered through the date of termination.</li>
+                        <li>Any profit share distributions shall be calculated based on the period of service and distributed according to the Company's standard schedule.</li>
+                        <li>The Contractor shall return all Company property, documents, and materials in their possession.</li>
+                        <li>The confidentiality obligations set forth in this Agreement shall survive termination.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 5: Confidentiality -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 5</div>
+                <h2 class="section-title">Confidentiality</h2>
+                <div class="section-content">
+                    <p>The Contractor agrees to maintain the confidentiality of all proprietary information, trade secrets, and business information of the Company, including but not limited to:</p>
+                    <ul>
+                        <li>Financial information, including profit/loss statements, banking information, and investment details</li>
+                        <li>Customer and vendor lists, contracts, and relationships</li>
+                        <li>Operational methods, farming techniques, and business strategies</li>
+                        <li>Land lease agreements and real estate information</li>
+                        <li>Employee and contractor compensation information</li>
+                    </ul>
+                    <p>This confidentiality obligation shall survive the termination of this Agreement for a period of two (2) years.</p>
+                </div>
+            </div>
+
+            <!-- Section 6: Governing Law -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 6</div>
+                <h2 class="section-title">Governing Law</h2>
+                <div class="section-content">
+                    <p>This Agreement shall be governed by and construed in accordance with the laws of the State of Colorado, without regard to its conflict of law provisions. Any disputes arising under this Agreement shall be resolved in the courts of Phillips County, Colorado.</p>
+                </div>
+            </div>
+
+            <!-- Section 7: Entire Agreement -->
+            <div class="contract-section">
+                <div class="section-number">SECTION 7</div>
+                <h2 class="section-title">Entire Agreement</h2>
+                <div class="section-content">
+                    <p>This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof and supersedes all prior negotiations, representations, warranties, and agreements between the parties. This Agreement may not be modified except by a written instrument signed by both parties.</p>
+                </div>
+            </div>
+
+            <!-- Acknowledgments -->
+            <div class="acknowledgment-section" id="acknowledgmentSection">
+                <h2 class="acknowledgment-title">Acknowledgment of Terms</h2>
+                <p style="margin-bottom: 20px; color: #666;">Please read and acknowledge each section by checking the boxes below:</p>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="ackCompensation">
+                        <span class="checkbox-text">I acknowledge and agree to the <strong>Compensation</strong> terms outlined in Section 2, including the base compensation amount and payment schedule.</span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="ackWorkScope">
+                        <span class="checkbox-text">I acknowledge and agree to the <strong>Scope of Work</strong> and engagement terms outlined in Section 1.</span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="ackTermination">
+                        <span class="checkbox-text">I acknowledge and agree to the <strong>At-Will Termination</strong> provisions outlined in Section 4, understanding that either party may terminate this agreement at any time.</span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="ackConfidentiality">
+                        <span class="checkbox-text">I acknowledge and agree to the <strong>Confidentiality</strong> obligations outlined in Section 5.</span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="ackTaxResponsibility">
+                        <span class="checkbox-text">I acknowledge that as an <strong>Independent Contractor</strong>, I am solely responsible for payment of all taxes on compensation received, as outlined in Section 3.</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section" id="signatureSection">
+                <h2 class="signature-title">Digital Signature</h2>
+                <p style="margin-bottom: 15px; color: #666;">Please sign below using your mouse or touchscreen:</p>
+
+                <div class="signature-canvas-container">
+                    <canvas id="signatureCanvas"></canvas>
+                </div>
+
+                <div class="signature-actions">
+                    <button class="btn btn-clear" onclick="clearSignature()">Clear Signature</button>
+                    <button class="btn btn-submit" id="submitBtn" onclick="submitContract()" disabled>Sign Agreement</button>
+                </div>
+
+                <div class="signature-date">
+                    Date: <span id="signatureDate">--</span>
+                </div>
+            </div>
+
+            <!-- Already Signed State -->
+            <div class="already-signed" id="alreadySignedSection" style="display: none;">
+                <h2>Contract Signed</h2>
+                <p>This agreement was signed on <strong id="signedDate">--</strong></p>
+                <div class="signed-signature">
+                    <img id="signedSignatureImg" src="" alt="Signature">
+                </div>
+                <p style="color: #666; font-size: 14px;">Contract Version: <span id="contractVersion">1.0</span></p>
+                <button class="btn btn-clear print-btn" onclick="window.print()">Print Contract</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let employeeId = null;
+        let employeeData = null;
+        let canvas, ctx;
+        let isDrawing = false;
+        let hasSignature = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            employeeId = urlParams.get('id');
+
+            if (!employeeId) {
+                document.getElementById('loadingState').innerHTML = '<div class="error-message">No employee ID provided. Please access this page from the employee management section.</div>';
+                return;
+            }
+
+            loadContract();
+            setupSignatureCanvas();
+            setupCheckboxes();
+        });
+
+        async function loadContract() {
+            try {
+                const response = await fetch(`/api/employees/${employeeId}/contract`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    document.getElementById('loadingState').innerHTML = '<div class="error-message">Failed to load contract data.</div>';
+                    return;
+                }
+
+                employeeData = data.employee;
+                const contract = data.contract;
+
+                // Populate contract details
+                document.getElementById('contractorName').textContent = `${employeeData.firstName} ${employeeData.lastName}`;
+                document.getElementById('contractorPosition').textContent = `("Contractor") - ${employeeData.position}`;
+                document.getElementById('positionText').textContent = employeeData.position;
+                document.getElementById('effectiveDate').textContent = formatDate(employeeData.startDate);
+
+                // Compensation
+                if (employeeData.payType === 'salary') {
+                    document.getElementById('baseCompensation').textContent = `$${employeeData.annualSalary.toLocaleString('en-US', {minimumFractionDigits: 2})} / year`;
+                    document.getElementById('paymentSchedule').textContent = 'Monthly ($' + (employeeData.annualSalary / 12).toLocaleString('en-US', {minimumFractionDigits: 2}) + '/month)';
+                } else {
+                    document.getElementById('baseCompensation').textContent = `$${employeeData.monthlyRate.toLocaleString('en-US', {minimumFractionDigits: 2})} / month`;
+                    document.getElementById('paymentSchedule').textContent = 'Monthly';
+                }
+
+                // Profit share
+                if (employeeData.hasProfitShare) {
+                    document.getElementById('profitShareRow').style.display = 'table-row';
+                    document.getElementById('profitSharePercent').textContent = `${employeeData.profitSharePercent}%`;
+                    document.getElementById('profitShareDetails').style.display = 'block';
+                    document.getElementById('profitShareAmount').textContent = `${employeeData.profitSharePercent}%`;
+                }
+
+                // Set signature date
+                document.getElementById('signatureDate').textContent = new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Check if already signed
+                if (contract && contract.signed) {
+                    showSignedState(contract);
+                }
+
+                // Show content
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('contractContent').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading contract:', error);
+                document.getElementById('loadingState').innerHTML = '<div class="error-message">Error loading contract. Please try again.</div>';
+            }
+        }
+
+        function showSignedState(contract) {
+            document.getElementById('acknowledgmentSection').style.display = 'none';
+            document.getElementById('signatureSection').style.display = 'none';
+            document.getElementById('alreadySignedSection').style.display = 'block';
+            document.getElementById('signedDate').textContent = formatDate(contract.signedDate);
+            document.getElementById('contractVersion').textContent = contract.contractVersion || '1.0';
+
+            if (contract.signatureData) {
+                document.getElementById('signedSignatureImg').src = contract.signatureData;
+            }
+        }
+
+        function setupSignatureCanvas() {
+            canvas = document.getElementById('signatureCanvas');
+            ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            function resizeCanvas() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = 200;
+                ctx.strokeStyle = '#1a1a1a';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Touch events
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            hasSignature = true;
+            updateSubmitButton();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            ctx.stroke();
+            hasSignature = true;
+            updateSubmitButton();
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false;
+            updateSubmitButton();
+        }
+
+        function setupCheckboxes() {
+            const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateSubmitButton);
+            });
+        }
+
+        function updateSubmitButton() {
+            const allChecked =
+                document.getElementById('ackCompensation').checked &&
+                document.getElementById('ackWorkScope').checked &&
+                document.getElementById('ackTermination').checked &&
+                document.getElementById('ackConfidentiality').checked &&
+                document.getElementById('ackTaxResponsibility').checked;
+
+            document.getElementById('submitBtn').disabled = !(allChecked && hasSignature);
+        }
+
+        async function submitContract() {
+            if (!hasSignature) {
+                alert('Please provide your signature');
+                return;
+            }
+
+            const signatureData = canvas.toDataURL('image/png');
+
+            const contractData = {
+                signatureData: signatureData,
+                contractVersion: '1.0',
+                contractType: 'independent-contractor',
+                agreedTerms: {
+                    compensation: document.getElementById('ackCompensation').checked,
+                    workScope: document.getElementById('ackWorkScope').checked,
+                    termination: document.getElementById('ackTermination').checked,
+                    confidentiality: document.getElementById('ackConfidentiality').checked,
+                    taxResponsibility: document.getElementById('ackTaxResponsibility').checked
+                }
+            };
+
+            try {
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('submitBtn').textContent = 'Signing...';
+
+                const response = await fetch(`/api/employees/${employeeId}/sign-contract`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contractData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Contract signed successfully!');
+                    location.reload();
+                } else {
+                    alert('Error signing contract: ' + result.error);
+                    document.getElementById('submitBtn').disabled = false;
+                    document.getElementById('submitBtn').textContent = 'Sign Agreement';
+                }
+            } catch (error) {
+                console.error('Error submitting contract:', error);
+                alert('Failed to sign contract. Please try again.');
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Sign Agreement';
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '--';
+            return new Date(dateStr).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const EquipmentOffer = require('../models/equipmentOffer');
+const { sendEquipmentPurchaseConfirmation } = require('../utils/emailservice');
 
 // Submit a new offer (public)
 router.post('/offers', async (req, res) => {
@@ -110,6 +111,23 @@ router.post('/offers/:offerId/accept', async (req, res) => {
     });
 
     await offer.save();
+
+    // Send confirmation email to buyer and admin
+    try {
+      await sendEquipmentPurchaseConfirmation({
+        buyerName: offer.buyerName,
+        buyerEmail: offer.buyerEmail,
+        buyerPhone: offer.buyerPhone,
+        equipmentTitle: offer.equipmentTitle,
+        equipmentId: offer.equipmentId,
+        listPrice: offer.listPrice,
+        finalPrice: offer.finalPrice,
+        acceptedAt: offer.acceptedAt
+      });
+    } catch (emailError) {
+      console.error('Error sending purchase confirmation email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     res.json({ success: true, offer });
   } catch (error) {

@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grain Inventory Management - M77 AG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f3f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover { color: #d4af37; }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-header h1 {
+            color: #2d5016;
+            font-size: 28px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #c4a030 100%);
+            color: #1a1a1a;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2d5016;
+            border: 2px solid #2d5016;
+        }
+
+        .btn-secondary:hover {
+            background: #2d5016;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Financial Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #2d5016;
+        }
+
+        .summary-card.gold { border-left-color: #d4af37; }
+        .summary-card.blue { border-left-color: #2196F3; }
+        .summary-card.orange { border-left-color: #FF9800; }
+
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c2c2c;
+        }
+
+        .summary-value.positive { color: #2d5016; }
+        .summary-value.currency::before { content: '$'; }
+
+        .summary-sub {
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Bin Cards */
+        .bins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .bin-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .bin-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1e 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bin-header.corn {
+            background: linear-gradient(135deg, #f57f17 0%, #ff9800 100%);
+        }
+
+        .bin-header.milo {
+            background: linear-gradient(135deg, #c62828 0%, #e53935 100%);
+        }
+
+        .bin-header h3 {
+            font-size: 18px;
+        }
+
+        .bin-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .bin-body {
+            padding: 25px;
+        }
+
+        .bin-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bin-stat:last-child { border-bottom: none; }
+
+        .bin-stat-label { color: #666; }
+        .bin-stat-value { font-weight: 600; color: #2c2c2c; }
+        .bin-stat-value.highlight { color: #2d5016; font-size: 18px; }
+
+        .bin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .bin-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-record-sale {
+            background: #2d5016;
+            color: white;
+            border: none;
+        }
+
+        .btn-record-sale:hover { background: #3d6b1e; }
+
+        .btn-adjust {
+            background: white;
+            color: #2d5016;
+            border: 2px solid #2d5016;
+        }
+
+        .btn-adjust:hover {
+            background: #e8f5e9;
+        }
+
+        /* Sales History */
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1e 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h3 { font-size: 18px; }
+
+        .section-body { padding: 25px; }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .data-table tr:hover { background: #fafafa; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-sold { background: #e8f5e9; color: #2e7d32; }
+        .status-contracted { background: #fff3e0; color: #e65100; }
+        .status-pending { background: #e3f2fd; color: #1565c0; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1e 100%);
+            color: white;
+            padding: 20px 25px;
+        }
+
+        .modal-header h3 { font-size: 20px; }
+
+        .modal-body { padding: 25px; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .header, .header-actions, .bin-actions, .modal-overlay, .nav-links { display: none !important; }
+            .main-container { padding: 0; }
+            body { background: white; }
+            .summary-card, .bin-card, .section-card { box-shadow: none; border: 1px solid #ddd; }
+        }
+
+        .print-header {
+            display: none;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        @media print {
+            .print-header { display: block; }
+        }
+
+        .print-header h1 {
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 5px;
+        }
+
+        .print-header p { color: #666; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">M77 AG</div>
+        <nav class="nav-links">
+            <a href="/admin">Admin Dashboard</a>
+            <a href="/admin/farm-operations.html">Farm Operations</a>
+            <a href="/admin/farming/seed-orders.html">Seed Orders</a>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <div class="print-header">
+            <h1>M77 AG - Grain Inventory Report</h1>
+            <p>Generated: <span id="printDate"></span></p>
+        </div>
+
+        <div class="page-header">
+            <div>
+                <h1>Grain Inventory Management</h1>
+                <p style="color: #666; margin-top: 5px;">Track bin storage, sales, and inventory value</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="window.print()">Print Report</button>
+                <button class="btn btn-primary" onclick="openAddBinModal()">+ Add Bin</button>
+            </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Total Bushels in Storage</div>
+                <div class="summary-value" id="totalBushels">42,000</div>
+                <div class="summary-sub">Across all bins</div>
+            </div>
+            <div class="summary-card gold">
+                <div class="summary-label">Corn Inventory</div>
+                <div class="summary-value" id="cornBushels">20,000</div>
+                <div class="summary-sub" id="cornValue">Est. value at $4.50/bu: $90,000</div>
+            </div>
+            <div class="summary-card orange">
+                <div class="summary-label">Milo Inventory</div>
+                <div class="summary-value" id="miloBushels">22,000</div>
+                <div class="summary-sub" id="miloValue">Est. value at $4.00/bu: $88,000</div>
+            </div>
+            <div class="summary-card blue">
+                <div class="summary-label">Total Inventory Value</div>
+                <div class="summary-value positive currency" id="totalValue">178,000</div>
+                <div class="summary-sub">Based on current market prices</div>
+            </div>
+        </div>
+
+        <!-- Bin Cards -->
+        <div class="bins-grid" id="binsContainer">
+            <!-- NE Small Bin -->
+            <div class="bin-card" data-bin-id="NE-SMALL">
+                <div class="bin-header corn">
+                    <h3>North East Small Bin</h3>
+                    <span class="bin-badge">NE-SMALL</span>
+                </div>
+                <div class="bin-body">
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Crop Type</span>
+                        <span class="bin-stat-value">Corn</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Current Quantity</span>
+                        <span class="bin-stat-value highlight">10,000 bu</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Bin Capacity</span>
+                        <span class="bin-stat-value">12,000 bu</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Moisture</span>
+                        <span class="bin-stat-value">14.0%</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Test Weight</span>
+                        <span class="bin-stat-value">56 lb</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Est. Value (@$4.50)</span>
+                        <span class="bin-stat-value highlight">$45,000</span>
+                    </div>
+                    <div class="bin-actions">
+                        <button class="btn-record-sale" onclick="openSaleModal('NE-SMALL', 'Corn', 10000)">Record Sale</button>
+                        <button class="btn-adjust" onclick="openAdjustModal('NE-SMALL', 10000)">Adjust</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SE Small Bin -->
+            <div class="bin-card" data-bin-id="SE-SMALL">
+                <div class="bin-header corn">
+                    <h3>South East Small Bin</h3>
+                    <span class="bin-badge">SE-SMALL</span>
+                </div>
+                <div class="bin-body">
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Crop Type</span>
+                        <span class="bin-stat-value">Corn</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Current Quantity</span>
+                        <span class="bin-stat-value highlight">10,000 bu</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Bin Capacity</span>
+                        <span class="bin-stat-value">12,000 bu</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Moisture</span>
+                        <span class="bin-stat-value">14.2%</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Test Weight</span>
+                        <span class="bin-stat-value">56 lb</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Est. Value (@$4.50)</span>
+                        <span class="bin-stat-value highlight">$45,000</span>
+                    </div>
+                    <div class="bin-actions">
+                        <button class="btn-record-sale" onclick="openSaleModal('SE-SMALL', 'Corn', 10000)">Record Sale</button>
+                        <button class="btn-adjust" onclick="openAdjustModal('SE-SMALL', 10000)">Adjust</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SW Big Bin -->
+            <div class="bin-card" data-bin-id="SW-BIG">
+                <div class="bin-header milo">
+                    <h3>South West Big Bin</h3>
+                    <span class="bin-badge">SW-BIG</span>
+                </div>
+                <div class="bin-body">
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Crop Type</span>
+                        <span class="bin-stat-value">Milo</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Current Quantity</span>
+                        <span class="bin-stat-value highlight">22,000 bu</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Bin Capacity</span>
+                        <span class="bin-stat-value">25,000 bu</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Moisture</span>
+                        <span class="bin-stat-value">13.0%</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Test Weight</span>
+                        <span class="bin-stat-value">56 lb</span>
+                    </div>
+                    <div class="bin-stat">
+                        <span class="bin-stat-label">Est. Value (@$4.00)</span>
+                        <span class="bin-stat-value highlight">$88,000</span>
+                    </div>
+                    <div class="bin-actions">
+                        <button class="btn-record-sale" onclick="openSaleModal('SW-BIG', 'Milo', 22000)">Record Sale</button>
+                        <button class="btn-adjust" onclick="openAdjustModal('SW-BIG', 22000)">Adjust</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Sales / Transactions -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3>Recent Sales & Transactions</h3>
+            </div>
+            <div class="section-body">
+                <table class="data-table" id="salesTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Bin</th>
+                            <th>Crop</th>
+                            <th>Bushels</th>
+                            <th>Price/Bu</th>
+                            <th>Total</th>
+                            <th>Buyer</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <h3>No sales recorded yet</h3>
+                                <p>Click "Record Sale" on any bin to log a grain sale</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Record Sale Modal -->
+    <div class="modal-overlay" id="saleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Record Grain Sale</h3>
+            </div>
+            <div class="modal-body">
+                <form id="saleForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bin</label>
+                            <input type="text" id="saleBin" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Crop</label>
+                            <input type="text" id="saleCrop" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Available Bushels</label>
+                        <input type="text" id="saleAvailable" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bushels to Sell *</label>
+                            <input type="number" id="saleBushels" required min="1" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Price per Bushel *</label>
+                            <input type="number" id="salePrice" required min="0" step="0.01" placeholder="4.50">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Sale Total</label>
+                        <input type="text" id="saleTotal" readonly style="font-weight: bold; font-size: 18px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Buyer / Elevator</label>
+                        <input type="text" id="saleBuyer" placeholder="e.g., Cargill, ADM, Local Elevator">
+                    </div>
+                    <div class="form-group">
+                        <label>Sale Date</label>
+                        <input type="date" id="saleDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <input type="text" id="saleNotes" placeholder="Contract #, delivery notes, etc.">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSaleModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="recordSale()">Record Sale</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adjust Quantity Modal -->
+    <div class="modal-overlay" id="adjustModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Adjust Bin Quantity</h3>
+            </div>
+            <div class="modal-body">
+                <form id="adjustForm">
+                    <div class="form-group">
+                        <label>Current Quantity</label>
+                        <input type="text" id="adjustCurrent" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>New Quantity *</label>
+                        <input type="number" id="adjustNew" required min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Reason for Adjustment</label>
+                        <select id="adjustReason">
+                            <option value="shrinkage">Shrinkage</option>
+                            <option value="transfer">Transfer to Another Bin</option>
+                            <option value="correction">Data Correction</option>
+                            <option value="addition">Added Grain</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <input type="text" id="adjustNotes" placeholder="Explanation for adjustment">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAdjustModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="adjustQuantity()">Save Adjustment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bin Modal -->
+    <div class="modal-overlay" id="addBinModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Bin</h3>
+            </div>
+            <div class="modal-body">
+                <form id="addBinForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bin Name *</label>
+                            <input type="text" id="newBinName" required placeholder="e.g., North West Bin">
+                        </div>
+                        <div class="form-group">
+                            <label>Bin Number/ID *</label>
+                            <input type="text" id="newBinNumber" required placeholder="e.g., NW-1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Crop Type *</label>
+                            <select id="newBinCrop" required>
+                                <option value="">Select Crop</option>
+                                <option value="corn">Corn</option>
+                                <option value="milo">Milo (Sorghum)</option>
+                                <option value="wheat">Wheat</option>
+                                <option value="soybeans">Soybeans</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Current Quantity (bu) *</label>
+                            <input type="number" id="newBinQuantity" required min="0" step="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bin Capacity (bu)</label>
+                            <input type="number" id="newBinCapacity" min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Moisture %</label>
+                            <input type="number" id="newBinMoisture" min="0" max="30" step="0.1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Test Weight (lb)</label>
+                        <input type="number" id="newBinTestWeight" min="0" step="0.1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddBinModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addNewBin()">Add Bin</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current prices (can be fetched from market API later)
+        const PRICES = {
+            corn: 4.50,
+            milo: 4.00,
+            wheat: 5.50,
+            soybeans: 10.50
+        };
+
+        // Bin data storage (will sync with backend)
+        let binsData = [
+            { binNumber: 'NE-SMALL', binName: 'North East Small Bin', cropType: 'corn', currentQuantity: 10000, capacity: 12000, moisture: 14.0, testWeight: 56 },
+            { binNumber: 'SE-SMALL', binName: 'South East Small Bin', cropType: 'corn', currentQuantity: 10000, capacity: 12000, moisture: 14.2, testWeight: 56 },
+            { binNumber: 'SW-BIG', binName: 'South West Big Bin', cropType: 'milo', currentQuantity: 22000, capacity: 25000, moisture: 13.0, testWeight: 56 }
+        ];
+
+        let salesHistory = [];
+        let currentSaleBin = null;
+        let currentAdjustBin = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('printDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('saleDate').valueAsDate = new Date();
+            loadFromStorage();
+            updateSummary();
+            renderBins();
+            renderSalesHistory();
+
+            // Calculate sale total on input
+            document.getElementById('saleBushels').addEventListener('input', updateSaleTotal);
+            document.getElementById('salePrice').addEventListener('input', updateSaleTotal);
+        });
+
+        // Load from localStorage
+        function loadFromStorage() {
+            const savedBins = localStorage.getItem('m77ag_bins');
+            const savedSales = localStorage.getItem('m77ag_sales');
+            if (savedBins) binsData = JSON.parse(savedBins);
+            if (savedSales) salesHistory = JSON.parse(savedSales);
+        }
+
+        // Save to localStorage
+        function saveToStorage() {
+            localStorage.setItem('m77ag_bins', JSON.stringify(binsData));
+            localStorage.setItem('m77ag_sales', JSON.stringify(salesHistory));
+        }
+
+        // Update summary cards
+        function updateSummary() {
+            let totalBu = 0;
+            let cornBu = 0;
+            let miloBu = 0;
+
+            binsData.forEach(bin => {
+                totalBu += bin.currentQuantity;
+                if (bin.cropType === 'corn') cornBu += bin.currentQuantity;
+                if (bin.cropType === 'milo') miloBu += bin.currentQuantity;
+            });
+
+            const cornValue = cornBu * PRICES.corn;
+            const miloValue = miloBu * PRICES.milo;
+            const totalValue = cornValue + miloValue;
+
+            document.getElementById('totalBushels').textContent = totalBu.toLocaleString();
+            document.getElementById('cornBushels').textContent = cornBu.toLocaleString();
+            document.getElementById('miloBushels').textContent = miloBu.toLocaleString();
+            document.getElementById('cornValue').textContent = `Est. value at $${PRICES.corn.toFixed(2)}/bu: $${cornValue.toLocaleString()}`;
+            document.getElementById('miloValue').textContent = `Est. value at $${PRICES.milo.toFixed(2)}/bu: $${miloValue.toLocaleString()}`;
+            document.getElementById('totalValue').textContent = totalValue.toLocaleString();
+        }
+
+        // Render bin cards
+        function renderBins() {
+            const container = document.getElementById('binsContainer');
+            container.innerHTML = '';
+
+            binsData.forEach(bin => {
+                const price = PRICES[bin.cropType] || 4.00;
+                const value = bin.currentQuantity * price;
+                const headerClass = bin.cropType === 'corn' ? 'corn' : bin.cropType === 'milo' ? 'milo' : '';
+
+                container.innerHTML += `
+                    <div class="bin-card" data-bin-id="${bin.binNumber}">
+                        <div class="bin-header ${headerClass}">
+                            <h3>${bin.binName}</h3>
+                            <span class="bin-badge">${bin.binNumber}</span>
+                        </div>
+                        <div class="bin-body">
+                            <div class="bin-stat">
+                                <span class="bin-stat-label">Crop Type</span>
+                                <span class="bin-stat-value">${formatCrop(bin.cropType)}</span>
+                            </div>
+                            <div class="bin-stat">
+                                <span class="bin-stat-label">Current Quantity</span>
+                                <span class="bin-stat-value highlight">${bin.currentQuantity.toLocaleString()} bu</span>
+                            </div>
+                            <div class="bin-stat">
+                                <span class="bin-stat-label">Bin Capacity</span>
+                                <span class="bin-stat-value">${bin.capacity ? bin.capacity.toLocaleString() + ' bu' : 'N/A'}</span>
+                            </div>
+                            <div class="bin-stat">
+                                <span class="bin-stat-label">Moisture</span>
+                                <span class="bin-stat-value">${bin.moisture ? bin.moisture + '%' : 'N/A'}</span>
+                            </div>
+                            <div class="bin-stat">
+                                <span class="bin-stat-label">Test Weight</span>
+                                <span class="bin-stat-value">${bin.testWeight ? bin.testWeight + ' lb' : 'N/A'}</span>
+                            </div>
+                            <div class="bin-stat">
+                                <span class="bin-stat-label">Est. Value (@$${price.toFixed(2)})</span>
+                                <span class="bin-stat-value highlight">$${value.toLocaleString()}</span>
+                            </div>
+                            <div class="bin-actions">
+                                <button class="btn-record-sale" onclick="openSaleModal('${bin.binNumber}', '${bin.cropType}', ${bin.currentQuantity})">Record Sale</button>
+                                <button class="btn-adjust" onclick="openAdjustModal('${bin.binNumber}', ${bin.currentQuantity})">Adjust</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function formatCrop(crop) {
+            const names = { corn: 'Corn', milo: 'Milo', wheat: 'Wheat', soybeans: 'Soybeans' };
+            return names[crop] || crop;
+        }
+
+        // Sale Modal
+        function openSaleModal(binNumber, cropType, available) {
+            currentSaleBin = binNumber;
+            document.getElementById('saleBin').value = binNumber;
+            document.getElementById('saleCrop').value = formatCrop(cropType);
+            document.getElementById('saleAvailable').value = available.toLocaleString() + ' bu';
+            document.getElementById('saleBushels').value = '';
+            document.getElementById('saleBushels').max = available;
+            document.getElementById('salePrice').value = PRICES[cropType] || '';
+            document.getElementById('saleTotal').value = '';
+            document.getElementById('saleBuyer').value = '';
+            document.getElementById('saleNotes').value = '';
+            document.getElementById('saleModal').classList.add('active');
+        }
+
+        function closeSaleModal() {
+            document.getElementById('saleModal').classList.remove('active');
+            currentSaleBin = null;
+        }
+
+        function updateSaleTotal() {
+            const bushels = parseFloat(document.getElementById('saleBushels').value) || 0;
+            const price = parseFloat(document.getElementById('salePrice').value) || 0;
+            const total = bushels * price;
+            document.getElementById('saleTotal').value = '$' + total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function recordSale() {
+            const bushels = parseInt(document.getElementById('saleBushels').value);
+            const price = parseFloat(document.getElementById('salePrice').value);
+            const buyer = document.getElementById('saleBuyer').value;
+            const date = document.getElementById('saleDate').value;
+            const notes = document.getElementById('saleNotes').value;
+
+            if (!bushels || !price) {
+                alert('Please enter bushels and price');
+                return;
+            }
+
+            // Find and update bin
+            const bin = binsData.find(b => b.binNumber === currentSaleBin);
+            if (bin) {
+                if (bushels > bin.currentQuantity) {
+                    alert('Cannot sell more than available quantity');
+                    return;
+                }
+
+                bin.currentQuantity -= bushels;
+
+                // Record sale
+                salesHistory.unshift({
+                    id: Date.now(),
+                    date: date || new Date().toISOString().split('T')[0],
+                    binNumber: currentSaleBin,
+                    crop: bin.cropType,
+                    bushels: bushels,
+                    price: price,
+                    total: bushels * price,
+                    buyer: buyer,
+                    notes: notes,
+                    status: 'sold'
+                });
+
+                saveToStorage();
+                updateSummary();
+                renderBins();
+                renderSalesHistory();
+                closeSaleModal();
+                alert(`Sale recorded: ${bushels.toLocaleString()} bu for $${(bushels * price).toLocaleString()}`);
+            }
+        }
+
+        // Adjust Modal
+        function openAdjustModal(binNumber, currentQty) {
+            currentAdjustBin = binNumber;
+            document.getElementById('adjustCurrent').value = currentQty.toLocaleString() + ' bu';
+            document.getElementById('adjustNew').value = currentQty;
+            document.getElementById('adjustReason').value = 'correction';
+            document.getElementById('adjustNotes').value = '';
+            document.getElementById('adjustModal').classList.add('active');
+        }
+
+        function closeAdjustModal() {
+            document.getElementById('adjustModal').classList.remove('active');
+            currentAdjustBin = null;
+        }
+
+        function adjustQuantity() {
+            const newQty = parseInt(document.getElementById('adjustNew').value);
+            const reason = document.getElementById('adjustReason').value;
+            const notes = document.getElementById('adjustNotes').value;
+
+            if (isNaN(newQty) || newQty < 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            const bin = binsData.find(b => b.binNumber === currentAdjustBin);
+            if (bin) {
+                const oldQty = bin.currentQuantity;
+                bin.currentQuantity = newQty;
+
+                // Log adjustment as a transaction
+                salesHistory.unshift({
+                    id: Date.now(),
+                    date: new Date().toISOString().split('T')[0],
+                    binNumber: currentAdjustBin,
+                    crop: bin.cropType,
+                    bushels: newQty - oldQty,
+                    price: 0,
+                    total: 0,
+                    buyer: reason,
+                    notes: notes,
+                    status: 'adjustment'
+                });
+
+                saveToStorage();
+                updateSummary();
+                renderBins();
+                renderSalesHistory();
+                closeAdjustModal();
+                alert(`Bin adjusted from ${oldQty.toLocaleString()} to ${newQty.toLocaleString()} bu`);
+            }
+        }
+
+        // Add Bin Modal
+        function openAddBinModal() {
+            document.getElementById('addBinForm').reset();
+            document.getElementById('addBinModal').classList.add('active');
+        }
+
+        function closeAddBinModal() {
+            document.getElementById('addBinModal').classList.remove('active');
+        }
+
+        function addNewBin() {
+            const name = document.getElementById('newBinName').value.trim();
+            const number = document.getElementById('newBinNumber').value.trim().toUpperCase();
+            const crop = document.getElementById('newBinCrop').value;
+            const quantity = parseInt(document.getElementById('newBinQuantity').value) || 0;
+            const capacity = parseInt(document.getElementById('newBinCapacity').value) || null;
+            const moisture = parseFloat(document.getElementById('newBinMoisture').value) || null;
+            const testWeight = parseFloat(document.getElementById('newBinTestWeight').value) || null;
+
+            if (!name || !number || !crop) {
+                alert('Please fill in required fields');
+                return;
+            }
+
+            if (binsData.find(b => b.binNumber === number)) {
+                alert('A bin with this number already exists');
+                return;
+            }
+
+            binsData.push({
+                binNumber: number,
+                binName: name,
+                cropType: crop,
+                currentQuantity: quantity,
+                capacity: capacity,
+                moisture: moisture,
+                testWeight: testWeight
+            });
+
+            saveToStorage();
+            updateSummary();
+            renderBins();
+            closeAddBinModal();
+            alert('Bin added successfully');
+        }
+
+        // Render sales history
+        function renderSalesHistory() {
+            const tbody = document.getElementById('salesTableBody');
+
+            if (salesHistory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <h3>No sales recorded yet</h3>
+                            <p>Click "Record Sale" on any bin to log a grain sale</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = salesHistory.slice(0, 20).map(sale => `
+                <tr>
+                    <td>${sale.date}</td>
+                    <td>${sale.binNumber}</td>
+                    <td>${formatCrop(sale.crop)}</td>
+                    <td>${sale.bushels > 0 ? '+' : ''}${sale.bushels.toLocaleString()} bu</td>
+                    <td>${sale.price > 0 ? '$' + sale.price.toFixed(2) : '-'}</td>
+                    <td>${sale.total > 0 ? '$' + sale.total.toLocaleString() : '-'}</td>
+                    <td>${sale.buyer || '-'}</td>
+                    <td><span class="status-badge status-${sale.status}">${sale.status}</span></td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

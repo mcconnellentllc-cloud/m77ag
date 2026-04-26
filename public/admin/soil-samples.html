@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertility Trend Analysis | M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #020617; color: #E2E8F0; min-height: 100vh; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Header */
+        .page-header { background: linear-gradient(135deg, #0F172A 0%, #020617 100%); border-bottom: 1px solid #1E293B; padding: 16px 24px 14px; }
+        .page-header h1 { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 800; color: #F8FAFC; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .page-header p { font-size: 13px; color: #64748B; }
+        .header-nav { display: flex; gap: 20px; margin-top: 10px; }
+        .header-nav a { color: #64748B; text-decoration: none; font-size: 12px; font-weight: 600; transition: color 0.2s; }
+        .header-nav a:hover, .header-nav a.active { color: #d4af37; }
+
+        .container { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+
+        /* Verdict Banner */
+        .verdict-banner { border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .verdict-banner.positive { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); }
+        .verdict-banner.negative { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
+        .verdict-banner.mixed { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+        .verdict-text { flex: 1; min-width: 200px; }
+        .verdict-title { font-size: 16px; font-weight: 700; }
+        .verdict-sub { font-size: 13px; color: #94A3B8; margin-top: 2px; }
+        .verdict-counts { display: flex; gap: 16px; }
+        .verdict-count { text-align: center; }
+        .verdict-count .vc-num { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800; }
+        .verdict-count .vc-label { font-size: 10px; text-transform: uppercase; font-weight: 600; }
+        .vc-up { color: #10B981; }
+        .vc-hold { color: #F59E0B; }
+        .vc-down { color: #EF4444; }
+
+        /* Metric Selector */
+        .metric-bar { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+        .metric-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid #334155; background: #0F172A; color: #94A3B8; font-size: 13px; cursor: pointer; font-weight: 600; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+        .metric-btn:hover { border-color: #475569; color: #CBD5E1; }
+        .metric-btn.active { border-color: #22D3EE; background: rgba(34,211,238,0.08); color: #22D3EE; }
+        .metric-btn .mdesc { font-size: 10px; color: #64748B; margin-left: 6px; }
+
+        /* Chart Cards */
+        .chart-card { background: #0F172A; border-radius: 12px; border: 1px solid #1E293B; padding: 20px; margin-bottom: 24px; }
+        .chart-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+        .chart-card h3 { font-size: 15px; color: #F1F5F9; font-weight: 700; margin: 0; }
+        .chart-card .chart-sub { font-size: 11px; color: #64748B; }
+        .chart-wrap { position: relative; height: 260px; }
+
+        /* Sort buttons */
+        .sort-btns { display: flex; gap: 4px; }
+        .sort-btn { padding: 3px 8px; border-radius: 4px; border: 1px solid #334155; background: transparent; color: #64748B; font-size: 10px; cursor: pointer; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .sort-btn.active { border-color: #22D3EE; background: rgba(34,211,238,0.08); color: #22D3EE; }
+
+        /* Field Table */
+        .field-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .field-table th { padding: 8px 10px; text-align: left; color: #64748B; font-weight: 600; border-bottom: 1px solid #334155; cursor: pointer; user-select: none; white-space: nowrap; transition: color 0.2s; }
+        .field-table th:hover { color: #94A3B8; }
+        .field-table th.sorted { color: #22D3EE; }
+        .field-table td { padding: 6px 10px; border-bottom: 1px solid rgba(30,41,59,0.5); }
+        .field-table tr:hover td { background: rgba(15,23,42,0.5); }
+        .field-table tr:nth-child(even) td { background: rgba(2,6,23,0.5); }
+        .field-table .right { text-align: right; }
+        .field-table .center { text-align: center; }
+
+        .c-up { color: #10B981; }
+        .c-down { color: #EF4444; }
+        .c-hold { color: #F59E0B; }
+        .c-muted { color: #475569; }
+
+        .crop-tag { font-weight: 600; }
+        .crop-corn { color: #D97706; }
+        .crop-sorghum { color: #DC2626; }
+        .crop-wheat { color: #059669; }
+        .crop-sudan { color: #7C3AED; }
+        .crop-fallow { color: #64748B; }
+
+        /* Field Detail Modal */
+        .detail-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .detail-overlay.active { display: flex; }
+        .detail-modal { background: #0F172A; border: 1px solid #1E293B; border-radius: 16px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; }
+        .detail-modal-header { padding: 20px 24px; border-bottom: 1px solid #1E293B; display: flex; justify-content: space-between; align-items: center; }
+        .detail-modal-header h2 { font-family: 'Oswald', sans-serif; font-size: 22px; color: #F8FAFC; }
+        .detail-modal-close { background: none; border: none; color: #64748B; font-size: 24px; cursor: pointer; padding: 4px 8px; }
+        .detail-modal-close:hover { color: #E2E8F0; }
+        .detail-modal-body { padding: 24px; }
+        .detail-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .detail-stat { text-align: center; background: #020617; border-radius: 8px; padding: 12px; border: 1px solid #1E293B; }
+        .detail-stat .ds-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: #F1F5F9; }
+        .detail-stat .ds-label { font-size: 10px; text-transform: uppercase; color: #64748B; margin-top: 2px; }
+        .detail-chart-wrap { height: 220px; margin-bottom: 20px; }
+
+        /* AI Panel */
+        .ai-section { background: #0F172A; border-radius: 12px; border: 1px solid #1E293B; padding: 20px; margin-bottom: 24px; }
+        .ai-title { font-family: 'Oswald', sans-serif; font-size: 18px; color: #F8FAFC; margin-bottom: 4px; }
+        .ai-sub { font-size: 12px; color: #64748B; margin-bottom: 16px; }
+        .ai-quick-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .ai-quick-btn { padding: 6px 14px; border: 1px solid #334155; border-radius: 20px; background: transparent; font-size: 12px; cursor: pointer; color: #94A3B8; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+        .ai-quick-btn:hover { border-color: #22D3EE; color: #22D3EE; }
+        .ai-prompt-row { display: flex; gap: 10px; margin-bottom: 12px; }
+        .ai-input { flex: 1; padding: 12px 16px; border: 1px solid #334155; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; background: #020617; color: #E2E8F0; resize: none; transition: border-color 0.3s; }
+        .ai-input:focus { outline: none; border-color: #22D3EE; }
+        .ai-input::placeholder { color: #475569; }
+        .ai-send { padding: 12px 24px; background: #2d5016; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; white-space: nowrap; }
+        .ai-send:hover { background: #3d6b1f; }
+        .ai-send:disabled { background: #475569; cursor: not-allowed; }
+        .ai-response { background: #020617; border-radius: 8px; padding: 18px; border: 1px solid #1E293B; font-size: 13px; line-height: 1.7; color: #CBD5E1; white-space: pre-wrap; min-height: 60px; }
+        .ai-response.loading { color: #64748B; font-style: italic; }
+        .ai-response h4 { font-size: 14px; color: #22D3EE; margin: 12px 0 6px; font-weight: 700; }
+        .ai-response h4:first-child { margin-top: 0; }
+        .ai-response strong { color: #F1F5F9; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .verdict-banner { flex-direction: column; text-align: center; }
+            .verdict-counts { justify-content: center; }
+            .chart-wrap { height: 200px; }
+            .ai-prompt-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>M77 AG -- Fertility Trend Analysis</h1>
+        <p>Are we going forward or backward? -- <span id="fieldCountLabel">51</span> fields -- 2022-2026 -- All data from soil history</p>
+        <div class="header-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/field-manager">Field Manager</a>
+            <a href="/admin/soil-samples" class="active">Soil Analysis</a>
+            <a href="/admin/farm-projections">Projections</a>
+            <a href="/admin/financials">Financials</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Verdict Banner -->
+        <div class="verdict-banner mixed" id="verdictBanner">
+            <div class="verdict-text">
+                <div class="verdict-title" id="verdictTitle">Loading...</div>
+                <div class="verdict-sub" id="verdictSub">Analyzing soil data...</div>
+            </div>
+            <div class="verdict-counts">
+                <div class="verdict-count"><div class="vc-num vc-up" id="countUp">-</div><div class="vc-label vc-up">Up</div></div>
+                <div class="verdict-count"><div class="vc-num vc-hold" id="countHold">-</div><div class="vc-label vc-hold">Hold</div></div>
+                <div class="verdict-count"><div class="vc-num vc-down" id="countDown">-</div><div class="vc-label vc-down">Down</div></div>
+            </div>
+        </div>
+
+        <!-- Metric Selector -->
+        <div class="metric-bar" id="metricBar"></div>
+
+        <!-- Operation-Wide Trend -->
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <div>
+                    <h3 id="trendChartTitle">Operation-Wide Average: pH</h3>
+                    <span class="chart-sub" id="trendChartSub">Ideal range: 6.0-7.5 -- Each point = avg of all fields tested that year</span>
+                </div>
+            </div>
+            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+        </div>
+
+        <!-- Per-Field Change Bar Chart -->
+        <div class="chart-card">
+            <div class="chart-card-header">
+                <div>
+                    <h3 id="barChartTitle">Every Field -- pH Change</h3>
+                    <span class="chart-sub">First test -> most recent test -- sorted by change amount</span>
+                </div>
+                <div class="sort-btns">
+                    <button class="sort-btn active" data-sort="change" onclick="setSortBy('change')">By Change</button>
+                    <button class="sort-btn" data-sort="current" onclick="setSortBy('current')">By Current</button>
+                    <button class="sort-btn" data-sort="id" onclick="setSortBy('id')">By ID</button>
+                </div>
+            </div>
+            <div class="chart-wrap" style="height:300px;"><canvas id="barChart"></canvas></div>
+        </div>
+
+        <!-- Field Table -->
+        <div class="chart-card">
+            <h3 id="tableTitle" style="margin-bottom:14px;">Field-by-Field: pH</h3>
+            <div style="overflow-x:auto;">
+                <table class="field-table" id="fieldTable">
+                    <thead><tr id="tableHead"></tr></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AI Recommendations -->
+        <div class="ai-section">
+            <div class="ai-title">Ask for Recommendations</div>
+            <div class="ai-sub" id="aiSub">Select a field from the table above, then ask about fertilizer programs, soil amendments, crop-specific needs</div>
+            <div class="ai-quick-btns">
+                <button class="ai-quick-btn" onclick="askAI('What corn starter fertilizer do you recommend for this field based on the soil test?')">Corn starter recommendation</button>
+                <button class="ai-quick-btn" onclick="askAI('What is the full fertilizer program you recommend for this field?')">Full fertilizer program</button>
+                <button class="ai-quick-btn" onclick="askAI('What are the biggest soil health concerns for this field and how should I address them?')">Soil health concerns</button>
+                <button class="ai-quick-btn" onclick="askAI('Based on these soil levels, what micronutrient applications should I consider?')">Micronutrient needs</button>
+                <button class="ai-quick-btn" onclick="askAI('What lime application rate would you recommend and what type?')">Lime recommendation</button>
+            </div>
+            <div class="ai-prompt-row">
+                <textarea class="ai-input" id="aiInput" rows="2" placeholder="Ask about fertilizer programs, soil amendments, crop-specific needs..."></textarea>
+                <button class="ai-send" id="aiSendBtn" onclick="sendAI()">Get Recommendation</button>
+            </div>
+            <div class="ai-response" id="aiResponse">Select a field from the table (click any row), then use the quick prompts above or type your own question.</div>
+        </div>
+    </div>
+
+    <!-- Field Detail Modal -->
+    <div class="detail-overlay" id="detailOverlay">
+        <div class="detail-modal">
+            <div class="detail-modal-header">
+                <h2 id="detailTitle">Field Detail</h2>
+                <button class="detail-modal-close" onclick="closeDetail()">&times;</button>
+            </div>
+            <div class="detail-modal-body" id="detailBody"></div>
+        </div>
+    </div>
+
+    <script>
+    const API = window.location.origin;
+    let allFields = [];
+    let activeMetric = 'ph';
+    let sortBy = 'change';
+    let selectedFieldId = null;
+    let trendChartInstance = null;
+    let barChartInstance = null;
+    let detailChartInstance = null;
+
+    // Metric key mapping: our DB fields -> display
+    const METRICS = [
+        { key: 'ph', dbKey: 'ph', label: 'pH', desc: 'Soil acidity', idealRange: '6.0-7.5', ideal: [6.0, 7.5], refLines: [{ v: 5.5, label: '5.5 Low', color: '#EF4444' }, { v: 6.0, label: '6.0 Ideal', color: '#10B981' }], yMin: 4, yMax: 8 },
+        { key: 'om', dbKey: 'organicMatter', label: 'OM%', desc: 'Organic matter', idealRange: '1.5-3.0%', ideal: [1.5, 3.0], refLines: [{ v: 1.5, label: '1.5%', color: '#F59E0B' }] },
+        { key: 'k', dbKey: 'potassium', label: 'K ppm', desc: 'Potassium', idealRange: '250-600', ideal: [250, 600], refLines: [{ v: 250, label: '250', color: '#F59E0B' }] },
+        { key: 'p', dbKey: 'olsenP', label: 'Olsen P', desc: 'Phosphorus', idealRange: '15-30', ideal: [15, 30], refLines: [{ v: 15, label: '15', color: '#F59E0B' }] },
+        { key: 'casat', dbKey: 'caSat', label: 'Ca Sat%', desc: 'Calcium saturation', idealRange: '65-75%', ideal: [65, 75], refLines: [] },
+        { key: 'cec', dbKey: 'cec', label: 'CEC', desc: 'Cation exchange', idealRange: '10-25', ideal: [10, 25], refLines: [] },
+        { key: 'n', dbKey: 'NO3lbs', label: 'N lb/A', desc: 'Nitrate nitrogen', idealRange: '15-50', ideal: [15, 50], refLines: [{ v: 15, label: '15', color: '#F59E0B' }] },
+    ];
+
+    function getMetric() { return METRICS.find(m => m.key === activeMetric); }
+
+    // Threshold for trend detection
+    function getTrendThreshold(key) {
+        const thresholds = { ph: 0.3, om: 0.2, k: 30, p: 3, casat: 5, cec: 0.5, n: 5 };
+        return thresholds[key] || 0.5;
+    }
+
+    // Compute field trends from soil samples
+    function computeFieldData() {
+        const m = getMetric();
+        return allFields.map(f => {
+            const samples = (f.soil && f.soil.samples) || [];
+            // Extract values for this metric from all samples
+            const pts = samples
+                .filter(s => s[m.dbKey] != null && s.year != null)
+                .map(s => ({ year: s.year, value: s[m.dbKey] }))
+                .sort((a, b) => a.year - b.year);
+
+            // Deduplicate by year (take last entry per year)
+            const byYear = {};
+            pts.forEach(p => { byYear[p.year] = p.value; });
+            const unique = Object.entries(byYear).map(([y, v]) => ({ year: +y, value: v })).sort((a, b) => a.year - b.year);
+
+            const first = unique.length >= 2 ? unique[0] : null;
+            const last = unique.length >= 1 ? unique[unique.length - 1] : null;
+            const change = first && last ? last.value - first.value : null;
+            const threshold = getTrendThreshold(activeMetric);
+            let dir = 'none';
+            if (change != null) {
+                dir = change > threshold ? 'up' : change < -threshold ? 'down' : 'stable';
+            }
+
+            return {
+                _id: f._id,
+                field: f.field,
+                farm: f.farm,
+                crop: f.crop2026 || '',
+                acres: f.acres || 0,
+                samples: unique,
+                first: first ? first.value : null,
+                last: last ? last.value : null,
+                lastYear: last ? last.year : null,
+                change,
+                dir,
+                allSamples: samples
+            };
+        }).filter(f => f.samples.length > 0);
+    }
+
+    // Compute operation-wide trend (avg per year)
+    function computeOpTrend(fieldData) {
+        const m = getMetric();
+        const yearAgg = {};
+        fieldData.forEach(fd => {
+            fd.samples.forEach(s => {
+                if (!yearAgg[s.year]) yearAgg[s.year] = { sum: 0, count: 0 };
+                yearAgg[s.year].sum += s.value;
+                yearAgg[s.year].count++;
+            });
+        });
+        return Object.entries(yearAgg)
+            .map(([yr, d]) => ({ year: +yr, avg: +(d.sum / d.count).toFixed(2), count: d.count }))
+            .sort((a, b) => a.year - b.year);
+    }
+
+    // Sort field data
+    function sortFieldData(data) {
+        const s = [...data];
+        if (sortBy === 'change') s.sort((a, b) => (a.change || 0) - (b.change || 0));
+        else if (sortBy === 'current') s.sort((a, b) => (a.last || 0) - (b.last || 0));
+        else s.sort((a, b) => a.field.localeCompare(b.field));
+        return s;
+    }
+
+    // === RENDERING ===
+    function renderAll() {
+        const fieldData = computeFieldData();
+        const sorted = sortFieldData(fieldData);
+        const opTrend = computeOpTrend(fieldData);
+        const m = getMetric();
+
+        document.getElementById('fieldCountLabel').textContent = fieldData.length;
+
+        renderMetricBar();
+        renderVerdict(fieldData, m);
+        renderTrendChart(opTrend, m);
+        renderBarChart(sorted, m);
+        renderTable(sorted, m);
+        updateChartTitles(m);
+    }
+
+    function renderMetricBar() {
+        const bar = document.getElementById('metricBar');
+        bar.innerHTML = METRICS.map(m =>
+            `<button class="metric-btn ${activeMetric === m.key ? 'active' : ''}" onclick="setMetric('${m.key}')">${m.label}<span class="mdesc">${m.desc}</span></button>`
+        ).join('');
+    }
+
+    function setMetric(key) {
+        activeMetric = key;
+        renderAll();
+    }
+
+    function setSortBy(s) {
+        sortBy = s;
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === s));
+        renderAll();
+    }
+
+    function updateChartTitles(m) {
+        document.getElementById('trendChartTitle').textContent = 'Operation-Wide Average: ' + m.label;
+        document.getElementById('trendChartSub').textContent = 'Ideal range: ' + m.idealRange + ' -- Each point = avg of all fields tested that year';
+        document.getElementById('barChartTitle').textContent = 'Every Field -- ' + m.label + ' Change';
+        document.getElementById('tableTitle').textContent = 'Field-by-Field: ' + m.label;
+    }
+
+    function renderVerdict(fieldData, m) {
+        const up = fieldData.filter(f => f.dir === 'up').length;
+        const down = fieldData.filter(f => f.dir === 'down').length;
+        const stable = fieldData.filter(f => f.dir === 'stable').length;
+        const noData = fieldData.filter(f => f.dir === 'none').length;
+
+        const verdict = up > down + 5 ? 'positive' : down > up + 5 ? 'negative' : 'mixed';
+        const banner = document.getElementById('verdictBanner');
+        banner.className = 'verdict-banner ' + verdict;
+
+        const titleColor = verdict === 'positive' ? '#10B981' : verdict === 'negative' ? '#EF4444' : '#F59E0B';
+
+        let titleText;
+        if (activeMetric === 'ph') {
+            titleText = verdict === 'positive' ? 'Liming Program is Working' : verdict === 'negative' ? 'pH Still Declining Overall' : 'Mixed Results -- Lime Helping Some Fields';
+        } else {
+            titleText = m.label + ': ' + (verdict === 'positive' ? 'Trending Up' : verdict === 'negative' ? 'Trending Down' : 'Mixed Trend');
+        }
+
+        document.getElementById('verdictTitle').innerHTML = '<span style="color:' + titleColor + '">' + titleText + '</span>';
+        document.getElementById('verdictSub').textContent = up + ' improving -- ' + stable + ' stable -- ' + down + ' declining -- ' + noData + ' insufficient data';
+        document.getElementById('countUp').textContent = up;
+        document.getElementById('countHold').textContent = stable;
+        document.getElementById('countDown').textContent = down;
+    }
+
+    // === CHARTS ===
+    function renderTrendChart(opTrend, m) {
+        if (trendChartInstance) trendChartInstance.destroy();
+        const ctx = document.getElementById('trendChart').getContext('2d');
+
+        const annotations = {};
+        (m.refLines || []).forEach((r, i) => {
+            annotations['ref' + i] = {
+                type: 'line', yMin: r.v, yMax: r.v,
+                borderColor: r.color, borderDash: [6, 4], borderWidth: 1,
+                label: { content: r.label, display: true, position: 'start', color: r.color, font: { size: 10 }, backgroundColor: 'transparent' }
+            };
+        });
+
+        trendChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: opTrend.map(d => d.year),
+                datasets: [{
+                    label: m.label,
+                    data: opTrend.map(d => d.avg),
+                    borderColor: '#22D3EE',
+                    backgroundColor: 'rgba(34,211,238,0.1)',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#22D3EE',
+                    pointBorderColor: '#020617',
+                    pointBorderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#94A3B8', font: { size: 12 } }, grid: { color: '#1E293B' } },
+                    y: {
+                        min: m.yMin, max: m.yMax,
+                        ticks: { color: '#94A3B8', font: { size: 12 } },
+                        grid: { color: '#1E293B' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0F172A', borderColor: '#334155', borderWidth: 1,
+                        titleColor: '#E2E8F0', bodyColor: '#E2E8F0',
+                        callbacks: {
+                            label: function(ctx) { return m.label + ': ' + ctx.parsed.y + ' (avg of ' + opTrend[ctx.dataIndex].count + ' fields)'; }
+                        }
+                    },
+                    annotation: { annotations }
+                }
+            },
+            plugins: [chartAnnotationPlugin()]
+        });
+    }
+
+    function renderBarChart(sorted, m) {
+        if (barChartInstance) barChartInstance.destroy();
+        const ctx = document.getElementById('barChart').getContext('2d');
+
+        const colors = sorted.map(f => f.dir === 'up' ? '#10B981' : f.dir === 'down' ? '#EF4444' : '#F59E0B');
+
+        barChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sorted.map(f => f.field),
+                datasets: [{
+                    label: 'Change',
+                    data: sorted.map(f => f.change != null ? +f.change.toFixed(2) : 0),
+                    backgroundColor: colors,
+                    borderRadius: 3
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: '#64748B', font: { size: 8 }, maxRotation: 90, minRotation: 90 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        ticks: { color: '#94A3B8', font: { size: 11 } },
+                        grid: { color: '#1E293B' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0F172A', borderColor: '#334155', borderWidth: 1,
+                        titleColor: '#E2E8F0', bodyColor: '#E2E8F0',
+                        callbacks: {
+                            label: function(ctx) {
+                                const f = sorted[ctx.dataIndex];
+                                const v = ctx.parsed.y;
+                                return (v > 0 ? '+' : '') + v + ' | ' + (f.crop || '--');
+                            }
+                        }
+                    }
+                },
+                onClick: function(evt, elements) {
+                    if (elements.length > 0) {
+                        const idx = elements[0].index;
+                        openDetail(sorted[idx]);
+                    }
+                }
+            }
+        });
+    }
+
+    // Simple annotation plugin (draws horizontal reference lines)
+    function chartAnnotationPlugin() {
+        return {
+            id: 'refLines',
+            afterDraw(chart) {
+                const m = getMetric();
+                if (!m.refLines || m.refLines.length === 0) return;
+                const { ctx, chartArea, scales } = chart;
+                m.refLines.forEach(r => {
+                    const y = scales.y.getPixelForValue(r.v);
+                    if (y < chartArea.top || y > chartArea.bottom) return;
+                    ctx.save();
+                    ctx.strokeStyle = r.color;
+                    ctx.setLineDash([6, 4]);
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(chartArea.left, y);
+                    ctx.lineTo(chartArea.right, y);
+                    ctx.stroke();
+                    ctx.fillStyle = r.color;
+                    ctx.font = '10px Inter';
+                    ctx.fillText(r.label, chartArea.left + 4, y - 4);
+                    ctx.restore();
+                });
+            }
+        };
+    }
+
+    // === TABLE ===
+    function renderTable(sorted, m) {
+        const thead = document.getElementById('tableHead');
+        const tbody = document.getElementById('tableBody');
+
+        thead.innerHTML = '<th>Field</th><th>Crop 2026</th><th class="right">Acres</th><th class="right">First</th><th class="right">Latest</th><th class="right">Change</th><th class="center">Trend</th><th>Direction</th>';
+
+        tbody.innerHTML = sorted.map((f, i) => {
+            const dirClass = f.dir === 'up' ? 'c-up' : f.dir === 'down' ? 'c-down' : f.dir === 'stable' ? 'c-hold' : 'c-muted';
+            const arrow = f.dir === 'up' ? '&#9650;' : f.dir === 'down' ? '&#9660;' : f.dir === 'stable' ? '&#9679;' : '--';
+            const dirLabel = f.dir === 'up' ? 'Improving' : f.dir === 'down' ? 'Declining' : f.dir === 'stable' ? 'Stable' : 'Insufficient data';
+            const cropClass = getCropClass(f.crop);
+            const isK = activeMetric === 'k';
+            const fmtVal = (v) => v == null ? '--' : isK ? Math.round(v) : Number(v).toFixed(1);
+            const changeStr = f.change != null && f.first != null ? (f.change > 0 ? '+' : '') + fmtVal(f.change) : '--';
+            const yearNote = f.lastYear && f.lastYear < 2026 ? '<span class="c-muted" style="font-size:10px;margin-left:4px;">(' + f.lastYear + ')</span>' : '';
+
+            return `<tr onclick="selectFieldRow('${f._id}')" style="cursor:pointer;" class="${selectedFieldId === f._id ? 'selected' : ''}">
+                <td style="font-weight:700;color:#F1F5F9">${f.field}</td>
+                <td class="crop-tag ${cropClass}">${f.crop || '--'}</td>
+                <td class="right mono" style="color:#94A3B8">${f.acres ? f.acres.toFixed(1) : '--'}</td>
+                <td class="right mono" style="color:#94A3B8">${fmtVal(f.first)}</td>
+                <td class="right mono" style="color:#F1F5F9;font-weight:600">${fmtVal(f.last)}${yearNote}</td>
+                <td class="right mono ${dirClass}" style="font-weight:700">${changeStr}</td>
+                <td class="center ${dirClass}" style="font-size:14px">${arrow}</td>
+                <td class="${dirClass}" style="font-weight:600">${dirLabel}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function getCropClass(crop) {
+        if (!crop) return '';
+        const c = crop.toUpperCase();
+        if (c.includes('CORN')) return 'crop-corn';
+        if (c.includes('SORGHUM') || c.includes('SUDAN')) return 'crop-sorghum';
+        if (c.includes('WHEAT')) return 'crop-wheat';
+        if (c.includes('FALLOW')) return 'crop-fallow';
+        return '';
+    }
+
+    // === FIELD SELECTION & DETAIL ===
+    function selectFieldRow(id) {
+        selectedFieldId = id;
+        const f = allFields.find(x => x._id === id);
+        if (f) {
+            document.getElementById('aiSub').textContent = 'Recommendations for ' + f.field + ' (' + (f.crop2026 || 'Unknown') + ') | ' + f.farm;
+        }
+        // Highlight row
+        document.querySelectorAll('#tableBody tr').forEach(tr => tr.classList.remove('selected'));
+        // Re-render table to update highlight
+        const fieldData = computeFieldData();
+        const sorted = sortFieldData(fieldData);
+        renderTable(sorted, getMetric());
+    }
+
+    function openDetail(fd) {
+        selectedFieldId = fd._id;
+        const f = allFields.find(x => x._id === fd._id);
+        if (!f) return;
+
+        document.getElementById('detailTitle').textContent = f.field + ' -- ' + f.farm;
+        const body = document.getElementById('detailBody');
+        const samples = (f.soil && f.soil.samples) || [];
+        const latest = samples.length > 0 ? [...samples].sort((a, b) => (b.year || 0) - (a.year || 0))[0] : {};
+
+        let html = '<div class="detail-stats">';
+        const stats = [
+            { label: 'Acres', val: f.acres ? f.acres.toFixed(1) : '--' },
+            { label: 'Crop 2026', val: f.crop2026 || '--' },
+            { label: 'pH', val: latest.ph != null ? latest.ph : '--' },
+            { label: 'O.M.%', val: latest.organicMatter != null ? latest.organicMatter : '--' },
+            { label: 'K ppm', val: latest.potassium != null ? latest.potassium : '--' },
+            { label: 'Olsen P', val: latest.olsenP != null ? latest.olsenP : '--' },
+            { label: 'NO3 lb/A', val: latest.NO3lbs != null ? latest.NO3lbs : '--' },
+            { label: 'CEC', val: latest.cec != null ? latest.cec : '--' },
+            { label: 'Ca Sat%', val: latest.caSat != null ? latest.caSat : '--' },
+            { label: 'Samples', val: samples.length }
+        ];
+        stats.forEach(s => {
+            html += '<div class="detail-stat"><div class="ds-val">' + s.val + '</div><div class="ds-label">' + s.label + '</div></div>';
+        });
+        html += '</div>';
+
+        // History chart for all metrics
+        html += '<div class="detail-chart-wrap"><canvas id="detailChart"></canvas></div>';
+
+        // Sample history table
+        html += '<div style="overflow-x:auto;"><table class="field-table"><thead><tr><th>Year</th><th>Crop</th><th class="right">pH</th><th class="right">OM%</th><th class="right">K</th><th class="right">Olsen P</th><th class="right">N lb/A</th><th class="right">CEC</th><th class="right">Ca Sat%</th></tr></thead><tbody>';
+        [...samples].sort((a, b) => (b.year || 0) - (a.year || 0)).forEach(s => {
+            html += '<tr>';
+            html += '<td style="font-weight:700;color:#F1F5F9">' + (s.year || '--') + '</td>';
+            html += '<td style="color:#94A3B8">' + (s.crop || '--') + '</td>';
+            html += '<td class="right mono">' + (s.ph != null ? s.ph : '--') + '</td>';
+            html += '<td class="right mono">' + (s.organicMatter != null ? s.organicMatter : '--') + '</td>';
+            html += '<td class="right mono">' + (s.potassium != null ? s.potassium : '--') + '</td>';
+            html += '<td class="right mono">' + (s.olsenP != null ? s.olsenP : '--') + '</td>';
+            html += '<td class="right mono">' + (s.NO3lbs != null ? s.NO3lbs : '--') + '</td>';
+            html += '<td class="right mono">' + (s.cec != null ? s.cec : '--') + '</td>';
+            html += '<td class="right mono">' + (s.caSat != null ? s.caSat + '%' : '--') + '</td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+
+        body.innerHTML = html;
+        document.getElementById('detailOverlay').classList.add('active');
+
+        // Draw detail chart
+        setTimeout(() => {
+            const dctx = document.getElementById('detailChart');
+            if (!dctx) return;
+            if (detailChartInstance) detailChartInstance.destroy();
+
+            const sorted = [...samples].filter(s => s.year).sort((a, b) => a.year - b.year);
+            const years = sorted.map(s => s.year);
+
+            detailChartInstance = new Chart(dctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [
+                        { label: 'pH', data: sorted.map(s => s.ph), borderColor: '#22D3EE', borderWidth: 2, pointRadius: 4, tension: 0.3, yAxisID: 'y' },
+                        { label: 'OM%', data: sorted.map(s => s.organicMatter), borderColor: '#A78BFA', borderWidth: 2, pointRadius: 4, tension: 0.3, yAxisID: 'y' },
+                        { label: 'P ppm', data: sorted.map(s => s.olsenP), borderColor: '#F59E0B', borderWidth: 2, pointRadius: 4, tension: 0.3, yAxisID: 'y' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: '#94A3B8' }, grid: { color: '#1E293B' } },
+                        y: { ticks: { color: '#94A3B8' }, grid: { color: '#1E293B' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#94A3B8', font: { size: 11 } } },
+                        tooltip: { backgroundColor: '#0F172A', borderColor: '#334155', borderWidth: 1, titleColor: '#E2E8F0', bodyColor: '#E2E8F0' }
+                    }
+                }
+            });
+        }, 100);
+
+        // Update AI context
+        document.getElementById('aiSub').textContent = 'Recommendations for ' + f.field + ' (' + (f.crop2026 || 'Unknown') + ') | ' + f.farm;
+    }
+
+    function closeDetail() {
+        document.getElementById('detailOverlay').classList.remove('active');
+        if (detailChartInstance) { detailChartInstance.destroy(); detailChartInstance = null; }
+    }
+
+    document.getElementById('detailOverlay').addEventListener('click', function(e) { if (e.target === this) closeDetail(); });
+
+    // === AI ===
+    function askAI(prompt) {
+        document.getElementById('aiInput').value = prompt;
+        sendAI();
+    }
+
+    async function sendAI() {
+        const prompt = document.getElementById('aiInput').value.trim();
+        if (!prompt) return;
+
+        if (!selectedFieldId) {
+            document.getElementById('aiResponse').textContent = 'Please select a field first by clicking a row in the table or a bar in the chart.';
+            return;
+        }
+
+        const f = allFields.find(x => x._id === selectedFieldId);
+        if (!f) return;
+
+        const btn = document.getElementById('aiSendBtn');
+        const resp = document.getElementById('aiResponse');
+        btn.disabled = true;
+        btn.textContent = 'Thinking...';
+        resp.className = 'ai-response loading';
+        resp.textContent = 'Analyzing soil data and generating recommendations...';
+
+        const samples = (f.soil && f.soil.samples) || [];
+        const latest = samples.length > 0 ? [...samples].sort((a, b) => (b.year || 0) - (a.year || 0))[0] : null;
+
+        try {
+            const res = await fetch(API + '/api/cropping-fields/ai-recommendation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt,
+                    field: { name: f.field, farm: f.farm, acres: f.acres, crop: f.crop2026, soilType: f.soil && f.soil.type, county: f.county },
+                    latestSample: latest,
+                    sampleHistory: samples.slice(0, 5),
+                    concerns: []
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                resp.className = 'ai-response';
+                resp.innerHTML = formatResponse(data.recommendation);
+            } else {
+                resp.className = 'ai-response';
+                resp.textContent = 'Error: ' + (data.error || 'Failed to get recommendation.');
+            }
+        } catch (e) {
+            resp.className = 'ai-response';
+            resp.textContent = 'Error connecting to server. Please try again.';
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Get Recommendation';
+    }
+
+    function formatResponse(text) {
+        return text
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+            .replace(/^## (.+)$/gm, '<h4>$1</h4>')
+            .replace(/\n\n/g, '<br><br>')
+            .replace(/\n/g, '<br>');
+    }
+
+    // === LOAD DATA ===
+    async function init() {
+        try {
+            const res = await fetch(API + '/api/cropping-fields');
+            const data = await res.json();
+            if (data.success) {
+                allFields = data.fields;
+                renderAll();
+            }
+        } catch (e) {
+            console.error('Error loading fields:', e);
+        }
+    }
+
+    init();
+    </script>
+</body>
+</html>
