@@ -137,6 +137,27 @@ const sendServiceContract = async (serviceData) => {
   }
 };
 
+// Generic send email function (used by rental management flows)
+const sendEmail = async ({ to, subject, html, from, replyTo }) => {
+  try {
+    const transporter = createTransporter();
+
+    await transporter.sendMail({
+      from: from || `"M77 AG" <${process.env.EMAIL_USER || 'office@m77ag.com'}>`,
+      replyTo: replyTo || 'office@m77ag.com',
+      to,
+      subject,
+      html
+    });
+
+    console.log(`Email sent successfully to ${to}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
+};
+
 // Send equipment purchase confirmation email
 const sendEquipmentPurchaseConfirmation = async (purchaseData) => {
   try {
@@ -176,5 +197,6 @@ module.exports = {
   sendBookingConfirmation,
   sendWaiverConfirmation,
   sendServiceContract,
+  sendEmail,
   sendEquipmentPurchaseConfirmation
 };

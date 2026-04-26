@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Application - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            color: #2c2c2c;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #d4af37;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .agreement-box {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .agreement-box p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #d4af37 0%, #c49d2f 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .offer-display {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .offer-display h3 {
+            color: #d4af37;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .offer-display p {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>M77 AG RENTAL APPLICATION</h1>
+            <p>168 Hwy 59, Sedgwick, CO 80749</p>
+        </div>
+
+        <div class="form-container">
+            <div class="offer-display" id="offerDisplay">
+                <h3>Your Accepted Offer</h3>
+                <p id="offerAmount">$0/month</p>
+            </div>
+
+            <form id="rentalApplicationForm">
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h2>Personal Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name <span class="required">*</span></label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name <span class="required">*</span></label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ssn">Social Security Number (last 4 digits) <span class="required">*</span></label>
+                        <input type="text" id="ssn" name="ssn" maxlength="4" pattern="[0-9]{4}" required>
+                    </div>
+                </div>
+
+                <!-- Current Address -->
+                <div class="form-section">
+                    <h2>Current Address</h2>
+                    <div class="form-group">
+                        <label for="currentAddress">Street Address <span class="required">*</span></label>
+                        <input type="text" id="currentAddress" name="currentAddress" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currentCity">City <span class="required">*</span></label>
+                            <input type="text" id="currentCity" name="currentCity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="currentState">State <span class="required">*</span></label>
+                            <input type="text" id="currentState" name="currentState" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currentZip">ZIP Code <span class="required">*</span></label>
+                            <input type="text" id="currentZip" name="currentZip" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="moveInDate">Desired Move-In Date <span class="required">*</span></label>
+                            <input type="date" id="moveInDate" name="moveInDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment Information -->
+                <div class="form-section">
+                    <h2>Employment Information</h2>
+                    <div class="form-group">
+                        <label for="employer">Current Employer <span class="required">*</span></label>
+                        <input type="text" id="employer" name="employer" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobTitle">Job Title <span class="required">*</span></label>
+                            <input type="text" id="jobTitle" name="jobTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="employmentLength">Length of Employment <span class="required">*</span></label>
+                            <input type="text" id="employmentLength" name="employmentLength" placeholder="e.g., 2 years" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="monthlyIncome">Monthly Income <span class="required">*</span></label>
+                            <input type="number" id="monthlyIncome" name="monthlyIncome" placeholder="$" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supervisorPhone">Supervisor Phone</label>
+                            <input type="tel" id="supervisorPhone" name="supervisorPhone">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- References -->
+                <div class="form-section">
+                    <h2>Personal References</h2>
+                    <div class="form-group">
+                        <label for="reference1Name">Reference 1 - Name <span class="required">*</span></label>
+                        <input type="text" id="reference1Name" name="reference1Name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reference1Phone">Reference 1 - Phone <span class="required">*</span></label>
+                            <input type="tel" id="reference1Phone" name="reference1Phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reference1Relationship">Relationship <span class="required">*</span></label>
+                            <input type="text" id="reference1Relationship" name="reference1Relationship" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reference2Name">Reference 2 - Name</label>
+                        <input type="text" id="reference2Name" name="reference2Name">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reference2Phone">Reference 2 - Phone</label>
+                            <input type="tel" id="reference2Phone" name="reference2Phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="reference2Relationship">Relationship</label>
+                            <input type="text" id="reference2Relationship" name="reference2Relationship">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="form-section">
+                    <h2>Additional Information</h2>
+
+                    <div class="form-group">
+                        <label for="pets">Do you have pets? If yes, please describe:</label>
+                        <textarea id="pets" name="pets" placeholder="Type, breed, size, number"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehicles">Number of Vehicles</label>
+                        <input type="number" id="vehicles" name="vehicles" min="0" value="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="occupants">Number of Occupants (including yourself) <span class="required">*</span></label>
+                        <input type="number" id="occupants" name="occupants" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalInfo">Additional Information or Questions</label>
+                        <textarea id="additionalInfo" name="additionalInfo"></textarea>
+                    </div>
+                </div>
+
+                <!-- Agreement -->
+                <div class="agreement-box">
+                    <p>
+                        <strong>Background & Credit Check Authorization:</strong> By submitting this application,
+                        I authorize M77 AG to obtain credit reports, verify employment and income, contact references,
+                        and conduct background checks. I certify that all information provided is true and accurate.
+                    </p>
+                    <p>
+                        <strong>Application Fee:</strong> A non-refundable application fee of $50 per adult applicant
+                        will be required for background and credit checks.
+                    </p>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                        <label for="agreeTerms">I agree to the terms and authorize M77 AG to process this application <span class="required">*</span></label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">SUBMIT APPLICATION</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get offer amount from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const offerAmount = urlParams.get('offer') || '1250';
+        document.getElementById('offerAmount').textContent = `$${offerAmount}/month`;
+
+        // Form submission
+        document.getElementById('rentalApplicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SUBMITTING...';
+
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {
+                offerAmount: parseFloat(offerAmount),
+                property: '168 Hwy 59, Sedgwick, CO 80749',
+                personalInfo: {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    dateOfBirth: formData.get('dateOfBirth'),
+                    ssnLast4: formData.get('ssn')
+                },
+                currentAddress: {
+                    street: formData.get('currentAddress'),
+                    city: formData.get('currentCity'),
+                    state: formData.get('currentState'),
+                    zip: formData.get('currentZip')
+                },
+                moveInDate: formData.get('moveInDate'),
+                employment: {
+                    employer: formData.get('employer'),
+                    jobTitle: formData.get('jobTitle'),
+                    length: formData.get('employmentLength'),
+                    monthlyIncome: parseFloat(formData.get('monthlyIncome')),
+                    supervisorPhone: formData.get('supervisorPhone')
+                },
+                references: [
+                    {
+                        name: formData.get('reference1Name'),
+                        phone: formData.get('reference1Phone'),
+                        relationship: formData.get('reference1Relationship')
+                    },
+                    {
+                        name: formData.get('reference2Name'),
+                        phone: formData.get('reference2Phone'),
+                        relationship: formData.get('reference2Relationship')
+                    }
+                ],
+                additionalInfo: {
+                    pets: formData.get('pets'),
+                    vehicles: parseInt(formData.get('vehicles')),
+                    occupants: parseInt(formData.get('occupants')),
+                    notes: formData.get('additionalInfo')
+                },
+                agreedToTerms: formData.get('agreeTerms') === 'on',
+                submittedAt: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch('/api/rental-applications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Application submitted successfully! We will review your application and contact you within 2-3 business days.');
+                    window.location.href = '/rentals.html';
+                } else {
+                    throw new Error(result.message || 'Failed to submit application');
+                }
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                alert('There was an error submitting your application. Please try again or call (970) 520-1807.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'SUBMIT APPLICATION';
+            }
+        });
+    </script>
+</body>
+</html>

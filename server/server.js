@@ -78,6 +78,10 @@ const mailCenterRoutes = require('./routes/mailCenter');
 const m77FieldRoutes = require('./routes/m77Fields');
 const jdRoutes = require('./routes/jd');
 const jdController = require('./controllers/jdController');
+// Rental management (PR #191) — note: distinct from rentalRoutes above
+// (which is ./routes/rentals plural). These are renamed to avoid collision.
+const rentalApplicationRoutes = require('./routes/rental');
+const rentalBillingRoutes = require('./routes/rentalBilling');
 
 // Stripe webhook needs raw body - must be before express.json()
 // This is handled separately below after static files
@@ -121,6 +125,10 @@ app.use('/api/stripe', stripeRoutes);
 app.use('/api/mail-center', mailCenterRoutes);
 app.use('/api/m77-fields', m77FieldRoutes);
 app.use('/api/jd', jdRoutes);
+// Rental management (PR #191): mounted at /api so the inner paths resolve
+// to /api/rental-applications/* and /api/billing/invoices/*.
+app.use('/api', rentalApplicationRoutes);
+app.use('/api', rentalBillingRoutes);
 
 // Stripe webhook endpoint (needs raw body)
 app.post('/api/stripe/webhook',
@@ -396,6 +404,9 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Initialize rental billing cron jobs
+const { startRentalBillingJobs } = require('./jobs/rentalBillingCron');
+
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('='.repeat(50));
@@ -403,6 +414,11 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Time: ${new Date().toLocaleString()}`);
   console.log('='.repeat(50));
+
+  // Start rental billing automation
+  if (process.env.ENABLE_BILLING_CRON !== 'false') {
+    startRentalBillingJobs();
+  }
 });
 
 // Graceful shutdown
