@@ -1,6 +1,8 @@
 const M77Field = require('../models/m77Field');
+const Client = require('../models/client');
+const M77Farm = require('../models/m77Farm');
 
-const ALLOWED_FILTERS = ['county', 'irrigation', 'rotationGroup', 'owner', 'status', 'crop2026', 'enterprise'];
+const ALLOWED_FILTERS = ['county', 'irrigation', 'rotationGroup', 'owner', 'status', 'crop2026', 'enterprise', 'client', 'farm'];
 
 // Fields the bulk-update endpoint will accept. Anything not in this list is
 // silently dropped — keeps the surface area of the bulk endpoint tight.
@@ -11,7 +13,9 @@ const BULK_UPDATE_WHITELIST = new Set([
   'irrigation',
   'crop2026',
   'owner',
-  'landlordName'
+  'landlordName',
+  'client',
+  'farm'
 ]);
 
 function buildQuery(reqQuery) {
@@ -49,7 +53,10 @@ function buildQuery(reqQuery) {
 exports.listFields = async (req, res) => {
   try {
     const query = buildQuery(req.query);
-    const fields = await M77Field.find(query).sort({ name: 1 });
+    const fields = await M77Field.find(query)
+      .populate('client', 'name type')
+      .populate('farm', 'name')
+      .sort({ name: 1 });
     res.json({
       success: true,
       count: fields.length,
@@ -67,7 +74,9 @@ exports.listFields = async (req, res) => {
 
 exports.getField = async (req, res) => {
   try {
-    const field = await M77Field.findById(req.params.id);
+    const field = await M77Field.findById(req.params.id)
+      .populate('client', 'name type')
+      .populate('farm', 'name');
     if (!field) {
       return res.status(404).json({ success: false, message: 'Field not found' });
     }
@@ -82,14 +91,40 @@ exports.getField = async (req, res) => {
   }
 };
 
+// Verifies that the supplied client+farm refs exist and that the farm belongs
+// to the client. Returns a concrete error message — saves the user a confusing
+// Mongoose validation failure when one of the IDs is wrong.
+async function validateClientFarmPair(clientId, farmId) {
+  if (!clientId || !farmId) {
+    return 'client and farm are required';
+  }
+  const [client, farm] = await Promise.all([
+    Client.findById(clientId).select('_id'),
+    M77Farm.findById(farmId).select('client')
+  ]);
+  if (!client) return `client ${clientId} not found`;
+  if (!farm)   return `farm ${farmId} not found`;
+  if (String(farm.client) !== String(clientId)) {
+    return `farm ${farmId} does not belong to client ${clientId}`;
+  }
+  return null;
+}
+
 exports.createField = async (req, res) => {
   try {
+    const validationError = await validateClientFarmPair(req.body.client, req.body.farm);
+    if (validationError) {
+      return res.status(400).json({ success: false, message: validationError });
+    }
     const field = new M77Field(req.body);
     await field.save();
+    const populated = await M77Field.findById(field._id)
+      .populate('client', 'name type')
+      .populate('farm', 'name');
     res.status(201).json({
       success: true,
       message: 'Field created',
-      field
+      field: populated
     });
   } catch (error) {
     console.error('Error creating M77 field:', error);
@@ -107,11 +142,21 @@ exports.updateField = async (req, res) => {
     const update = { ...req.body };
     delete update.jd_field_id;
 
+    // If reassigning client/farm, validate the pair.
+    if (update.client || update.farm) {
+      const existing = await M77Field.findById(req.params.id).select('client farm');
+      if (!existing) return res.status(404).json({ success: false, message: 'Field not found' });
+      const clientId = update.client || existing.client;
+      const farmId = update.farm || existing.farm;
+      const err = await validateClientFarmPair(clientId, farmId);
+      if (err) return res.status(400).json({ success: false, message: err });
+    }
+
     const field = await M77Field.findByIdAndUpdate(
       req.params.id,
       update,
       { new: true, runValidators: true }
-    );
+    ).populate('client', 'name type').populate('farm', 'name');
     if (!field) {
       return res.status(404).json({ success: false, message: 'Field not found' });
     }

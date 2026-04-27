@@ -13,6 +13,8 @@
     "seed:fields": "node server/scripts/seed-fields.js",
     "migrate:m77fields": "node server/scripts/migrate-to-m77-fields.js",
     "migrate:m77fields:dry": "DRY_RUN=1 node server/scripts/migrate-to-m77-fields.js",
+    "migrate:hierarchy": "node server/scripts/seed-and-migrate-hierarchy.js",
+    "migrate:hierarchy:dry": "DRY_RUN=1 node server/scripts/seed-and-migrate-hierarchy.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
