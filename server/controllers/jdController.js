@@ -1,9 +1,15 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const jdService = require('../services/johnDeereService');
 const JdSyncReview = require('../models/jdSyncReview');
 const JdSyncRun = require('../models/jdSyncRun');
 const JdField = require('../models/jdField');
 const M77Field = require('../models/m77Field');
+const Client = require('../models/client');
+const M77Farm = require('../models/m77Farm');
+const matcher = require('../utils/fieldMatcher');
+
+const IMPORT_QUARANTINE_CLIENT_NAME = 'M77 AG - Import';
 
 function sendAuthError(res, err) {
   // Distinct status code so the UI can flip the status pill and prompt
@@ -260,5 +266,231 @@ exports.disconnect = async (req, res) => {
   } catch (err) {
     console.error('JD disconnect error:', err);
     res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// ---- JD Import Quarantine: list / merge / promote / suggest ----------------
+
+async function getImportClient() {
+  const c = await Client.findOne({ name: IMPORT_QUARANTINE_CLIENT_NAME });
+  if (!c) {
+    const err = new Error(
+      `Quarantine Client "${IMPORT_QUARANTINE_CLIENT_NAME}" not found. ` +
+      `Run \`npm run migrate:hierarchy\` on the server.`
+    );
+    err.statusCode = 500;
+    throw err;
+  }
+  return c;
+}
+
+// GET /api/jd/imports — list all M77Field records under the import quarantine
+// (i.e. the things that need merging or promoting). Hydrated with farm
+// (per-org) and JD-side metadata for the merge UI.
+exports.listImports = async (req, res) => {
+  try {
+    const importClient = await getImportClient();
+    const fields = await M77Field
+      .find({ client: importClient._id })
+      .populate('farm', 'name landlordName')
+      .sort({ 'farm.name': 1, name: 1 })
+      .lean();
+
+    // Hydrate with the JD-side cache so the UI can show acres/boundary as JD
+    // reports them, not just the (initially identical) M77 mirror.
+    const jdIds = fields.map(f => f.jd_field_id).filter(Boolean);
+    const jdRecords = await JdField.find({ jd_field_id: { $in: jdIds } }).lean();
+    const jdById = new Map(jdRecords.map(j => [j.jd_field_id, j]));
+
+    const enriched = fields.map(f => ({ ...f, jd: jdById.get(f.jd_field_id) || null }));
+    res.json({
+      success: true,
+      count: enriched.length,
+      importClientId: importClient._id,
+      fields: enriched
+    });
+  } catch (err) {
+    console.error('JD listImports error:', err);
+    res.status(err.statusCode || 500).json({ success: false, message: err.message });
+  }
+};
+
+// POST /api/jd/merge   body: { sourceFieldId, targetFieldId }
+// Copies boundary + jd_field_id from the import field onto an existing real
+// field, then deletes the import. The target keeps its name, acres, and
+// every other curated value — only the JD link is added.
+exports.merge = async (req, res) => {
+  const { sourceFieldId, targetFieldId } = req.body || {};
+  if (!sourceFieldId || !targetFieldId) {
+    return res.status(400).json({ success: false, message: 'sourceFieldId and targetFieldId are required' });
+  }
+  if (String(sourceFieldId) === String(targetFieldId)) {
+    return res.status(400).json({ success: false, message: 'source and target must be different fields' });
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    let result;
+    await session.withTransaction(async () => {
+      const importClient = await getImportClient();
+
+      const source = await M77Field.findById(sourceFieldId).session(session);
+      const target = await M77Field.findById(targetFieldId).session(session);
+      if (!source) throw Object.assign(new Error('Source field not found'), { statusCode: 404 });
+      if (!target) throw Object.assign(new Error('Target field not found'), { statusCode: 404 });
+
+      if (String(source.client) !== String(importClient._id)) {
+        throw Object.assign(new Error('Source must be in the import quarantine'), { statusCode: 400 });
+      }
+      if (String(target.client) === String(importClient._id)) {
+        throw Object.assign(new Error('Target must be a real (non-quarantine) field'), { statusCode: 400 });
+      }
+      if (target.jd_field_id && target.jd_field_id !== source.jd_field_id) {
+        throw Object.assign(
+          new Error(`Target is already linked to a different JD field (${target.jd_field_id})`),
+          { statusCode: 409 }
+        );
+      }
+
+      // Copy JD link + boundary onto the target. Acres / name / county /
+      // owner / etc. on the target are preserved verbatim.
+      target.jd_field_id     = source.jd_field_id;
+      target.jdLastSyncedAt  = source.jdLastSyncedAt || new Date();
+      target.jdSyncMatchScore = null;  // human-confirmed merge — no machine score
+      if (source.boundary && source.boundary.coordinates && source.boundary.coordinates.length) {
+        target.boundary = source.boundary;
+      }
+      await target.save({ session });
+
+      await M77Field.deleteOne({ _id: source._id }).session(session);
+
+      result = {
+        merged: true,
+        target: {
+          _id: target._id, name: target.name,
+          jd_field_id: target.jd_field_id
+        },
+        deletedSourceId: source._id
+      };
+    });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('JD merge error:', err);
+    res.status(err.statusCode || 500).json({ success: false, message: err.message });
+  } finally {
+    await session.endSession();
+  }
+};
+
+// POST /api/jd/promote   body: { sourceFieldIds: [...], targetClientId, targetFarmId }
+// Moves one or more import fields out of the quarantine to a target
+// Client/Farm. The fields keep their data (name, acres, boundary, jd_field_id)
+// — only `client` and `farm` change. createdFromJdSync stays true so they
+// remain filterable as JD-imported in /admin/fields.
+exports.promote = async (req, res) => {
+  const { sourceFieldIds, targetClientId, targetFarmId } = req.body || {};
+  if (!Array.isArray(sourceFieldIds) || sourceFieldIds.length === 0) {
+    return res.status(400).json({ success: false, message: 'sourceFieldIds must be a non-empty array' });
+  }
+  if (!targetClientId || !targetFarmId) {
+    return res.status(400).json({ success: false, message: 'targetClientId and targetFarmId are required' });
+  }
+
+  try {
+    const importClient = await getImportClient();
+    if (String(targetClientId) === String(importClient._id)) {
+      return res.status(400).json({ success: false, message: 'Cannot promote into the import quarantine' });
+    }
+
+    // Verify target client + farm exist and farm belongs to client.
+    const [client, farm] = await Promise.all([
+      Client.findById(targetClientId).select('_id name'),
+      M77Farm.findById(targetFarmId).select('client name')
+    ]);
+    if (!client) return res.status(404).json({ success: false, message: 'Target client not found' });
+    if (!farm)   return res.status(404).json({ success: false, message: 'Target farm not found' });
+    if (String(farm.client) !== String(targetClientId)) {
+      return res.status(400).json({ success: false, message: `Target farm does not belong to target client` });
+    }
+
+    // Verify every source is currently in the quarantine.
+    const sources = await M77Field.find({ _id: { $in: sourceFieldIds } }).select('_id client');
+    if (sources.length !== sourceFieldIds.length) {
+      return res.status(404).json({ success: false, message: 'One or more source fields not found' });
+    }
+    const stray = sources.find(f => String(f.client) !== String(importClient._id));
+    if (stray) {
+      return res.status(400).json({
+        success: false,
+        message: `Field ${stray._id} is not in the import quarantine — refusing to move it`
+      });
+    }
+
+    const result = await M77Field.updateMany(
+      { _id: { $in: sourceFieldIds } },
+      { $set: { client: targetClientId, farm: targetFarmId } }
+    );
+    res.json({
+      success: true,
+      promoted: result.modifiedCount,
+      target: { client: client.name, farm: farm.name }
+    });
+  } catch (err) {
+    console.error('JD promote error:', err);
+    res.status(err.statusCode || 500).json({ success: false, message: err.message });
+  }
+};
+
+// GET /api/jd/suggest/:sourceFieldId — top match suggestions for an import,
+// scored against every real (non-quarantine) M77 field. Score is from the
+// existing matcher (turf overlap + name + acres + client alignment), but
+// the result is informational only — no auto-write.
+exports.suggestMatches = async (req, res) => {
+  try {
+    const importClient = await getImportClient();
+    const source = await M77Field.findById(req.params.sourceFieldId)
+      .populate('client', 'name')
+      .lean();
+    if (!source) return res.status(404).json({ success: false, message: 'Source field not found' });
+    if (String(source.client?._id || source.client) !== String(importClient._id)) {
+      return res.status(400).json({ success: false, message: 'Source is not in the import quarantine' });
+    }
+
+    const candidates = await M77Field
+      .find({ client: { $ne: importClient._id }, jd_field_id: null })
+      .populate('client', 'name')
+      .populate('farm', 'name')
+      .lean();
+
+    // Cast to the shape the matcher expects (it treats the JD side as the
+    // counterparty; here the import field plays the JD role).
+    const sourceAsJd = {
+      jd_field_id: source.jd_field_id,
+      jd_org_name: source.client?.name,
+      name: source.name,
+      acres: source.acres,
+      boundary: source.boundary
+    };
+
+    const scored = candidates
+      .map(c => ({
+        candidate: {
+          _id: c._id,
+          name: c.name,
+          acres: c.acres,
+          county: c.county,
+          client: c.client?.name,
+          farm: c.farm?.name
+        },
+        ...matcher.scoreCandidate(c, sourceAsJd)
+      }))
+      .filter(s => s.decision !== 'none')
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10);
+
+    res.json({ success: true, source: { _id: source._id, name: source.name }, suggestions: scored });
+  } catch (err) {
+    console.error('JD suggestMatches error:', err);
+    res.status(err.statusCode || 500).json({ success: false, message: err.message });
   }
 };

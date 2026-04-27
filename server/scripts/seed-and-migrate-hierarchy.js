@@ -78,6 +78,19 @@ const HIERARCHY = [
       { name: 'Eisenhard', landlordName: 'Eisenhard', type: 'custom', defaultShare: 0 },
       { name: 'RPM',       landlordName: 'RPM',       type: 'custom', defaultShare: 0 }
     ]
+  },
+  {
+    // Quarantine bucket for all JD-imported fields. Every JD sync drops new
+    // fields here under a per-org Farm (created on demand). Admin reviews
+    // each import via /admin/jd-merge and either Merges (copies JD boundary
+    // + jd_field_id onto an existing real field) or Promotes (moves the
+    // import to its correct Client/Farm). M77 AG's existing 72 records are
+    // never touched by sync.
+    name: 'M77 AG - Import',
+    type: 'owner',
+    contact: { name: 'M77 AG (JD import quarantine)' },
+    defaultEnterprise: 'M77 AG',
+    farms: []  // populated on-demand during JD sync
   }
 ];
 

@@ -292,9 +292,14 @@ app.get('/admin/fields', (req, res) => {
 // registered at developer.deere.com — must remain exact: /admin/jd-callback.
 app.get('/admin/jd-callback', jdController.handleCallback);
 
-// JD sync review queue page
+// JD sync review queue page (legacy)
 app.get('/admin/jd-review', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/jd-review.html'));
+});
+
+// JD import quarantine merge tool
+app.get('/admin/jd-merge', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/jd-merge.html'));
 });
 
 // Soil analysis

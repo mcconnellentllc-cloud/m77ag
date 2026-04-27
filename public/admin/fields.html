@@ -524,8 +524,8 @@
                 </div>
                 <button class="btn btn-secondary btn-sm" id="btnJdConnect" style="display:none;">Connect to John Deere</button>
                 <button class="btn btn-secondary btn-sm" id="btnJdSync" style="display:none;">Sync from JD</button>
-                <a href="/admin/jd-review" class="btn btn-secondary btn-sm" id="btnJdReview" style="display:none;">
-                    Review queue <span id="jdReviewBadge" style="display:none; margin-left:6px; background:#c0392b; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px;">0</span>
+                <a href="/admin/jd-merge" class="btn btn-secondary btn-sm" id="btnJdReview" style="display:none;">
+                    JD Imports <span id="jdReviewBadge" style="display:none; margin-left:6px; background:#c0392b; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px;">0</span>
                 </a>
                 <button class="btn btn-secondary btn-sm" id="btnJdDisconnect" style="display:none;">Disconnect JD</button>
                 <button class="btn" id="btnNewField">Add Field</button>
@@ -1385,12 +1385,17 @@
                     btnJdSync.style.display = 'none';
                     btnJdReview.style.display = 'none';
                 }
-                // Pending review badge
-                const pending = s.pendingReviews || 0;
-                if (pending > 0) {
-                    jdReviewBadge.textContent = pending;
-                    jdReviewBadge.style.display = '';
-                } else {
+                // Imports awaiting review (quarantine bucket count).
+                try {
+                    const importsResp = await fetch('/api/jd/imports', { headers: authHeaders() }).then(r => r.json());
+                    const pending = importsResp?.count || 0;
+                    if (pending > 0) {
+                        jdReviewBadge.textContent = pending;
+                        jdReviewBadge.style.display = '';
+                    } else {
+                        jdReviewBadge.style.display = 'none';
+                    }
+                } catch (_) {
                     jdReviewBadge.style.display = 'none';
                 }
             } catch (e) {
