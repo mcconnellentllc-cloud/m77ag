@@ -2,7 +2,7 @@ const M77Field = require('../models/m77Field');
 const Client = require('../models/client');
 const M77Farm = require('../models/m77Farm');
 
-const ALLOWED_FILTERS = ['county', 'irrigation', 'rotationGroup', 'owner', 'status', 'crop2026', 'enterprise', 'client', 'farm'];
+const ALLOWED_FILTERS = ['county', 'irrigation', 'rotationGroup', 'owner', 'status', 'crop2026', 'enterprise', 'client', 'farm', 'fsaLeaseHolderName', 'fsaFarmSerial'];
 
 // Fields the bulk-update endpoint will accept. Anything not in this list is
 // silently dropped — keeps the surface area of the bulk endpoint tight.
@@ -15,7 +15,17 @@ const BULK_UPDATE_WHITELIST = new Set([
   'owner',
   'landlordName',
   'client',
-  'farm'
+  'farm',
+  'fsaFarmSerial',
+  'fsaTract',
+  'fsaLeaseHolderName',
+  'fsaLeasedAcres',
+  'fsaLeaseType',
+  'fsaCounty',
+  'fsaProgramYear',
+  'legalDescription',
+  'splitType',
+  'needsFsaAssignment'
 ]);
 
 function buildQuery(reqQuery) {
@@ -46,6 +56,11 @@ function buildQuery(reqQuery) {
       { jd_field_id: null },
       { jd_field_id: { $exists: false } }
     ]);
+  }
+  if (reqQuery.needsFsaAssignment === 'true' || reqQuery.needsFsaAssignment === '1') {
+    query.needsFsaAssignment = true;
+  } else if (reqQuery.needsFsaAssignment === 'false' || reqQuery.needsFsaAssignment === '0') {
+    query.needsFsaAssignment = { $ne: true };
   }
   return query;
 }
