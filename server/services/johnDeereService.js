@@ -227,45 +227,83 @@ const Client = require('../models/client');
 const M77Farm = require('../models/m77Farm');
 const matcher = require('../utils/fieldMatcher');
 
-// JD organization-name → M77 Client routing for auto-create. The keys are
-// case-insensitive substring matches on the JD organization name.
-// Anything that doesn't match any rule defaults to (M77 AG, Unassigned (JD imported)).
-const JD_ORG_CLIENT_RULES = [
-  { match: /allphin/i, client: 'Allphin Farms', farm: 'Lueking',                  enterprise: 'Lueking' }
-];
-const DEFAULT_JD_CLIENT_NAME = 'M77 AG';
-const DEFAULT_JD_FARM_NAME   = 'Unassigned (JD imported)';
+// All JD-imported fields land in this Client until the admin reviews them
+// in /admin/jd-merge. NEVER writes onto an existing real M77 field.
+const IMPORT_QUARANTINE_CLIENT_NAME = 'M77 AG - Import';
 
-// Resolve (clientId, farmId, enterprise) for a JD-originated field. The
-// target Farm is created on demand under the Client if it doesn't exist
-// yet — keeps sync robust against new orgs appearing in JD between runs.
-async function resolveClientFarmForJdField(jdField, session) {
-  const orgName = jdField.jd_org_name || '';
-  let clientName = DEFAULT_JD_CLIENT_NAME;
-  let farmName   = DEFAULT_JD_FARM_NAME;
-  let enterprise = 'M77 AG';
+// Legacy (kept for reference; quarantine mode does not use these):
+//   const JD_ORG_CLIENT_RULES = [...]
+//   const DEFAULT_JD_CLIENT_NAME = 'M77 AG'
+//   const DEFAULT_JD_FARM_NAME   = 'Unassigned (JD imported)'
 
-  for (const rule of JD_ORG_CLIENT_RULES) {
-    if (rule.match.test(orgName)) {
-      clientName = rule.client;
-      farmName   = rule.farm;
-      enterprise = rule.enterprise;
-      break;
-    }
+// Quarantine import: create one M77Field under the Import Client, with a
+// per-JD-org Farm created on demand. Never touches any existing real field.
+// All decisions about merging / promoting happen later in /admin/jd-merge.
+async function createM77ImportField(jd, runId, syncedAt, importClientId) {
+  const session = await mongoose.startSession();
+  try {
+    let createdId;
+    await session.withTransaction(async () => {
+      // Per-JD-org Farm under the Import client. Created on demand so a
+      // brand-new JD org appearing in production doesn't break sync.
+      const farmName = jd.jd_org_name || 'Unknown JD organization';
+      const farm = await M77Farm.findOneAndUpdate(
+        { client: importClientId, name: farmName },
+        {
+          $setOnInsert: {
+            client: importClientId,
+            name: farmName,
+            landlordName: farmName,
+            type: 'crop-share',   // unknown until the admin promotes it
+            defaultShare: null
+          }
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true, session }
+      );
+
+      const created = await M77Field.create([{
+        name: jd.name || `JD field ${jd.jd_field_id}`,
+        acres: jd.acres || 0,
+        owner: 'm77',
+        landlordName: '',
+        m77SharePercent: 100,
+        landlordSharePercent: 0,
+        irrigation: 'dryland',
+        enterprise: 'M77 AG',
+        crop2026: '',
+        rotationGroup: jd.jd_org_name || '',
+        client: importClientId,
+        farm: farm._id,
+        boundary: jd.boundary || undefined,
+        jd_field_id: jd.jd_field_id,
+        createdFromJdSync: true,
+        jdLastSyncedAt: syncedAt,
+        status: 'active'
+      }], { session });
+      createdId = created[0]._id;
+
+      await JdSyncRun.updateOne(
+        { runId },
+        {
+          $push: {
+            decisions: {
+              m77FieldId: createdId,
+              m77Name: jd.name,
+              jd_field_id: jd.jd_field_id,
+              jdName: jd.name,
+              action: 'created',
+              reason: 'imported into quarantine; awaiting merge/promote in /admin/jd-merge'
+            }
+          },
+          $inc: { 'summary.autoCreated': 1 }
+        },
+        { session }
+      );
+    });
+    return createdId;
+  } finally {
+    await session.endSession();
   }
-
-  const client = await Client.findOneAndUpdate(
-    { name: clientName },
-    { $setOnInsert: { name: clientName, type: clientName === 'M77 AG' ? 'owner' : 'landlord' } },
-    { upsert: true, new: true, setDefaultsOnInsert: true, session }
-  );
-  const farm = await M77Farm.findOneAndUpdate(
-    { client: client._id, name: farmName },
-    { $setOnInsert: { client: client._id, name: farmName } },
-    { upsert: true, new: true, setDefaultsOnInsert: true, session }
-  );
-
-  return { clientId: client._id, farmId: farm._id, enterprise };
 }
 
 // JD API conventions
@@ -638,80 +676,62 @@ async function syncAllFields({ triggeredBy, triggeredByEmail }) {
     // 2. Cache the JD field data.
     await upsertJdFieldCache(allJd);
 
-    // 3. Match every M77 field that doesn't already have a jd_field_id.
+    // 3. QUARANTINE-ONLY MODE.
+    //    No matching against existing M77 fields. No writing jd_field_id
+    //    onto existing records. Every JD field becomes a new M77Field row
+    //    under Client "M77 AG - Import" / Farm = JD organizationName.
+    //    Admin reviews each one in /admin/jd-merge and either Merges
+    //    (copies boundary + jd_field_id onto an existing real field, then
+    //    deletes the import) or Promotes (moves the import to its real
+    //    Client/Farm).
     const syncedAt = new Date();
-    // Populate client.name so the matcher can compute the Client-alignment bonus.
-    const m77Fields = await M77Field.find({}).populate('client', 'name');
-    const linkedJdIds = new Set(m77Fields.filter(f => f.jd_field_id).map(f => f.jd_field_id));
 
-    const m77ToConsider = m77Fields.filter(f => !f.jd_field_id);
-    const candidatePool = allJd.filter(j => !linkedJdIds.has(j.jd_field_id));
-
-    let skippedAlreadyLinked = m77Fields.length - m77ToConsider.length;
-    if (skippedAlreadyLinked > 0) {
-      await JdSyncRun.updateOne({ runId }, {
-        $inc: { 'summary.skippedAlreadyLinked': skippedAlreadyLinked }
-      });
+    const importClient = await Client.findOne({ name: IMPORT_QUARANTINE_CLIENT_NAME });
+    if (!importClient) {
+      throw new Error(
+        `Quarantine Client "${IMPORT_QUARANTINE_CLIENT_NAME}" not found. ` +
+        `Run \`npm run migrate:hierarchy\` before syncing.`
+      );
     }
 
-    const consumedJdIds = new Set();
+    // Skip JD fields whose jd_field_id is already on any M77 record (either
+    // already imported into quarantine, or merged onto a real field).
+    const existingJdIds = new Set(
+      (await M77Field.find({ jd_field_id: { $ne: null } }).select('jd_field_id'))
+        .map(f => f.jd_field_id)
+    );
+    let skippedAlreadyImported = 0;
     let errorCount = 0;
 
-    for (const m77 of m77ToConsider) {
-      try {
-        // Skip JD candidates already consumed by an earlier auto-link this run.
-        const remaining = candidatePool.filter(j => !consumedJdIds.has(j.jd_field_id));
-        const match = matcher.bestMatch(m77, remaining);
-        const action = await applyDecisionForM77(m77, match, runId, syncedAt);
-        if (action === 'linked' && match) {
-          consumedJdIds.add(match.jdField.jd_field_id);
-        }
-      } catch (err) {
-        errorCount++;
-        console.error(`[jd-sync] error processing M77 field ${m77._id}:`, err);
+    for (const jd of allJd) {
+      if (existingJdIds.has(jd.jd_field_id)) {
+        skippedAlreadyImported++;
         await JdSyncRun.updateOne({ runId }, {
           $push: {
             decisions: {
-              m77FieldId: m77._id,
-              m77Name: m77.name,
-              action: 'error',
-              reason: 'exception during decision',
-              errorMessage: err.message
+              jd_field_id: jd.jd_field_id,
+              jdName: jd.name,
+              action: 'skipped-already-linked',
+              reason: 'jd_field_id already exists on an M77Field (imported or merged)'
             }
           },
-          $inc: { 'summary.errors': 1 }
+          $inc: { 'summary.skippedAlreadyLinked': 1 }
         });
+        continue;
       }
-    }
 
-    // 4. Auto-create M77 fields for JD fields that didn't end up linked anywhere.
-    const matchedJdIds = new Set([...linkedJdIds, ...consumedJdIds]);
-    // Also avoid creating a new M77 record for a JD field that is the JD side
-    // of a pending review item — the user may accept that review later.
-    const pendingReviewJdIds = new Set(
-      (await JdSyncReview.find({ status: 'pending' }).select('jd_field_id'))
-        .map(r => r.jd_field_id)
-    );
-
-    const orphanJdFields = allJd.filter(j =>
-      !matchedJdIds.has(j.jd_field_id) && !pendingReviewJdIds.has(j.jd_field_id)
-    );
-
-    for (const jd of orphanJdFields) {
       try {
-        await createM77FieldFromJd(jd, runId, syncedAt);
+        await createM77ImportField(jd, runId, syncedAt, importClient._id);
       } catch (err) {
-        // Possible race: a unique-index conflict if jd_field_id already
-        // exists on an M77 row. Log and continue.
         errorCount++;
-        console.error(`[jd-sync] error creating M77 from JD ${jd.jd_field_id}:`, err);
+        console.error(`[jd-sync] error importing JD ${jd.jd_field_id}:`, err);
         await JdSyncRun.updateOne({ runId }, {
           $push: {
             decisions: {
               jd_field_id: jd.jd_field_id,
               jdName: jd.name,
               action: 'error',
-              reason: 'exception during auto-create',
+              reason: 'exception during quarantine import',
               errorMessage: err.message
             }
           },

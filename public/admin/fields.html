@@ -524,8 +524,8 @@
                 </div>
                 <button class="btn btn-secondary btn-sm" id="btnJdConnect" style="display:none;">Connect to John Deere</button>
                 <button class="btn btn-secondary btn-sm" id="btnJdSync" style="display:none;">Sync from JD</button>
-                <a href="/admin/jd-review" class="btn btn-secondary btn-sm" id="btnJdReview" style="display:none;">
-                    Review queue <span id="jdReviewBadge" style="display:none; margin-left:6px; background:#c0392b; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px;">0</span>
+                <a href="/admin/jd-merge" class="btn btn-secondary btn-sm" id="btnJdReview" style="display:none;">
+                    JD Imports <span id="jdReviewBadge" style="display:none; margin-left:6px; background:#c0392b; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px;">0</span>
                 </a>
                 <button class="btn btn-secondary btn-sm" id="btnJdDisconnect" style="display:none;">Disconnect JD</button>
                 <button class="btn" id="btnNewField">Add Field</button>
@@ -622,6 +622,14 @@
                     <option value="created">Created from JD</option>
                     <option value="linked">Linked to JD</option>
                     <option value="unlinked">Not linked</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterFsa">FSA</label>
+                <select id="filterFsa">
+                    <option value="">All</option>
+                    <option value="needs">Needs FSA Assignment</option>
+                    <option value="has">Has FSA record</option>
                 </select>
             </div>
         </div>
@@ -947,6 +955,7 @@
                         <div class="group"><div class="label">JD Field ID</div><div class="value" style="font-family:monospace; font-size:11px;">${escapeHtml(f.jd_field_id || '—')}</div></div>
                         <div class="group"><div class="label">JD Last Synced</div><div class="value">${f.jdLastSyncedAt ? new Date(f.jdLastSyncedAt).toLocaleString() : '—'}</div></div>
                         ${f.notes ? `<div class="group" style="grid-column: 1 / -1;"><div class="label">Notes</div><div class="value">${escapeHtml(f.notes)}</div></div>` : ''}
+                        ${renderFsaSection(f)}
                         <div class="actions">
                             <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit field</button>
                         </div>
@@ -955,9 +964,66 @@
             `;
         }
 
+        function renderFsaSection(f) {
+            const needs = !!f.needsFsaAssignment;
+            const hasCurrent = !!f.fsaFarmSerial;
+            const history = Array.isArray(f.fsaHistory) ? f.fsaHistory.slice().sort((a, b) => (b.programYear || 0) - (a.programYear || 0)) : [];
+
+            const headerBadge = needs
+                ? '<span style="background:#fdecea; color:#962d22; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; text-transform:uppercase;">Needs Assignment</span>'
+                : (hasCurrent ? '<span style="background:#e8f5e9; color:#1e3d10; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">FSA on file</span>' : '');
+
+            const currentBlock = hasCurrent ? `
+                <dl style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:8px 16px; margin-top:8px; font-size:12px;">
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">FSA Farm Serial</div><div>${escapeHtml(f.fsaFarmSerial)}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Tract</div><div>${escapeHtml(f.fsaTract || '—')}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Lease Holder</div><div>${escapeHtml(f.fsaLeaseHolderName || '—')}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">FSA Acres</div><div>${f.fsaLeasedAcres != null ? fmtAcres(f.fsaLeasedAcres) : '—'}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">County</div><div>${escapeHtml(f.fsaCounty || '—')}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Lease Type</div><div>${escapeHtml(f.fsaLeaseType || '—')}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Program Year</div><div>${f.fsaProgramYear || '—'}</div></div>
+                    <div><div style="color:#888; text-transform:uppercase; font-size:10px; letter-spacing:0.5px;">Legal</div><div>${escapeHtml(f.legalDescription || '—')}</div></div>
+                </dl>
+            ` : (needs
+                ? `<div style="margin-top:8px; font-size:12px; color:#666;">No FSA Farm/Tract assigned yet${f.legalDescription ? ` &middot; legal: <strong>${escapeHtml(f.legalDescription)}</strong>` : ''}. Assign via the field edit form once the CCC-902 is filed.</div>`
+                : `<div style="margin-top:8px; font-size:12px; color:#888;">No FSA record on file.</div>`);
+
+            const historyBlock = history.length > 0 ? `
+                <details style="margin-top: 10px;">
+                    <summary style="cursor:pointer; font-size:11px; color:#2d5016; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">View History (${history.length})</summary>
+                    <table style="margin-top:8px; width:100%; font-size:11px; border-collapse:collapse;">
+                        <thead><tr style="background:#f0efe8;"><th style="text-align:left; padding:4px 8px;">Year</th><th style="text-align:left; padding:4px 8px;">FSN</th><th style="text-align:left; padding:4px 8px;">Tract</th><th style="text-align:left; padding:4px 8px;">Owner</th><th style="text-align:right; padding:4px 8px;">Acres</th><th style="text-align:left; padding:4px 8px;">Lease</th><th style="text-align:left; padding:4px 8px;">Source</th></tr></thead>
+                        <tbody>
+                            ${history.map(h => `
+                                <tr style="border-bottom:1px solid #eee;">
+                                    <td style="padding:4px 8px;">${h.programYear || '—'}</td>
+                                    <td style="padding:4px 8px;">${escapeHtml(h.fsn || '—')}</td>
+                                    <td style="padding:4px 8px;">${escapeHtml(h.tract || '—')}</td>
+                                    <td style="padding:4px 8px;">${escapeHtml(h.owner || '—')}</td>
+                                    <td style="padding:4px 8px; text-align:right;">${h.acres != null ? fmtAcres(h.acres) : '—'}</td>
+                                    <td style="padding:4px 8px;">${escapeHtml(h.leaseType || '—')}</td>
+                                    <td style="padding:4px 8px; color:#888;">${escapeHtml(h.source || '—')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </details>
+            ` : '';
+
+            return `
+                <details class="fsa-section" style="grid-column: 1 / -1; background:#fff8e1; border:1px solid #f0e0a0; border-radius:5px; padding:10px 14px; margin-top:6px;">
+                    <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#8a6d00; display:flex; align-items:center; gap:10px;">
+                        FSA Records ${headerBadge}
+                    </summary>
+                    ${currentBlock}
+                    ${historyBlock}
+                </details>
+            `;
+        }
+
         function hasActiveFilters() {
             const ids = ['filterSearch','filterCounty','filterIrrigation','filterOwner',
-                'filterEnterprise','filterRotation','filterCrop','filterStatus','filterJd'];
+                'filterEnterprise','filterRotation','filterCrop','filterStatus','filterJd','filterFsa'];
             return ids.some(id => {
                 const el = document.getElementById(id);
                 return el && el.value && el.value.trim() !== '';
@@ -1052,6 +1118,10 @@
             if (jdFilter === 'created') params.set('createdFromJdSync', 'true');
             else if (jdFilter === 'linked') params.set('jdLinked', 'true');
             else if (jdFilter === 'unlinked') params.set('jdLinked', 'false');
+            // Special filter: FSA assignment
+            const fsaFilter = document.getElementById('filterFsa').value;
+            if (fsaFilter === 'needs') params.set('needsFsaAssignment', 'true');
+            else if (fsaFilter === 'has') params.set('needsFsaAssignment', 'false');
             try {
                 if (!lastClients.length) await loadHierarchy();
                 const data = await api('/' + (params.toString() ? '?' + params.toString() : ''));
@@ -1385,12 +1455,17 @@
                     btnJdSync.style.display = 'none';
                     btnJdReview.style.display = 'none';
                 }
-                // Pending review badge
-                const pending = s.pendingReviews || 0;
-                if (pending > 0) {
-                    jdReviewBadge.textContent = pending;
-                    jdReviewBadge.style.display = '';
-                } else {
+                // Imports awaiting review (quarantine bucket count).
+                try {
+                    const importsResp = await fetch('/api/jd/imports', { headers: authHeaders() }).then(r => r.json());
+                    const pending = importsResp?.count || 0;
+                    if (pending > 0) {
+                        jdReviewBadge.textContent = pending;
+                        jdReviewBadge.style.display = '';
+                    } else {
+                        jdReviewBadge.style.display = 'none';
+                    }
+                } catch (_) {
                     jdReviewBadge.style.display = 'none';
                 }
             } catch (e) {

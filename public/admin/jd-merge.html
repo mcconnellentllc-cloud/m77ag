@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Merge | M77 AG Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+
+        .admin-header {
+            background: #1a1a1a; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 20px;
+        }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 20px; flex-wrap: wrap; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 32px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; max-width: 720px; }
+
+        .btn { padding: 10px 20px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn:hover { background: #234012; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+        .btn-secondary:hover { background: #f0f0f0; }
+        .btn-danger { background: #c0392b; color: #fff; }
+        .btn-danger:hover { background: #962d22; }
+        .btn-sm { padding: 8px 14px; font-size: 12px; }
+
+        .alert { padding: 12px 16px; border-radius: 5px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert.show { display: block; }
+        .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
+        .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
+
+        .summary-bar {
+            background: #fff; padding: 16px 20px; border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 24px;
+            display: flex; gap: 24px; flex-wrap: wrap; align-items: center;
+        }
+        .summary-item .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-item .value { font-family: 'Oswald', sans-serif; font-size: 22px; color: #1a1a1a; }
+
+        .bulk-bar {
+            background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 8px;
+            margin-bottom: 16px; display: none; align-items: center; gap: 16px; flex-wrap: wrap;
+        }
+        .bulk-bar.active { display: flex; }
+        .bulk-bar select, .bulk-bar input { padding: 8px 12px; border: 1px solid #444; border-radius: 5px; background: #2c2c2c; color: #fff; font-size: 14px; }
+
+        .org-section { margin-bottom: 32px; }
+        .org-title { font-family: 'Oswald', sans-serif; font-size: 18px; color: #1a1a1a; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+
+        .import-card {
+            background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 16px 20px; margin-bottom: 12px; border-left: 4px solid #d4af37;
+        }
+        .import-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .import-name { font-weight: 600; font-size: 15px; color: #1a1a1a; min-width: 180px; }
+        .import-meta { font-size: 13px; color: #666; display: flex; gap: 12px; flex-wrap: wrap; }
+        .import-meta strong { color: #1a1a1a; }
+        .import-actions { margin-left: auto; display: flex; gap: 8px; }
+
+        .suggestions { margin-top: 12px; padding: 10px; background: #fafafa; border-radius: 5px; border: 1px solid #eee; display: none; }
+        .suggestions.show { display: block; }
+        .suggestions h4 { font-size: 12px; text-transform: uppercase; color: #888; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .sug-row { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 4px; font-size: 13px; }
+        .sug-row:hover { background: #fff; }
+        .sug-name { font-weight: 600; min-width: 160px; }
+        .sug-meta { color: #666; flex: 1; }
+        .sug-score { font-family: monospace; color: #2d5016; font-weight: 600; min-width: 60px; text-align: right; }
+
+        .empty {
+            background: #fff; border-radius: 8px; padding: 60px 20px; text-align: center; color: #888;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; align-items: flex-start; justify-content: center;
+            padding: 40px 20px; z-index: 1000; overflow-y: auto;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 100%; max-width: 640px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-header { padding: 22px 26px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-family: 'Oswald', sans-serif; font-size: 22px; color: #1a1a1a; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #888; }
+        .modal-body { padding: 22px 26px; }
+        .modal-footer { padding: 18px 26px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600; }
+        .form-group select, .form-group input { width: 100%; padding: 10px 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/fields">Fields</a>
+            <a href="/admin/jd-merge" class="active">JD Merge</a>
+            <a href="/admin/farming-dashboard">Farming</a>
+            <a href="/admin/equipment">Equipment</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="alert" id="topBanner"></div>
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">JD Import Merge</h1>
+                <p class="page-subtitle">Every JD-imported field lands in <strong>M77 AG - Import</strong> as quarantine. Review each one and either <strong>Merge</strong> (copy boundary + JD link onto an existing real field) or <strong>Promote</strong> (move it to its real Client/Farm). Your existing real fields are never touched automatically.</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <a href="/admin/fields" class="btn btn-secondary btn-sm">Back to Fields</a>
+                <button class="btn btn-sm" id="btnRefresh">Refresh</button>
+            </div>
+        </div>
+
+        <div class="summary-bar">
+            <div class="summary-item">
+                <div class="label">Imports awaiting review</div>
+                <div class="value" id="sumPending">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Total JD orgs imported</div>
+                <div class="value" id="sumOrgs">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Selected</div>
+                <div class="value" id="sumSelected">0</div>
+            </div>
+        </div>
+
+        <div class="bulk-bar" id="bulkBar">
+            <span><strong id="bulkCount">0</strong> selected</span>
+            <span style="opacity:0.7;">|</span>
+            <span>Bulk promote to:</span>
+            <select id="bulkClient"><option value="">— select Client —</option></select>
+            <select id="bulkFarm"><option value="">— select Farm —</option></select>
+            <button class="btn btn-sm" id="btnBulkPromote">Promote selected</button>
+            <button class="btn btn-secondary btn-sm" id="btnBulkClear">Clear</button>
+        </div>
+
+        <div id="importList"><div class="empty">Loading...</div></div>
+    </main>
+
+    <!-- Merge modal -->
+    <div class="modal-overlay" id="mergeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Merge import into existing field</h2>
+                <button class="modal-close" id="mergeClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="mergeError"></div>
+                <div id="mergeSourceInfo" style="margin-bottom: 14px; padding: 10px 12px; background: #fafafa; border-radius: 5px; border: 1px solid #eee; font-size: 14px;"></div>
+                <div class="form-group">
+                    <label for="mergeTarget">Target field (existing real M77 field to receive boundary + JD link)</label>
+                    <select id="mergeTarget"></select>
+                </div>
+                <p style="font-size: 12px; color: #666;">The target keeps its name, acres, county, owner — only the JD field ID and boundary are copied over. The source import is then deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" id="mergeCancel">Cancel</button>
+                <button class="btn btn-sm" id="mergeConfirm">Merge</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promote modal -->
+    <div class="modal-overlay" id="promoteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Promote import to its real location</h2>
+                <button class="modal-close" id="promoteClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="promoteError"></div>
+                <div id="promoteSourceInfo" style="margin-bottom: 14px; padding: 10px 12px; background: #fafafa; border-radius: 5px; border: 1px solid #eee; font-size: 14px;"></div>
+                <div class="form-group">
+                    <label for="promoteClient">Target Client</label>
+                    <select id="promoteClient"></select>
+                </div>
+                <div class="form-group">
+                    <label for="promoteFarm">Target Farm</label>
+                    <select id="promoteFarm"></select>
+                </div>
+                <p style="font-size: 12px; color: #666;">The field keeps everything else as-is — only its Client + Farm change. The JD link is preserved.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" id="promoteCancel">Cancel</button>
+                <button class="btn btn-sm" id="promoteConfirm">Promote</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getToken() { return localStorage.getItem('adminToken'); }
+        function authHeaders() { const t = getToken(); const h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t; return h; }
+
+        async function api(path, opts = {}) {
+            const res = await fetch(path, { ...opts, headers: { ...authHeaders(), ...(opts.headers || {}) } });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('adminToken'); window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+
+        const banner = document.getElementById('topBanner');
+        function showBanner(kind, msg) {
+            banner.className = 'alert alert-' + kind + ' show';
+            banner.textContent = msg;
+            setTimeout(() => banner.classList.remove('show'), 6000);
+        }
+
+        function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function fmtAcres(n) { if (n == null) return '—'; return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 }); }
+
+        // State
+        let imports = [];
+        let importClientId = null;
+        let allClients = [];
+        let allFarms = [];
+        const selectedIds = new Set();
+
+        async function loadAll() {
+            try {
+                const [importsResp, clientsResp, farmsResp] = await Promise.all([
+                    api('/api/jd/imports'),
+                    api('/api/clients'),
+                    api('/api/m77-farms')
+                ]);
+                imports = importsResp.fields || [];
+                importClientId = importsResp.importClientId;
+                allClients = (clientsResp.clients || []).filter(c => String(c._id) !== String(importClientId));
+                allFarms = farmsResp.farms || [];
+                renderImports();
+                renderBulkClientSelect();
+            } catch (e) {
+                document.getElementById('importList').innerHTML = `<div class="empty">Error: ${escapeHtml(e.message)}</div>`;
+            }
+        }
+
+        function renderImports() {
+            // Group by JD org farm name (stored on the import field's farm.name).
+            const byOrg = new Map();
+            for (const f of imports) {
+                const orgName = f.farm?.name || 'Unknown JD organization';
+                if (!byOrg.has(orgName)) byOrg.set(orgName, []);
+                byOrg.get(orgName).push(f);
+            }
+
+            document.getElementById('sumPending').textContent = imports.length;
+            document.getElementById('sumOrgs').textContent = byOrg.size;
+            updateSelectedCount();
+
+            const wrap = document.getElementById('importList');
+            if (imports.length === 0) {
+                wrap.innerHTML = '<div class="empty">No imports awaiting review. Run a JD sync from /admin/fields to populate.</div>';
+                return;
+            }
+
+            const html = Array.from(byOrg.entries())
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([orgName, fields]) => {
+                    const fieldsHtml = fields.map(f => `
+                        <div class="import-card" data-id="${f._id}">
+                            <div class="import-row">
+                                <input type="checkbox" class="row-select" data-id="${f._id}" ${selectedIds.has(f._id) ? 'checked' : ''}>
+                                <span class="import-name">${escapeHtml(f.name)}</span>
+                                <span class="import-meta">
+                                    <span><strong>${fmtAcres(f.acres)}</strong> ac</span>
+                                    <span>JD ID: <code style="font-size: 11px;">${escapeHtml(f.jd_field_id || '—')}</code></span>
+                                    ${f.boundary && f.boundary.coordinates ? '<span style="color:#2d5016;">boundary present</span>' : '<span style="color:#888;">no boundary</span>'}
+                                </span>
+                                <div class="import-actions">
+                                    <button class="btn btn-secondary btn-sm" data-action="suggest" data-id="${f._id}">Suggest</button>
+                                    <button class="btn btn-secondary btn-sm" data-action="merge" data-id="${f._id}">Merge to existing</button>
+                                    <button class="btn btn-sm" data-action="promote" data-id="${f._id}">Promote</button>
+                                </div>
+                            </div>
+                            <div class="suggestions" id="sug-${f._id}"></div>
+                        </div>
+                    `).join('');
+                    return `
+                        <div class="org-section">
+                            <h2 class="org-title">${escapeHtml(orgName)} <span style="font-size: 13px; color: #888; font-weight: 400;">(${fields.length} field${fields.length === 1 ? '' : 's'})</span></h2>
+                            ${fieldsHtml}
+                        </div>
+                    `;
+                }).join('');
+            wrap.innerHTML = html;
+        }
+
+        function renderBulkClientSelect() {
+            const sel = document.getElementById('bulkClient');
+            sel.innerHTML = '<option value="">— select Client —</option>' + allClients
+                .map(c => `<option value="${c._id}">${escapeHtml(c.name)}</option>`).join('');
+            sel.addEventListener('change', () => populateFarmSelect('bulkFarm', sel.value));
+        }
+
+        function populateFarmSelect(selId, clientId) {
+            const sel = document.getElementById(selId);
+            const farms = allFarms
+                .filter(f => String(f.client?._id || f.client) === String(clientId))
+                .sort((a, b) => a.name.localeCompare(b.name));
+            sel.innerHTML = '<option value="">— select Farm —</option>' + farms
+                .map(f => `<option value="${f._id}">${escapeHtml(f.name)} — ${escapeHtml(f.landlordName || '')}</option>`).join('');
+        }
+
+        function updateSelectedCount() {
+            const n = selectedIds.size;
+            document.getElementById('sumSelected').textContent = n;
+            document.getElementById('bulkCount').textContent = n;
+            document.getElementById('bulkBar').classList.toggle('active', n > 0);
+        }
+
+        // ---- Suggest ----
+        async function showSuggestions(id) {
+            const wrap = document.getElementById('sug-' + id);
+            wrap.classList.add('show');
+            wrap.innerHTML = '<h4>Suggested matches</h4><div style="font-size:13px; color:#666;">Loading...</div>';
+            try {
+                const data = await api('/api/jd/suggest/' + id);
+                if (!data.suggestions.length) {
+                    wrap.innerHTML = '<h4>Suggested matches</h4><div style="font-size:13px; color:#666;">No candidates above threshold. Use Promote to move to a new location.</div>';
+                    return;
+                }
+                wrap.innerHTML = '<h4>Suggested matches (review-only — no auto-merge)</h4>' + data.suggestions.map(s => `
+                    <div class="sug-row">
+                        <span class="sug-name">${escapeHtml(s.candidate.name)}</span>
+                        <span class="sug-meta">${escapeHtml(s.candidate.client || '—')} / ${escapeHtml(s.candidate.farm || '—')} · ${fmtAcres(s.candidate.acres)} ac · ${escapeHtml(s.reason)}</span>
+                        <span class="sug-score">${s.score.toFixed(2)}</span>
+                        <button class="btn btn-sm" data-action="merge-into" data-source-id="${id}" data-target-id="${s.candidate._id}">Merge here</button>
+                    </div>
+                `).join('');
+            } catch (e) {
+                wrap.innerHTML = '<h4>Suggested matches</h4><div style="font-size:13px; color:#c0392b;">Error: ' + escapeHtml(e.message) + '</div>';
+            }
+        }
+
+        // ---- Merge modal ----
+        const mergeModal = document.getElementById('mergeModal');
+        let mergeSourceId = null;
+
+        function openMergeModal(sourceId, presetTargetId) {
+            const src = imports.find(f => f._id === sourceId);
+            if (!src) return;
+            mergeSourceId = sourceId;
+            document.getElementById('mergeSourceInfo').innerHTML = `
+                <strong>Source (import):</strong> ${escapeHtml(src.name)} · ${fmtAcres(src.acres)} ac · JD org ${escapeHtml(src.farm?.name || '—')}
+            `;
+            // Populate target dropdown — every real M77 field grouped by client/farm.
+            const sel = document.getElementById('mergeTarget');
+            api('/api/m77-fields?jdLinked=false').then(resp => {
+                const fields = (resp.fields || [])
+                    .filter(f => String(f.client?._id || f.client) !== String(importClientId))
+                    .sort((a, b) => (a.client?.name || '').localeCompare(b.client?.name || '') || (a.farm?.name || '').localeCompare(b.farm?.name || '') || a.name.localeCompare(b.name));
+                sel.innerHTML = '<option value="">— select target field —</option>' + fields.map(f =>
+                    `<option value="${f._id}">${escapeHtml(f.client?.name || '?')} / ${escapeHtml(f.farm?.name || '?')} / ${escapeHtml(f.name)} — ${fmtAcres(f.acres)} ac</option>`
+                ).join('');
+                if (presetTargetId) sel.value = presetTargetId;
+            });
+            document.getElementById('mergeError').classList.remove('show');
+            mergeModal.classList.add('open');
+        }
+        function closeMergeModal() { mergeModal.classList.remove('open'); mergeSourceId = null; }
+
+        document.getElementById('mergeClose').addEventListener('click', closeMergeModal);
+        document.getElementById('mergeCancel').addEventListener('click', closeMergeModal);
+        mergeModal.addEventListener('click', e => { if (e.target === mergeModal) closeMergeModal(); });
+
+        document.getElementById('mergeConfirm').addEventListener('click', async () => {
+            const targetId = document.getElementById('mergeTarget').value;
+            if (!targetId) {
+                document.getElementById('mergeError').textContent = 'Pick a target field first.';
+                document.getElementById('mergeError').classList.add('show');
+                return;
+            }
+            try {
+                await api('/api/jd/merge', { method: 'POST', body: JSON.stringify({ sourceFieldId: mergeSourceId, targetFieldId: targetId }) });
+                closeMergeModal();
+                showBanner('success', 'Merged. Source import deleted; target field updated with JD link.');
+                selectedIds.delete(mergeSourceId);
+                await loadAll();
+            } catch (e) {
+                document.getElementById('mergeError').textContent = e.message;
+                document.getElementById('mergeError').classList.add('show');
+            }
+        });
+
+        // ---- Promote modal ----
+        const promoteModal = document.getElementById('promoteModal');
+        let promoteSourceIds = [];
+
+        function openPromoteModal(sourceIds) {
+            promoteSourceIds = Array.isArray(sourceIds) ? sourceIds : [sourceIds];
+            const labels = promoteSourceIds.map(id => {
+                const src = imports.find(f => f._id === id);
+                return src ? `${escapeHtml(src.name)} (${fmtAcres(src.acres)} ac)` : id;
+            }).join('<br>');
+            document.getElementById('promoteSourceInfo').innerHTML = `<strong>Promoting ${promoteSourceIds.length} field${promoteSourceIds.length === 1 ? '' : 's'}:</strong><br>${labels}`;
+            const cSel = document.getElementById('promoteClient');
+            cSel.innerHTML = '<option value="">— select Client —</option>' + allClients.map(c => `<option value="${c._id}">${escapeHtml(c.name)}</option>`).join('');
+            cSel.onchange = () => populateFarmSelect('promoteFarm', cSel.value);
+            document.getElementById('promoteFarm').innerHTML = '<option value="">— select Farm —</option>';
+            document.getElementById('promoteError').classList.remove('show');
+            promoteModal.classList.add('open');
+        }
+        function closePromoteModal() { promoteModal.classList.remove('open'); promoteSourceIds = []; }
+
+        document.getElementById('promoteClose').addEventListener('click', closePromoteModal);
+        document.getElementById('promoteCancel').addEventListener('click', closePromoteModal);
+        promoteModal.addEventListener('click', e => { if (e.target === promoteModal) closePromoteModal(); });
+
+        document.getElementById('promoteConfirm').addEventListener('click', async () => {
+            const targetClientId = document.getElementById('promoteClient').value;
+            const targetFarmId   = document.getElementById('promoteFarm').value;
+            if (!targetClientId || !targetFarmId) {
+                document.getElementById('promoteError').textContent = 'Pick both a Client and a Farm.';
+                document.getElementById('promoteError').classList.add('show');
+                return;
+            }
+            try {
+                const r = await api('/api/jd/promote', { method: 'POST', body: JSON.stringify({ sourceFieldIds: promoteSourceIds, targetClientId, targetFarmId }) });
+                closePromoteModal();
+                showBanner('success', `Promoted ${r.promoted} field(s) to ${r.target.client} / ${r.target.farm}.`);
+                promoteSourceIds.forEach(id => selectedIds.delete(id));
+                await loadAll();
+            } catch (e) {
+                document.getElementById('promoteError').textContent = e.message;
+                document.getElementById('promoteError').classList.add('show');
+            }
+        });
+
+        // ---- Per-row events ----
+        document.getElementById('importList').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            if (action === 'suggest') showSuggestions(id);
+            else if (action === 'merge') openMergeModal(id);
+            else if (action === 'merge-into') openMergeModal(btn.getAttribute('data-source-id'), btn.getAttribute('data-target-id'));
+            else if (action === 'promote') openPromoteModal(id);
+        });
+        document.getElementById('importList').addEventListener('change', (e) => {
+            const cb = e.target.closest('.row-select');
+            if (!cb) return;
+            const id = cb.getAttribute('data-id');
+            if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+            updateSelectedCount();
+        });
+
+        // ---- Bulk ----
+        document.getElementById('btnBulkPromote').addEventListener('click', () => {
+            if (selectedIds.size === 0) return showBanner('error', 'No imports selected.');
+            const targetClientId = document.getElementById('bulkClient').value;
+            const targetFarmId   = document.getElementById('bulkFarm').value;
+            if (!targetClientId || !targetFarmId) return showBanner('error', 'Pick a Client and Farm in the bulk bar.');
+            openPromoteModal(Array.from(selectedIds));
+            // Pre-fill the modal selectors from the bulk bar
+            document.getElementById('promoteClient').value = targetClientId;
+            populateFarmSelect('promoteFarm', targetClientId);
+            setTimeout(() => { document.getElementById('promoteFarm').value = targetFarmId; }, 0);
+        });
+        document.getElementById('btnBulkClear').addEventListener('click', () => {
+            selectedIds.clear();
+            document.querySelectorAll('.row-select').forEach(cb => cb.checked = false);
+            updateSelectedCount();
+        });
+
+        document.getElementById('btnRefresh').addEventListener('click', loadAll);
+
+        (async () => {
+            if (!getToken()) { window.location.href = '/admin/login'; return; }
+            await loadAll();
+        })();
+    </script>
+</body>
+</html>

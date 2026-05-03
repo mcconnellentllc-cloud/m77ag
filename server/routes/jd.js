@@ -13,8 +13,15 @@ router.post('/sync',                authenticate, isAdmin, jdController.sync);
 router.get('/sync/runs',            authenticate, isAdmin, jdController.listRuns);
 router.get('/sync/runs/:runId',     authenticate, isAdmin, jdController.getRun);
 
-// Review queue
+// Review queue (legacy from auto-match mode; left in place but unused
+// by quarantine sync). Replaced by /imports + merge/promote.
 router.get('/reviews',              authenticate, isAdmin, jdController.listReviews);
 router.post('/reviews/:id/decide',  authenticate, isAdmin, jdController.decideReview);
+
+// Import quarantine workflow
+router.get('/imports',                          authenticate, isAdmin, jdController.listImports);
+router.get('/suggest/:sourceFieldId',           authenticate, isAdmin, jdController.suggestMatches);
+router.post('/merge',                           authenticate, isAdmin, jdController.merge);
+router.post('/promote',                         authenticate, isAdmin, jdController.promote);
 
 module.exports = router;
