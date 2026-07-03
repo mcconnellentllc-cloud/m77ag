@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="M77 AG Farm Operations - Irrigated and dryland crop production in Northeast Colorado. Corn, grain sorghum, and revenue protection analysis.">
+    <title>Farm Operations - M77 AG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/main.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f3f0;
+            color: #2c2c2c;
+        }
+
+        .nav-wrapper {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar {
+            padding: 20px 0;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #4a4a4a;
+            transition: 0.3s;
+        }
+
+        .nav-link {
+            color: #4a4a4a;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #d4af37;
+        }
+
+        /* Hero */
+        .farms-hero {
+            margin-top: 80px;
+            height: 60vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)),
+                        url('assets/images/aerial-farmland.jpg') center/cover;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            color: #fff;
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 8vw, 96px);
+            line-height: 0.9;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+        }
+
+        /* Section base */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-alt {
+            background: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 40px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        /* Farm profile card */
+        .farm-profile {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .profile-summary {
+            background: #fff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-summary h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #2d5016;
+        }
+
+        /* Stat cards */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            font-weight: 600;
+            color: #2d5016;
+            margin-bottom: 8px;
+        }
+
+        .stat-value.gold {
+            color: #d4af37;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Data tables */
+        .data-table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .data-table th {
+            background: #2d5016;
+            color: #fff;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 12px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background: #fafaf8;
+        }
+
+        .data-table .total-row {
+            background: #f5f3f0;
+            font-weight: 600;
+        }
+
+        .data-table .total-row td {
+            color: #1a1a1a;
+            border-top: 2px solid #2d5016;
+        }
+
+        .data-table td.num,
+        .data-table th.num {
+            text-align: right;
+        }
+
+        .table-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        .table-note {
+            font-size: 13px;
+            color: #888;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        /* Cost breakdown sections */
+        .cost-section {
+            margin-bottom: 50px;
+        }
+
+        .cost-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2d5016;
+        }
+
+        .cost-header h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            color: #1a1a1a;
+        }
+
+        .cost-header .net {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #2d5016;
+        }
+
+        .cost-category {
+            font-weight: 600;
+            color: #2d5016;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 18px;
+        }
+
+        /* Cash flow section */
+        .cashflow-table th {
+            font-size: 11px;
+            padding: 10px 8px;
+        }
+
+        .cashflow-table td {
+            font-size: 12px;
+            padding: 8px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .cashflow-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .cashflow-highlight {
+            background: #e8f5e9;
+        }
+
+        /* Summary cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h4 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #2d5016;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f3f0;
+            font-size: 14px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row .label {
+            color: #666;
+        }
+
+        .summary-row .value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .summary-row.highlight {
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid #2d5016;
+        }
+
+        .summary-row.highlight .value {
+            color: #2d5016;
+            font-size: 18px;
+        }
+
+        /* Insurance badge */
+        .insurance-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e8f5e9;
+            color: #2d5016;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Collapsible sections */
+        .collapsible-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible-toggle::after {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #999;
+            border-bottom: 2px solid #999;
+            transform: rotate(45deg);
+            margin-left: 10px;
+            transition: transform 0.3s;
+            vertical-align: middle;
+        }
+
+        .collapsible-toggle.open::after {
+            transform: rotate(-135deg);
+        }
+
+        .collapsible-content {
+            display: none;
+        }
+
+        .collapsible-content.open {
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a0a0a;
+            padding: 40px 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #fff;
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .farm-profile {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .section {
+                padding: 50px 0;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .cost-header h3 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="logo">M77 AG</a>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/services" class="nav-link">Services</a></li>
+                    <li><a href="/farms" class="nav-link active">Farms</a></li>
+                    <li><a href="/forsale" class="nav-link">Equipment</a></li>
+                    <li><a href="/hunting" class="nav-link">Hunting</a></li>
+                    <li><a href="/rentals" class="nav-link">Rentals</a></li>
+                    <li><a href="/about" class="nav-link">About</a></li>
+                    <li><a href="/internal" class="nav-link">Internal</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero -->
+    <section class="farms-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                FARM<br>
+                OPERATIONS
+            </h1>
+            <p class="hero-subtitle">
+                Precision crop production across irrigated and dryland acreage in Northeast Colorado.
+                Data-driven planning from seed to sale.
+            </p>
+        </div>
+    </section>
+
+    <!-- Allphin Farm Overview -->
+    <section class="section section-alt" id="allphin">
+        <div class="container">
+            <h2 class="section-title">Allphin Farm -- 2026 Season</h2>
+            <p class="section-subtitle">
+                990-acre operation spanning irrigated center pivot and dryland production.
+                First-year operator, veteran.
+            </p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value">990</div>
+                    <div class="stat-label">Total Acres</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value gold">$550,695</div>
+                    <div class="stat-label">Projected Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$427,235</div>
+                    <div class="stat-label">75% RP Insurance Floor</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value gold">$96,889</div>
+                    <div class="stat-label">Projected Net Cash</div>
+                </div>
+            </div>
+
+            <!-- Operation Overview Table -->
+            <div class="table-label">Operation Overview</div>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Enterprise</th>
+                            <th>Location</th>
+                            <th class="num">Acres</th>
+                            <th>Crop</th>
+                            <th class="num">Lease Rate</th>
+                            <th class="num">Lease Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Irrigated (center pivot)</td>
+                            <td>Sec 19 / Sec 30</td>
+                            <td class="num">390</td>
+                            <td>Corn</td>
+                            <td class="num">$230/ac</td>
+                            <td class="num">$89,700</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland</td>
+                            <td>--</td>
+                            <td class="num">300</td>
+                            <td>Corn</td>
+                            <td class="num">$45/ac</td>
+                            <td class="num">$13,500</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland</td>
+                            <td>--</td>
+                            <td class="num">300</td>
+                            <td>Milo (grain sorghum)</td>
+                            <td class="num">$45/ac</td>
+                            <td class="num">$13,500</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Total</td>
+                            <td></td>
+                            <td class="num">990</td>
+                            <td></td>
+                            <td></td>
+                            <td class="num">$116,700</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="table-note">Lease structure: 25% due May ($29,175) drawn against operating line; 75% due December 15 ($87,525) from harvest proceeds. Seed costs of $72,300 carried on a separate PHI note.</p>
+        </div>
+    </section>
+
+    <!-- Production & Revenue Protection -->
+    <section class="section" id="production">
+        <div class="container">
+            <h2 class="section-title">Production & Revenue Protection</h2>
+
+            <div class="table-label">Yield, Production & Gross Revenue</div>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th class="num">Acres</th>
+                            <th class="num">APH Yield</th>
+                            <th class="num">Total Bushels</th>
+                            <th class="num">Cash Price</th>
+                            <th class="num">Gross Revenue</th>
+                            <th class="num">Rev./Acre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Irrigated corn</td>
+                            <td class="num">390</td>
+                            <td class="num">220 bu/ac</td>
+                            <td class="num">85,800</td>
+                            <td class="num">$4.65/bu</td>
+                            <td class="num">$398,970</td>
+                            <td class="num">$1,023</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland corn</td>
+                            <td class="num">300</td>
+                            <td class="num">65 bu/ac</td>
+                            <td class="num">19,500</td>
+                            <td class="num">$4.55/bu</td>
+                            <td class="num">$88,725</td>
+                            <td class="num">$296</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland milo</td>
+                            <td class="num">300</td>
+                            <td class="num">60 bu/ac</td>
+                            <td class="num">18,000</td>
+                            <td class="num">$3.50/bu</td>
+                            <td class="num">$63,000</td>
+                            <td class="num">$210</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Total / Weighted</td>
+                            <td class="num">990</td>
+                            <td></td>
+                            <td class="num">123,300</td>
+                            <td></td>
+                            <td class="num">$550,695</td>
+                            <td class="num">$556</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-label" style="margin-top: 40px;">Crop Insurance & Revenue Protection</div>
+            <p class="section-subtitle" style="margin-bottom: 20px;">CLIP umbrella policy at 75% RP covering all three crops. Irrigated corn also carries private hail insurance. Spring price: $4.62/bu (USDA RMA 2026).</p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Coverage</th>
+                            <th class="num">APH Yield</th>
+                            <th class="num">Projected Price</th>
+                            <th class="num">Revenue Guarantee/ac</th>
+                            <th class="num">Protected Floor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Irrigated corn -- 75% RP</td>
+                            <td><span class="insurance-badge">CLIP</span></td>
+                            <td class="num">220 bu</td>
+                            <td class="num">$4.62/bu</td>
+                            <td class="num">$762/ac</td>
+                            <td class="num">$297,297</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland corn -- 75% RP</td>
+                            <td><span class="insurance-badge">CLIP</span></td>
+                            <td class="num">65 bu</td>
+                            <td class="num">$4.62/bu</td>
+                            <td class="num">$225/ac</td>
+                            <td class="num">$67,568</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland milo -- 75% RP</td>
+                            <td><span class="insurance-badge">CLIP</span></td>
+                            <td class="num">60 bu</td>
+                            <td class="num">$4.62/bu</td>
+                            <td class="num">$208/ac</td>
+                            <td class="num">$62,370</td>
+                        </tr>
+                        <tr>
+                            <td>Hail -- irrigated corn</td>
+                            <td>Private</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="num">TBD</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Combined protected floor</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="num">$427,235</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="table-note">Beginning farmer discount: estimated 40-50% premium reduction vs. standard rates in years 1-4. Veteran status qualifies for FSA set-aside loan funds and beginning farmer program benefits.</p>
+        </div>
+    </section>
+
+    <!-- Cost Detail -->
+    <section class="section section-alt" id="costs">
+        <div class="container">
+            <h2 class="section-title">Operating Cost Detail</h2>
+            <p class="section-subtitle">Complete per-crop cost breakdown. Seed costs carried on separate PHI note and excluded from operating loan calculations.</p>
+
+            <!-- Irrigated Corn -->
+            <div class="cost-section">
+                <div class="cost-header">
+                    <h3 class="collapsible-toggle open" onclick="toggleSection('irrigated')">Irrigated Corn -- 390 Acres</h3>
+                    <div class="net">Net: $79,168</div>
+                </div>
+                <div class="collapsible-content open" id="irrigated">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Line Item</th>
+                                    <th>Rate/Unit</th>
+                                    <th class="num">Quantity</th>
+                                    <th class="num">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="cost-category" colspan="4">Land</td></tr>
+                                <tr>
+                                    <td>Cash lease -- May 25%</td>
+                                    <td>$230/ac</td>
+                                    <td class="num">390 ac (25%)</td>
+                                    <td class="num">$22,425</td>
+                                </tr>
+                                <tr>
+                                    <td>Cash lease -- Dec 75%</td>
+                                    <td>$230/ac</td>
+                                    <td class="num">390 ac (75%)</td>
+                                    <td class="num">$67,275</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Fertilizer</td></tr>
+                                <tr>
+                                    <td>UAN 32% nitrogen</td>
+                                    <td>$558/ton</td>
+                                    <td class="num">134 tons</td>
+                                    <td class="num">$56,550</td>
+                                </tr>
+                                <tr>
+                                    <td>10-34-0 liquid phosphorus</td>
+                                    <td>$667/ton</td>
+                                    <td class="num">8.7 tons</td>
+                                    <td class="num">$4,973</td>
+                                </tr>
+                                <tr>
+                                    <td>KTS 0-0-25 liquid potassium</td>
+                                    <td>$700/ton</td>
+                                    <td class="num">6.5 tons</td>
+                                    <td class="num">$9,926</td>
+                                </tr>
+                                <tr>
+                                    <td>Pivot Bio biologicals</td>
+                                    <td>$16.50/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$6,435</td>
+                                </tr>
+                                <tr>
+                                    <td>Zinc (2 lb/ac)</td>
+                                    <td>$12.50/gal</td>
+                                    <td class="num">195 gal</td>
+                                    <td class="num">$2,438</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Chemicals -- Pass 1</td></tr>
+                                <tr>
+                                    <td>Xsate glyphosate (24 oz)</td>
+                                    <td>$14.77/gal</td>
+                                    <td class="num">73 gal</td>
+                                    <td class="num">$1,080</td>
+                                </tr>
+                                <tr>
+                                    <td>Atrazine 4L (2 lb ai)</td>
+                                    <td>$22.00/gal</td>
+                                    <td class="num">195 gal</td>
+                                    <td class="num">$2,145</td>
+                                </tr>
+                                <tr>
+                                    <td>Anthem NXT (3 oz)</td>
+                                    <td>$430/gal</td>
+                                    <td class="num">91 gal</td>
+                                    <td class="num">$3,931</td>
+                                </tr>
+                                <tr>
+                                    <td>Mesotrione 4SC (6 oz)</td>
+                                    <td>$169.95/2.5 gal</td>
+                                    <td class="num">183 gal</td>
+                                    <td class="num">$2,480</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Chemicals -- Pass 2</td></tr>
+                                <tr>
+                                    <td>Xsate glyphosate (24 oz)</td>
+                                    <td>$14.77/gal</td>
+                                    <td class="num">73 gal</td>
+                                    <td class="num">$1,080</td>
+                                </tr>
+                                <tr>
+                                    <td>Status herbicide (5 oz)</td>
+                                    <td>$5.00/oz</td>
+                                    <td class="num">1,950 oz</td>
+                                    <td class="num">$9,750</td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrovant (2 oz)</td>
+                                    <td>$135/gal</td>
+                                    <td class="num">61 gal</td>
+                                    <td class="num">$822</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Irrigation</td></tr>
+                                <tr>
+                                    <td>Electricity -- center pivot</td>
+                                    <td>$175/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$68,250</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Insurance</td></tr>
+                                <tr>
+                                    <td>Crop insurance 75% RP</td>
+                                    <td>Est. $20/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$7,800</td>
+                                </tr>
+                                <tr>
+                                    <td>Hail insurance</td>
+                                    <td>Est. $15/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$5,850</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Custom Hire & Operations</td></tr>
+                                <tr>
+                                    <td>Custom spray -- 2 passes</td>
+                                    <td>$12/ac/pass</td>
+                                    <td class="num">780 ac passes</td>
+                                    <td class="num">$9,360</td>
+                                </tr>
+                                <tr>
+                                    <td>Custom plant/fertilizer apply</td>
+                                    <td>$15/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$5,850</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Harvest & Overhead</td></tr>
+                                <tr>
+                                    <td>Trucking & hauling</td>
+                                    <td>$20/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$7,800</td>
+                                </tr>
+                                <tr>
+                                    <td>Fuel & equipment operation</td>
+                                    <td>$30/ac</td>
+                                    <td class="num">390 ac</td>
+                                    <td class="num">$11,700</td>
+                                </tr>
+                                <tr>
+                                    <td>Miscellaneous & supplies</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="num">$3,900</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Loan Interest</td></tr>
+                                <tr>
+                                    <td>Operating loan interest @ 5.25%</td>
+                                    <td>7 mo avg</td>
+                                    <td class="num">Prorated</td>
+                                    <td class="num">$7,980</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total Irrigated Costs (excl. seed note)</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="num">$319,802</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dryland Corn -->
+            <div class="cost-section">
+                <div class="cost-header">
+                    <h3 class="collapsible-toggle" onclick="toggleSection('dryland-corn')">Dryland Corn -- 300 Acres</h3>
+                    <div class="net">Net: $20,047</div>
+                </div>
+                <div class="collapsible-content" id="dryland-corn">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Line Item</th>
+                                    <th>Rate/Unit</th>
+                                    <th class="num">Quantity</th>
+                                    <th class="num">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="cost-category" colspan="4">Land</td></tr>
+                                <tr>
+                                    <td>Cash lease -- May 25%</td>
+                                    <td>$45/ac</td>
+                                    <td class="num">300 ac (25%)</td>
+                                    <td class="num">$3,375</td>
+                                </tr>
+                                <tr>
+                                    <td>Cash lease -- Dec 75%</td>
+                                    <td>$45/ac</td>
+                                    <td class="num">300 ac (75%)</td>
+                                    <td class="num">$10,125</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Fertilizer (Starter Program)</td></tr>
+                                <tr>
+                                    <td>10-34-0 liquid starter (15 lbs P)</td>
+                                    <td>$4.00/gal</td>
+                                    <td class="num">780 gal</td>
+                                    <td class="num">$3,120</td>
+                                </tr>
+                                <tr>
+                                    <td>Thiosol ATS 12-0-0-26S (5 lbs S)</td>
+                                    <td>$3.75/gal</td>
+                                    <td class="num">690 gal</td>
+                                    <td class="num">$2,588</td>
+                                </tr>
+                                <tr>
+                                    <td>Zinc 1 lb/ac</td>
+                                    <td>$12.50/gal</td>
+                                    <td class="num">75 gal</td>
+                                    <td class="num">$938</td>
+                                </tr>
+                                <tr>
+                                    <td>Pivot Bio biologicals</td>
+                                    <td>$16.50/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$4,950</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Chemicals -- Pass 1</td></tr>
+                                <tr>
+                                    <td>Valor SX (3 oz)</td>
+                                    <td>$190/5lb bag</td>
+                                    <td class="num">56 bags</td>
+                                    <td class="num">$4,275</td>
+                                </tr>
+                                <tr>
+                                    <td>Xsate glyphosate (22 oz)</td>
+                                    <td>$14.77/gal</td>
+                                    <td class="num">51 gal</td>
+                                    <td class="num">$756</td>
+                                </tr>
+                                <tr>
+                                    <td>Atrazine 4L (1 lb ai)</td>
+                                    <td>$22/gal</td>
+                                    <td class="num">75 gal</td>
+                                    <td class="num">$1,650</td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrovant (2 oz)</td>
+                                    <td>$135/gal</td>
+                                    <td class="num">47 gal</td>
+                                    <td class="num">$633</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Chemicals -- Pass 2</td></tr>
+                                <tr>
+                                    <td>Xsate glyphosate (22 oz)</td>
+                                    <td>$14.77/gal</td>
+                                    <td class="num">51 gal</td>
+                                    <td class="num">$756</td>
+                                </tr>
+                                <tr>
+                                    <td>Anthem NXT (3 oz)</td>
+                                    <td>$430/gal</td>
+                                    <td class="num">71 gal</td>
+                                    <td class="num">$3,024</td>
+                                </tr>
+                                <tr>
+                                    <td>Mesotrione 4SC (6 oz)</td>
+                                    <td>$169.95/2.5 gal</td>
+                                    <td class="num">141 gal</td>
+                                    <td class="num">$1,908</td>
+                                </tr>
+                                <tr>
+                                    <td>Dicamba DMA (4 oz)</td>
+                                    <td>$30.25/gal</td>
+                                    <td class="num">94 gal</td>
+                                    <td class="num">$283</td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrovant (2 oz)</td>
+                                    <td>$135/gal</td>
+                                    <td class="num">47 gal</td>
+                                    <td class="num">$633</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Insurance</td></tr>
+                                <tr>
+                                    <td>CLIP 75% RP crop insurance</td>
+                                    <td>Est. $9/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$2,700</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Custom Hire & Operations</td></tr>
+                                <tr>
+                                    <td>Custom spray -- 2 passes</td>
+                                    <td>$12/ac/pass</td>
+                                    <td class="num">600 ac passes</td>
+                                    <td class="num">$7,200</td>
+                                </tr>
+                                <tr>
+                                    <td>Custom plant</td>
+                                    <td>$15/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$4,500</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Harvest & Overhead</td></tr>
+                                <tr>
+                                    <td>Trucking & hauling</td>
+                                    <td>$15/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$4,500</td>
+                                </tr>
+                                <tr>
+                                    <td>Fuel & equipment operation</td>
+                                    <td>$30/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$9,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Miscellaneous & supplies</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="num">$3,000</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Loan Interest</td></tr>
+                                <tr>
+                                    <td>Operating loan interest @ 5.25%</td>
+                                    <td>7 mo avg</td>
+                                    <td class="num">Prorated</td>
+                                    <td class="num">$1,714</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total Dryland Corn Costs (excl. seed note)</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="num">$68,678</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dryland Milo -->
+            <div class="cost-section">
+                <div class="cost-header">
+                    <h3 class="collapsible-toggle" onclick="toggleSection('dryland-milo')">Dryland Milo -- 300 Acres</h3>
+                    <div class="net">Net: $2,326</div>
+                </div>
+                <div class="collapsible-content" id="dryland-milo">
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Line Item</th>
+                                    <th>Rate/Unit</th>
+                                    <th class="num">Quantity</th>
+                                    <th class="num">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="cost-category" colspan="4">Land</td></tr>
+                                <tr>
+                                    <td>Cash lease -- May 25%</td>
+                                    <td>$45/ac</td>
+                                    <td class="num">300 ac (25%)</td>
+                                    <td class="num">$3,375</td>
+                                </tr>
+                                <tr>
+                                    <td>Cash lease -- Dec 75%</td>
+                                    <td>$45/ac</td>
+                                    <td class="num">300 ac (75%)</td>
+                                    <td class="num">$10,125</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Fertilizer (Starter Program)</td></tr>
+                                <tr>
+                                    <td>10-34-0 liquid starter (15 lbs P)</td>
+                                    <td>$4.00/gal</td>
+                                    <td class="num">780 gal</td>
+                                    <td class="num">$3,120</td>
+                                </tr>
+                                <tr>
+                                    <td>Thiosol ATS 12-0-0-26S (5 lbs S)</td>
+                                    <td>$3.75/gal</td>
+                                    <td class="num">690 gal</td>
+                                    <td class="num">$2,588</td>
+                                </tr>
+                                <tr>
+                                    <td>Zinc 1 lb/ac</td>
+                                    <td>$12.50/gal</td>
+                                    <td class="num">75 gal</td>
+                                    <td class="num">$938</td>
+                                </tr>
+                                <tr>
+                                    <td>Pivot Bio biologicals</td>
+                                    <td>$16.50/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$4,950</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Chemicals -- Pass 1</td></tr>
+                                <tr>
+                                    <td>Valor SX (3 oz)</td>
+                                    <td>$190/5lb bag</td>
+                                    <td class="num">split w/ corn</td>
+                                    <td class="num">split</td>
+                                </tr>
+                                <tr>
+                                    <td>Xsate glyphosate (22 oz)</td>
+                                    <td>$14.77/gal</td>
+                                    <td class="num">51 gal</td>
+                                    <td class="num">$756</td>
+                                </tr>
+                                <tr>
+                                    <td>Atrazine 4L (1 lb ai)</td>
+                                    <td>$22/gal</td>
+                                    <td class="num">75 gal</td>
+                                    <td class="num">$1,650</td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrovant (2 oz)</td>
+                                    <td>$135/gal</td>
+                                    <td class="num">47 gal</td>
+                                    <td class="num">$633</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Chemicals -- Pass 2 (No Anthem NXT)</td></tr>
+                                <tr>
+                                    <td>Xsate glyphosate (22 oz)</td>
+                                    <td>$14.77/gal</td>
+                                    <td class="num">51 gal</td>
+                                    <td class="num">$756</td>
+                                </tr>
+                                <tr>
+                                    <td>Mesotrione 4SC (6 oz)</td>
+                                    <td>$169.95/2.5 gal</td>
+                                    <td class="num">141 gal</td>
+                                    <td class="num">$1,908</td>
+                                </tr>
+                                <tr>
+                                    <td>Dicamba DMA (4 oz)</td>
+                                    <td>$30.25/gal</td>
+                                    <td class="num">94 gal</td>
+                                    <td class="num">$283</td>
+                                </tr>
+                                <tr>
+                                    <td>Hydrovant (2 oz)</td>
+                                    <td>$135/gal</td>
+                                    <td class="num">47 gal</td>
+                                    <td class="num">$633</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Insurance</td></tr>
+                                <tr>
+                                    <td>CLIP 75% RP crop insurance</td>
+                                    <td>Est. $7/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$2,100</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Custom Hire & Operations</td></tr>
+                                <tr>
+                                    <td>Custom spray -- 2 passes</td>
+                                    <td>$12/ac/pass</td>
+                                    <td class="num">600 ac passes</td>
+                                    <td class="num">$7,200</td>
+                                </tr>
+                                <tr>
+                                    <td>Custom plant</td>
+                                    <td>$15/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$4,500</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Harvest & Overhead</td></tr>
+                                <tr>
+                                    <td>Trucking & hauling</td>
+                                    <td>$15/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$4,500</td>
+                                </tr>
+                                <tr>
+                                    <td>Fuel & equipment operation</td>
+                                    <td>$30/ac</td>
+                                    <td class="num">300 ac</td>
+                                    <td class="num">$9,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Miscellaneous & supplies</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="num">$3,000</td>
+                                </tr>
+                                <tr><td class="cost-category" colspan="4">Loan Interest</td></tr>
+                                <tr>
+                                    <td>Operating loan interest @ 5.25%</td>
+                                    <td>7 mo avg</td>
+                                    <td class="num">Prorated</td>
+                                    <td class="num">$1,630</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total Milo Costs (excl. seed note)</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="num">$65,326</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Break-Even & Cash Flow -->
+    <section class="section" id="breakeven">
+        <div class="container">
+            <h2 class="section-title">Break-Even & Cash Flow Analysis</h2>
+            <p class="section-subtitle">Break-even prices at October grain sale. Monthly cash draws against the operating line.</p>
+
+            <div class="table-label">Break-Even Prices -- October Sale</div>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th class="num">Total Bushels</th>
+                            <th class="num">Crop Cost Share</th>
+                            <th class="num">Cost/Bushel (BE)</th>
+                            <th class="num">Market Est.</th>
+                            <th class="num">Margin Above BE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Irrigated corn</td>
+                            <td class="num">85,800 bu</td>
+                            <td class="num">$319,802</td>
+                            <td class="num">$3.73/bu</td>
+                            <td class="num">$4.65/bu</td>
+                            <td class="num">$0.92/bu</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland corn</td>
+                            <td class="num">19,500 bu</td>
+                            <td class="num">$68,678</td>
+                            <td class="num">$3.52/bu</td>
+                            <td class="num">$4.55/bu</td>
+                            <td class="num">$1.03/bu</td>
+                        </tr>
+                        <tr>
+                            <td>Dryland milo</td>
+                            <td class="num">18,000 bu</td>
+                            <td class="num">$65,326</td>
+                            <td class="num">$3.63/bu</td>
+                            <td class="num">$3.50/bu</td>
+                            <td class="num" style="color: #c62828;">-$0.13/bu</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Blended -- all crops</td>
+                            <td class="num">123,300 bu</td>
+                            <td class="num">$453,806</td>
+                            <td class="num">$3.68/bu</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Key Repayment Metrics -->
+            <div style="margin: 40px 0;">
+                <div class="table-label">Key Repayment Metrics</div>
+                <div class="data-table-wrapper">
+                    <table class="data-table" style="max-width: 600px;">
+                        <tbody>
+                            <tr>
+                                <td>Operating loan balance at October sale</td>
+                                <td class="num">$354,955</td>
+                            </tr>
+                            <tr>
+                                <td>Total interest accrued through October</td>
+                                <td class="num">$11,324</td>
+                            </tr>
+                            <tr>
+                                <td>December 15 lease obligation</td>
+                                <td class="num">$87,525</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total revenue needed to clear all obligations</td>
+                                <td class="num">$453,804</td>
+                            </tr>
+                            <tr>
+                                <td>Projected October gross revenue</td>
+                                <td class="num" style="color: #2d5016; font-weight: 700;">$550,695</td>
+                            </tr>
+                            <tr>
+                                <td>75% RP insurance floor</td>
+                                <td class="num">$427,235</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700;">Projected net cash after all obligations</td>
+                                <td class="num" style="color: #2d5016; font-weight: 700; font-size: 18px;">$96,889</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Monthly Cash Flow -->
+            <div class="table-label" style="margin-top: 50px;">Monthly Cash Flow -- Operating Line Draws</div>
+            <p class="table-note" style="margin-bottom: 15px;">All draws against operating line of credit. Seed ($72,300) on separate PHI note. All grain sells October. December 15 lease (75%) from harvest proceeds.</p>
+            <div class="data-table-wrapper">
+                <table class="data-table cashflow-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th class="num">Feb</th>
+                            <th class="num">Mar</th>
+                            <th class="num">Apr</th>
+                            <th class="num">May</th>
+                            <th class="num">Jun</th>
+                            <th class="num">Jul</th>
+                            <th class="num">Aug</th>
+                            <th class="num">Sep</th>
+                            <th class="num">Oct</th>
+                            <th class="num">Nov</th>
+                            <th class="num">Dec</th>
+                            <th class="num">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lease -- May 25%</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$29,175</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$29,175</td>
+                        </tr>
+                        <tr>
+                            <td>Fertilizer</td>
+                            <td>$16,573</td>
+                            <td>$24,859</td>
+                            <td>$16,573</td>
+                            <td>--</td>
+                            <td>$24,859</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$82,864</td>
+                        </tr>
+                        <tr>
+                            <td>Chemicals</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$10,140</td>
+                            <td>$12,167</td>
+                            <td>$10,140</td>
+                            <td>$8,112</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$40,558</td>
+                        </tr>
+                        <tr>
+                            <td>Irrigation</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$6,825</td>
+                            <td>$17,063</td>
+                            <td>$20,475</td>
+                            <td>$23,888</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$68,250</td>
+                        </tr>
+                        <tr>
+                            <td>Insurance</td>
+                            <td>$22,763</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$22,763</td>
+                        </tr>
+                        <tr>
+                            <td>Pivot Bio</td>
+                            <td>--</td>
+                            <td>$16,335</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$16,335</td>
+                        </tr>
+                        <tr>
+                            <td>Custom hire</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$9,653</td>
+                            <td>$11,583</td>
+                            <td>$9,653</td>
+                            <td>$7,722</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$38,610</td>
+                        </tr>
+                        <tr>
+                            <td>Trucking/fuel/misc</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$56,400</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$56,400</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Total Monthly Draws</td>
+                            <td>$39,336</td>
+                            <td>$41,194</td>
+                            <td>$36,365</td>
+                            <td>$59,750</td>
+                            <td>$61,714</td>
+                            <td>$36,309</td>
+                            <td>$23,888</td>
+                            <td>--</td>
+                            <td>$56,400</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$442,482</td>
+                        </tr>
+                        <tr style="background: #f0ede8;">
+                            <td style="font-weight:600;">Cumul. loan balance</td>
+                            <td>$39,336</td>
+                            <td>$80,530</td>
+                            <td>$116,895</td>
+                            <td>$176,645</td>
+                            <td>$238,359</td>
+                            <td>$274,668</td>
+                            <td>$298,555</td>
+                            <td>$298,555</td>
+                            <td>$354,955</td>
+                            <td>$354,955</td>
+                            <td>$354,955</td>
+                            <td></td>
+                        </tr>
+                        <tr class="cashflow-highlight">
+                            <td style="font-weight:600;">Grain Revenue (Oct)</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$550,695</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$550,695</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:600;">Lease -- Dec 75%</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td>$87,525</td>
+                            <td>$87,525</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="table-note">Peak loan balance: $354,955 in August. Electric peaks in August (35% of annual irrigation cost). All grain revenue arrives October.</p>
+        </div>
+    </section>
+
+    <!-- Farm-Wide Summary -->
+    <section class="section section-alt" id="summary">
+        <div class="container">
+            <h2 class="section-title">Farm-Wide Summary</h2>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h4>Irrigated Corn -- 390 ac</h4>
+                    <div class="summary-row"><span class="label">Yield</span><span class="value">220 bu/ac</span></div>
+                    <div class="summary-row"><span class="label">Total bushels</span><span class="value">85,800</span></div>
+                    <div class="summary-row"><span class="label">Cash price</span><span class="value">$4.65/bu</span></div>
+                    <div class="summary-row"><span class="label">Gross revenue</span><span class="value">$398,970</span></div>
+                    <div class="summary-row"><span class="label">Total costs</span><span class="value">$319,802</span></div>
+                    <div class="summary-row"><span class="label">Cost per acre</span><span class="value">$820</span></div>
+                    <div class="summary-row"><span class="label">Break-even</span><span class="value">$3.73/bu</span></div>
+                    <div class="summary-row"><span class="label">75% RP floor</span><span class="value">$297,297</span></div>
+                    <div class="summary-row highlight"><span class="label">Net cash</span><span class="value">$79,168</span></div>
+                    <div class="summary-row"><span class="label">Net per acre</span><span class="value">$203</span></div>
+                </div>
+
+                <div class="summary-card">
+                    <h4>Dryland Corn -- 300 ac</h4>
+                    <div class="summary-row"><span class="label">Yield</span><span class="value">65 bu/ac</span></div>
+                    <div class="summary-row"><span class="label">Total bushels</span><span class="value">19,500</span></div>
+                    <div class="summary-row"><span class="label">Cash price</span><span class="value">$4.55/bu</span></div>
+                    <div class="summary-row"><span class="label">Gross revenue</span><span class="value">$88,725</span></div>
+                    <div class="summary-row"><span class="label">Total costs</span><span class="value">$68,678</span></div>
+                    <div class="summary-row"><span class="label">Cost per acre</span><span class="value">$229</span></div>
+                    <div class="summary-row"><span class="label">Break-even</span><span class="value">$3.52/bu</span></div>
+                    <div class="summary-row"><span class="label">75% RP floor</span><span class="value">$67,568</span></div>
+                    <div class="summary-row highlight"><span class="label">Net cash</span><span class="value">$20,047</span></div>
+                    <div class="summary-row"><span class="label">Net per acre</span><span class="value">$67</span></div>
+                </div>
+
+                <div class="summary-card">
+                    <h4>Dryland Milo -- 300 ac</h4>
+                    <div class="summary-row"><span class="label">Yield</span><span class="value">60 bu/ac</span></div>
+                    <div class="summary-row"><span class="label">Total bushels</span><span class="value">18,000</span></div>
+                    <div class="summary-row"><span class="label">Cash price</span><span class="value">$3.50/bu</span></div>
+                    <div class="summary-row"><span class="label">Gross revenue</span><span class="value">$63,000</span></div>
+                    <div class="summary-row"><span class="label">Total costs</span><span class="value">$65,326</span></div>
+                    <div class="summary-row"><span class="label">Cost per acre</span><span class="value">$218</span></div>
+                    <div class="summary-row"><span class="label">Break-even</span><span class="value">$3.63/bu</span></div>
+                    <div class="summary-row"><span class="label">75% RP floor</span><span class="value">$62,370</span></div>
+                    <div class="summary-row highlight"><span class="label">Net cash</span><span class="value">$2,326</span></div>
+                    <div class="summary-row"><span class="label">Net per acre</span><span class="value">$8</span></div>
+                </div>
+            </div>
+
+            <!-- Farm Totals -->
+            <div style="margin-top: 50px;">
+                <div class="table-label">Farm Totals -- 990 Acres</div>
+                <div class="data-table-wrapper">
+                    <table class="data-table" style="max-width: 700px;">
+                        <tbody>
+                            <tr>
+                                <td>Total gross revenue</td>
+                                <td class="num">$550,695</td>
+                            </tr>
+                            <tr>
+                                <td>Operating loan request (excl. PHI seed note)</td>
+                                <td class="num">$442,482</td>
+                            </tr>
+                            <tr>
+                                <td>PHI seed note (separate)</td>
+                                <td class="num">$72,300</td>
+                            </tr>
+                            <tr>
+                                <td>Operating loan interest @ 5.25% / 7 months</td>
+                                <td class="num">$11,324</td>
+                            </tr>
+                            <tr>
+                                <td>Total cash costs (incl. interest, excl. seed note)</td>
+                                <td class="num">$453,806</td>
+                            </tr>
+                            <tr>
+                                <td>Cost per acre -- 990 ac</td>
+                                <td class="num">$458/ac</td>
+                            </tr>
+                            <tr>
+                                <td>Blended break-even -- all bushels</td>
+                                <td class="num">$3.68/bu</td>
+                            </tr>
+                            <tr>
+                                <td>Total 75% RP insurance floor</td>
+                                <td class="num">$427,235</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Net cash position -- base case</td>
+                                <td class="num" style="font-size: 18px; color: #2d5016;">$96,889</td>
+                            </tr>
+                            <tr>
+                                <td>Net per acre</td>
+                                <td class="num">$98/ac</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="table-note">Operating loan interest estimated at 5.25% over average 7-month outstanding period. FSA direct operating loans for beginning farmer/veterans currently available at 4.50%. All yields, prices, and cost estimates are projections based on current market data, APH history, and confirmed input quotes as of April 2026.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 M77 AG. All rights reserved. McConnell Enterprises LLC.</p>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        function toggleSection(id) {
+            const content = document.getElementById(id);
+            const toggle = content.previousElementSibling.querySelector('.collapsible-toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
