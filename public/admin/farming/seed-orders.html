@@ -573,7 +573,7 @@
             <div class="summary-grid">
                 <div class="summary-item">
                     <div class="label">Total Corn Units</div>
-                    <div class="value">147.0</div>
+                    <div class="value" id="summaryCornUnits">238.0</div>
                 </div>
                 <div class="summary-item">
                     <div class="label">Total Sorghum Units</div>
@@ -601,8 +601,8 @@
         <!-- Corn Seeds Section -->
         <div class="seed-section">
             <div class="section-header corn">
-                <h3>Corn Seed - 147 Units (80K)</h3>
-                <span>Net: $44,906.40</span>
+                <h3>Corn Seed - <span id="cornUnitTotal"></span> Units (80K)</h3>
+                <span>Net: <span id="cornNetTotal"></span></span>
             </div>
             <div class="section-body">
                 <table class="seed-table">
@@ -770,19 +770,23 @@
             vendor: 'Pioneer',
             businessPartnerId: '18482203',
             corn: [
-                { hybrid: 'P0075AM', traits: 'AM/LL/RR2', units: 21.0, grossPrice: 390.00, avgPrice: 276.40, totalValue: 8190.00, assigned: 0 },
-                { hybrid: 'P05081AML', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 430.00, avgPrice: 326.80, totalValue: 9030.00, assigned: 0 },
-                { hybrid: 'P0622AML', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 420.00, avgPrice: 319.20, totalValue: 8820.00, assigned: 0 },
-                { hybrid: 'P0995AM', traits: 'AM/LL/RR2/AQ', units: 14.0, grossPrice: 370.00, avgPrice: 281.20, totalValue: 5180.00, assigned: 0 },
-                { hybrid: 'P1122AML', traits: 'AM/LL/RR2/AQ', units: 28.0, grossPrice: 410.00, avgPrice: 311.60, totalValue: 11480.00, assigned: 0 },
-                { hybrid: 'P1244AM', traits: 'AM/LL/RR2/AQ', units: 7.0, grossPrice: 360.00, avgPrice: 273.60, totalValue: 2520.00, assigned: 0 },
-                { hybrid: 'P13841PWUE', traits: 'AVBL/VTP/HX1/LL/RR2/ENL/AQ', units: 7.0, grossPrice: 440.00, avgPrice: 334.40, totalValue: 3080.00, assigned: 0 },
-                { hybrid: 'P14830AML', traits: 'AM/LL/RR2', units: 7.0, grossPrice: 480.00, avgPrice: 364.80, totalValue: 3360.00, assigned: 0 },
-                { hybrid: 'P1548AM', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 380.00, avgPrice: 288.80, totalValue: 7980.00, assigned: 0 }
+                { hybrid: 'P03115V', pkg: 'NI01', traits: 'VT2P/RR2', units: 12.0, grossPrice: 390.00, avgPrice: 276.40, totalValue: 4680.00, assigned: 0 },
+                { hybrid: 'P05081AML', pkg: 'NI84', traits: 'AM/LL/RR2/AQ', units: 40.0, grossPrice: 430.00, avgPrice: 326.80, totalValue: 17200.00, assigned: 0 },
+                { hybrid: 'P05466V', pkg: 'NI07', traits: 'VT2P/RR2', units: 18.0, grossPrice: 420.00, avgPrice: 319.20, totalValue: 7560.00, assigned: 0 },
+                { hybrid: 'P0622AML', pkg: 'NI01', traits: 'AM/LL/RR2/AQ', units: 25.0, grossPrice: 420.00, avgPrice: 319.20, totalValue: 10500.00, assigned: 0 },
+                { hybrid: 'P0622AML', pkg: 'NI01', traits: 'AM/LL/RR2/AQ', units: 31.0, grossPrice: 420.00, avgPrice: 319.20, totalValue: 13020.00, assigned: 0 },
+                { hybrid: 'P0622AML', pkg: 'NI07', traits: 'AM/LL/RR2/AQ', units: 7.0, grossPrice: 420.00, avgPrice: 319.20, totalValue: 2940.00, assigned: 0 },
+                { hybrid: 'P0075AM', pkg: '', traits: 'AM/LL/RR2', units: 21.0, grossPrice: 390.00, avgPrice: 276.40, totalValue: 8190.00, assigned: 0 },
+                { hybrid: 'P0995AM', pkg: '', traits: 'AM/LL/RR2/AQ', units: 14.0, grossPrice: 370.00, avgPrice: 281.20, totalValue: 5180.00, assigned: 0 },
+                { hybrid: 'P1122AML', pkg: '', traits: 'AM/LL/RR2/AQ', units: 28.0, grossPrice: 410.00, avgPrice: 311.60, totalValue: 11480.00, assigned: 0 },
+                { hybrid: 'P1244AM', pkg: '', traits: 'AM/LL/RR2/AQ', units: 7.0, grossPrice: 360.00, avgPrice: 273.60, totalValue: 2520.00, assigned: 0 },
+                { hybrid: 'P13841PWUE', pkg: '', traits: 'AVBL/VTP/HX1/LL/RR2/ENL/AQ', units: 7.0, grossPrice: 440.00, avgPrice: 334.40, totalValue: 3080.00, assigned: 0 },
+                { hybrid: 'P14830AML', pkg: '', traits: 'AM/LL/RR2', units: 7.0, grossPrice: 480.00, avgPrice: 364.80, totalValue: 3360.00, assigned: 0 },
+                { hybrid: 'P1548AM', pkg: '', traits: 'AM/LL/RR2/AQ', units: 21.0, grossPrice: 380.00, avgPrice: 288.80, totalValue: 7980.00, assigned: 0 }
             ],
             sorghum: [
-                { hybrid: '86P20', traits: 'Conventional NSI1', units: 20.0, grossPrice: 225.00, avgPrice: 171.00, totalValue: 4500.00, assigned: 0 },
-                { hybrid: '88P71', traits: 'Conventional NSI1', units: 20.0, grossPrice: 216.00, avgPrice: 164.16, totalValue: 4320.00, assigned: 0 }
+                { hybrid: '86P20', pkg: '', traits: 'Conventional NSI1', units: 20.0, grossPrice: 225.00, avgPrice: 171.00, totalValue: 4500.00, assigned: 0 },
+                { hybrid: '88P71', pkg: '', traits: 'Conventional NSI1', units: 20.0, grossPrice: 216.00, avgPrice: 164.16, totalValue: 4320.00, assigned: 0 }
             ],
             fieldAssignments: {}
         };
@@ -814,12 +818,15 @@
         function renderCornTable() {
             const tbody = document.getElementById('cornTableBody');
             let html = '';
+            let totalUnits = 0;
 
             seedOrderData.corn.forEach((seed, index) => {
+                totalUnits += seed.units;
                 const assignedPercent = (seed.assigned / seed.units * 100).toFixed(0);
+                const pkgLabel = seed.pkg ? ` <span style="color:#999;font-size:12px;">${seed.pkg}</span>` : '';
                 html += `
                     <tr>
-                        <td><span class="hybrid-name">${seed.hybrid}</span></td>
+                        <td><span class="hybrid-name">${seed.hybrid}</span>${pkgLabel}</td>
                         <td><span class="traits-badge">${seed.traits}</span></td>
                         <td>${seed.units.toFixed(1)}</td>
                         <td>$${seed.grossPrice.toFixed(2)}</td>
@@ -846,6 +853,11 @@
             });
 
             tbody.innerHTML = html;
+
+            const cornUnitEl = document.getElementById('cornUnitTotal');
+            if (cornUnitEl) cornUnitEl.textContent = totalUnits.toFixed(0);
+            const summaryEl = document.getElementById('summaryCornUnits');
+            if (summaryEl) summaryEl.textContent = totalUnits.toFixed(1);
         }
 
         function renderSorghumTable() {
@@ -914,7 +926,8 @@
             currentHybrid = index;
 
             const seed = seedType === 'corn' ? seedOrderData.corn[index] : seedOrderData.sorghum[index];
-            document.getElementById('modalHybrid').value = `${seed.hybrid} (${seed.units - seed.assigned} units available)`;
+            const pkgLabel = seed.pkg ? ` ${seed.pkg}` : '';
+            document.getElementById('modalHybrid').value = `${seed.hybrid}${pkgLabel} (${seed.units - seed.assigned} units available)`;
 
             document.getElementById('modalField').value = '';
             document.getElementById('modalAcres').value = '';
