@@ -35,9 +35,46 @@ const CO_TENANT_LAST = 'Kinzie';
 
 const LEASE_START = new Date('2026-07-01T00:00:00');
 const LEASE_TYPE = 'twelve_month';
-const MONTHLY_RENT = 1250;
-const SECURITY_DEPOSIT = 1250;
+const BASE_RENT = 1400;
+const SECURITY_DEPOSIT = 1400;
 const PET_DEPOSIT = 300;
+
+// Standard discount menu. Tenants may opt into any of these on the
+// signing page; each pairs a dollar credit with a real responsibility.
+// Landlord may revoke any discount if the tenant fails to hold up
+// the trade — see POST /api/rentals/admin/leases/:id/discounts/:code/revoke.
+const DISCOUNT_MENU = [
+  {
+    code: 'twelve_month_lease',
+    label: 'Sign a 12-month lease commitment',
+    responsibility: 'Tenants commit to remain in possession through the full 12-month term. Early termination forfeits the discount and any remaining months of the credit are back-charged.',
+    monthlyValue: 150
+  },
+  {
+    code: 'autopay',
+    label: 'Enroll in ACH autopay on the 1st of each month',
+    responsibility: 'Tenants keep an active ACH autopay authorization. If autopay is cancelled or fails two consecutive months, this discount is revoked going forward.',
+    monthlyValue: 25
+  },
+  {
+    code: 'yard_care',
+    label: 'Handle yard mowing April through October',
+    responsibility: 'Tenants mow and trim the yard at least every two weeks during the growing season. If Landlord must arrange mowing because grass exceeds 8 inches, this discount is revoked and the mowing cost is back-charged.',
+    monthlyValue: 50
+  },
+  {
+    code: 'snow_removal',
+    label: 'Handle snow removal from driveway and walkways',
+    responsibility: 'Tenants clear driveway and walkways within 24 hours of any snowfall of 2 inches or more. If Landlord must arrange clearing, this discount is revoked and the clearing cost is back-charged.',
+    monthlyValue: 50
+  },
+  {
+    code: 'minor_repairs',
+    label: 'Handle minor repairs and consumables under $50',
+    responsibility: 'Tenants handle light bulbs, HVAC filter changes, minor caulking, and other repairs under $50 without invoicing Landlord. If unaddressed items become larger repairs, this discount is revoked.',
+    monthlyValue: 25
+  }
+];
 
 async function upsertProperty() {
   const existing = await RentalProperty.findOne({
@@ -153,6 +190,14 @@ async function upsertLease(propertyId, tenantId) {
   const signingToken = crypto.randomBytes(24).toString('hex');
   const expires = new Date();
   expires.setDate(expires.getDate() + 30);
+  // Seed the discount menu. The 12-month discount is pre-selected because
+  // the Kinzies already chose the 12-month leaseType; the remaining
+  // discounts are un-selected and offered to them on the signing page.
+  const discounts = DISCOUNT_MENU.map(d => ({
+    ...d,
+    selected: d.code === 'twelve_month_lease',
+    selectedAt: d.code === 'twelve_month_lease' ? new Date() : undefined
+  }));
   const lease = new Lease({
     property: propertyId,
     tenant: tenantId,
@@ -162,7 +207,9 @@ async function upsertLease(propertyId, tenantId) {
     }],
     leaseType: LEASE_TYPE,
     startDate: LEASE_START,
-    monthlyRent: MONTHLY_RENT,
+    baseRent: BASE_RENT,
+    monthlyRent: BASE_RENT, // recomputed by pre-save hook from discounts
+    discounts,
     securityDeposit: SECURITY_DEPOSIT,
     petDeposit: PET_DEPOSIT,
     rentDueDay: 1,

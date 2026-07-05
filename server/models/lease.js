@@ -30,11 +30,33 @@ const leaseSchema = new mongoose.Schema({
   endDate: {
     type: Date // Null for month-to-month
   },
-  // Rent details
+  // Rent details.
+  //
+  // Rent model: `baseRent` is the sticker price for the property. Tenants
+  // can opt into `discounts` at signing time — each discount pairs a
+  // dollar credit with a real responsibility the tenant takes on (12-month
+  // term, autopay, yard care, snow removal, in-kind minor repairs, etc).
+  // Landlord may revoke a discount if the tenant does not hold up their
+  // end of the trade; from that month forward the full `baseRent` (less
+  // any still-active discounts) is due. `monthlyRent` stores the
+  // currently-effective rent and is recalculated by the pre-save hook.
+  baseRent: Number,
   monthlyRent: {
     type: Number,
     required: true
   },
+  discounts: [{
+    code: { type: String, required: true },
+    label: { type: String, required: true },
+    responsibility: String,
+    monthlyValue: { type: Number, required: true, default: 0 },
+    selected: { type: Boolean, default: false },
+    selectedAt: Date,
+    revokedAt: Date,
+    revokedReason: String,
+    backChargeAmount: Number
+  }],
+  discountsFinalizedAt: Date,
   securityDeposit: {
     type: Number,
     required: true
@@ -162,6 +184,24 @@ const leaseSchema = new mongoose.Schema({
   notes: String
 }, {
   timestamps: true
+});
+
+// Recompute monthlyRent = baseRent − sum(active discounts). Runs before
+// any save so that the stored rent is always consistent with the discount
+// selections and their revocation state.
+leaseSchema.pre('save', function(next) {
+  if (this.baseRent != null && Array.isArray(this.discounts)) {
+    const activeDiscountTotal = this.discounts
+      .filter(d => d.selected && !d.revokedAt)
+      .reduce((sum, d) => sum + (Number(d.monthlyValue) || 0), 0);
+    this.monthlyRent = Math.max(0, this.baseRent - activeDiscountTotal);
+  }
+  next();
+});
+
+// Virtuals for the budget breakdown the landlord tracks against.
+leaseSchema.virtual('effectiveRent').get(function() {
+  return this.monthlyRent;
 });
 
 // Calculate end date based on lease type

@@ -337,8 +337,30 @@
         </div>
 
         <div class="section">
-            <h2>4. Rent</h2>
-            <p id="rentText"></p>
+            <h2>4. Rent &amp; Rent-Reduction Options</h2>
+            <p id="rentBaseText"></p>
+            <p>Tenants may elect any of the rent-reduction options below. Each reduction is paired with a specific responsibility Tenants take on. <strong>If Landlord must perform the responsibility because Tenants fail to do so, Landlord may revoke that reduction going forward and back-charge the reasonable cost of performing the task.</strong> Revocation is documented in writing and provided to Tenants.</p>
+
+            <div id="discountPicker" style="display:flex;flex-direction:column;gap:10px;margin:14px 0;"></div>
+
+            <div id="rentCalc" style="background:#ecf5e6;border:1px solid #2d5016;border-radius:8px;padding:18px 22px;margin:14px 0;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:14px;">
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5016;font-weight:600;margin-bottom:4px;">Base Rent</div>
+                        <div id="calcBase" style="font-family:'Oswald',sans-serif;font-size:24px;color:#1a1a1a;"></div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5016;font-weight:600;margin-bottom:4px;">Total Reductions</div>
+                        <div id="calcDiscounts" style="font-family:'Oswald',sans-serif;font-size:24px;color:#2d5016;"></div>
+                    </div>
+                </div>
+                <hr style="margin:14px 0;border:none;border-top:1px solid #cde0be;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#2d5016;font-weight:700;">Effective Monthly Rent</div>
+                    <div id="calcTotal" style="font-family:'Oswald',sans-serif;font-size:32px;color:#2d5016;"></div>
+                </div>
+            </div>
+
             <p>Rent is payable in advance on or before the <strong>1st day</strong> of each calendar month. Payments may be made by ACH, check, PayPal, or Venmo to Landlord. Any check returned unpaid shall carry a $30 returned-check fee in addition to any late fees.</p>
             <div class="highlight">
                 <strong>Colorado Grace Period &amp; Late Fee:</strong> Rent is considered late if not received by the 7th day of the month. A late fee of $50 (or 5% of the past-due rent, whichever is greater) may be assessed thereafter, consistent with C.R.S. § 38-12-105.
@@ -545,8 +567,10 @@
             document.getElementById('termText').textContent =
                 `The term of this lease begins on ${fmtDate(lease.startDate)} and, unless earlier terminated, ends on ${lease.endDate ? fmtDate(lease.endDate) : 'the date of termination by either party with 30 days written notice (month-to-month)'}. If Tenants remain in possession after expiration without a new signed agreement, tenancy shall continue on a month-to-month basis at the current market rate.`;
 
-            document.getElementById('rentText').innerHTML =
-                `Tenants agree to pay to Landlord monthly rent of <strong>${money(lease.monthlyRent)}</strong> per month, for a total contract value of <strong>${lease.leaseType === 'twelve_month' ? money(lease.monthlyRent * 12) : lease.leaseType === 'six_month' ? money(lease.monthlyRent * 6) : 'month-to-month'}</strong> over the lease term.`;
+            document.getElementById('rentBaseText').innerHTML =
+                `Base rent for the Premises is <strong>${money(lease.baseRent || lease.monthlyRent)}</strong> per month.`;
+
+            renderDiscountPicker();
 
             document.getElementById('depositText').innerHTML =
                 `Tenants shall deposit with Landlord the sum of <strong>${money(lease.securityDeposit)}</strong> as a security deposit prior to occupancy${lease.petDeposit ? `, together with an additional <strong>${money(lease.petDeposit)}</strong> pet deposit` : ''}.`;
@@ -598,6 +622,66 @@
             });
 
             renderSignatures();
+        }
+
+        function renderDiscountPicker() {
+            const picker = document.getElementById('discountPicker');
+            const locked = !!(lease.signatures && lease.signatures.tenantSignedDate);
+            const discounts = lease.discounts || [];
+            if (!discounts.length) { picker.innerHTML = ''; recomputeRentCalc(); return; }
+            picker.innerHTML = discounts.map(d => {
+                const revoked = !!d.revokedAt;
+                const isSelected = d.selected && !revoked;
+                const disabled = locked || revoked;
+                return `
+                    <label style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:${revoked ? '#fbe9e7' : '#fafaf7'};border:1px solid ${isSelected ? '#2d5016' : (revoked ? '#c62828' : '#e0d9c8')};border-radius:6px;cursor:${disabled ? 'not-allowed' : 'pointer'};">
+                        <input type="checkbox" data-discount-code="${esc(d.code)}" ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} style="margin-top:3px;width:18px;height:18px;">
+                        <div style="flex:1;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;">
+                                <strong style="font-size:14px;color:#2d5016;">${esc(d.label)}</strong>
+                                <span style="font-family:'Oswald',sans-serif;font-size:18px;color:#2d5016;">−${money(d.monthlyValue)}/mo</span>
+                            </div>
+                            <div style="font-size:12px;color:#555;line-height:1.5;">${esc(d.responsibility || '')}</div>
+                            ${revoked ? `<div style="margin-top:8px;padding:8px 10px;background:#fff;border-left:3px solid #c62828;font-size:12px;color:#c62828;"><strong>Revoked ${fmtDate(d.revokedAt)}:</strong> ${esc(d.revokedReason || '')}</div>` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+            picker.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', recomputeRentCalc);
+            });
+            recomputeRentCalc();
+        }
+
+        function recomputeRentCalc() {
+            const base = Number(lease.baseRent || lease.monthlyRent) || 0;
+            const discounts = lease.discounts || [];
+            let selectedTotal = 0;
+            discounts.forEach(d => {
+                if (d.revokedAt) return;
+                const cb = document.querySelector(`#discountPicker input[data-discount-code="${d.code}"]`);
+                const checked = cb ? cb.checked : d.selected;
+                if (checked) selectedTotal += Number(d.monthlyValue) || 0;
+            });
+            document.getElementById('calcBase').textContent = money(base);
+            document.getElementById('calcDiscounts').textContent = '−' + money(selectedTotal);
+            document.getElementById('calcTotal').textContent = money(Math.max(0, base - selectedTotal));
+        }
+
+        async function lockInDiscounts() {
+            const picker = document.getElementById('discountPicker');
+            if (!picker) return true;
+            const selectedCodes = Array.from(picker.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.dataset.discountCode);
+            const r = await fetch('/api/rentals/sign/' + encodeURIComponent(token) + '/discounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ selectedCodes })
+            });
+            const data = await r.json();
+            if (!data.success) throw new Error(data.message || 'Could not save discount selection');
+            lease = data.lease;
+            return true;
         }
 
         function renderSignatures() {
@@ -821,6 +905,11 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
             try {
+                if (role === 'tenant') {
+                    // Lock the discount selection to the effective rent that
+                    // the tenant sees on-screen before capturing the signature.
+                    await lockInDiscounts();
+                }
                 const body = { signature, typedName };
                 if (role === 'tenant') {
                     body.disclosuresAcknowledged = true;

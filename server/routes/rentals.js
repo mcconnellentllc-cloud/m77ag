@@ -428,6 +428,40 @@ router.get('/sign/:token', async (req, res) => {
   }
 });
 
+// Lock in the tenant's discount selection. This is called from the signing
+// page before the primary tenant signs — it flips the `selected` flag on
+// each discount the tenant opted into, then re-runs the pre-save hook so
+// `monthlyRent` reflects the chosen effective rent. Cannot be changed
+// once both tenant signatures are on file (would require landlord edit).
+router.post('/sign/:token/discounts', async (req, res) => {
+  try {
+    const { selectedCodes } = req.body;
+    if (!Array.isArray(selectedCodes)) {
+      return res.status(400).json({ success: false, message: 'selectedCodes must be an array' });
+    }
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) return res.status(404).json({ success: false, message: 'Invalid signing link' });
+
+    // If the primary tenant has already signed, discounts are locked.
+    if (lease.signatures?.tenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Discounts are locked once the lease is signed' });
+    }
+
+    const selected = new Set(selectedCodes);
+    lease.discounts.forEach(d => {
+      const wasSelected = d.selected;
+      d.selected = selected.has(d.code);
+      if (d.selected && !wasSelected) d.selectedAt = new Date();
+      if (!d.selected) d.selectedAt = undefined;
+    });
+    lease.discountsFinalizedAt = new Date();
+    await lease.save();
+    res.json({ success: true, lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Submit primary tenant signature.
 router.post('/sign/:token/tenant', async (req, res) => {
   try {
@@ -560,6 +594,34 @@ router.post('/sign/:token/landlord', async (req, res) => {
     }
 
     res.json({ success: true, message: 'Lease executed', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admin: revoke a discount because the tenant did not hold up the
+// corresponding responsibility. Records the reason, an optional
+// back-charge amount for prior months, and stops the discount from
+// applying to future rent (monthlyRent is recomputed automatically).
+router.post('/admin/leases/:id/discounts/:code/revoke', async (req, res) => {
+  try {
+    const { reason, backChargeAmount } = req.body;
+    if (!reason || reason.trim().length < 5) {
+      return res.status(400).json({ success: false, message: 'A reason (min 5 chars) is required to revoke a discount' });
+    }
+    const lease = await Lease.findById(req.params.id);
+    if (!lease) return res.status(404).json({ success: false, message: 'Lease not found' });
+
+    const discount = lease.discounts.find(d => d.code === req.params.code);
+    if (!discount) return res.status(404).json({ success: false, message: 'Discount not found on this lease' });
+    if (discount.revokedAt) return res.status(400).json({ success: false, message: 'Discount already revoked' });
+
+    discount.revokedAt = new Date();
+    discount.revokedReason = reason.trim();
+    if (backChargeAmount != null) discount.backChargeAmount = Number(backChargeAmount);
+
+    await lease.save();
+    res.json({ success: true, lease, newMonthlyRent: lease.monthlyRent });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
