@@ -216,7 +216,7 @@ async function upsertLease(propertyId, tenantId) {
     lateFeeAmount: 50,
     lateFeeGracePeriod: 7,
     utilitiesIncluded: true,
-    utilitiesDetails: 'Landlord pays electricity, propane, water, sewer, and trash. If tenant usage exceeds 20% above historical monthly averages (electricity ~$100/mo, propane ~$150/mo), the parties agree to renegotiate the utility allowance in good faith.',
+    utilitiesDetails: 'Landlord pays electricity, propane, water, sewer, and trash. Historical monthly averages: electricity ~$150/mo year-round, propane ~$250/mo during heating season (November–March). If tenant usage exceeds 20% above these averages in any calendar month, the parties agree to renegotiate the utility allowance in good faith or Landlord may back-charge the excess.',
     petPolicy: 'Tenants may keep pets identified on the pet addendum. Pet deposit is required and refundable per Colorado law. Tenants are responsible for all pet-related damage and for cleanup of the yard.',
     specialTerms: 'Tenants are responsible for routine yard care (mowing) in summer and snow removal from driveway/walkways in winter. Property is offered furnished with appliances noted; refrigerator is NOT included and must be supplied by tenant.',
     status: 'draft',

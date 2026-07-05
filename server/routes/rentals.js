@@ -1199,8 +1199,8 @@ PROPERTY DETAILS:
 - Features: Central heat (no AC), stove, microwave, washer/dryer hookups, off-street parking, large yard, enclosed porch
 - NO refrigerator included - tenant needs to bring their own
 - All utilities paid by landlord (electricity, propane, water, sewer, trash)
-- Historical utility averages: electricity ~$100/mo, propane ~$150/mo
-- If tenant usage exceeds 20% above historical averages, terms may be renegotiated
+- Historical utility averages: electricity ~$150/mo year-round, propane ~$250/mo during heating season (Nov–Mar)
+- If tenant usage exceeds 20% above historical averages, terms may be renegotiated or excess back-charged
 - Pet friendly
 
 PRICING (utilities included):
