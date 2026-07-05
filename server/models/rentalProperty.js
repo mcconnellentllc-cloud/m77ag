@@ -76,6 +76,18 @@ const rentalPropertySchema = new mongoose.Schema({
     uninhabitableReportingEmail: String,
     uninhabitableReportingAddress: String
   },
+  // Property valuation ledger snapshots.
+  //
+  // `baselineValue` is the starting valuation of the property on the
+  // baseline date (e.g. purchase price / initial appraisal). `bookValue`
+  // is the running current value = baseline + sum of positive ledger
+  // entries (capital improvements, appreciation) − sum of negative entries
+  // (valuation write-downs). Repair expenses do NOT change bookValue;
+  // they are tracked separately on PropertyLedger for the repair budget.
+  baselineValue: Number,
+  baselineValueDate: Date,
+  bookValue: Number,
+  currentDebtBalance: Number, // running debt owed against this property
   // Owner/Manager info
   owner: {
     type: mongoose.Schema.Types.ObjectId,

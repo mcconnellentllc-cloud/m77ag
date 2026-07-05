@@ -8,6 +8,7 @@ const RentPayment = require('../models/rentPayment');
 const PropertyMessage = require('../models/propertyMessage');
 const RentalApplication = require('../models/rentalApplication');
 const ShowingRequest = require('../models/showingRequest');
+const PropertyLedger = require('../models/propertyLedger');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -398,6 +399,210 @@ router.put('/tenant/profile', verifyTenant, async (req, res) => {
     );
 
     res.json({ success: true, tenant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ============================================
+// PROPERTY LEDGER (admin)
+//
+// Running record of every dollar into or out of a rental property.
+// Combines valuation-side entries (baseline, capital improvement,
+// valuation adjustments) with operating entries (repair expenses,
+// debt paydowns). Side effects on RentalProperty.bookValue and
+// currentDebtBalance are applied at write time.
+// ============================================
+
+// Reapply an entry's effect on the property's running book value and
+// debt balance. Positive delta on bookValue = capital investment or
+// upward revaluation; negative = write-down.
+function applyEntryToProperty(property, entry, direction) {
+  const sign = direction === 'add' ? 1 : -1;
+  const amount = Number(entry.amount) || 0;
+  switch (entry.entryType) {
+    case 'baseline_value':
+      // Baseline is a set point, not additive. Handled at endpoint level.
+      break;
+    case 'capital_improvement':
+    case 'valuation_adjustment':
+      property.bookValue = (property.bookValue || 0) + sign * amount;
+      break;
+    case 'debt_paydown':
+      property.currentDebtBalance = Math.max(
+        0,
+        (property.currentDebtBalance || 0) - sign * amount
+      );
+      break;
+    case 'repair_expense':
+    case 'operating_expense':
+    case 'other':
+    default:
+      // No effect on book value / debt balance.
+      break;
+  }
+}
+
+// List all ledger entries for a property, newest first.
+router.get('/admin/properties/:id/ledger', async (req, res) => {
+  try {
+    const property = await RentalProperty.findById(req.params.id);
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+    const entries = await PropertyLedger.find({ property: property._id })
+      .sort({ entryDate: -1, createdAt: -1 });
+
+    // Roll up totals by type so the admin gets an at-a-glance summary.
+    const totals = {
+      capitalImprovements: 0,
+      valuationAdjustments: 0,
+      repairExpenses: 0,
+      debtPaydowns: 0,
+      operatingExpenses: 0
+    };
+    entries.forEach(e => {
+      const a = Number(e.amount) || 0;
+      if (e.entryType === 'capital_improvement') totals.capitalImprovements += a;
+      else if (e.entryType === 'valuation_adjustment') totals.valuationAdjustments += a;
+      else if (e.entryType === 'repair_expense') totals.repairExpenses += a;
+      else if (e.entryType === 'debt_paydown') totals.debtPaydowns += a;
+      else if (e.entryType === 'operating_expense') totals.operatingExpenses += a;
+    });
+
+    // Repair budget calc: $300/mo × months since baseline − actual repair spend.
+    const REPAIR_BUDGET_PER_MONTH = 300;
+    let budgetAccrued = 0;
+    if (property.baselineValueDate) {
+      const months = Math.max(0,
+        (Date.now() - new Date(property.baselineValueDate).getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+      );
+      budgetAccrued = months * REPAIR_BUDGET_PER_MONTH;
+    }
+    const repairBudgetRemaining = budgetAccrued - totals.repairExpenses;
+
+    res.json({
+      success: true,
+      property: {
+        _id: property._id,
+        name: property.name,
+        baselineValue: property.baselineValue,
+        baselineValueDate: property.baselineValueDate,
+        bookValue: property.bookValue,
+        currentDebtBalance: property.currentDebtBalance,
+        equity: (property.bookValue || 0) - (property.currentDebtBalance || 0)
+      },
+      totals,
+      repairBudget: {
+        monthlyAllocation: REPAIR_BUDGET_PER_MONTH,
+        accrued: Math.round(budgetAccrued),
+        spent: totals.repairExpenses,
+        remaining: Math.round(repairBudgetRemaining)
+      },
+      entries
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Add a new ledger entry. baseline_value is idempotent — creating it
+// resets baselineValue on the property and re-seeds bookValue at that
+// baseline plus any prior capital_improvement / valuation_adjustment
+// entries. All other entry types are additive.
+router.post('/admin/properties/:id/ledger', async (req, res) => {
+  try {
+    const property = await RentalProperty.findById(req.params.id);
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+    const {
+      entryType, entryDate, amount, category, description,
+      vendor, invoiceNumber, paidBy, receiptUrl, photoUrls,
+      lease, repairRequest, recordedBy, notes
+    } = req.body;
+
+    if (!entryType || amount == null || !description) {
+      return res.status(400).json({ success: false, message: 'entryType, amount, and description are required' });
+    }
+
+    const entry = new PropertyLedger({
+      property: property._id,
+      entryType,
+      entryDate: entryDate ? new Date(entryDate) : new Date(),
+      amount: Number(amount),
+      category,
+      description,
+      vendor,
+      invoiceNumber,
+      paidBy,
+      receiptUrl,
+      photoUrls,
+      lease,
+      repairRequest,
+      recordedBy,
+      notes
+    });
+    await entry.save();
+
+    // Apply the entry's side-effect on the property snapshot.
+    if (entryType === 'baseline_value') {
+      // Setting baseline resets the property's baselineValue and
+      // recomputes bookValue from scratch = baseline + net valuation deltas.
+      property.baselineValue = Number(amount);
+      property.baselineValueDate = entry.entryDate;
+      const valuationDeltas = await PropertyLedger.aggregate([
+        { $match: { property: property._id, entryType: { $in: ['capital_improvement', 'valuation_adjustment'] } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+      ]);
+      property.bookValue = Number(amount) + (valuationDeltas[0]?.total || 0);
+    } else {
+      applyEntryToProperty(property, entry, 'add');
+    }
+    await property.save();
+
+    res.json({ success: true, entry, property });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Delete a ledger entry and reverse its effect on the property.
+router.delete('/admin/properties/:id/ledger/:entryId', async (req, res) => {
+  try {
+    const property = await RentalProperty.findById(req.params.id);
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+    const entry = await PropertyLedger.findOne({ _id: req.params.entryId, property: property._id });
+    if (!entry) return res.status(404).json({ success: false, message: 'Ledger entry not found' });
+
+    if (entry.entryType === 'baseline_value') {
+      return res.status(400).json({ success: false, message: 'Baseline entry cannot be deleted — record a valuation_adjustment instead' });
+    }
+
+    applyEntryToProperty(property, entry, 'subtract');
+    await property.save();
+    await entry.deleteOne();
+
+    res.json({ success: true, property });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Update the property's current debt balance directly (e.g. after
+// receiving a fresh statement from the lender).
+router.put('/admin/properties/:id/debt-balance', async (req, res) => {
+  try {
+    const { currentDebtBalance } = req.body;
+    if (currentDebtBalance == null || isNaN(Number(currentDebtBalance))) {
+      return res.status(400).json({ success: false, message: 'currentDebtBalance is required' });
+    }
+    const property = await RentalProperty.findByIdAndUpdate(
+      req.params.id,
+      { currentDebtBalance: Number(currentDebtBalance) },
+      { new: true }
+    );
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+    res.json({ success: true, property });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

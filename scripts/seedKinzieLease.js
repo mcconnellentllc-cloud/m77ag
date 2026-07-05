@@ -15,6 +15,7 @@ require('dotenv').config();
 const RentalProperty = require('../server/models/rentalProperty');
 const Tenant = require('../server/models/tenant');
 const Lease = require('../server/models/lease');
+const PropertyLedger = require('../server/models/propertyLedger');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
@@ -228,6 +229,33 @@ async function upsertLease(propertyId, tenantId) {
   return lease;
 }
 
+const BASELINE_VALUE = 130000;
+
+async function seedBaselineLedger(property) {
+  const existing = await PropertyLedger.findOne({
+    property: property._id,
+    entryType: 'baseline_value'
+  });
+  if (existing) {
+    console.log('Baseline ledger entry already exists:', existing._id.toString(), '=', existing.amount);
+    return existing;
+  }
+  const entry = await PropertyLedger.create({
+    property: property._id,
+    entryType: 'baseline_value',
+    entryDate: new Date(),
+    amount: BASELINE_VALUE,
+    description: 'Starting book value for 168 Hwy 59 property',
+    recordedBy: 'seed:kinzie-lease'
+  });
+  property.baselineValue = BASELINE_VALUE;
+  property.baselineValueDate = entry.entryDate;
+  if (property.bookValue == null) property.bookValue = BASELINE_VALUE;
+  await property.save();
+  console.log('Baseline ledger entry created: $' + BASELINE_VALUE.toLocaleString());
+  return entry;
+}
+
 async function main() {
   await mongoose.connect(MONGODB_URI);
   console.log('Connected to MongoDB');
@@ -235,6 +263,7 @@ async function main() {
     const property = await upsertProperty();
     const tenant = await upsertTenant();
     const lease = await upsertLease(property._id, tenant._id);
+    await seedBaselineLedger(property);
 
     // Update the tenant's currentProperty pointer so the admin view lines up.
     if (!tenant.currentProperty || tenant.currentProperty.toString() !== property._id.toString()) {
