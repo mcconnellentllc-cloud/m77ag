@@ -101,11 +101,28 @@ const leaseSchema = new mongoose.Schema({
   // Signatures
   signatures: {
     tenantSignature: String,
+    tenantSignedName: String,
     tenantSignedDate: Date,
     tenantSignedIP: String,
+    tenantSignedUserAgent: String,
+    coTenantSignature: String,
+    coTenantSignedName: String,
+    coTenantSignedDate: Date,
+    coTenantSignedIP: String,
+    coTenantSignedUserAgent: String,
     landlordSignature: String,
-    landlordSignedDate: Date
+    landlordSignedName: String,
+    landlordSignedDate: Date,
+    landlordSignedIP: String
   },
+  // Signing token — random URL-safe string used to grant the tenants
+  // access to the signing page without a full login. Rotated after
+  // both tenants sign so the link can no longer be re-used.
+  signingToken: {
+    type: String,
+    index: true
+  },
+  signingTokenExpiresAt: Date,
   // Lease document
   leaseDocumentUrl: String,
   leaseDocumentGeneratedAt: Date,

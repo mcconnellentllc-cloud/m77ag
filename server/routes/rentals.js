@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const router = express.Router();
 const RentalProperty = require('../models/rentalProperty');
 const Tenant = require('../models/tenant');
@@ -9,6 +10,13 @@ const RentalApplication = require('../models/rentalApplication');
 const ShowingRequest = require('../models/showingRequest');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+
+// Client IP helper — respects the proxy header set by Render/Heroku-style hosts.
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return req.ip || req.connection?.remoteAddress || '';
+}
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'm77ag-rental-secret-key';
@@ -390,6 +398,173 @@ router.put('/tenant/profile', verifyTenant, async (req, res) => {
     );
 
     res.json({ success: true, tenant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ============================================
+// LEASE E-SIGNATURE ROUTES (token-gated public)
+// ============================================
+
+// Fetch a lease + property for the signing page, keyed by signing token.
+// The token is a one-time secret shared with the tenants via the signing URL;
+// it is rotated after both tenants sign, invalidating the link.
+router.get('/sign/:token', async (req, res) => {
+  try {
+    const lease = await Lease.findOne({ signingToken: req.params.token })
+      .populate('property')
+      .populate('tenant', 'firstName lastName email phone');
+
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid or expired signing link' });
+    }
+    if (lease.signingTokenExpiresAt && lease.signingTokenExpiresAt < new Date()) {
+      return res.status(410).json({ success: false, message: 'Signing link has expired' });
+    }
+    res.json({ success: true, lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Submit primary tenant signature.
+router.post('/sign/:token/tenant', async (req, res) => {
+  try {
+    const { signature, typedName, disclosuresAcknowledged } = req.body;
+    if (!signature || !typedName) {
+      return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
+    }
+
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid signing link' });
+    }
+    if (lease.signatures?.tenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Primary tenant has already signed' });
+    }
+
+    lease.signatures = lease.signatures || {};
+    lease.signatures.tenantSignature = signature;
+    lease.signatures.tenantSignedName = typedName;
+    lease.signatures.tenantSignedDate = new Date();
+    lease.signatures.tenantSignedIP = getClientIp(req);
+    lease.signatures.tenantSignedUserAgent = req.headers['user-agent'] || '';
+
+    if (disclosuresAcknowledged) {
+      lease.disclosures = lease.disclosures || {};
+      lease.disclosures.radonDisclosureAcknowledged = true;
+      lease.disclosures.leadPaintDisclosureAcknowledged = true;
+      lease.disclosures.bedBugDisclosureAcknowledged = true;
+      lease.disclosures.uninhabitableReportingAcknowledged = true;
+      lease.disclosures.allDisclosuresSignedDate = new Date();
+    }
+
+    // Advance the lease to pending_signature once the first tenant signs.
+    if (lease.status === 'draft') lease.status = 'pending_signature';
+
+    await lease.save();
+    res.json({ success: true, message: 'Primary tenant signature recorded', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Submit co-tenant signature.
+router.post('/sign/:token/co-tenant', async (req, res) => {
+  try {
+    const { signature, typedName } = req.body;
+    if (!signature || !typedName) {
+      return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
+    }
+
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid signing link' });
+    }
+    if (lease.signatures?.coTenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Co-tenant has already signed' });
+    }
+
+    lease.signatures = lease.signatures || {};
+    lease.signatures.coTenantSignature = signature;
+    lease.signatures.coTenantSignedName = typedName;
+    lease.signatures.coTenantSignedDate = new Date();
+    lease.signatures.coTenantSignedIP = getClientIp(req);
+    lease.signatures.coTenantSignedUserAgent = req.headers['user-agent'] || '';
+
+    await lease.save();
+    res.json({ success: true, message: 'Co-tenant signature recorded', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Landlord counter-signs. Once both tenants + landlord have signed we
+// activate the lease and rotate the signing token so the link can't be reused.
+router.post('/sign/:token/landlord', async (req, res) => {
+  try {
+    const { signature, typedName } = req.body;
+    if (!signature || !typedName) {
+      return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
+    }
+
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid signing link' });
+    }
+    if (!lease.signatures?.tenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Tenants must sign before landlord counter-signature' });
+    }
+
+    lease.signatures.landlordSignature = signature;
+    lease.signatures.landlordSignedName = typedName;
+    lease.signatures.landlordSignedDate = new Date();
+    lease.signatures.landlordSignedIP = getClientIp(req);
+
+    // Activate the lease and burn the signing token.
+    lease.status = 'active';
+    lease.signingToken = null;
+    lease.signingTokenExpiresAt = null;
+
+    await lease.save();
+
+    // Reflect the executed lease on the tenant and property records.
+    if (lease.tenant) {
+      await Tenant.findByIdAndUpdate(lease.tenant, {
+        currentLease: lease._id,
+        currentProperty: lease.property,
+        status: 'active'
+      });
+    }
+    if (lease.property) {
+      await RentalProperty.findByIdAndUpdate(lease.property, {
+        status: 'rented',
+        currentTenant: lease.tenant,
+        currentLease: lease._id
+      });
+    }
+
+    res.json({ success: true, message: 'Lease executed', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admin: generate (or refresh) the signing token for a lease.
+router.post('/admin/leases/:id/signing-link', async (req, res) => {
+  try {
+    const lease = await Lease.findById(req.params.id);
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Lease not found' });
+    }
+    lease.signingToken = crypto.randomBytes(24).toString('hex');
+    // Signing links are valid for 30 days by default.
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 30);
+    lease.signingTokenExpiresAt = expires;
+    await lease.save();
+    res.json({ success: true, token: lease.signingToken, expiresAt: lease.signingTokenExpiresAt });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
