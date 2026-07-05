@@ -72,6 +72,16 @@ const leaseSchema = new mongoose.Schema({
     uninhabitableReportingAcknowledged: { type: Boolean, default: false },
     allDisclosuresSignedDate: Date
   },
+  // Renters insurance status — landlord is not responsible for tenant
+  // personal belongings. Tenants attest whether they carry a renters
+  // insurance policy at the time of signing.
+  rentersInsurance: {
+    hasPolicy: { type: Boolean, default: null }, // null until answered
+    carrier: String,
+    policyNumber: String,
+    liabilityWaiverAcknowledged: { type: Boolean, default: false },
+    declaredAt: Date
+  },
   // Move-in/Move-out
   moveInCondition: {
     reportDate: Date,

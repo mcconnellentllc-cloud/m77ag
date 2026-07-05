@@ -413,22 +413,57 @@
         </div>
 
         <div class="section">
-            <h2>13. Default &amp; Remedies</h2>
+            <h2>13. Renters Insurance &amp; Limitation of Liability</h2>
+            <p><strong>Landlord is not responsible for Tenants' personal belongings.</strong> Landlord shall not be liable for loss, damage, or theft of Tenants' personal property, whether caused by fire, water, wind, theft, vandalism, mechanical failure, or any other cause, except to the extent required by law. Landlord's insurance covers only the building structure and Landlord's property.</p>
+            <p>Tenants are strongly encouraged to carry a renters insurance policy that provides personal property coverage and personal liability coverage. Tenants shall declare below whether such a policy is in force at the time of signing.</p>
+
+            <div class="disclosure" style="background:#fff;border:1px solid #e0d9c8;">
+                <h3>Tenant Renters Insurance Declaration</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+                    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px;border:1px solid #ddd;border-radius:4px;background:#fafaf7;">
+                        <input type="radio" name="hasInsurance" value="yes" id="insYes" style="margin-top:3px;">
+                        <span style="font-size:13px;">
+                            <strong>Yes — Tenants currently carry a renters insurance policy.</strong>
+                            <div id="insDetailsWrap" style="display:none;margin-top:10px;">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                    <input type="text" id="insCarrier" placeholder="Insurance carrier (e.g. State Farm)" style="padding:8px;border:1px solid #ccc;border-radius:3px;font-size:13px;">
+                                    <input type="text" id="insPolicy" placeholder="Policy number (optional)" style="padding:8px;border:1px solid #ccc;border-radius:3px;font-size:13px;">
+                                </div>
+                            </div>
+                        </span>
+                    </label>
+                    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px;border:1px solid #ddd;border-radius:4px;background:#fafaf7;">
+                        <input type="radio" name="hasInsurance" value="no" id="insNo" style="margin-top:3px;">
+                        <span style="font-size:13px;">
+                            <strong>No — Tenants do NOT currently carry a renters insurance policy.</strong>
+                            Tenants acknowledge they are choosing to self-insure their personal belongings and personal liability, and understand that Landlord's insurance does not cover their property or any personal-liability claims against them.
+                        </span>
+                    </label>
+                </div>
+                <div class="ack-row" style="margin-top:14px;">
+                    <input type="checkbox" id="ackInsuranceWaiver">
+                    <label for="ackInsuranceWaiver">Tenants acknowledge that Landlord is not liable for loss, damage, or theft of Tenants' personal property, regardless of insurance status.</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>14. Default &amp; Remedies</h2>
             <p>In the event Tenant fails to pay rent when due or otherwise breaches this Agreement, Landlord may proceed with remedies available under Colorado law, including but not limited to the service of a demand for compliance or possession and forcible entry and detainer proceedings.</p>
         </div>
 
         <div class="section">
-            <h2>14. Governing Law</h2>
+            <h2>15. Governing Law</h2>
             <p>This Agreement is governed by the laws of the State of Colorado. Any disputes shall be resolved in the courts of Sedgwick County, Colorado.</p>
         </div>
 
         <div class="section">
-            <h2>15. Entire Agreement</h2>
+            <h2>16. Entire Agreement</h2>
             <p>This Agreement constitutes the entire understanding between the parties. Any modification must be in writing and signed by both parties. Electronic signatures affixed below are intended to have the same legal effect as handwritten signatures pursuant to the Colorado Uniform Electronic Transactions Act, C.R.S. § 24-71.3-101 et seq.</p>
         </div>
 
         <div class="section">
-            <h2>16. Signatures</h2>
+            <h2>17. Signatures</h2>
             <div id="signaturesArea"></div>
         </div>
 
@@ -534,6 +569,33 @@
                 ack.checked = true;
                 ack.disabled = true;
             }
+
+            // Restore renters insurance selection if already saved.
+            const ri = lease.rentersInsurance || {};
+            if (ri.declaredAt) {
+                if (ri.hasPolicy === true) {
+                    document.getElementById('insYes').checked = true;
+                    document.getElementById('insDetailsWrap').style.display = 'block';
+                    if (ri.carrier) document.getElementById('insCarrier').value = ri.carrier;
+                    if (ri.policyNumber) document.getElementById('insPolicy').value = ri.policyNumber;
+                } else if (ri.hasPolicy === false) {
+                    document.getElementById('insNo').checked = true;
+                }
+                document.getElementById('ackInsuranceWaiver').checked = true;
+                // Lock once declared.
+                document.querySelectorAll('[name="hasInsurance"]').forEach(el => el.disabled = true);
+                document.getElementById('insCarrier').disabled = true;
+                document.getElementById('insPolicy').disabled = true;
+                document.getElementById('ackInsuranceWaiver').disabled = true;
+            }
+
+            // Toggle the carrier/policy fields when the tenant selects "Yes".
+            document.getElementById('insYes').addEventListener('change', () => {
+                document.getElementById('insDetailsWrap').style.display = 'block';
+            });
+            document.getElementById('insNo').addEventListener('change', () => {
+                document.getElementById('insDetailsWrap').style.display = 'none';
+            });
 
             renderSignatures();
         }
@@ -727,9 +789,26 @@
             if (canvasIsEmpty(canvas)) return alert('Please draw your signature in the box above.');
             if (typedName.length < 3) return alert('Please type your full legal name.');
 
+            let rentersInsurance = null;
             if (role === 'tenant') {
                 const ack = document.getElementById('ackDisclosures');
                 if (!ack.checked) return alert('Please acknowledge the Colorado disclosures before signing.');
+
+                const insYes = document.getElementById('insYes').checked;
+                const insNo = document.getElementById('insNo').checked;
+                const insAck = document.getElementById('ackInsuranceWaiver').checked;
+                if (!insYes && !insNo) {
+                    return alert('Please indicate whether you have renters insurance in Section 13.');
+                }
+                if (!insAck) {
+                    return alert('Please acknowledge the renters insurance liability waiver in Section 13.');
+                }
+                rentersInsurance = {
+                    hasPolicy: insYes,
+                    carrier: insYes ? (document.getElementById('insCarrier').value || '').trim() : '',
+                    policyNumber: insYes ? (document.getElementById('insPolicy').value || '').trim() : '',
+                    liabilityWaiverAcknowledged: true
+                };
             }
 
             const signature = canvas.toDataURL('image/png');
@@ -743,7 +822,10 @@
             submitBtn.textContent = 'Submitting...';
             try {
                 const body = { signature, typedName };
-                if (role === 'tenant') body.disclosuresAcknowledged = true;
+                if (role === 'tenant') {
+                    body.disclosuresAcknowledged = true;
+                    body.rentersInsurance = rentersInsurance;
+                }
                 const r = await fetch('/api/rentals/sign/' + encodeURIComponent(token) + endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

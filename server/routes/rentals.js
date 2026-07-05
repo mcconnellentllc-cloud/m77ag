@@ -431,7 +431,7 @@ router.get('/sign/:token', async (req, res) => {
 // Submit primary tenant signature.
 router.post('/sign/:token/tenant', async (req, res) => {
   try {
-    const { signature, typedName, disclosuresAcknowledged } = req.body;
+    const { signature, typedName, disclosuresAcknowledged, rentersInsurance } = req.body;
     if (!signature || !typedName) {
       return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
     }
@@ -444,12 +444,26 @@ router.post('/sign/:token/tenant', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Primary tenant has already signed' });
     }
 
+    // Require an explicit renters-insurance declaration so the landlord's
+    // limitation-of-liability language is opted into knowingly.
+    if (!rentersInsurance || typeof rentersInsurance.hasPolicy !== 'boolean' || !rentersInsurance.liabilityWaiverAcknowledged) {
+      return res.status(400).json({ success: false, message: 'Renters insurance declaration and liability acknowledgement are required' });
+    }
+
     lease.signatures = lease.signatures || {};
     lease.signatures.tenantSignature = signature;
     lease.signatures.tenantSignedName = typedName;
     lease.signatures.tenantSignedDate = new Date();
     lease.signatures.tenantSignedIP = getClientIp(req);
     lease.signatures.tenantSignedUserAgent = req.headers['user-agent'] || '';
+
+    lease.rentersInsurance = {
+      hasPolicy: rentersInsurance.hasPolicy,
+      carrier: rentersInsurance.carrier || '',
+      policyNumber: rentersInsurance.policyNumber || '',
+      liabilityWaiverAcknowledged: true,
+      declaredAt: new Date()
+    };
 
     if (disclosuresAcknowledged) {
       lease.disclosures = lease.disclosures || {};
