@@ -60,13 +60,13 @@ const DISCOUNT_MENU = [
   {
     code: 'yard_care',
     label: 'Handle yard mowing April through October',
-    responsibility: 'Tenants mow and trim the yard at least every two weeks during the growing season. If Landlord must arrange mowing because grass exceeds 8 inches, this discount is revoked and the mowing cost is back-charged.',
+    responsibility: 'Tenants mow and trim the yard at least every two weeks during the growing season, at Tenants\' expense including mower, trimmer, fuel, and all supplies. Landlord does not provide or maintain mowing equipment. If Landlord must arrange mowing because grass exceeds 8 inches, this discount is revoked and the mowing cost is back-charged.',
     monthlyValue: 50
   },
   {
     code: 'snow_removal',
     label: 'Handle snow removal from driveway and walkways',
-    responsibility: 'Tenants clear driveway and walkways within 24 hours of any snowfall of 2 inches or more. If Landlord must arrange clearing, this discount is revoked and the clearing cost is back-charged.',
+    responsibility: 'Tenants clear driveway and walkways within 24 hours of any snowfall of 2 inches or more, at Tenants\' expense including snowblower, shovels, ice melt, and all supplies. Landlord does not provide or maintain snow-removal equipment. If Landlord must arrange clearing, this discount is revoked and the clearing cost is back-charged.',
     monthlyValue: 50
   },
   {
@@ -219,7 +219,7 @@ async function upsertLease(propertyId, tenantId) {
     utilitiesIncluded: true,
     utilitiesDetails: 'Landlord pays electricity, propane, water, sewer, and trash. Historical monthly averages: electricity ~$150/mo year-round, propane ~$250/mo during heating season (November–March). If tenant usage exceeds 20% above these averages in any calendar month, the parties agree to renegotiate the utility allowance in good faith or Landlord may back-charge the excess.',
     petPolicy: 'Tenants may keep pets identified on the pet addendum. Pet deposit is required and refundable per Colorado law. Tenants are responsible for all pet-related damage and for cleanup of the yard.',
-    specialTerms: 'Tenants are responsible for routine yard care (mowing) in summer and snow removal from driveway/walkways in winter. Property is offered furnished with appliances noted; refrigerator is NOT included and must be supplied by tenant.',
+    specialTerms: 'Rent is payable by ACH transfer or check only; PayPal, Venmo, and other payment platforms are not accepted. If Tenants elect the yard-care or snow-removal rent-reduction options, Tenants provide all equipment, fuel, and supplies at their own expense — Landlord does not provide or maintain mowing or snow-removal equipment. Refrigerator is NOT included and must be supplied by Tenants.',
     status: 'draft',
     signingToken,
     signingTokenExpiresAt: expires
