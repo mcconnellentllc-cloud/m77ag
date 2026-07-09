@@ -30,6 +30,9 @@ const TENANT_FIRST = 'Jeremy';
 const TENANT_LAST = 'Kinzie';
 const TENANT_PHONE = '720-601-3243';
 const TENANT_PREV_ADDRESS = '1302 85th Ave, Greeley, CO 80634';
+// Temporary password issued at move-in. Jeremy is prompted to reset
+// via the standard forgot-password flow on first login.
+const TENANT_TEMP_PASSWORD = 'Kinzie168!';
 
 const CO_TENANT_FIRST = 'Amy';
 const CO_TENANT_LAST = 'Kinzie';
@@ -144,11 +147,11 @@ async function upsertTenant() {
     if (dirty) await existing.save();
     return existing;
   }
-  // Password is placeholder — tenant can reset via forgot-password flow if
-  // they want portal access. Signing does not require a login.
+  // Temporary password — printed on Jeremy's welcome instructions.
+  // He is expected to change it on first login.
   const tenant = new Tenant({
     email: TENANT_EMAIL,
-    password: crypto.randomBytes(16).toString('hex'),
+    password: TENANT_TEMP_PASSWORD,
     firstName: TENANT_FIRST,
     lastName: TENANT_LAST,
     phone: TENANT_PHONE,
@@ -279,6 +282,11 @@ async function main() {
     console.log('Property:', property.name, `(${property._id})`);
     console.log('Tenant:  ', `${tenant.firstName} ${tenant.lastName}`, `(${tenant._id})`);
     console.log('Lease:   ', lease._id.toString(), 'status:', lease.status);
+    console.log('---');
+    console.log('Tenant login (for m77ag.com/tenant/login):');
+    console.log('  Email:', tenant.email);
+    console.log('  Temp password:', TENANT_TEMP_PASSWORD, '(change on first login)');
+    console.log('---');
     console.log('Signing URL:');
     console.log(' ', signingUrl);
     console.log('Token expires:', lease.signingTokenExpiresAt?.toISOString());

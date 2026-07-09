@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to 168 Hwy 59 — Kinzie Family | M77 AG</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            font-size: 12pt;
+            background: #eee;
+        }
+        .page {
+            max-width: 8.5in;
+            margin: 20px auto;
+            background: #fff;
+            padding: 0.7in 0.85in;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        .doc-header {
+            text-align: center;
+            border-bottom: 2px solid #2d5016;
+            padding-bottom: 14px;
+            margin-bottom: 22px;
+        }
+        .brand {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12pt;
+            letter-spacing: 4px;
+            color: #d4a54a;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        h1 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 22pt;
+            color: #2d5016;
+            font-weight: 700;
+        }
+        h2 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 13pt;
+            color: #2d5016;
+            border-bottom: 1px solid #cfc9b8;
+            padding-bottom: 4px;
+            margin: 22px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        p { margin-bottom: 10px; }
+        .greeting {
+            font-size: 12.5pt;
+            margin-bottom: 14px;
+        }
+        .credentials {
+            background: #ecf5e6;
+            border: 2px solid #2d5016;
+            padding: 18px 22px;
+            margin: 14px 0;
+            border-radius: 4px;
+        }
+        .credentials .row {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #cde0be;
+            font-size: 12pt;
+        }
+        .credentials .row:last-child { border-bottom: none; }
+        .credentials .label {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #2d5016;
+            font-weight: bold;
+            align-self: center;
+        }
+        .credentials .value {
+            font-family: 'Courier New', monospace;
+            font-size: 13pt;
+            font-weight: bold;
+        }
+        ol.steps {
+            padding-left: 24px;
+            margin: 10px 0 14px;
+        }
+        ol.steps li {
+            padding: 5px 0;
+            font-size: 11.5pt;
+        }
+        ol.steps li strong { color: #2d5016; }
+        .callout {
+            background: #f9f5e6;
+            border-left: 4px solid #d4a54a;
+            padding: 12px 16px;
+            font-size: 11pt;
+            margin: 12px 0;
+        }
+        .warning {
+            background: #fdecea;
+            border-left: 4px solid #c62828;
+            padding: 12px 16px;
+            font-size: 11pt;
+            margin: 12px 0;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 20px;
+            background: #f8f6f2;
+            padding: 14px 18px;
+            border-radius: 4px;
+            font-size: 11pt;
+        }
+        .info-grid strong {
+            display: block;
+            font-size: 9.5pt;
+            color: #2d5016;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .action-box {
+            background: #fff;
+            border: 1px solid #cfc9b8;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .action-box .head {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11pt;
+            color: #2d5016;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .sig-line {
+            border-top: 1px solid #1a1a1a;
+            padding-top: 4px;
+            margin-top: 40px;
+            font-size: 10pt;
+            color: #666;
+        }
+        .print-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            padding: 12px 18px;
+            background: #2d5016;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        @media print {
+            body { background: #fff; }
+            .page { box-shadow: none; margin: 0; max-width: none; padding: 0.5in 0.6in; }
+            .print-btn { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+
+<div class="page">
+
+    <div class="doc-header">
+        <div class="brand">M77 AG</div>
+        <h1>Welcome, Kinzie Family</h1>
+        <p style="color:#666;margin-top:6px;font-size:11pt;">168 Hwy 59 · Sedgwick, Colorado 80749</p>
+    </div>
+
+    <p class="greeting">Jeremy and Amy,</p>
+
+    <p>Welcome home. We're glad to have you at 168 Hwy 59, and we appreciate you signing a full 12-month lease with us. This packet has everything you need to get started: your account credentials, how to pay rent, how to reach us, and a quick tour of the tenant portal at m77ag.com.</p>
+
+    <h2>Move-In Details</h2>
+    <div class="info-grid">
+        <div><strong>Property</strong>168 Hwy 59, Sedgwick, CO 80749</div>
+        <div><strong>Lease Term</strong>July 1, 2026 – June 30, 2027</div>
+        <div><strong>Base Rent</strong>$1,400.00 / month</div>
+        <div><strong>Rent Due</strong>1st of each month</div>
+        <div><strong>Security Deposit</strong>$1,400.00 (refundable per Colorado law)</div>
+        <div><strong>Pet Deposit</strong>$300.00 (if applicable)</div>
+    </div>
+
+    <h2>Your Tenant Portal Login</h2>
+    <p>Your tenant account is set up. Please log in at <strong>m77ag.com/tenant/login</strong> using the credentials below and change your password on first sign-in.</p>
+
+    <div class="credentials">
+        <div class="row">
+            <div class="label">Login URL</div>
+            <div class="value" style="font-size:12pt;">m77ag.com/tenant/login</div>
+        </div>
+        <div class="row">
+            <div class="label">Email</div>
+            <div class="value">kinzjer33@yahoo.com</div>
+        </div>
+        <div class="row">
+            <div class="label">Temp Password</div>
+            <div class="value">Kinzie168!</div>
+        </div>
+    </div>
+
+    <div class="warning">
+        <strong>First things to do after logging in:</strong> Click your profile, change your password to something only you know, and verify your phone number (720-601-3243) is correct so we can text you if there's an urgent property issue.
+    </div>
+
+    <h2>What You Can Do in the Portal</h2>
+    <ol class="steps">
+        <li><strong>Pay rent.</strong> Rent is paid by <strong>ACH transfer or check</strong> only — no PayPal or Venmo (the platform fees add up). ACH is the fastest way to pay and lets you set up autopay for a small monthly discount. See "How to Pay Rent" below.</li>
+        <li><strong>See your payment history.</strong> Every rent payment we receive is logged with the date, amount, and method, so you always have a clean record.</li>
+        <li><strong>Submit a repair request.</strong> If something breaks, open a repair request in the portal — we get an email immediately, and you'll see status updates back in the portal.</li>
+        <li><strong>Message us directly.</strong> Use the Messages tab for anything else. Everything is time-stamped so nothing gets lost in a text thread.</li>
+        <li><strong>Access your signed lease and receipts.</strong> Your executed lease agreement lives in the Documents tab. You can download it any time.</li>
+        <li><strong>Propose an improvement project.</strong> Interior paint, flooring, outdoor work — send us a proposal through the portal. If we approve it in writing before you start and buy the materials, you can earn up to $150/month off rent for approved work. See "Improvement Projects" below.</li>
+    </ol>
+
+    <h2>How to Pay Rent</h2>
+    <p>Rent is due on the <strong>1st of each month</strong>. Colorado law gives you a 7-day grace period before a late fee applies.</p>
+
+    <div class="action-box">
+        <div class="head">Option 1 — ACH Transfer (preferred)</div>
+        <p>Log in to the portal, go to <strong>Payments → Set up ACH</strong>, and connect your bank account. You can pay one-off each month or turn on autopay for the 1st. <strong>Autopay earns you a $25/month rent reduction</strong> as long as it's active. Contact Kyle to receive routing/account info for direct ACH.</p>
+    </div>
+
+    <div class="action-box">
+        <div class="head">Option 2 — Check</div>
+        <p>Make checks payable to <strong>M77 AG</strong> and mail to:<br>
+        M77 AG · Sedgwick, CO 80749<br>
+        Or hand-deliver to Kyle. Include "168 Hwy 59 — [Month]" in the memo line.</p>
+    </div>
+
+    <h2>Rent Reduction Options You Elected</h2>
+    <p>The lease you signed allows you to earn credits against the $1,400 base rent by taking on specific responsibilities. Whatever you've checked on your signed lease is what's active on your account. If you'd like to change your selections mid-lease, contact Kyle in writing.</p>
+
+    <div class="callout">
+        Reminder: each rent reduction is tied to a real responsibility. If we end up doing the task (mowing, snow removal, minor repair, etc.), we can revoke that reduction going forward and back-charge the reasonable cost. We'll always give you written notice before doing so, and we'd rather work it out with you than revoke anything.
+    </div>
+
+    <h2>Improvement Projects — Earn Up to $150/Month</h2>
+    <p>If you want to do a paint job, install flooring, tackle exterior maintenance, or a similar improvement, we'll consider it. Here's how it works:</p>
+    <ol class="steps">
+        <li><strong>Send us a written proposal</strong> via the portal Messages tab (or email office@m77ag.com). Include what you want to do, expected materials, and roughly how long it'll take.</li>
+        <li><strong>We approve in writing before you start.</strong> No approval, no credit — please don't start the work or buy materials on your own.</li>
+        <li><strong>We buy the materials</strong> once we approve. You supply the labor.</li>
+        <li><strong>We inspect</strong> when you're done. If it's up to standard, we apply the credit (up to $150) to the next month's rent.</li>
+    </ol>
+
+    <h2>Utilities</h2>
+    <p><strong>We pay all utilities</strong> — electricity, propane, water, sewer, and trash. That's a real benefit and a real cost. Historical monthly averages are about <strong>$150 for electricity year-round</strong> and <strong>$250 for propane during heating season (Nov–Mar)</strong>. If your usage runs more than 20% above those averages in a given month, we'll reach out and talk about it — we'd rather adjust together than surprise you.</p>
+
+    <h2>Your Responsibilities Around the House</h2>
+    <ul style="padding-left:24px;margin:10px 0;">
+        <li style="padding:4px 0;">Refrigerator — you bring your own; the house doesn't come with one.</li>
+        <li style="padding:4px 0;">Renters insurance — strongly recommended. Landlord's insurance covers the building, not your belongings.</li>
+        <li style="padding:4px 0;">Keep the house clean and let us know promptly if anything breaks.</li>
+        <li style="padding:4px 0;">If you chose the yard or snow discounts, you provide the equipment (mower, snowblower, shovels, fuel, ice melt).</li>
+        <li style="padding:4px 0;">No modifications without our written OK (paint colors, flooring changes, structural changes — all covered by the improvement-project process above).</li>
+    </ul>
+
+    <h2>How to Reach Us</h2>
+    <div class="info-grid">
+        <div><strong>Kyle McConnell (Landlord)</strong>970-571-1015 · office@m77ag.com</div>
+        <div><strong>Emergencies</strong>Call/text Kyle any time</div>
+        <div><strong>Portal</strong>m77ag.com/tenant/login</div>
+        <div><strong>General inquiries</strong>office@m77ag.com</div>
+    </div>
+
+    <p style="margin-top:22px;">Thanks for being part of the M77 AG community. If there's anything you need on move-in day, just give me a call.</p>
+
+    <div class="sig-line">
+        Kyle McConnell &nbsp;·&nbsp; M77 AG &nbsp;·&nbsp; Sedgwick, Colorado
+    </div>
+
+</div>
+</body>
+</html>
