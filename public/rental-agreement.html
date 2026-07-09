@@ -368,44 +368,58 @@
         </div>
 
         <div class="section">
-            <h2>5. Security Deposit</h2>
+            <h2>5. Improvement Project Rent Credit</h2>
+            <p>Separate from the rent-reduction options in Section 4, Tenants may propose <strong>approved property improvement projects</strong> in exchange for a rent credit of <strong>up to $150.00 per calendar month</strong>. Example project types include interior painting, flooring installation or refinishing, outdoor maintenance (fencing, landscaping features, exterior painting), and similar improvements that add lasting value to the Premises.</p>
+            <ol>
+                <li><strong>Written proposal required.</strong> Tenants submit a written project proposal to Landlord describing scope, materials, and estimated completion time.</li>
+                <li><strong>Written approval required before starting.</strong> Landlord must approve the project in writing before any work begins. Work started or materials purchased without prior written approval will not be credited.</li>
+                <li><strong>Landlord purchases materials.</strong> Upon approval, Landlord purchases all necessary materials before Tenants commence work. Tenants shall not front material costs and shall not be reimbursed for materials they purchase.</li>
+                <li><strong>Tenant supplies labor.</strong> Tenants complete the approved work using materials supplied by Landlord and Tenants' own labor and tools.</li>
+                <li><strong>Verification and credit.</strong> Upon completion, Landlord inspects the work and, upon satisfactory verification, applies the agreed rent credit to the following month's rent statement.</li>
+                <li><strong>$150/mo aggregate cap.</strong> Total improvement-project rent credits shall not exceed $150.00 in any calendar month, regardless of the number of projects.</li>
+                <li><strong>Standard of work.</strong> Work not completed to Landlord's reasonable satisfaction may result in denial or reduction of the credit. Materials remain the property of Landlord.</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>6. Security Deposit</h2>
             <p id="depositText"></p>
             <p>Landlord shall return the security deposit, less any lawful deductions and with an itemized statement, within 30 days after Tenant vacates the Premises, in accordance with C.R.S. § 38-12-103.</p>
         </div>
 
         <div class="section">
-            <h2>6. Utilities</h2>
+            <h2>7. Utilities</h2>
             <p id="utilitiesText"></p>
         </div>
 
         <div class="section">
-            <h2>7. Occupants &amp; Use</h2>
+            <h2>8. Occupants &amp; Use</h2>
             <p>The Premises shall be occupied only by the Tenants named in this Agreement and their minor children. Guests staying longer than 14 consecutive days require Landlord's prior written consent. The Premises shall be used only as a private residence.</p>
         </div>
 
         <div class="section">
-            <h2>8. Pets</h2>
+            <h2>9. Pets</h2>
             <p id="petPolicyText"></p>
         </div>
 
         <div class="section">
-            <h2>9. Maintenance &amp; Yard Care</h2>
+            <h2>10. Maintenance &amp; Yard Care</h2>
             <p id="specialTermsText"></p>
             <p>Tenant shall keep the Premises in a clean and sanitary condition and shall promptly report any needed repairs to Landlord. Landlord shall be responsible for major systems (roof, plumbing, electrical, heating). Tenant is responsible for replacing light bulbs, HVAC filters, and minor consumables.</p>
         </div>
 
         <div class="section">
-            <h2>10. Warranty of Habitability</h2>
-            <p>Landlord warrants the Premises to be fit for human habitation as required by C.R.S. § 38-12-503. Tenant may report uninhabitable conditions to Landlord at the address and email listed in Section 12 and shall provide reasonable opportunity for repair.</p>
+            <h2>11. Warranty of Habitability</h2>
+            <p>Landlord warrants the Premises to be fit for human habitation as required by C.R.S. § 38-12-503. Tenant may report uninhabitable conditions to Landlord at the address and email listed in Section 13 and shall provide reasonable opportunity for repair.</p>
         </div>
 
         <div class="section">
-            <h2>11. Access by Landlord</h2>
+            <h2>12. Access by Landlord</h2>
             <p>Landlord may enter the Premises with reasonable notice (typically 24 hours except in emergencies) to inspect, make repairs, or show the property to prospective tenants or buyers.</p>
         </div>
 
         <div class="section">
-            <h2>12. Colorado Required Disclosures</h2>
+            <h2>13. Colorado Required Disclosures</h2>
 
             <div class="disclosure">
                 <h3>Radon Disclosure</h3>
@@ -435,7 +449,7 @@
         </div>
 
         <div class="section">
-            <h2>13. Renters Insurance &amp; Limitation of Liability</h2>
+            <h2>14. Renters Insurance &amp; Limitation of Liability</h2>
             <p><strong>Landlord is not responsible for Tenants' personal belongings.</strong> Landlord shall not be liable for loss, damage, or theft of Tenants' personal property, whether caused by fire, water, wind, theft, vandalism, mechanical failure, or any other cause, except to the extent required by law. Landlord's insurance covers only the building structure and Landlord's property.</p>
             <p>Tenants are strongly encouraged to carry a renters insurance policy that provides personal property coverage and personal liability coverage. Tenants shall declare below whether such a policy is in force at the time of signing.</p>
 
@@ -470,22 +484,22 @@
         </div>
 
         <div class="section">
-            <h2>14. Default &amp; Remedies</h2>
+            <h2>15. Default &amp; Remedies</h2>
             <p>In the event Tenant fails to pay rent when due or otherwise breaches this Agreement, Landlord may proceed with remedies available under Colorado law, including but not limited to the service of a demand for compliance or possession and forcible entry and detainer proceedings.</p>
         </div>
 
         <div class="section">
-            <h2>15. Governing Law</h2>
+            <h2>16. Governing Law</h2>
             <p>This Agreement is governed by the laws of the State of Colorado. Any disputes shall be resolved in the courts of Sedgwick County, Colorado.</p>
         </div>
 
         <div class="section">
-            <h2>16. Entire Agreement</h2>
+            <h2>17. Entire Agreement</h2>
             <p>This Agreement constitutes the entire understanding between the parties. Any modification must be in writing and signed by both parties. Electronic signatures affixed below are intended to have the same legal effect as handwritten signatures pursuant to the Colorado Uniform Electronic Transactions Act, C.R.S. § 24-71.3-101 et seq.</p>
         </div>
 
         <div class="section">
-            <h2>17. Signatures</h2>
+            <h2>18. Signatures</h2>
             <div id="signaturesArea"></div>
         </div>
 
@@ -882,10 +896,10 @@
                 const insNo = document.getElementById('insNo').checked;
                 const insAck = document.getElementById('ackInsuranceWaiver').checked;
                 if (!insYes && !insNo) {
-                    return alert('Please indicate whether you have renters insurance in Section 13.');
+                    return alert('Please indicate whether you have renters insurance in Section 14.');
                 }
                 if (!insAck) {
-                    return alert('Please acknowledge the renters insurance liability waiver in Section 13.');
+                    return alert('Please acknowledge the renters insurance liability waiver in Section 14.');
                 }
                 rentersInsurance = {
                     hasPolicy: insYes,
