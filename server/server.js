@@ -373,6 +373,10 @@ app.get('/admin/rentals', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/rentals.html'));
 });
 
+app.get('/rental-agreement', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/rental-agreement.html'));
+});
+
 app.get('/season-pass', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/season-pass.html'));
 });

@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const router = express.Router();
 const RentalProperty = require('../models/rentalProperty');
 const Tenant = require('../models/tenant');
@@ -7,8 +8,16 @@ const RentPayment = require('../models/rentPayment');
 const PropertyMessage = require('../models/propertyMessage');
 const RentalApplication = require('../models/rentalApplication');
 const ShowingRequest = require('../models/showingRequest');
+const PropertyLedger = require('../models/propertyLedger');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+
+// Client IP helper — respects the proxy header set by Render/Heroku-style hosts.
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return req.ip || req.connection?.remoteAddress || '';
+}
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'm77ag-rental-secret-key';
@@ -390,6 +399,453 @@ router.put('/tenant/profile', verifyTenant, async (req, res) => {
     );
 
     res.json({ success: true, tenant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ============================================
+// PROPERTY LEDGER (admin)
+//
+// Running record of every dollar into or out of a rental property.
+// Combines valuation-side entries (baseline, capital improvement,
+// valuation adjustments) with operating entries (repair expenses,
+// debt paydowns). Side effects on RentalProperty.bookValue and
+// currentDebtBalance are applied at write time.
+// ============================================
+
+// Reapply an entry's effect on the property's running book value and
+// debt balance. Positive delta on bookValue = capital investment or
+// upward revaluation; negative = write-down.
+function applyEntryToProperty(property, entry, direction) {
+  const sign = direction === 'add' ? 1 : -1;
+  const amount = Number(entry.amount) || 0;
+  switch (entry.entryType) {
+    case 'baseline_value':
+      // Baseline is a set point, not additive. Handled at endpoint level.
+      break;
+    case 'capital_improvement':
+    case 'valuation_adjustment':
+      property.bookValue = (property.bookValue || 0) + sign * amount;
+      break;
+    case 'debt_paydown':
+      property.currentDebtBalance = Math.max(
+        0,
+        (property.currentDebtBalance || 0) - sign * amount
+      );
+      break;
+    case 'repair_expense':
+    case 'operating_expense':
+    case 'other':
+    default:
+      // No effect on book value / debt balance.
+      break;
+  }
+}
+
+// List all ledger entries for a property, newest first.
+router.get('/admin/properties/:id/ledger', async (req, res) => {
+  try {
+    const property = await RentalProperty.findById(req.params.id);
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+    const entries = await PropertyLedger.find({ property: property._id })
+      .sort({ entryDate: -1, createdAt: -1 });
+
+    // Roll up totals by type so the admin gets an at-a-glance summary.
+    const totals = {
+      capitalImprovements: 0,
+      valuationAdjustments: 0,
+      repairExpenses: 0,
+      debtPaydowns: 0,
+      operatingExpenses: 0
+    };
+    entries.forEach(e => {
+      const a = Number(e.amount) || 0;
+      if (e.entryType === 'capital_improvement') totals.capitalImprovements += a;
+      else if (e.entryType === 'valuation_adjustment') totals.valuationAdjustments += a;
+      else if (e.entryType === 'repair_expense') totals.repairExpenses += a;
+      else if (e.entryType === 'debt_paydown') totals.debtPaydowns += a;
+      else if (e.entryType === 'operating_expense') totals.operatingExpenses += a;
+    });
+
+    // Repair budget calc: $300/mo × months since baseline − actual repair spend.
+    const REPAIR_BUDGET_PER_MONTH = 300;
+    let budgetAccrued = 0;
+    if (property.baselineValueDate) {
+      const months = Math.max(0,
+        (Date.now() - new Date(property.baselineValueDate).getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+      );
+      budgetAccrued = months * REPAIR_BUDGET_PER_MONTH;
+    }
+    const repairBudgetRemaining = budgetAccrued - totals.repairExpenses;
+
+    res.json({
+      success: true,
+      property: {
+        _id: property._id,
+        name: property.name,
+        baselineValue: property.baselineValue,
+        baselineValueDate: property.baselineValueDate,
+        bookValue: property.bookValue,
+        currentDebtBalance: property.currentDebtBalance,
+        equity: (property.bookValue || 0) - (property.currentDebtBalance || 0)
+      },
+      totals,
+      repairBudget: {
+        monthlyAllocation: REPAIR_BUDGET_PER_MONTH,
+        accrued: Math.round(budgetAccrued),
+        spent: totals.repairExpenses,
+        remaining: Math.round(repairBudgetRemaining)
+      },
+      entries
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Add a new ledger entry. baseline_value is idempotent — creating it
+// resets baselineValue on the property and re-seeds bookValue at that
+// baseline plus any prior capital_improvement / valuation_adjustment
+// entries. All other entry types are additive.
+router.post('/admin/properties/:id/ledger', async (req, res) => {
+  try {
+    const property = await RentalProperty.findById(req.params.id);
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+    const {
+      entryType, entryDate, amount, category, description,
+      vendor, invoiceNumber, paidBy, receiptUrl, photoUrls,
+      lease, repairRequest, recordedBy, notes
+    } = req.body;
+
+    if (!entryType || amount == null || !description) {
+      return res.status(400).json({ success: false, message: 'entryType, amount, and description are required' });
+    }
+
+    const entry = new PropertyLedger({
+      property: property._id,
+      entryType,
+      entryDate: entryDate ? new Date(entryDate) : new Date(),
+      amount: Number(amount),
+      category,
+      description,
+      vendor,
+      invoiceNumber,
+      paidBy,
+      receiptUrl,
+      photoUrls,
+      lease,
+      repairRequest,
+      recordedBy,
+      notes
+    });
+    await entry.save();
+
+    // Apply the entry's side-effect on the property snapshot.
+    if (entryType === 'baseline_value') {
+      // Setting baseline resets the property's baselineValue and
+      // recomputes bookValue from scratch = baseline + net valuation deltas.
+      property.baselineValue = Number(amount);
+      property.baselineValueDate = entry.entryDate;
+      const valuationDeltas = await PropertyLedger.aggregate([
+        { $match: { property: property._id, entryType: { $in: ['capital_improvement', 'valuation_adjustment'] } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+      ]);
+      property.bookValue = Number(amount) + (valuationDeltas[0]?.total || 0);
+    } else {
+      applyEntryToProperty(property, entry, 'add');
+    }
+    await property.save();
+
+    res.json({ success: true, entry, property });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Delete a ledger entry and reverse its effect on the property.
+router.delete('/admin/properties/:id/ledger/:entryId', async (req, res) => {
+  try {
+    const property = await RentalProperty.findById(req.params.id);
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+    const entry = await PropertyLedger.findOne({ _id: req.params.entryId, property: property._id });
+    if (!entry) return res.status(404).json({ success: false, message: 'Ledger entry not found' });
+
+    if (entry.entryType === 'baseline_value') {
+      return res.status(400).json({ success: false, message: 'Baseline entry cannot be deleted — record a valuation_adjustment instead' });
+    }
+
+    applyEntryToProperty(property, entry, 'subtract');
+    await property.save();
+    await entry.deleteOne();
+
+    res.json({ success: true, property });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Update the property's current debt balance directly (e.g. after
+// receiving a fresh statement from the lender).
+router.put('/admin/properties/:id/debt-balance', async (req, res) => {
+  try {
+    const { currentDebtBalance } = req.body;
+    if (currentDebtBalance == null || isNaN(Number(currentDebtBalance))) {
+      return res.status(400).json({ success: false, message: 'currentDebtBalance is required' });
+    }
+    const property = await RentalProperty.findByIdAndUpdate(
+      req.params.id,
+      { currentDebtBalance: Number(currentDebtBalance) },
+      { new: true }
+    );
+    if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+    res.json({ success: true, property });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ============================================
+// LEASE E-SIGNATURE ROUTES (token-gated public)
+// ============================================
+
+// Fetch a lease + property for the signing page, keyed by signing token.
+// The token is a one-time secret shared with the tenants via the signing URL;
+// it is rotated after both tenants sign, invalidating the link.
+router.get('/sign/:token', async (req, res) => {
+  try {
+    const lease = await Lease.findOne({ signingToken: req.params.token })
+      .populate('property')
+      .populate('tenant', 'firstName lastName email phone');
+
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid or expired signing link' });
+    }
+    if (lease.signingTokenExpiresAt && lease.signingTokenExpiresAt < new Date()) {
+      return res.status(410).json({ success: false, message: 'Signing link has expired' });
+    }
+    res.json({ success: true, lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Lock in the tenant's discount selection. This is called from the signing
+// page before the primary tenant signs — it flips the `selected` flag on
+// each discount the tenant opted into, then re-runs the pre-save hook so
+// `monthlyRent` reflects the chosen effective rent. Cannot be changed
+// once both tenant signatures are on file (would require landlord edit).
+router.post('/sign/:token/discounts', async (req, res) => {
+  try {
+    const { selectedCodes } = req.body;
+    if (!Array.isArray(selectedCodes)) {
+      return res.status(400).json({ success: false, message: 'selectedCodes must be an array' });
+    }
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) return res.status(404).json({ success: false, message: 'Invalid signing link' });
+
+    // If the primary tenant has already signed, discounts are locked.
+    if (lease.signatures?.tenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Discounts are locked once the lease is signed' });
+    }
+
+    const selected = new Set(selectedCodes);
+    lease.discounts.forEach(d => {
+      const wasSelected = d.selected;
+      d.selected = selected.has(d.code);
+      if (d.selected && !wasSelected) d.selectedAt = new Date();
+      if (!d.selected) d.selectedAt = undefined;
+    });
+    lease.discountsFinalizedAt = new Date();
+    await lease.save();
+    res.json({ success: true, lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Submit primary tenant signature.
+router.post('/sign/:token/tenant', async (req, res) => {
+  try {
+    const { signature, typedName, disclosuresAcknowledged, rentersInsurance } = req.body;
+    if (!signature || !typedName) {
+      return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
+    }
+
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid signing link' });
+    }
+    if (lease.signatures?.tenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Primary tenant has already signed' });
+    }
+
+    // Require an explicit renters-insurance declaration so the landlord's
+    // limitation-of-liability language is opted into knowingly.
+    if (!rentersInsurance || typeof rentersInsurance.hasPolicy !== 'boolean' || !rentersInsurance.liabilityWaiverAcknowledged) {
+      return res.status(400).json({ success: false, message: 'Renters insurance declaration and liability acknowledgement are required' });
+    }
+
+    lease.signatures = lease.signatures || {};
+    lease.signatures.tenantSignature = signature;
+    lease.signatures.tenantSignedName = typedName;
+    lease.signatures.tenantSignedDate = new Date();
+    lease.signatures.tenantSignedIP = getClientIp(req);
+    lease.signatures.tenantSignedUserAgent = req.headers['user-agent'] || '';
+
+    lease.rentersInsurance = {
+      hasPolicy: rentersInsurance.hasPolicy,
+      carrier: rentersInsurance.carrier || '',
+      policyNumber: rentersInsurance.policyNumber || '',
+      liabilityWaiverAcknowledged: true,
+      declaredAt: new Date()
+    };
+
+    if (disclosuresAcknowledged) {
+      lease.disclosures = lease.disclosures || {};
+      lease.disclosures.radonDisclosureAcknowledged = true;
+      lease.disclosures.leadPaintDisclosureAcknowledged = true;
+      lease.disclosures.bedBugDisclosureAcknowledged = true;
+      lease.disclosures.uninhabitableReportingAcknowledged = true;
+      lease.disclosures.allDisclosuresSignedDate = new Date();
+    }
+
+    // Advance the lease to pending_signature once the first tenant signs.
+    if (lease.status === 'draft') lease.status = 'pending_signature';
+
+    await lease.save();
+    res.json({ success: true, message: 'Primary tenant signature recorded', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Submit co-tenant signature.
+router.post('/sign/:token/co-tenant', async (req, res) => {
+  try {
+    const { signature, typedName } = req.body;
+    if (!signature || !typedName) {
+      return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
+    }
+
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid signing link' });
+    }
+    if (lease.signatures?.coTenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Co-tenant has already signed' });
+    }
+
+    lease.signatures = lease.signatures || {};
+    lease.signatures.coTenantSignature = signature;
+    lease.signatures.coTenantSignedName = typedName;
+    lease.signatures.coTenantSignedDate = new Date();
+    lease.signatures.coTenantSignedIP = getClientIp(req);
+    lease.signatures.coTenantSignedUserAgent = req.headers['user-agent'] || '';
+
+    await lease.save();
+    res.json({ success: true, message: 'Co-tenant signature recorded', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Landlord counter-signs. Once both tenants + landlord have signed we
+// activate the lease and rotate the signing token so the link can't be reused.
+router.post('/sign/:token/landlord', async (req, res) => {
+  try {
+    const { signature, typedName } = req.body;
+    if (!signature || !typedName) {
+      return res.status(400).json({ success: false, message: 'Signature and typed name are required' });
+    }
+
+    const lease = await Lease.findOne({ signingToken: req.params.token });
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Invalid signing link' });
+    }
+    if (!lease.signatures?.tenantSignedDate) {
+      return res.status(400).json({ success: false, message: 'Tenants must sign before landlord counter-signature' });
+    }
+
+    lease.signatures.landlordSignature = signature;
+    lease.signatures.landlordSignedName = typedName;
+    lease.signatures.landlordSignedDate = new Date();
+    lease.signatures.landlordSignedIP = getClientIp(req);
+
+    // Activate the lease and burn the signing token.
+    lease.status = 'active';
+    lease.signingToken = null;
+    lease.signingTokenExpiresAt = null;
+
+    await lease.save();
+
+    // Reflect the executed lease on the tenant and property records.
+    if (lease.tenant) {
+      await Tenant.findByIdAndUpdate(lease.tenant, {
+        currentLease: lease._id,
+        currentProperty: lease.property,
+        status: 'active'
+      });
+    }
+    if (lease.property) {
+      await RentalProperty.findByIdAndUpdate(lease.property, {
+        status: 'rented',
+        currentTenant: lease.tenant,
+        currentLease: lease._id
+      });
+    }
+
+    res.json({ success: true, message: 'Lease executed', lease });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admin: revoke a discount because the tenant did not hold up the
+// corresponding responsibility. Records the reason, an optional
+// back-charge amount for prior months, and stops the discount from
+// applying to future rent (monthlyRent is recomputed automatically).
+router.post('/admin/leases/:id/discounts/:code/revoke', async (req, res) => {
+  try {
+    const { reason, backChargeAmount } = req.body;
+    if (!reason || reason.trim().length < 5) {
+      return res.status(400).json({ success: false, message: 'A reason (min 5 chars) is required to revoke a discount' });
+    }
+    const lease = await Lease.findById(req.params.id);
+    if (!lease) return res.status(404).json({ success: false, message: 'Lease not found' });
+
+    const discount = lease.discounts.find(d => d.code === req.params.code);
+    if (!discount) return res.status(404).json({ success: false, message: 'Discount not found on this lease' });
+    if (discount.revokedAt) return res.status(400).json({ success: false, message: 'Discount already revoked' });
+
+    discount.revokedAt = new Date();
+    discount.revokedReason = reason.trim();
+    if (backChargeAmount != null) discount.backChargeAmount = Number(backChargeAmount);
+
+    await lease.save();
+    res.json({ success: true, lease, newMonthlyRent: lease.monthlyRent });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admin: generate (or refresh) the signing token for a lease.
+router.post('/admin/leases/:id/signing-link', async (req, res) => {
+  try {
+    const lease = await Lease.findById(req.params.id);
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Lease not found' });
+    }
+    lease.signingToken = crypto.randomBytes(24).toString('hex');
+    // Signing links are valid for 30 days by default.
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 30);
+    lease.signingTokenExpiresAt = expires;
+    await lease.save();
+    res.json({ success: true, token: lease.signingToken, expiresAt: lease.signingTokenExpiresAt });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -948,8 +1404,8 @@ PROPERTY DETAILS:
 - Features: Central heat (no AC), stove, microwave, washer/dryer hookups, off-street parking, large yard, enclosed porch
 - NO refrigerator included - tenant needs to bring their own
 - All utilities paid by landlord (electricity, propane, water, sewer, trash)
-- Historical utility averages: electricity ~$100/mo, propane ~$150/mo
-- If tenant usage exceeds 20% above historical averages, terms may be renegotiated
+- Historical utility averages: electricity ~$150/mo year-round, propane ~$250/mo during heating season (Nov–Mar)
+- If tenant usage exceeds 20% above historical averages, terms may be renegotiated or excess back-charged
 - Pet friendly
 
 PRICING (utilities included):
