@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residential Lease Agreement — Kinzie | M77 AG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #1a1a1a;
+            line-height: 1.55;
+            font-size: 12pt;
+            background: #eee;
+        }
+        .page {
+            max-width: 8.5in;
+            margin: 20px auto;
+            background: #fff;
+            padding: 0.75in 0.85in;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        .doc-header {
+            text-align: center;
+            border-bottom: 2px solid #2d5016;
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+        }
+        .brand {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12pt;
+            letter-spacing: 4px;
+            color: #d4a54a;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        h1 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 20pt;
+            color: #2d5016;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .subtitle {
+            font-size: 9pt;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #666;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 20px;
+            font-size: 10pt;
+            border: 1px solid #cfc9b8;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            background: #f9f7f0;
+        }
+        .meta-grid strong {
+            display: block;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2d5016;
+            margin-bottom: 2px;
+        }
+        h2 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12pt;
+            color: #2d5016;
+            border-bottom: 1px solid #cfc9b8;
+            padding-bottom: 3px;
+            margin: 18px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        p { margin-bottom: 8px; }
+        .callout {
+            background: #f9f5e6;
+            border-left: 3px solid #d4a54a;
+            padding: 8px 12px;
+            font-size: 10.5pt;
+            margin: 8px 0;
+        }
+        .parties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+        .party {
+            border: 1px solid #cfc9b8;
+            padding: 10px 12px;
+            font-size: 11pt;
+        }
+        .party .label {
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2d5016;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .party .name { font-weight: bold; }
+        table.discount-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10.5pt;
+            margin: 8px 0 4px;
+        }
+        table.discount-tbl th, table.discount-tbl td {
+            border: 1px solid #cfc9b8;
+            padding: 8px 10px;
+            vertical-align: top;
+        }
+        table.discount-tbl th {
+            background: #f4efdd;
+            font-weight: bold;
+            text-align: left;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .checkbox {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #333;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        .checkbox.checked {
+            background: #2d5016;
+            position: relative;
+        }
+        .checkbox.checked::after {
+            content: "✓";
+            color: #fff;
+            font-weight: bold;
+            font-size: 11px;
+            position: absolute;
+            top: -3px;
+            left: 1px;
+        }
+        .rent-summary {
+            background: #ecf5e6;
+            border: 2px solid #2d5016;
+            padding: 12px 16px;
+            margin: 12px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            text-align: center;
+        }
+        .rent-summary .label { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 1px; color: #2d5016; margin-bottom: 3px; }
+        .rent-summary .value { font-size: 18pt; font-weight: bold; font-family: 'Helvetica Neue', Arial, sans-serif; color: #2d5016; }
+        .sig-block {
+            margin-top: 14px;
+            page-break-inside: avoid;
+        }
+        .sig-block .sig-role {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #2d5016;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .sig-line {
+            display: grid;
+            grid-template-columns: 3fr 1.4fr;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .sig-field {
+            border-bottom: 1px solid #1a1a1a;
+            padding-bottom: 2px;
+            height: 46px;
+            position: relative;
+        }
+        .sig-field-label {
+            position: absolute;
+            bottom: -14px;
+            left: 0;
+            font-size: 8.5pt;
+            color: #666;
+        }
+        .print-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            padding: 12px 18px;
+            background: #2d5016;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .print-btn:hover { background: #1f3a0e; }
+        .discl {
+            background: #f9f5e6;
+            padding: 8px 12px;
+            font-size: 10.5pt;
+            margin-bottom: 8px;
+            border: 1px solid #e5dcb9;
+        }
+        .discl strong { color: #2d5016; }
+        .disclosure-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: #fff;
+            border: 1px solid #cfc9b8;
+            margin-top: 8px;
+            font-size: 10.5pt;
+        }
+        ul, ol { margin: 4px 0 8px 22px; }
+        ul li, ol li { margin-bottom: 4px; font-size: 11pt; }
+        @media print {
+            body { background: #fff; font-size: 10.5pt; }
+            .page { box-shadow: none; margin: 0; max-width: none; padding: 0.5in 0.6in; }
+            .print-btn { display: none !important; }
+            h2 { page-break-after: avoid; }
+            .sig-block, .rent-summary, table.discount-tbl { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+
+<div class="page">
+
+    <div class="doc-header">
+        <div class="brand">M77 AG</div>
+        <h1>Residential Lease Agreement</h1>
+        <div class="subtitle">State of Colorado</div>
+    </div>
+
+    <div class="meta-grid">
+        <div><strong>Agreement Date</strong>__________________________, 2026</div>
+        <div><strong>Property</strong>168 Hwy 59, Sedgwick, CO 80749</div>
+        <div><strong>Lease Term</strong>12 months (fixed term)</div>
+        <div><strong>Lease Period</strong>July 1, 2026 – June 30, 2027</div>
+    </div>
+
+    <h2>1. Parties</h2>
+    <div class="parties">
+        <div class="party">
+            <div class="label">Landlord</div>
+            <div class="name">M77 AG</div>
+            <div>c/o Kyle McConnell<br>Sedgwick, Colorado 80749<br>Phone: 970-571-1015<br>Email: office@m77ag.com</div>
+        </div>
+        <div class="party">
+            <div class="label">Tenants (jointly and severally liable)</div>
+            <div class="name">Jeremy Kinzie</div>
+            <div>Phone: 720-601-3243<br>Email: kinzjer33@yahoo.com<br>Prior address: 1302 85th Ave, Greeley, CO 80634</div>
+            <div class="name" style="margin-top:6px;">Amy Kinzie</div>
+        </div>
+    </div>
+
+    <h2>2. Premises</h2>
+    <p>Landlord leases to Tenants the residential property located at <strong>168 Hwy 59, Sedgwick, Colorado 80749</strong> (the "Premises"), a 2-bedroom, 1-bath single-family home including the enclosed porch, yard, and off-street parking. The Premises includes stove, microwave, and washer/dryer hookups. <strong>A refrigerator is NOT included and shall be supplied by Tenants.</strong></p>
+
+    <h2>3. Term of Lease</h2>
+    <p>This lease begins on <strong>July 1, 2026</strong> and ends on <strong>June 30, 2027</strong> (12 months). If Tenants remain in possession after expiration without a new signed agreement, tenancy shall continue on a month-to-month basis at Landlord's then-current market rate.</p>
+
+    <h2>4. Rent &amp; Rent-Reduction Options</h2>
+    <p>Base rent for the Premises is <strong>$1,400.00</strong> per month. Tenants may elect any of the rent-reduction options below. Each reduction is paired with a specific responsibility Tenants take on. <strong>If Landlord must perform the responsibility because Tenants fail to do so, Landlord may revoke that reduction going forward and back-charge the reasonable cost of performing the task. Revocation will be documented in writing.</strong></p>
+
+    <table class="discount-tbl">
+        <thead>
+            <tr>
+                <th style="width:22px;"></th>
+                <th>Option &amp; Responsibility</th>
+                <th style="width:90px;text-align:right;">Monthly Credit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="checkbox checked"></span></td>
+                <td><strong>12-month lease commitment.</strong> Tenants commit to the full 12-month term. Early termination forfeits this discount and any remaining months of the credit are back-charged.</td>
+                <td style="text-align:right;font-weight:bold;">−$150.00</td>
+            </tr>
+            <tr>
+                <td><span class="checkbox"></span></td>
+                <td><strong>ACH autopay on the 1st.</strong> Tenants maintain an active ACH autopay authorization scheduled for the 1st of each month. If autopay is cancelled or fails two consecutive months, this discount is revoked going forward.</td>
+                <td style="text-align:right;font-weight:bold;">−$25.00</td>
+            </tr>
+            <tr>
+                <td><span class="checkbox"></span></td>
+                <td><strong>Yard mowing April–October.</strong> Tenants mow and trim the yard at least every two weeks during the growing season. If Landlord must arrange mowing because grass exceeds 8 inches, this discount is revoked and the mowing cost is back-charged.</td>
+                <td style="text-align:right;font-weight:bold;">−$50.00</td>
+            </tr>
+            <tr>
+                <td><span class="checkbox"></span></td>
+                <td><strong>Snow removal.</strong> Tenants clear the driveway and walkways within 24 hours of any snowfall of 2 inches or more. If Landlord must arrange clearing, this discount is revoked and the clearing cost is back-charged.</td>
+                <td style="text-align:right;font-weight:bold;">−$50.00</td>
+            </tr>
+            <tr>
+                <td><span class="checkbox"></span></td>
+                <td><strong>Minor repairs and consumables under $50.</strong> Tenants handle light bulbs, HVAC filter changes, minor caulking, and other repairs under $50 without invoicing Landlord. If unaddressed items become larger repairs, this discount is revoked.</td>
+                <td style="text-align:right;font-weight:bold;">−$25.00</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="font-size:10pt;color:#555;font-style:italic;margin-bottom:10px;">The 12-month lease credit is pre-elected as a condition of the 12-month term. Tenants may check any additional boxes above at signing.</p>
+
+    <div class="rent-summary">
+        <div>
+            <div class="label">Base Rent</div>
+            <div class="value">$1,400</div>
+        </div>
+        <div>
+            <div class="label">Elected Reductions</div>
+            <div class="value">−$_________</div>
+        </div>
+        <div>
+            <div class="label">Effective Monthly Rent</div>
+            <div class="value">$__________</div>
+        </div>
+    </div>
+
+    <p>Rent is payable in advance on or before the <strong>1st day</strong> of each calendar month. Payments may be made by ACH, check, PayPal, or Venmo to Landlord. Any check returned unpaid shall carry a $30 returned-check fee.</p>
+    <div class="callout">
+        <strong>Colorado Grace Period &amp; Late Fee (C.R.S. § 38-12-105):</strong> Rent is considered late if not received by the 7th day of the month. A late fee of $50 (or 5% of the past-due rent, whichever is greater) may be assessed thereafter.
+    </div>
+
+    <h2>5. Security Deposit &amp; Pet Deposit</h2>
+    <p>Tenants shall deposit with Landlord the sum of <strong>$1,400.00</strong> as a security deposit prior to occupancy, together with an additional <strong>$300.00</strong> pet deposit if applicable. Landlord shall return the security deposit, less any lawful deductions and with an itemized statement, within <strong>30 days</strong> after Tenants vacate the Premises, in accordance with C.R.S. § 38-12-103.</p>
+
+    <h2>6. Utilities</h2>
+    <p>Landlord shall pay for electricity, propane, water, sewer, and trash service to the Premises. Historical monthly averages: <strong>electricity ~$150/mo year-round</strong> and <strong>propane ~$250/mo during heating season (November–March)</strong>. If Tenants' usage exceeds 20% above these averages in any calendar month, the parties agree to renegotiate the utility allowance in good faith or Landlord may back-charge the excess.</p>
+
+    <h2>7. Occupants &amp; Use</h2>
+    <p>The Premises shall be occupied only by Jeremy Kinzie, Amy Kinzie, and their minor children. Guests staying longer than 14 consecutive days require Landlord's prior written consent. The Premises shall be used only as a private residence.</p>
+
+    <h2>8. Pets</h2>
+    <p>Tenants may keep pets identified on the pet addendum below. Pet deposit is required and refundable, less any pet-related damage. Tenants are responsible for all pet-related damage and for prompt cleanup of the yard.</p>
+    <p style="margin-top:6px;font-size:10.5pt;"><strong>Pet(s) at time of signing:</strong> ______________________________________________________________________</p>
+
+    <h2>9. Maintenance &amp; Yard Care</h2>
+    <p>Tenants shall keep the Premises clean, sanitary, and in good repair, and shall promptly report any needed repairs to Landlord. Landlord shall be responsible for major systems (roof, plumbing, electrical, heating). Unless Tenants have elected the "minor repairs" rent-reduction option in Section 4, Tenants are responsible only for reporting issues; if elected, Tenants shall handle light bulbs, HVAC filters, and consumables. Regardless of election, Tenants shall not modify the Premises without Landlord's written consent.</p>
+
+    <h2>10. Warranty of Habitability</h2>
+    <p>Landlord warrants the Premises to be fit for human habitation as required by C.R.S. § 38-12-503. Tenants may report uninhabitable conditions to Landlord at office@m77ag.com, by phone at 970-571-1015, or in writing to M77 AG, Sedgwick, CO 80749, and shall provide reasonable opportunity for repair.</p>
+
+    <h2>11. Access by Landlord</h2>
+    <p>Landlord may enter the Premises with reasonable notice (typically 24 hours except in emergencies) to inspect, make repairs, or show the property to prospective tenants or buyers.</p>
+
+    <h2>12. Colorado Required Disclosures</h2>
+
+    <div class="discl">
+        <strong>Radon Disclosure.</strong> Colorado is a Zone 1 radon state and every home in Colorado has the potential for elevated radon levels. Landlord has not conducted a radon test on the Premises. Tenants are encouraged to test for radon and may receive a copy of any test results known to Landlord upon request. See the EPA Citizen's Guide to Radon.
+    </div>
+    <div class="discl">
+        <strong>Lead-Based Paint Disclosure.</strong> Landlord has no knowledge of lead-based paint or lead-based paint hazards in the Premises and has no reports or records pertaining to same. Tenants acknowledge receipt of the federal pamphlet "Protect Your Family from Lead in Your Home."
+    </div>
+    <div class="discl">
+        <strong>Bed Bug Disclosure (C.R.S. § 38-12-1004).</strong> Landlord discloses that the Premises has not, to Landlord's knowledge, had a bed bug infestation within the last 8 months, and the dwelling unit immediately adjacent to the Premises has not, to Landlord's knowledge, had a bed bug infestation within the last 8 months, unless the infestation has been remediated.
+    </div>
+    <div class="discl">
+        <strong>Reporting Uninhabitable Conditions.</strong> Tenants may report an uninhabitable condition of the Premises to Landlord in writing.<br>
+        <strong>Email:</strong> office@m77ag.com &nbsp;·&nbsp; <strong>Phone:</strong> 970-571-1015 &nbsp;·&nbsp; <strong>Mail:</strong> M77 AG, Sedgwick, CO 80749
+    </div>
+    <div class="disclosure-strip">
+        <span class="checkbox"></span> Tenants acknowledge receipt and review of the above Colorado-required disclosures.
+    </div>
+
+    <h2>13. Renters Insurance &amp; Limitation of Liability</h2>
+    <p><strong>Landlord is not responsible for Tenants' personal belongings.</strong> Landlord shall not be liable for loss, damage, or theft of Tenants' personal property, whether caused by fire, water, wind, theft, vandalism, mechanical failure, or any other cause, except to the extent required by law. Landlord's insurance covers only the building structure and Landlord's property. Tenants are strongly encouraged to carry a renters insurance policy.</p>
+
+    <div class="discl" style="background:#fff;">
+        <strong>Tenant Renters Insurance Declaration (check one):</strong>
+        <div style="margin-top:6px;">
+            <div style="margin-bottom:4px;"><span class="checkbox"></span> <strong>YES</strong> — Tenants currently carry a renters insurance policy.</div>
+            <div style="margin-left:22px;margin-bottom:8px;font-size:10.5pt;">
+                Carrier: ___________________________________ &nbsp;&nbsp; Policy #: _____________________________
+            </div>
+            <div><span class="checkbox"></span> <strong>NO</strong> — Tenants do NOT currently carry a renters insurance policy and choose to self-insure.</div>
+        </div>
+    </div>
+    <div class="disclosure-strip">
+        <span class="checkbox"></span> Tenants acknowledge that Landlord is not liable for loss, damage, or theft of Tenants' personal property, regardless of insurance status.
+    </div>
+
+    <h2>14. Default &amp; Remedies</h2>
+    <p>In the event Tenants fail to pay rent when due or otherwise breach this Agreement, Landlord may proceed with remedies available under Colorado law, including but not limited to service of a demand for compliance or possession and forcible entry and detainer proceedings.</p>
+
+    <h2>15. Governing Law &amp; Venue</h2>
+    <p>This Agreement is governed by the laws of the State of Colorado. Any disputes shall be resolved in the courts of Sedgwick County, Colorado.</p>
+
+    <h2>16. Entire Agreement</h2>
+    <p>This Agreement constitutes the entire understanding between the parties. Any modification must be in writing and signed by both parties. This Agreement may be signed in counterparts and by electronic signature, each of which shall have the same legal effect as an original handwritten signature pursuant to the Colorado Uniform Electronic Transactions Act, C.R.S. § 24-71.3-101 et seq.</p>
+
+    <h2>17. Signatures</h2>
+    <p style="margin-bottom:14px;">By signing below, each party acknowledges they have read, understood, and agree to be bound by the terms of this Residential Lease Agreement.</p>
+
+    <div class="sig-block">
+        <div class="sig-role">Tenant — Jeremy Kinzie</div>
+        <div class="sig-line">
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Signature</div>
+            </div>
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Date</div>
+            </div>
+        </div>
+        <div class="sig-line" style="margin-top:6px;">
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Printed Name</div>
+            </div>
+            <div></div>
+        </div>
+    </div>
+
+    <div class="sig-block">
+        <div class="sig-role">Tenant — Amy Kinzie</div>
+        <div class="sig-line">
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Signature</div>
+            </div>
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Date</div>
+            </div>
+        </div>
+        <div class="sig-line" style="margin-top:6px;">
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Printed Name</div>
+            </div>
+            <div></div>
+        </div>
+    </div>
+
+    <div class="sig-block">
+        <div class="sig-role">Landlord — M77 AG</div>
+        <div class="sig-line">
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Signature (Kyle McConnell, authorized signatory)</div>
+            </div>
+            <div>
+                <div class="sig-field"></div>
+                <div class="sig-field-label">Date</div>
+            </div>
+        </div>
+    </div>
+
+    <p style="text-align:center;font-size:9pt;color:#888;margin-top:30px;">M77 AG · Sedgwick County, Colorado · m77ag.com · office@m77ag.com · 970-571-1015</p>
+
+</div>
+</body>
+</html>
