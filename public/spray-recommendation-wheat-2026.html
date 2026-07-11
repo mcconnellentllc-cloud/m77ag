@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spray Recommendation — 2026 Post-Wheat Burndown | M77 AG</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #1a1a1a;
+            background: #eee;
+            font-size: 11pt;
+            line-height: 1.4;
+        }
+        .page {
+            max-width: 8.5in;
+            margin: 20px auto;
+            background: #fff;
+            padding: 0.55in 0.65in;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        .doc-header {
+            border-bottom: 3px solid #2d5016;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+        .brand {
+            font-size: 10pt;
+            letter-spacing: 4px;
+            color: #d4a54a;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        h1 {
+            font-size: 20pt;
+            color: #2d5016;
+            font-weight: 700;
+        }
+        .subtitle {
+            font-size: 10pt;
+            color: #666;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .header-meta {
+            text-align: right;
+            font-size: 9pt;
+            color: #666;
+        }
+        .header-meta strong { color: #2d5016; text-transform: uppercase; letter-spacing: 1px; font-size: 8.5pt; display: block; }
+        h2 {
+            font-size: 11.5pt;
+            color: #2d5016;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 1.5px solid #cfc9b8;
+            padding-bottom: 4px;
+            margin: 18px 0 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10.5pt;
+            margin-bottom: 10px;
+        }
+        th, td {
+            border: 1px solid #cfc9b8;
+            padding: 6px 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background: #2d5016;
+            color: #fff;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        tr.total-row td {
+            background: #ecf5e6;
+            font-weight: bold;
+            border-top: 2px solid #2d5016;
+        }
+        tr.subtotal td {
+            background: #f9f7ec;
+            font-weight: 600;
+            border-top: 1px solid #cfc9b8;
+        }
+        .callout {
+            background: #f9f5e6;
+            border-left: 4px solid #d4a54a;
+            padding: 10px 14px;
+            font-size: 10.5pt;
+            margin: 12px 0;
+        }
+        .warn {
+            background: #fdecea;
+            border-left: 4px solid #c62828;
+            padding: 10px 14px;
+            font-size: 10.5pt;
+            margin: 12px 0;
+        }
+        .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .total-card {
+            background: #ecf5e6;
+            border: 1.5px solid #2d5016;
+            padding: 10px 12px;
+            text-align: center;
+        }
+        .total-card .label {
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2d5016;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .total-card .value {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .total-card .unit {
+            font-size: 9pt;
+            color: #666;
+            margin-top: 2px;
+        }
+        ol { padding-left: 22px; }
+        ol li { padding: 3px 0; font-size: 10.5pt; }
+        .sig-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .sig-field {
+            border-top: 1px solid #1a1a1a;
+            padding-top: 4px;
+            font-size: 9pt;
+            color: #666;
+            height: 40px;
+            position: relative;
+        }
+        .sig-field-label {
+            position: absolute;
+            top: -34px;
+            left: 0;
+            font-size: 8.5pt;
+            color: #666;
+        }
+        .print-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            padding: 12px 18px;
+            background: #2d5016;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        @media print {
+            body { background: #fff; font-size: 10pt; }
+            .page { box-shadow: none; margin: 0; max-width: none; padding: 0.4in 0.5in; }
+            .print-btn { display: none !important; }
+            table { page-break-inside: avoid; }
+            .totals-grid { page-break-inside: avoid; }
+            h2 { page-break-after: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+
+<div class="page">
+
+    <div class="doc-header">
+        <div>
+            <div class="brand">M77 AG</div>
+            <h1>Spray Recommendation Sheet</h1>
+            <div class="subtitle">2026 Post-Wheat Harvest Burndown · Double-Ground Setup</div>
+        </div>
+        <div class="header-meta">
+            <div style="margin-bottom:6px;"><strong>Prepared</strong>July 11, 2026</div>
+            <div style="margin-bottom:6px;"><strong>Target</strong>Wheat stubble (post-harvest)</div>
+            <div><strong>Season</strong>2026</div>
+        </div>
+    </div>
+
+    <h2>1. Product Mix — Per Acre</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Active Ingredient</th>
+                <th class="num" style="width:100px;">Rate / Acre</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Glyphosate</td>
+                <td>Glyphosate (typically 41% or 48% a.i.)</td>
+                <td class="num">32 oz</td>
+                <td>Broad-spectrum burndown</td>
+            </tr>
+            <tr>
+                <td>Dicamba</td>
+                <td>Dicamba</td>
+                <td class="num">10 oz</td>
+                <td>Broadleaf control, glyphosate-resistant weed cleanup</td>
+            </tr>
+            <tr>
+                <td>2,4-D LV6</td>
+                <td>2,4-D low-volatile ester, 6 lb/gal</td>
+                <td class="num">6 oz</td>
+                <td>Additional broadleaf activity</td>
+            </tr>
+            <tr>
+                <td>Flumi (flumioxazin)</td>
+                <td>Flumioxazin</td>
+                <td class="num">1 oz</td>
+                <td>Residual control on emerging weeds</td>
+            </tr>
+            <tr>
+                <td>Hydrovant</td>
+                <td>Water-conditioning spray adjuvant</td>
+                <td class="num">____ oz</td>
+                <td>Fill per label; typical rate 2–4 oz/ac or 1% v/v</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="callout">
+        <strong>Note on Hydrovant:</strong> This mix specifies Hydrovant as the adjuvant. Confirm the specific product (Hydrovant 100 vs. Hydrovant AMS-Replacement) and follow the label rate. If applying at a fixed 4 oz/ac, total product need = <strong>3,005 oz (≈ 23.5 gal)</strong> across all wheat acres.
+    </div>
+
+    <h2>2. Wheat Fields — 2026</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:44px;">#</th>
+                <th>Farm</th>
+                <th>Field</th>
+                <th>County</th>
+                <th>FSA Farm / Tract</th>
+                <th class="num" style="width:85px;">Acres</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td class="num">1</td><td>LAFARMS</td><td>13.W BAM E</td><td>Logan</td><td>3438 / 3460</td><td class="num">74.90</td></tr>
+            <tr><td class="num">2</td><td>LAFARMS</td><td>36.W POLE RD SEC 15</td><td>Logan</td><td>3438 / —</td><td class="num">78.00</td></tr>
+            <tr><td class="num">3</td><td>KBFARMS</td><td>23.W SW PAULI</td><td>Phillips</td><td>— / —</td><td class="num">65.40</td></tr>
+            <tr><td class="num">4</td><td>KBFARMS</td><td>28.SE MICHAEL</td><td>Sedgwick</td><td>— / —</td><td class="num">67.00</td></tr>
+            <tr><td class="num">5</td><td>HDFARMS</td><td>41.E E/4</td><td>Phillips</td><td>— / —</td><td class="num">78.40</td></tr>
+            <tr><td class="num">6</td><td>HDFARMS</td><td>42.W E/2 N/4</td><td>Phillips</td><td>— / —</td><td class="num">79.10</td></tr>
+            <tr><td class="num">7</td><td>MEFARMS</td><td>54.S PAULS</td><td>Phillips</td><td>— / —</td><td class="num">68.01</td></tr>
+            <tr><td class="num">8</td><td>MEFARMS</td><td>55.N KIRBY HOUSE</td><td>Phillips</td><td>— / —</td><td class="num">82.75</td></tr>
+            <tr><td class="num">9</td><td>A1FARMS</td><td>60.W DAILEYRD</td><td>Logan</td><td>— / —</td><td class="num">78.80</td></tr>
+            <tr><td class="num">10</td><td>A1FARMS</td><td>61.S HIGHLAND E</td><td>Phillips</td><td>— / —</td><td class="num">78.90</td></tr>
+            <tr class="total-row">
+                <td colspan="5"><strong>TOTAL — 10 fields</strong></td>
+                <td class="num"><strong>751.26 ac</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Total Product Requirements — 751.26 ac</h2>
+    <div class="totals-grid">
+        <div class="total-card">
+            <div class="label">Glyphosate</div>
+            <div class="value">24,040</div>
+            <div class="unit">oz &nbsp;·&nbsp; 187.82 gal</div>
+        </div>
+        <div class="total-card">
+            <div class="label">Dicamba</div>
+            <div class="value">7,513</div>
+            <div class="unit">oz &nbsp;·&nbsp; 58.69 gal</div>
+        </div>
+        <div class="total-card">
+            <div class="label">2,4-D LV6</div>
+            <div class="value">4,508</div>
+            <div class="unit">oz &nbsp;·&nbsp; 35.22 gal</div>
+        </div>
+        <div class="total-card">
+            <div class="label">Flumi</div>
+            <div class="value">751.3</div>
+            <div class="unit">oz &nbsp;·&nbsp; 5.87 gal</div>
+        </div>
+        <div class="total-card">
+            <div class="label">Hydrovant</div>
+            <div class="value">____</div>
+            <div class="unit">per rate above</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th class="num">Rate/Ac</th>
+                <th class="num">Total Ounces</th>
+                <th class="num">Total Gallons</th>
+                <th class="num">Total Quarts</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Glyphosate</td>
+                <td class="num">32 oz</td>
+                <td class="num">24,040.32</td>
+                <td class="num">187.82</td>
+                <td class="num">751.26</td>
+                <td>Order in 265 gal totes if possible</td>
+            </tr>
+            <tr>
+                <td>Dicamba</td>
+                <td class="num">10 oz</td>
+                <td class="num">7,512.60</td>
+                <td class="num">58.69</td>
+                <td class="num">234.77</td>
+                <td>Approved formulation only; follow buffer requirements</td>
+            </tr>
+            <tr>
+                <td>2,4-D LV6</td>
+                <td class="num">6 oz</td>
+                <td class="num">4,507.56</td>
+                <td class="num">35.22</td>
+                <td class="num">140.86</td>
+                <td>Low-volatile 6 lb ester</td>
+            </tr>
+            <tr>
+                <td>Flumi (flumioxazin)</td>
+                <td class="num">1 oz</td>
+                <td class="num">751.26</td>
+                <td class="num">5.87</td>
+                <td class="num">23.48</td>
+                <td>Provides residual — activate w/ ½"+ rain</td>
+            </tr>
+            <tr>
+                <td>Hydrovant</td>
+                <td class="num">____ oz</td>
+                <td class="num">____</td>
+                <td class="num">____</td>
+                <td class="num">____</td>
+                <td>Per label rate / carrier volume</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Tank-Mix Order (W-A-L-E-S)</h2>
+    <p>Fill spray tank to ⅓ full with clean water and start agitation. Add products in this order, allowing each to disperse fully before adding the next:</p>
+    <ol>
+        <li><strong>W</strong> — Water (½ tank, agitator running).</li>
+        <li><strong>A</strong> — <strong>Hydrovant</strong> (adjuvant / water conditioner — added first so it can precondition the water).</li>
+        <li><strong>L</strong> — <strong>Flumi</strong> (dry/liquid formulation — add before EC herbicides).</li>
+        <li><strong>E</strong> — <strong>Dicamba</strong>, then <strong>2,4-D LV6</strong> (emulsifiable concentrates).</li>
+        <li><strong>S</strong> — <strong>Glyphosate</strong> (soluble liquid — added last).</li>
+        <li>Top off with the remaining water. Maintain agitation until spray-out.</li>
+    </ol>
+
+    <h2>5. Application &amp; Safety Notes</h2>
+    <div class="warn">
+        <strong>Dicamba Buffer Requirement.</strong> Do not apply within the label-required downwind buffer of dicamba-sensitive crops (soybeans, tomatoes, grapes, orchards). Consult the current dicamba label for the specific buffer distance and wind-speed restrictions in effect.
+    </div>
+    <ol>
+        <li><strong>Wind:</strong> 3–10 mph. Do not apply during temperature inversions (typical dawn/dusk when smoke or dust hangs level in the air).</li>
+        <li><strong>Temperature:</strong> Above 90°F increases volatility risk for dicamba and 2,4-D — schedule for cooler parts of the day.</li>
+        <li><strong>Nozzle / droplet size:</strong> Use a labeled low-drift nozzle (e.g., TTI or ULD) at coarse-to-extremely-coarse droplet spectrum. Boom pressure per nozzle chart.</li>
+        <li><strong>Carrier volume:</strong> Minimum 10 gal/ac by ground; 15 gal/ac preferred for full residual activation of flumi.</li>
+        <li><strong>PPE:</strong> Long sleeves/pants, chemical-resistant gloves, protective eyewear during mixing/loading. Refer to individual product labels for full PPE.</li>
+        <li><strong>REI / PHI:</strong> Follow the most restrictive re-entry interval among products in the mix.</li>
+        <li><strong>Recordkeeping:</strong> Record application date, wind, temperature, rate, and applicator initials for each field in the spray log.</li>
+        <li><strong>Cleanout:</strong> Triple-rinse tank and nozzles before switching to any sensitive crop (soybeans, alfalfa, sunflowers). Use ammonia-based tank cleaner after dicamba.</li>
+    </ol>
+
+    <h2>6. Application Log</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th class="num">Acres</th>
+                <th style="width:110px;">Date Applied</th>
+                <th style="width:70px;">Wind</th>
+                <th style="width:70px;">Temp</th>
+                <th>Applicator</th>
+                <th style="width:60px;">Initials</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>13.W BAM E</td><td class="num">74.90</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>36.W POLE RD SEC 15</td><td class="num">78.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>23.W SW PAULI</td><td class="num">65.40</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>28.SE MICHAEL</td><td class="num">67.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>41.E E/4</td><td class="num">78.40</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>42.W E/2 N/4</td><td class="num">79.10</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>54.S PAULS</td><td class="num">68.01</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>55.N KIRBY HOUSE</td><td class="num">82.75</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>60.W DAILEYRD</td><td class="num">78.80</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>61.S HIGHLAND E</td><td class="num">78.90</td><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+    </table>
+
+    <div class="sig-row">
+        <div>
+            <div class="sig-field">
+                <div class="sig-field-label">Approved by</div>
+            </div>
+        </div>
+        <div>
+            <div class="sig-field">
+                <div class="sig-field-label">Date</div>
+            </div>
+        </div>
+    </div>
+
+    <p style="text-align:center;font-size:9pt;color:#888;margin-top:20px;">M77 AG · Sedgwick County, Colorado · office@m77ag.com · 970-571-1015 · Read and follow all product labels. This document is a planning aid, not a substitute for the product label.</p>
+
+</div>
+</body>
+</html>
