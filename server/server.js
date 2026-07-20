@@ -238,6 +238,10 @@ app.get('/admin/farming/seed-orders', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farming/seed-orders.html'));
 });
 
+app.get('/admin/farming/spray-cards', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming/spray-cards.html'));
+});
+
 // User routes
 app.get('/user/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/user/dashboard.html'));
