@@ -339,7 +339,7 @@ const fields = [
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.50, taxYear: 2026, taxingAuthority: 'Phillips County' } },
 
-  { client: 'MCC. ENT.', farm: 'HDFARMS', field: '44.W S. TOWN', legal: 'NE4 32-8-47', fsaFarm: '2522', tract: '1626', acres: 77.50, crop2026: 'FALLOW',
+  { client: 'MCC. ENT.', farm: 'HDFARMS', field: '44.W S. TOWN', legal: 'NE4 32-8-47', fsaFarm: '2522', tract: '1626', acres: 77.50, crop2026: 'SORGHUM SUDAN',
     county: 'Phillips', section: '32', township: '8N', range: '47W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.50, taxYear: 2026, taxingAuthority: 'Phillips County' } },
