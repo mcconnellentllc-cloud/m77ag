@@ -238,6 +238,10 @@ app.get('/admin/farming/seed-orders', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farming/seed-orders.html'));
 });
 
+app.get('/admin/farming/spray-cards', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/farming/spray-cards.html'));
+});
+
 // User routes
 app.get('/user/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/user/dashboard.html'));
@@ -271,6 +275,11 @@ app.get('/farmer', (req, res) => {
 // Admin partner management
 app.get('/admin/partners', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/partners.html'));
+});
+
+// Public farms page
+app.get('/farms', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/farms.html'));
 });
 
 // Farm projections
