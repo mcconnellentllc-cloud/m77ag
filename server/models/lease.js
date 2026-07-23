@@ -128,6 +128,9 @@ const leaseSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  // Early termination upon sale — if set, landlord may terminate the
+  // lease with this many days written notice if the property is sold.
+  saleTerminationNoticeDays: Number,
   // Terms and conditions
   specialTerms: String,
   petPolicy: String,

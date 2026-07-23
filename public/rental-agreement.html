@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residential Lease Agreement | M77 AG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #1a1a1a;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .doc {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 50px 60px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            border-radius: 8px;
+        }
+        .doc-header {
+            text-align: center;
+            border-bottom: 3px solid #2d5016;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .doc-header .brand {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #d4a54a;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+        .doc-header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px;
+            color: #2d5016;
+            margin-bottom: 4px;
+        }
+        .doc-header .subtitle {
+            color: #666;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .lease-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #f8f6f2;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .lease-meta strong { color: #2d5016; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #2d5016;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 1px solid #e0d9c8;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+        }
+        .section p, .section li {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #2a2a2a;
+        }
+        .section ol, .section ul { padding-left: 22px; }
+        .section li { margin-bottom: 8px; }
+        .highlight {
+            background: #fff8e6;
+            padding: 12px 16px;
+            border-left: 3px solid #d4a54a;
+            font-size: 13px;
+            margin: 12px 0;
+            border-radius: 3px;
+        }
+        .parties-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        .party-card {
+            border: 1px solid #e0d9c8;
+            border-radius: 6px;
+            padding: 16px;
+            background: #fafaf7;
+        }
+        .party-card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2d5016;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .party-card .name { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+        .party-card .contact { font-size: 13px; color: #555; }
+        .disclosure {
+            background: #f8f6f2;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .disclosure h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .ack-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            border: 1px solid #e0d9c8;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .ack-row input[type="checkbox"] { width: 18px; height: 18px; }
+        .ack-row label { font-size: 13px; cursor: pointer; flex: 1; }
+
+        /* Signature Blocks */
+        .signature-block {
+            border: 2px solid #e0d9c8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fafaf7;
+        }
+        .signature-block.signed {
+            background: #ecf5e6;
+            border-color: #2d5016;
+        }
+        .sig-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .sig-header h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .sig-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #e0e0e0;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .sig-status.done { background: #2d5016; color: #fff; }
+        .sig-canvas-wrap {
+            background: #fff;
+            border: 1px dashed #b8b0a0;
+            border-radius: 4px;
+            position: relative;
+            height: 140px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .sig-canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: crosshair;
+            display: block;
+        }
+        .sig-canvas-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #b8b0a0;
+            font-size: 13px;
+            pointer-events: none;
+            font-style: italic;
+        }
+        .sig-canvas-wrap.has-ink .sig-canvas-hint { display: none; }
+        .sig-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        .sig-form label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .sig-form input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+        .sig-form input:focus { border-color: #2d5016; outline: none; }
+        .btn {
+            padding: 12px 24px;
+            background: #2d5016;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover { background: #1f3a0e; }
+        .btn:disabled { background: #b8b0a0; cursor: not-allowed; }
+        .btn-secondary {
+            background: #fff;
+            color: #666;
+            border: 1px solid #ccc;
+            padding: 8px 14px;
+            font-size: 12px;
+        }
+        .btn-secondary:hover { background: #f5f3f0; color: #1a1a1a; }
+        .signed-preview {
+            background: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            border: 1px solid #cde0be;
+        }
+        .signed-preview img {
+            max-height: 80px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .signed-preview .signed-meta {
+            font-size: 12px;
+            color: #555;
+        }
+        .signed-preview .signed-meta strong { color: #2d5016; }
+
+        /* States */
+        .loading, .error, .success-banner {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .loading { color: #666; }
+        .error { color: #b3261e; }
+        .success-banner {
+            background: linear-gradient(135deg, #2d5016 0%, #1a3009 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .success-banner h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 700px) {
+            body { padding: 8px; }
+            .doc { padding: 24px 20px; }
+            .lease-meta, .parties-grid { grid-template-columns: 1fr; }
+            .sig-form { grid-template-columns: 1fr; }
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .doc { box-shadow: none; padding: 30px; }
+            .toolbar, .btn, .btn-secondary { display: none !important; }
+            .sig-canvas-wrap { border: 1px solid #999; }
+            .signature-block { page-break-inside: avoid; }
+            .section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="doc" id="doc">
+        <div class="loading" id="loading">Loading lease agreement...</div>
+    </div>
+
+    <template id="tpl-agreement">
+        <div class="toolbar">
+            <button class="btn btn-secondary" onclick="window.print()">Print / Save as PDF</button>
+        </div>
+
+        <div class="doc-header">
+            <div class="brand">M77 AG</div>
+            <h1>Residential Lease Agreement</h1>
+            <div class="subtitle">State of Colorado</div>
+        </div>
+
+        <div class="lease-meta" id="leaseMeta"></div>
+
+        <div class="section">
+            <h2>1. Parties</h2>
+            <div class="parties-grid" id="partiesGrid"></div>
+        </div>
+
+        <div class="section">
+            <h2>2. Premises</h2>
+            <p id="premisesText"></p>
+        </div>
+
+        <div class="section">
+            <h2>3. Term of Lease</h2>
+            <p id="termText"></p>
+        </div>
+
+        <div class="section">
+            <h2>4. Rent &amp; Rent-Reduction Options</h2>
+            <p id="rentBaseText"></p>
+            <p>Tenants may elect any of the rent-reduction options below. Each reduction is paired with a specific responsibility Tenants take on. <strong>If Landlord must perform the responsibility because Tenants fail to do so, Landlord may revoke that reduction going forward and back-charge the reasonable cost of performing the task.</strong> Revocation is documented in writing and provided to Tenants.</p>
+
+            <div id="discountPicker" style="display:flex;flex-direction:column;gap:10px;margin:14px 0;"></div>
+
+            <div id="rentCalc" style="background:#ecf5e6;border:1px solid #2d5016;border-radius:8px;padding:18px 22px;margin:14px 0;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:14px;">
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5016;font-weight:600;margin-bottom:4px;">Base Rent</div>
+                        <div id="calcBase" style="font-family:'Oswald',sans-serif;font-size:24px;color:#1a1a1a;"></div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#2d5016;font-weight:600;margin-bottom:4px;">Total Reductions</div>
+                        <div id="calcDiscounts" style="font-family:'Oswald',sans-serif;font-size:24px;color:#2d5016;"></div>
+                    </div>
+                </div>
+                <hr style="margin:14px 0;border:none;border-top:1px solid #cde0be;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#2d5016;font-weight:700;">Effective Monthly Rent</div>
+                    <div id="calcTotal" style="font-family:'Oswald',sans-serif;font-size:32px;color:#2d5016;"></div>
+                </div>
+            </div>
+
+            <p>Rent is payable in advance on or before the <strong>1st day</strong> of each calendar month. Payments may be made by ACH, check, PayPal, or Venmo to Landlord. Any check returned unpaid shall carry a $30 returned-check fee in addition to any late fees.</p>
+            <div class="highlight">
+                <strong>Colorado Grace Period &amp; Late Fee:</strong> Rent is considered late if not received by the 7th day of the month. A late fee of $50 (or 5% of the past-due rent, whichever is greater) may be assessed thereafter, consistent with C.R.S. § 38-12-105.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>5. Security Deposit</h2>
+            <p id="depositText"></p>
+            <p>Landlord shall return the security deposit, less any lawful deductions and with an itemized statement, within 30 days after Tenant vacates the Premises, in accordance with C.R.S. § 38-12-103.</p>
+        </div>
+
+        <div class="section">
+            <h2>6. Utilities</h2>
+            <p id="utilitiesText"></p>
+        </div>
+
+        <div class="section">
+            <h2>7. Occupants &amp; Use</h2>
+            <p>The Premises shall be occupied only by the Tenants named in this Agreement and their minor children. Guests staying longer than 14 consecutive days require Landlord's prior written consent. The Premises shall be used only as a private residence.</p>
+        </div>
+
+        <div class="section">
+            <h2>8. Pets</h2>
+            <p id="petPolicyText"></p>
+        </div>
+
+        <div class="section">
+            <h2>9. Maintenance &amp; Yard Care</h2>
+            <p id="specialTermsText"></p>
+            <p>Tenant shall keep the Premises in a clean and sanitary condition and shall promptly report any needed repairs to Landlord. Landlord shall be responsible for major systems (roof, plumbing, electrical, heating). Tenant is responsible for replacing light bulbs, HVAC filters, and minor consumables.</p>
+        </div>
+
+        <div class="section">
+            <h2>10. Warranty of Habitability</h2>
+            <p>Landlord warrants the Premises to be fit for human habitation as required by C.R.S. § 38-12-503. Tenant may report uninhabitable conditions to Landlord at the address and email listed in Section 12 and shall provide reasonable opportunity for repair.</p>
+        </div>
+
+        <div class="section">
+            <h2>11. Access by Landlord</h2>
+            <p>Landlord may enter the Premises with reasonable notice (typically 24 hours except in emergencies) to inspect, make repairs, or show the property to prospective tenants or buyers.</p>
+        </div>
+
+        <div class="section">
+            <h2>12. Colorado Required Disclosures</h2>
+
+            <div class="disclosure">
+                <h3>Radon Disclosure</h3>
+                <p>Colorado is a Zone 1 radon state and every home in Colorado has the potential for elevated radon levels. Landlord has not conducted a radon test on the Premises. Tenants are encouraged to test for radon and may receive a copy of any test results known to Landlord upon request. See the EPA Citizen's Guide to Radon for more information.</p>
+            </div>
+
+            <div class="disclosure">
+                <h3>Lead-Based Paint Disclosure</h3>
+                <p>This property was constructed prior to 1978 lead-paint regulation applicability. Landlord has no knowledge of lead-based paint or lead-based paint hazards in the Premises and has no reports or records pertaining to same. Tenants acknowledge receipt of the federal pamphlet "Protect Your Family from Lead in Your Home."</p>
+            </div>
+
+            <div class="disclosure">
+                <h3>Bed Bug Disclosure (C.R.S. § 38-12-1004)</h3>
+                <p>Landlord discloses that (a) the Premises has not, to Landlord's knowledge, had a bed bug infestation within the last 8 months, and (b) the dwelling unit immediately adjacent to the Premises has not, to Landlord's knowledge, had a bed bug infestation within the last 8 months, unless the infestation has been remediated.</p>
+            </div>
+
+            <div class="disclosure">
+                <h3>Reporting Uninhabitable Conditions</h3>
+                <p>Tenants may report an uninhabitable condition of the Premises to Landlord in writing. Notice may be given to:<br>
+                <strong>Email:</strong> office@m77ag.com &nbsp;•&nbsp; <strong>Phone:</strong> 970-571-1015 &nbsp;•&nbsp; <strong>Mail:</strong> M77 AG, Sedgwick, CO 80749</p>
+            </div>
+
+            <div class="ack-row">
+                <input type="checkbox" id="ackDisclosures">
+                <label for="ackDisclosures">Tenants acknowledge receipt and review of the above Colorado-required disclosures.</label>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>13. Renters Insurance &amp; Limitation of Liability</h2>
+            <p><strong>Landlord is not responsible for Tenants' personal belongings.</strong> Landlord shall not be liable for loss, damage, or theft of Tenants' personal property, whether caused by fire, water, wind, theft, vandalism, mechanical failure, or any other cause, except to the extent required by law. Landlord's insurance covers only the building structure and Landlord's property.</p>
+            <p>Tenants are strongly encouraged to carry a renters insurance policy that provides personal property coverage and personal liability coverage. Tenants shall declare below whether such a policy is in force at the time of signing.</p>
+
+            <div class="disclosure" style="background:#fff;border:1px solid #e0d9c8;">
+                <h3>Tenant Renters Insurance Declaration</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+                    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px;border:1px solid #ddd;border-radius:4px;background:#fafaf7;">
+                        <input type="radio" name="hasInsurance" value="yes" id="insYes" style="margin-top:3px;">
+                        <span style="font-size:13px;">
+                            <strong>Yes — Tenants currently carry a renters insurance policy.</strong>
+                            <div id="insDetailsWrap" style="display:none;margin-top:10px;">
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                    <input type="text" id="insCarrier" placeholder="Insurance carrier (e.g. State Farm)" style="padding:8px;border:1px solid #ccc;border-radius:3px;font-size:13px;">
+                                    <input type="text" id="insPolicy" placeholder="Policy number (optional)" style="padding:8px;border:1px solid #ccc;border-radius:3px;font-size:13px;">
+                                </div>
+                            </div>
+                        </span>
+                    </label>
+                    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px;border:1px solid #ddd;border-radius:4px;background:#fafaf7;">
+                        <input type="radio" name="hasInsurance" value="no" id="insNo" style="margin-top:3px;">
+                        <span style="font-size:13px;">
+                            <strong>No — Tenants do NOT currently carry a renters insurance policy.</strong>
+                            Tenants acknowledge they are choosing to self-insure their personal belongings and personal liability, and understand that Landlord's insurance does not cover their property or any personal-liability claims against them.
+                        </span>
+                    </label>
+                </div>
+                <div class="ack-row" style="margin-top:14px;">
+                    <input type="checkbox" id="ackInsuranceWaiver">
+                    <label for="ackInsuranceWaiver">Tenants acknowledge that Landlord is not liable for loss, damage, or theft of Tenants' personal property, regardless of insurance status.</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>14. Default &amp; Remedies</h2>
+            <p>In the event Tenant fails to pay rent when due or otherwise breaches this Agreement, Landlord may proceed with remedies available under Colorado law, including but not limited to the service of a demand for compliance or possession and forcible entry and detainer proceedings.</p>
+        </div>
+
+        <div class="section" id="saleTerminationSection" style="display:none;">
+            <h2>15. Early Termination Upon Sale of Property</h2>
+            <p id="saleTerminationText"></p>
+            <p>If Landlord exercises this right, Tenants shall vacate the Premises in broom-clean condition by the effective date stated in the notice. Landlord shall refund the security deposit (less any lawful deductions) within 30 days of vacating, consistent with C.R.S. § 38-12-103. Tenants shall not be liable for rent beyond the effective termination date.</p>
+        </div>
+
+        <div class="section">
+            <h2 id="govLawHeading">16. Governing Law</h2>
+            <p>This Agreement is governed by the laws of the State of Colorado. Any disputes shall be resolved in the courts of Sedgwick County, Colorado.</p>
+        </div>
+
+        <div class="section">
+            <h2 id="entireAgreementHeading">17. Entire Agreement</h2>
+            <p>This Agreement constitutes the entire understanding between the parties. Any modification must be in writing and signed by both parties. Electronic signatures affixed below are intended to have the same legal effect as handwritten signatures pursuant to the Colorado Uniform Electronic Transactions Act, C.R.S. § 24-71.3-101 et seq.</p>
+        </div>
+
+        <div class="section">
+            <h2 id="signaturesHeading">18. Signatures</h2>
+            <div id="signaturesArea"></div>
+        </div>
+
+        <p style="text-align:center;color:#888;font-size:11px;margin-top:40px;">M77 AG • Sedgwick County, Colorado • m77ag.com</p>
+    </template>
+
+    <script>
+    (function () {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        const asLandlord = params.get('as') === 'landlord';
+        const doc = document.getElementById('doc');
+
+        if (!token) {
+            doc.innerHTML = '<div class="error"><h2>Missing signing link</h2><p>This page requires a valid signing link. Please use the link sent to you.</p></div>';
+            return;
+        }
+
+        let lease;
+
+        function money(n) { return '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 0 }); }
+        function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+        function fmtDate(d) {
+            if (!d) return '';
+            const dt = new Date(d);
+            return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        async function load() {
+            try {
+                const r = await fetch('/api/rentals/sign/' + encodeURIComponent(token));
+                const data = await r.json();
+                if (!data.success) throw new Error(data.message || 'Failed to load');
+                lease = data.lease;
+                render();
+            } catch (e) {
+                doc.innerHTML = '<div class="error"><h2>Unable to load agreement</h2><p>' + esc(e.message) + '</p></div>';
+            }
+        }
+
+        function render() {
+            const tpl = document.getElementById('tpl-agreement').content.cloneNode(true);
+            doc.innerHTML = '';
+            doc.appendChild(tpl);
+
+            const prop = lease.property || {};
+            const addr = prop.address || {};
+            const tenant = lease.tenant || {};
+            const coTenant = (lease.additionalTenants && lease.additionalTenants[0]) || null;
+            const leaseTypeLabel = {
+                'twelve_month': '12-month fixed term',
+                'six_month': '6-month fixed term',
+                'month_to_month': 'Month-to-month'
+            }[lease.leaseType] || lease.leaseType;
+
+            document.getElementById('leaseMeta').innerHTML = `
+                <div><strong>Lease Number</strong>${esc(String(lease._id).slice(-8).toUpperCase())}</div>
+                <div><strong>Agreement Date</strong>${fmtDate(new Date())}</div>
+                <div><strong>Property</strong>${esc(prop.name || '')} — ${esc(addr.street || '')}, ${esc(addr.city || '')}, ${esc(addr.state || '')} ${esc(addr.zip || '')}</div>
+                <div><strong>Lease Type</strong>${esc(leaseTypeLabel)}</div>
+            `;
+
+            document.getElementById('partiesGrid').innerHTML = `
+                <div class="party-card">
+                    <div class="label">Landlord</div>
+                    <div class="name">M77 AG (Kyle McConnell)</div>
+                    <div class="contact">P.O. Box, Sedgwick, CO 80749<br>970-571-1015 • office@m77ag.com</div>
+                </div>
+                <div class="party-card">
+                    <div class="label">Tenants</div>
+                    <div class="name">${esc(tenant.firstName || '')} ${esc(tenant.lastName || '')}${coTenant ? ' &amp; ' + esc(coTenant.name || '') : ''}</div>
+                    <div class="contact">${esc(tenant.phone || '')}<br>${esc(tenant.email || '')}</div>
+                </div>
+            `;
+
+            document.getElementById('premisesText').textContent =
+                `Landlord leases to Tenants the residential property located at ${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zip || ''} (the "Premises"), including all furnishings and appliances therein except as noted below.`;
+
+            document.getElementById('termText').textContent =
+                `The term of this lease begins on ${fmtDate(lease.startDate)} and, unless earlier terminated, ends on ${lease.endDate ? fmtDate(lease.endDate) : 'the date of termination by either party with 30 days written notice (month-to-month)'}. If Tenants remain in possession after expiration without a new signed agreement, tenancy shall continue on a month-to-month basis at the current market rate.`;
+
+            document.getElementById('rentBaseText').innerHTML =
+                `Base rent for the Premises is <strong>${money(lease.baseRent || lease.monthlyRent)}</strong> per month.`;
+
+            renderDiscountPicker();
+
+            document.getElementById('depositText').innerHTML =
+                `Tenants shall deposit with Landlord the sum of <strong>${money(lease.securityDeposit)}</strong> as a security deposit prior to occupancy${lease.petDeposit ? `, together with an additional <strong>${money(lease.petDeposit)}</strong> pet deposit` : ''}.`;
+
+            document.getElementById('utilitiesText').textContent =
+                lease.utilitiesDetails ||
+                (lease.utilitiesIncluded
+                    ? 'All utilities are included in the monthly rent (electricity, propane, water, sewer, and trash).'
+                    : 'Tenants are responsible for all utilities including electricity, gas, water, sewer, and trash.');
+
+            document.getElementById('petPolicyText').textContent =
+                lease.petPolicy || 'No pets allowed without prior written consent of Landlord.';
+
+            document.getElementById('specialTermsText').textContent =
+                lease.specialTerms || '';
+
+            if (lease.saleTerminationNoticeDays) {
+                const days = lease.saleTerminationNoticeDays;
+                document.getElementById('saleTerminationSection').style.display = '';
+                document.getElementById('saleTerminationText').textContent =
+                    'Notwithstanding the term stated in Section 3, Landlord reserves the right to terminate this lease early if Landlord elects to sell the Premises. Landlord shall provide Tenants with no fewer than ' + days + ' days written notice prior to the required vacate date. This notice shall be delivered in writing to Tenants at the Premises address or by email to the address on file.';
+            } else {
+                document.getElementById('govLawHeading').textContent = '15. Governing Law';
+                document.getElementById('entireAgreementHeading').textContent = '16. Entire Agreement';
+                document.getElementById('signaturesHeading').textContent = '17. Signatures';
+            }
+
+            // Restore disclosure acknowledgement state if already saved.
+            const ack = document.getElementById('ackDisclosures');
+            if (lease.disclosures && lease.disclosures.allDisclosuresSignedDate) {
+                ack.checked = true;
+                ack.disabled = true;
+            }
+
+            // Restore renters insurance selection if already saved.
+            const ri = lease.rentersInsurance || {};
+            if (ri.declaredAt) {
+                if (ri.hasPolicy === true) {
+                    document.getElementById('insYes').checked = true;
+                    document.getElementById('insDetailsWrap').style.display = 'block';
+                    if (ri.carrier) document.getElementById('insCarrier').value = ri.carrier;
+                    if (ri.policyNumber) document.getElementById('insPolicy').value = ri.policyNumber;
+                } else if (ri.hasPolicy === false) {
+                    document.getElementById('insNo').checked = true;
+                }
+                document.getElementById('ackInsuranceWaiver').checked = true;
+                // Lock once declared.
+                document.querySelectorAll('[name="hasInsurance"]').forEach(el => el.disabled = true);
+                document.getElementById('insCarrier').disabled = true;
+                document.getElementById('insPolicy').disabled = true;
+                document.getElementById('ackInsuranceWaiver').disabled = true;
+            }
+
+            // Toggle the carrier/policy fields when the tenant selects "Yes".
+            document.getElementById('insYes').addEventListener('change', () => {
+                document.getElementById('insDetailsWrap').style.display = 'block';
+            });
+            document.getElementById('insNo').addEventListener('change', () => {
+                document.getElementById('insDetailsWrap').style.display = 'none';
+            });
+
+            renderSignatures();
+        }
+
+        function renderDiscountPicker() {
+            const picker = document.getElementById('discountPicker');
+            const locked = !!(lease.signatures && lease.signatures.tenantSignedDate);
+            const discounts = lease.discounts || [];
+            if (!discounts.length) { picker.innerHTML = ''; recomputeRentCalc(); return; }
+            picker.innerHTML = discounts.map(d => {
+                const revoked = !!d.revokedAt;
+                const isSelected = d.selected && !revoked;
+                const disabled = locked || revoked;
+                return `
+                    <label style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:${revoked ? '#fbe9e7' : '#fafaf7'};border:1px solid ${isSelected ? '#2d5016' : (revoked ? '#c62828' : '#e0d9c8')};border-radius:6px;cursor:${disabled ? 'not-allowed' : 'pointer'};">
+                        <input type="checkbox" data-discount-code="${esc(d.code)}" ${isSelected ? 'checked' : ''} ${disabled ? 'disabled' : ''} style="margin-top:3px;width:18px;height:18px;">
+                        <div style="flex:1;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;">
+                                <strong style="font-size:14px;color:#2d5016;">${esc(d.label)}</strong>
+                                <span style="font-family:'Oswald',sans-serif;font-size:18px;color:#2d5016;">−${money(d.monthlyValue)}/mo</span>
+                            </div>
+                            <div style="font-size:12px;color:#555;line-height:1.5;">${esc(d.responsibility || '')}</div>
+                            ${revoked ? `<div style="margin-top:8px;padding:8px 10px;background:#fff;border-left:3px solid #c62828;font-size:12px;color:#c62828;"><strong>Revoked ${fmtDate(d.revokedAt)}:</strong> ${esc(d.revokedReason || '')}</div>` : ''}
+                        </div>
+                    </label>
+                `;
+            }).join('');
+            picker.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', recomputeRentCalc);
+            });
+            recomputeRentCalc();
+        }
+
+        function recomputeRentCalc() {
+            const base = Number(lease.baseRent || lease.monthlyRent) || 0;
+            const discounts = lease.discounts || [];
+            let selectedTotal = 0;
+            discounts.forEach(d => {
+                if (d.revokedAt) return;
+                const cb = document.querySelector(`#discountPicker input[data-discount-code="${d.code}"]`);
+                const checked = cb ? cb.checked : d.selected;
+                if (checked) selectedTotal += Number(d.monthlyValue) || 0;
+            });
+            document.getElementById('calcBase').textContent = money(base);
+            document.getElementById('calcDiscounts').textContent = '−' + money(selectedTotal);
+            document.getElementById('calcTotal').textContent = money(Math.max(0, base - selectedTotal));
+        }
+
+        async function lockInDiscounts() {
+            const picker = document.getElementById('discountPicker');
+            if (!picker) return true;
+            const selectedCodes = Array.from(picker.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.dataset.discountCode);
+            const r = await fetch('/api/rentals/sign/' + encodeURIComponent(token) + '/discounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ selectedCodes })
+            });
+            const data = await r.json();
+            if (!data.success) throw new Error(data.message || 'Could not save discount selection');
+            lease = data.lease;
+            return true;
+        }
+
+        function renderSignatures() {
+            const s = lease.signatures || {};
+            const wrap = document.getElementById('signaturesArea');
+            const coTenant = (lease.additionalTenants && lease.additionalTenants[0]) || null;
+            const tenant = lease.tenant || {};
+
+            const blocks = [];
+
+            blocks.push(signatureBlock({
+                role: 'tenant',
+                title: `Tenant — ${tenant.firstName || ''} ${tenant.lastName || ''}`.trim(),
+                signed: !!s.tenantSignedDate,
+                signature: s.tenantSignature,
+                signedName: s.tenantSignedName,
+                signedDate: s.tenantSignedDate,
+                disabled: asLandlord && !s.tenantSignedDate
+            }));
+
+            if (coTenant) {
+                blocks.push(signatureBlock({
+                    role: 'co-tenant',
+                    title: `Co-Tenant — ${coTenant.name}`,
+                    signed: !!s.coTenantSignedDate,
+                    signature: s.coTenantSignature,
+                    signedName: s.coTenantSignedName,
+                    signedDate: s.coTenantSignedDate,
+                    disabled: asLandlord && !s.coTenantSignedDate
+                }));
+            }
+
+            blocks.push(signatureBlock({
+                role: 'landlord',
+                title: 'Landlord — M77 AG (Kyle McConnell)',
+                signed: !!s.landlordSignedDate,
+                signature: s.landlordSignature,
+                signedName: s.landlordSignedName,
+                signedDate: s.landlordSignedDate,
+                disabled: !asLandlord || !s.tenantSignedDate
+            }));
+
+            wrap.innerHTML = blocks.join('');
+
+            // Wire up canvases and submit buttons for any unsigned block.
+            wrap.querySelectorAll('.signature-block').forEach(block => {
+                const role = block.dataset.role;
+                const canvas = block.querySelector('canvas');
+                if (canvas) attachPad(canvas, block);
+                const submitBtn = block.querySelector('[data-submit]');
+                if (submitBtn) submitBtn.addEventListener('click', () => submitSignature(role, block));
+                const clearBtn = block.querySelector('[data-clear]');
+                if (clearBtn) clearBtn.addEventListener('click', () => clearCanvas(canvas, block));
+            });
+
+            // If everything is signed, show a success banner.
+            const bothTenantsSigned = !!s.tenantSignedDate && (!coTenant || !!s.coTenantSignedDate);
+            if (bothTenantsSigned && s.landlordSignedDate) {
+                const banner = document.createElement('div');
+                banner.className = 'success-banner';
+                banner.innerHTML = `
+                    <h2>Lease Fully Executed</h2>
+                    <p>All parties have signed. This agreement is now legally binding.</p>
+                    <p style="opacity:0.85;font-size:13px;margin-top:8px;">Executed on ${fmtDate(s.landlordSignedDate)}</p>
+                `;
+                wrap.prepend(banner);
+            } else if (bothTenantsSigned && !s.landlordSignedDate && !asLandlord) {
+                const banner = document.createElement('div');
+                banner.className = 'success-banner';
+                banner.style.background = 'linear-gradient(135deg, #d4a54a 0%, #a5822f 100%)';
+                banner.innerHTML = `
+                    <h2>Awaiting Landlord Counter-Signature</h2>
+                    <p>Thank you. Both tenants have signed. The landlord will counter-sign shortly and email you an executed copy.</p>
+                `;
+                wrap.prepend(banner);
+            }
+        }
+
+        function signatureBlock(cfg) {
+            if (cfg.signed) {
+                return `
+                    <div class="signature-block signed" data-role="${cfg.role}">
+                        <div class="sig-header">
+                            <h3>${esc(cfg.title)}</h3>
+                            <span class="sig-status done">Signed</span>
+                        </div>
+                        <div class="signed-preview">
+                            ${cfg.signature ? `<img src="${cfg.signature}" alt="Signature">` : ''}
+                            <div class="signed-meta">
+                                <strong>${esc(cfg.signedName || '')}</strong><br>
+                                Signed ${fmtDate(cfg.signedDate)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            if (cfg.disabled) {
+                return `
+                    <div class="signature-block" data-role="${cfg.role}">
+                        <div class="sig-header">
+                            <h3>${esc(cfg.title)}</h3>
+                            <span class="sig-status">${cfg.role === 'landlord' ? 'Awaiting tenant signature' : 'Not yet available'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            return `
+                <div class="signature-block" data-role="${cfg.role}">
+                    <div class="sig-header">
+                        <h3>${esc(cfg.title)}</h3>
+                        <span class="sig-status">Awaiting signature</span>
+                    </div>
+                    <div class="sig-canvas-wrap">
+                        <canvas class="sig-canvas"></canvas>
+                        <div class="sig-canvas-hint">Draw your signature here</div>
+                    </div>
+                    <div class="sig-form">
+                        <div>
+                            <label>Type your full legal name</label>
+                            <input type="text" data-name placeholder="e.g. Jeremy Kinzie">
+                        </div>
+                        <div>
+                            <label>Date</label>
+                            <input type="text" value="${fmtDate(new Date())}" disabled>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button type="button" class="btn btn-secondary" data-clear>Clear</button>
+                            <button type="button" class="btn" data-submit>Sign</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function attachPad(canvas, block) {
+            const ctx = canvas.getContext('2d');
+            const wrap = canvas.parentElement;
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.strokeStyle = '#1a1a1a';
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            let drawing = false;
+            function pos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const t = e.touches ? e.touches[0] : e;
+                return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+            }
+            function start(e) { e.preventDefault(); drawing = true; wrap.classList.add('has-ink'); const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+            function move(e) { if (!drawing) return; e.preventDefault(); const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+            function end(e) { drawing = false; }
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('mousemove', move);
+            canvas.addEventListener('mouseup', end);
+            canvas.addEventListener('mouseleave', end);
+            canvas.addEventListener('touchstart', start, { passive: false });
+            canvas.addEventListener('touchmove', move, { passive: false });
+            canvas.addEventListener('touchend', end);
+        }
+
+        function clearCanvas(canvas, block) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.parentElement.classList.remove('has-ink');
+        }
+
+        function canvasIsEmpty(canvas) {
+            const ctx = canvas.getContext('2d');
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            for (let i = 3; i < data.length; i += 4) if (data[i] !== 0) return false;
+            return true;
+        }
+
+        async function submitSignature(role, block) {
+            const canvas = block.querySelector('canvas');
+            const nameInput = block.querySelector('[data-name]');
+            const submitBtn = block.querySelector('[data-submit]');
+            const typedName = (nameInput.value || '').trim();
+
+            if (canvasIsEmpty(canvas)) return alert('Please draw your signature in the box above.');
+            if (typedName.length < 3) return alert('Please type your full legal name.');
+
+            let rentersInsurance = null;
+            if (role === 'tenant') {
+                const ack = document.getElementById('ackDisclosures');
+                if (!ack.checked) return alert('Please acknowledge the Colorado disclosures before signing.');
+
+                const insYes = document.getElementById('insYes').checked;
+                const insNo = document.getElementById('insNo').checked;
+                const insAck = document.getElementById('ackInsuranceWaiver').checked;
+                if (!insYes && !insNo) {
+                    return alert('Please indicate whether you have renters insurance in Section 13.');
+                }
+                if (!insAck) {
+                    return alert('Please acknowledge the renters insurance liability waiver in Section 13.');
+                }
+                rentersInsurance = {
+                    hasPolicy: insYes,
+                    carrier: insYes ? (document.getElementById('insCarrier').value || '').trim() : '',
+                    policyNumber: insYes ? (document.getElementById('insPolicy').value || '').trim() : '',
+                    liabilityWaiverAcknowledged: true
+                };
+            }
+
+            const signature = canvas.toDataURL('image/png');
+            const endpoint = {
+                'tenant': '/tenant',
+                'co-tenant': '/co-tenant',
+                'landlord': '/landlord'
+            }[role];
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            try {
+                if (role === 'tenant') {
+                    // Lock the discount selection to the effective rent that
+                    // the tenant sees on-screen before capturing the signature.
+                    await lockInDiscounts();
+                }
+                const body = { signature, typedName };
+                if (role === 'tenant') {
+                    body.disclosuresAcknowledged = true;
+                    body.rentersInsurance = rentersInsurance;
+                }
+                const r = await fetch('/api/rentals/sign/' + encodeURIComponent(token) + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await r.json();
+                if (!data.success) throw new Error(data.message || 'Failed to sign');
+                lease = data.lease;
+                renderSignatures();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (e) {
+                alert('Could not record signature: ' + e.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign';
+            }
+        }
+
+        load();
+    })();
+    </script>
+</body>
+</html>
