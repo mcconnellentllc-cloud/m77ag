@@ -178,14 +178,21 @@ async function upsertLease(propertyId, tenantId) {
   });
   if (existing) {
     console.log('Lease already exists:', existing._id.toString(), 'status:', existing.status);
+    let dirty = false;
     if (!existing.signingToken || (existing.signingTokenExpiresAt && existing.signingTokenExpiresAt < new Date())) {
       existing.signingToken = crypto.randomBytes(24).toString('hex');
       const expires = new Date();
       expires.setDate(expires.getDate() + 30);
       existing.signingTokenExpiresAt = expires;
-      await existing.save();
+      dirty = true;
       console.log('Signing token refreshed.');
     }
+    if (existing.saleTerminationNoticeDays !== 60) {
+      existing.saleTerminationNoticeDays = 60;
+      dirty = true;
+      console.log('Added 60-day sale termination notice clause.');
+    }
+    if (dirty) await existing.save();
     return existing;
   }
   const signingToken = crypto.randomBytes(24).toString('hex');
