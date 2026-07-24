@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra Gator Setup Guide - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .back-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .page-eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: #d4a54a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        .toc {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #2d5016;
+        }
+        .toc-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            padding: 6px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+        }
+        .toc li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            color: #d4a54a;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        .toc a {
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2d5016;
+            text-decoration: underline;
+        }
+        section.guide-section {
+            background: white;
+            padding: 28px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        section.guide-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        section.guide-section .section-lede {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        section.guide-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin: 22px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        section.guide-section p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        section.guide-section ul,
+        section.guide-section ol {
+            margin: 0 0 14px 22px;
+            font-size: 15px;
+        }
+        section.guide-section li {
+            margin-bottom: 6px;
+        }
+        .callout {
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .callout-answer {
+            background: #eef6e9;
+            border-left: 4px solid #2d5016;
+        }
+        .callout-answer strong {
+            color: #2d5016;
+        }
+        .callout-warn {
+            background: #fff8e6;
+            border-left: 4px solid #d4a54a;
+        }
+        .callout-warn strong {
+            color: #a37c1c;
+        }
+        .callout-note {
+            background: #f5f3f0;
+            border-left: 4px solid #999;
+        }
+        table.spec {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.spec th,
+        table.spec td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table.spec th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.spec td:first-child {
+            font-weight: 600;
+            width: 40%;
+        }
+        .path {
+            font-family: 'Courier New', monospace;
+            background: #f5f3f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d5016;
+            font-weight: 600;
+        }
+        .digit-key {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 8px 16px;
+            margin: 10px 0 18px;
+            font-size: 14px;
+        }
+        .digit-key .k {
+            font-family: 'Courier New', monospace;
+            background: #2d5016;
+            color: #d4a54a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .print-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        .print-btn:hover {
+            background: #1e3a0e;
+        }
+        .footer-actions {
+            text-align: center;
+            padding: 20px 0;
+        }
+        @media (max-width: 700px) {
+            .header { padding: 12px 16px; }
+            .container { padding: 20px 14px 40px; }
+            .page-title { font-size: 26px; }
+            section.guide-section { padding: 20px 18px; }
+        }
+        @media print {
+            .header, .back-link, .print-btn, .toc { display: none; }
+            body { background: white; }
+            section.guide-section { box-shadow: none; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">M77 AG</div>
+        <a href="/admin/equipment-manager.html" class="back-link">Back to Equipment</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-eyebrow">Ag Chem 1603 Terra Gator Floater &middot; Unit #207</div>
+            <h1 class="page-title">Terra Gator Setup Guide</h1>
+            <p class="page-subtitle">John Deere GreenStar 2630 display &middot; rate controller and application setup</p>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">In This Guide</div>
+            <ol>
+                <li><a href="#control-valve">Control Valve Calibration</a></li>
+                <li><a href="#flowmeter">Flowmeter Calibration (spray volume)</a></li>
+                <li><a href="#implement">Implement and Machine Setup</a></li>
+                <li><a href="#rate">Product, Rate, and Boom Setup</a></li>
+                <li><a href="#field-check">Field Check and Troubleshooting</a></li>
+            </ol>
+        </div>
+
+        <section class="guide-section" id="control-valve">
+            <h2>1. Control Valve Calibration</h2>
+            <p class="section-lede">The Valve Response Number tunes how the control valve reacts to the difference between actual rate and target rate. It does not, by itself, change how many gallons per acre come out the tips.</p>
+
+            <h3>The short answer on higher vs. lower</h3>
+            <div class="callout callout-answer">
+                <p><strong>Higher Valve Response Number = valve moves faster and more aggressively.</strong> Lower number = valve moves slower.</p>
+                <p style="margin-bottom:0;">Neither direction adds spray volume by itself. If the rate is chasing (bouncing above and below target), lower the response. If the rate is slow to catch up when speed changes, raise it.</p>
+            </div>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>If the sprayer is under-applying gallons per acre, this is almost never the valve response number.</strong> Skip to Section 2 (Flowmeter Calibration). That is the number that changes actual output.</p>
+            </div>
+
+            <h3>Where to find it on the 2630</h3>
+            <p>Menu path: <span class="path">Menu &rarr; GreenStar &rarr; Rate Controller &rarr; Setup &rarr; Valve Cal</span></p>
+            <p>The Valve Response Number is a four-digit code. Each digit tunes a different behavior of the servo valve:</p>
+
+            <div class="digit-key">
+                <div class="k">Digit 1</div>
+                <div>Valve backlash / dead time. Higher = more anticipation for a sluggish valve.</div>
+                <div class="k">Digit 2</div>
+                <div>Valve response speed. Higher = faster valve movement per correction cycle.</div>
+                <div class="k">Digit 3</div>
+                <div>Response deadband. Higher = valve ignores small errors (steadier, less hunting).</div>
+                <div class="k">Digit 4</div>
+                <div>Fine adjust on deadband. Same idea as digit 3, finer step.</div>
+            </div>
+
+            <p>Common starting points for a servo control valve on this class of Ag Chem floater:</p>
+            <table class="spec">
+                <thead>
+                    <tr><th>Symptom</th><th>Try</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>No idea, starting fresh</td><td>0743 (JD default for standard servo valve)</td></tr>
+                    <tr><td>Rate is slow to reach target after a speed change</td><td>Raise digit 2 (e.g. 0743 to 0843)</td></tr>
+                    <tr><td>Rate hunts around target (bounces high/low)</td><td>Lower digit 2, or raise digit 3 (e.g. 0743 to 0753)</td></tr>
+                    <tr><td>Slight lag at startup only</td><td>Raise digit 1 (e.g. 0743 to 1743)</td></tr>
+                </tbody>
+            </table>
+            <p>Change one digit at a time, run a pass, watch the actual rate on the display, then re-tune.</p>
+        </section>
+
+        <section class="guide-section" id="flowmeter">
+            <h2>2. Flowmeter Calibration &mdash; the number that changes spray volume</h2>
+            <p class="section-lede">If a catch test at the tips shows less than the target GPA, this is the setting to fix. It tells the 2630 how many pulses the flowmeter sends per gallon.</p>
+
+            <div class="callout callout-answer">
+                <p><strong>Higher flowmeter calibration number = MORE actual spray output.</strong> Lower cal number = less actual output.</p>
+                <p style="margin-bottom:0;">Because the display divides incoming pulses by the cal number to get gallons, a higher cal number makes the display <em>under-report</em> the flow it is seeing. The rate controller then opens the valve wider to hit target rate, so more product actually goes out the tips.</p>
+            </div>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>The Terra Gator is currently under-applying, so the fix goes UP.</strong> Raise the flowmeter cal number in small steps and re-catch-test between each change.</p>
+            </div>
+
+            <h3>Where to find it on the 2630</h3>
+            <p>Menu path: <span class="path">Menu &rarr; GreenStar &rarr; Rate Controller &rarr; Setup &rarr; Flowmeter Cal</span></p>
+            <p>The value stamped on the plate on top of the flowmeter is the factory pulses-per-gallon number. It is a starting point only. Every flowmeter drifts with wear, chemical residue, and screen condition, and the direction of the drift is almost always the same: worn turbines spin faster than they should, which means the cal needs to go up over time to match reality.</p>
+
+            <h3>How to correct it with a catch test</h3>
+            <ol>
+                <li>Fill the tank with clean water. Park on level ground. Bring the pump up to normal operating pressure.</li>
+                <li>On the 2630, note the current Flowmeter Cal Number. Write it down before changing anything.</li>
+                <li>Set a target rate (for example 15 GPA) and drive one measured pass, or run stationary with all booms open into calibrated buckets under each tip.</li>
+                <li>Compare the actual gallons applied to what the 2630 says was applied.
+                    <ul>
+                        <li>Display says 15 GPA, tips actually put out 12 GPA &rarr; sprayer is under-applying (our current problem).</li>
+                        <li>Display says 15 GPA, tips actually put out 18 GPA &rarr; sprayer is over-applying.</li>
+                    </ul>
+                </li>
+                <li>Correct the cal number with this formula:
+                    <p style="margin-left:22px; font-family:'Courier New',monospace; background:#f5f3f0; padding:10px 14px; border-radius:4px;">
+                        New Cal = Old Cal &times; (Display Gallons &divide; Actual Gallons)
+                    </p>
+                </li>
+                <li>Enter the new number. Repeat the catch test to verify. Two rounds of correction is normal.</li>
+            </ol>
+
+            <h3>Worked example for our current problem</h3>
+            <p>The Terra Gator is short on spray volume. Say the flowmeter plate reads <strong>720 pulses per gallon</strong> and a catch test shows the display claims 15 GPA but the tips are really putting out 12 GPA:</p>
+            <p style="margin-left:22px; font-family:'Courier New',monospace; background:#f5f3f0; padding:10px 14px; border-radius:4px;">
+                New Cal = 720 &times; (15 &divide; 12) = 720 &times; 1.25 = <strong>900</strong>
+            </p>
+            <p>The cal number goes from 720 up to 900. Enter 900 on the 2630, run the catch test again at the same target rate, and expect the tips to now put out very close to 15 GPA. If it still comes up short, apply the same formula against the new numbers and step it up again.</p>
+
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;"><strong>Sanity check.</strong> If the correction says the cal needs to move more than about 20% in one step, stop and inspect the flowmeter itself before entering the new number. A large correction usually means the meter is plugged, worn, or has a stuck turbine &mdash; not that the number was that far off.</p>
+            </div>
+
+            <h3>Rule out these first, before touching the cal number</h3>
+            <ul>
+                <li>Plugged flowmeter screen or chemical build-up on the turbine. Pull the meter, clean the screen and rotor, spin the turbine by hand &mdash; it should spin freely.</li>
+                <li>Worn or wrong nozzle tips. A worn tip flows more, not less &mdash; but a mismatched replacement can flow less than expected. Check tip color/number against the rate chart for our target speed and pressure.</li>
+                <li>Pressure sitting at the low end of the tip range. Verify pump pressure against the tip chart for the current GPA and MPH.</li>
+                <li>A boom section not fully opening, a partially closed manual valve, or air in the plumbing.</li>
+                <li>Speed sensor calibration off &mdash; the 2630 uses ground speed to calculate GPA. If speed reads high, gallons per acre will read high while real output is low.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section" id="implement">
+            <h2>3. Implement and Machine Setup</h2>
+            <p class="section-lede">Before any calibration will hold, the 2630 has to know it is driving the Terra Gator floater and the sprayer boom, not a planter or a spreader.</p>
+
+            <h3>Machine profile</h3>
+            <ol>
+                <li>Power on the 2630 with the key in the run position and the master boom switch OFF.</li>
+                <li><span class="path">Menu &rarr; GreenStar &rarr; Equipment</span> &rarr; select or create the Terra Gator machine profile.</li>
+                <li>Enter GPS receiver offsets (StarFire ITC, Unit #807). Antenna is at the cab roof center. Measure fore/aft from the boom.</li>
+                <li>Enter boom width. Number of sections. Section widths. Nozzle spacing.</li>
+                <li>Set implement type to Self-Propelled Sprayer.</li>
+            </ol>
+
+            <h3>Speed source</h3>
+            <ul>
+                <li>Primary: GPS ground speed from the StarFire receiver.</li>
+                <li>Backup: radar or wheel speed if available. Set the failover threshold so a bad GPS fix does not zero out rate control mid-pass.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section" id="rate">
+            <h2>4. Product, Rate, and Boom Setup</h2>
+            <p class="section-lede">This is where the target GPA lives, and where boom section behavior is defined.</p>
+
+            <h3>Product setup</h3>
+            <ol>
+                <li><span class="path">Menu &rarr; GreenStar &rarr; Rate Controller &rarr; Products</span>.</li>
+                <li>Create a product. Name it plainly (Roundup, Liberty, Fertilizer 32-0-0, and so on).</li>
+                <li>Set the target application rate. Units gallons per acre.</li>
+                <li>Set the minimum and maximum pressure. These are the guardrails the valve will not cross even if it is chasing rate.</li>
+            </ol>
+
+            <h3>Boom sections</h3>
+            <ol>
+                <li>Confirm section count matches the physical boom.</li>
+                <li>Assign each section switch on the console to the correct physical section. Walk the boom with the switches and check.</li>
+                <li>Set Look-Ahead (turn-on and turn-off) so sections come on right at the headland edge. Start at 0.5 seconds and adjust.</li>
+                <li>Enable Boom Section Control (BSC) for auto shut-off in overlap and outside boundaries. Requires a coverage map or field boundary.</li>
+            </ol>
+
+            <h3>Priming</h3>
+            <p>Before the first pass, prime the booms: open every section, run the pump at operating pressure, and watch every tip for a solid pattern. A single plugged tip will drop total output enough to look like a calibration problem.</p>
+        </section>
+
+        <section class="guide-section" id="field-check">
+            <h2>5. Field Check and Troubleshooting</h2>
+
+            <h3>Pre-application checklist</h3>
+            <ul>
+                <li>Tank agitation on before adding product.</li>
+                <li>Fresh water rinse of the flowmeter after every chemical change.</li>
+                <li>Speed on the 2630 matches the speedometer within 0.2 MPH.</li>
+                <li>Rate on the 2630 stabilizes at target within 3 seconds of opening booms.</li>
+                <li>Pressure gauge on the boom matches the tip chart for target GPA at target MPH.</li>
+            </ul>
+
+            <h3>Common symptoms and where to look</h3>
+            <table class="spec">
+                <thead>
+                    <tr><th>Symptom</th><th>Most likely cause</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Actual GPA at the tips is below target (current problem)</td><td>Flowmeter cal number set too low, or plugged flowmeter screen, or nozzles too small for the target rate/speed combo. Raise the cal number per Section 2.</td></tr>
+                    <tr><td>Rate on display bounces above and below target</td><td>Valve response number too aggressive. Lower digit 2 or raise the deadband digits.</td></tr>
+                    <tr><td>Rate takes 5+ seconds to reach target after opening booms</td><td>Valve response too slow. Raise digit 2. Also check pump pressure is up before opening.</td></tr>
+                    <tr><td>Rate reads correct on 2630 but tips are dry on one section</td><td>Solenoid, wiring, or fuse for that section. Not a calibration issue.</td></tr>
+                    <tr><td>2630 shows a Pressure Low fault</td><td>Product tank low, plugged strainer, agitation valve open too far, or pump not primed.</td></tr>
+                    <tr><td>Coverage map has gaps or double-application stripes</td><td>Look-ahead turn-on/turn-off timing, or GPS receiver offsets entered wrong.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;"><strong>Record what you change.</strong> Write down the old cal number, the new cal number, the date, and the catch-test result each time. The 2630 does not keep a change log. When something drifts next season, that notebook is what tells you where to start.</p>
+            </div>
+        </section>
+
+        <div class="footer-actions">
+            <button class="print-btn" onclick="window.print()">Print Guide</button>
+            <a href="/admin/equipment-manager.html" class="print-btn" style="background:#666;">Back to Equipment</a>
+        </div>
+    </div>
+</body>
+</html>
