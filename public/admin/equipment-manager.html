@@ -770,6 +770,39 @@
             color: #666;
             margin-top: 6px;
         }
+        .equipment-card-guide {
+            display: block;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-top: 15px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .equipment-card-guide:hover {
+            background: linear-gradient(135deg, #1e3a0e 0%, #2d5016 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(45, 80, 22, 0.3);
+        }
+        .equipment-card-guide-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #d4a54a;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .equipment-card-guide-sub {
+            font-size: 12px;
+            color: rgba(255,255,255,0.85);
+            margin-top: 3px;
+        }
+        .equipment-card-guide-arrow {
+            font-size: 12px;
+            color: white;
+            margin-top: 6px;
+            font-weight: 600;
+        }
         .equipment-card-actions {
             display: flex;
             gap: 8px;
@@ -1371,6 +1404,31 @@
             renderView();
         }
 
+        const EQUIPMENT_GUIDES = [
+            {
+                match: (item) => {
+                    const title = (item.title || '').toLowerCase();
+                    const model = (item.model || '').toLowerCase();
+                    return title.includes('terra gator') || title.includes('terragator') || model === '1603';
+                },
+                url: '/admin/equipment/terragator-guide.html',
+                label: 'John Deere 2630 Setup Guide',
+                sublabel: 'Control valve calibration, flowmeter cal, and troubleshooting'
+            }
+        ];
+
+        function getEquipmentGuideLink(item) {
+            const guide = EQUIPMENT_GUIDES.find(g => g.match(item));
+            if (!guide) return '';
+            return `
+                <a class="equipment-card-guide" href="${guide.url}">
+                    <div class="equipment-card-guide-label">${guide.label}</div>
+                    <div class="equipment-card-guide-sub">${guide.sublabel}</div>
+                    <div class="equipment-card-guide-arrow">Open Guide &rarr;</div>
+                </a>
+            `;
+        }
+
         function renderTable() {
             const container = document.getElementById('tableContent');
 
@@ -1542,6 +1600,8 @@
                             </div>
 
                             ${loanHtml}
+
+                            ${getEquipmentGuideLink(item)}
 
                             <div class="equipment-card-actions">
                                 <button class="card-edit-btn" onclick="editEquipment('${item._id}')">Edit</button>

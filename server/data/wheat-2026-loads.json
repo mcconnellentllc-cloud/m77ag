@@ -1,0 +1,177 @@
+{
+  "cropYear": 2026,
+  "crop": "wheat",
+  "cropClass": "HRW",
+  "sourceDocuments": [
+    "McConnell_loads_report_sheets_wheat_2026.pdf (Paoli, run 08/11/26)",
+    "CHS Southern Plains Yield By Field Individual Grades report (run 08/11/26)"
+  ],
+  "generatedFrom": "elevator scale tickets, transcribed 2026-08-13",
+  "elevators": [
+    {
+      "name": "Paoli",
+      "code": "NC 26 Paoli",
+      "loads": [
+        {
+          "loadNumber": "80000577",
+          "controlNumber": "54368",
+          "date": "2026-07-08",
+          "account": "M77 AG LLC",
+          "accountNumber": "805091",
+          "netLbs": 24725,
+          "grossLbs": 24849,
+          "shrinkLbs": 124,
+          "bushels": 412.09,
+          "testWeight": 58.00,
+          "moisture": 9.50,
+          "protein": 16.20,
+          "foreignMaterial": 0.52,
+          "dockage": null,
+          "purchaseClass": "Open Storage",
+          "notes": "50/50 split of physical load with McConnell Enterprises LLC (control 54369)"
+        },
+        {
+          "loadNumber": "80000577",
+          "controlNumber": "54369",
+          "date": "2026-07-08",
+          "account": "McConnell Enterprises LLC",
+          "accountNumber": "805097",
+          "netLbs": 24726,
+          "grossLbs": 24850,
+          "shrinkLbs": 124,
+          "bushels": 412.10,
+          "testWeight": 58.00,
+          "moisture": 9.50,
+          "protein": 16.20,
+          "foreignMaterial": 0.52,
+          "dockage": null,
+          "purchaseClass": "Open Storage",
+          "notes": "50/50 split of physical load with M77 AG LLC (control 54368)"
+        }
+      ]
+    },
+    {
+      "name": "Haxtun",
+      "code": "CHS Southern Plains - Haxtun",
+      "loads": [
+        {
+          "ticketNumber": "X045342",
+          "date": "2026-07-03",
+          "account": "M77 AG LLC",
+          "accountId": "950891",
+          "netLbs": 34180,
+          "grossLbs": 61840,
+          "tareLbs": 27660,
+          "bushels": 562.26,
+          "testWeight": 56.80,
+          "moisture": 9.80,
+          "protein": 12.60,
+          "damage": 1.30,
+          "foreignMaterial": 2.30
+        },
+        {
+          "ticketNumber": "X045452",
+          "date": "2026-07-07",
+          "account": "M77 AG LLC",
+          "accountId": "950891",
+          "netLbs": 22100,
+          "grossLbs": 49800,
+          "tareLbs": 27700,
+          "bushels": 360.23,
+          "testWeight": 52.60,
+          "moisture": 10.20,
+          "protein": 13.50,
+          "damage": 2.20,
+          "foreignMaterial": 2.50
+        },
+        {
+          "ticketNumber": "X045543",
+          "date": "2026-07-12",
+          "account": "M77 AG LLC",
+          "accountId": "950891",
+          "netLbs": 32480,
+          "grossLbs": 60000,
+          "tareLbs": 27520,
+          "bushels": 535.38,
+          "testWeight": 56.40,
+          "moisture": 13.20,
+          "protein": 15.30,
+          "damage": 1.10,
+          "foreignMaterial": 0.80
+        },
+        {
+          "ticketNumber": "X045539",
+          "date": "2026-07-12",
+          "account": "M77 AG LLC",
+          "accountId": "950891",
+          "netLbs": 66100,
+          "grossLbs": 93800,
+          "tareLbs": 27700,
+          "bushels": 1089.55,
+          "testWeight": 56.20,
+          "moisture": 11.70,
+          "protein": 14.80,
+          "damage": 1.10,
+          "foreignMaterial": 1.80
+        },
+        {
+          "ticketNumber": "X045500",
+          "date": "2026-07-09",
+          "account": "McConnell Enterprises LLC",
+          "accountId": "124813",
+          "netLbs": 64200,
+          "grossLbs": 91780,
+          "tareLbs": 27580,
+          "bushels": 1061.44,
+          "testWeight": 57.70,
+          "moisture": 13.60,
+          "protein": 16.40,
+          "damage": 0.60,
+          "foreignMaterial": 0.60
+        },
+        {
+          "ticketNumber": "X045560",
+          "date": "2026-07-13",
+          "account": "Kyle D McConnell",
+          "accountId": "391145",
+          "netLbs": 73820,
+          "grossLbs": 101380,
+          "tareLbs": 27560,
+          "bushels": 1189.73,
+          "testWeight": 58.40,
+          "moisture": 13.50,
+          "protein": 11.60,
+          "damage": 3.30,
+          "foreignMaterial": 2.20
+        },
+        {
+          "ticketNumber": "X045565",
+          "date": "2026-07-13",
+          "account": "Kyle D McConnell",
+          "accountId": "391145",
+          "netLbs": 16180,
+          "grossLbs": 43640,
+          "tareLbs": 27460,
+          "bushels": 261.31,
+          "testWeight": 58.00,
+          "moisture": 13.10,
+          "protein": 12.70,
+          "damage": 3.10,
+          "foreignMaterial": 1.60
+        }
+      ]
+    }
+  ],
+  "unharvestedFields": [
+    { "fieldId": "23-W", "acres": 77.2, "reason": "not harvested" },
+    { "fieldId": "32-N", "acres": 79.2, "reason": "not harvested" },
+    { "fieldId": "61-N", "acres": 78.94, "reason": "not harvested" },
+    { "fieldId": "61-S", "acres": 78.94, "reason": "not harvested" }
+  ],
+  "accountTotals": {
+    "M77 AG LLC": { "bushels": 2959.51, "note": "Paoli 412.09 + Haxtun 2,547.42" },
+    "McConnell Enterprises LLC": { "bushels": 1473.54, "note": "Paoli 412.10 + Haxtun 1,061.44" },
+    "Kyle D McConnell": { "bushels": 1451.04, "note": "Haxtun personal account, tickets X045560 and X045565" }
+  },
+  "grandTotalBushels": 5884.09
+}
