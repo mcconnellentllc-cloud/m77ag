@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Shares - 2026 Wheat | M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+        .toolbar {
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .toolbar .brand {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #d4af37;
+            letter-spacing: 1px;
+        }
+        .toolbar .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .toolbar button, .toolbar a {
+            color: #d4af37;
+            background: transparent;
+            border: 1px solid #d4af37;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .toolbar button:hover, .toolbar a:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .sheet {
+            max-width: 8.5in;
+            margin: 30px auto 60px;
+            background: white;
+            padding: 0.6in 0.7in 0.5in;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            border-radius: 4px;
+        }
+        .sheet-header {
+            padding-bottom: 16px;
+            border-bottom: 3px double #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+        }
+        .brand-block .m77 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #2d5016;
+        }
+        .brand-block .tag {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #d4a54a;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .doc-title { text-align: right; }
+        .doc-title .eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .doc-title h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .doc-title .subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        section.block { margin-top: 24px; }
+        section.block h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #2d5016;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #2d5016;
+            margin-bottom: 12px;
+        }
+        section.block p.lede {
+            font-size: 12.5px;
+            color: #444;
+            margin-bottom: 12px;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        table.data th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.6px;
+            color: #2d5016;
+            text-transform: uppercase;
+            padding: 8px;
+            border: 1px solid #2d5016;
+            text-align: left;
+            vertical-align: bottom;
+        }
+        table.data td {
+            padding: 8px;
+            border: 1px solid #ccc;
+            vertical-align: top;
+            font-variant-numeric: tabular-nums;
+        }
+        table.data td.num, table.data th.num { text-align: right; }
+        table.data td.fld {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.4px;
+        }
+        table.data tr.grand-total td {
+            background: #f5f3f0;
+            font-weight: 700;
+            font-size: 13px;
+            border-top: 2px solid #2d5016;
+        }
+        table.data .placeholder {
+            color: #999;
+            font-style: italic;
+        }
+        table.data .strong-share { color: #2d5016; font-weight: 700; }
+
+        .landlord-card {
+            border: 1px solid #d4a54a;
+            border-left-width: 4px;
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            page-break-inside: avoid;
+        }
+        .landlord-card .name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            color: #1a1a1a;
+            letter-spacing: 0.6px;
+            font-weight: 700;
+        }
+        .landlord-card .sub {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .kpi-tile {
+            background: #f5f3f0;
+            padding: 10px 12px;
+            border-radius: 5px;
+            border-left: 3px solid #2d5016;
+        }
+        .kpi-tile.gold { border-left-color: #d4a54a; }
+        .kpi-tile.warn { border-left-color: #b8863a; }
+        .kpi-tile .k {
+            font-family: 'Oswald', sans-serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #999;
+        }
+        .kpi-tile .v {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            margin-top: 2px;
+        }
+        .kpi-tile .v.small { font-size: 14px; }
+        .kpi-tile .sub {
+            font-size: 10px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .callout {
+            padding: 12px 14px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin: 12px 0;
+        }
+        .callout.action {
+            background: #eef6e9;
+            border-left: 3px solid #2d5016;
+        }
+        .callout.note {
+            background: #faf9f5;
+            border-left: 3px solid #d4a54a;
+        }
+
+        .signatures {
+            margin-top: 26px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .sig .line {
+            border-top: 1px solid #1a1a1a;
+            padding-top: 6px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #666;
+        }
+        .sig .fill-name {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+            margin-top: 30px;
+            padding-bottom: 2px;
+            border-bottom: 1px dotted #999;
+            min-height: 22px;
+        }
+
+        .footer-strip {
+            margin-top: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 10px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 700px) {
+            .sheet { padding: 24px 20px; margin: 16px; }
+            .kpi-row { grid-template-columns: 1fr; }
+            .signatures { grid-template-columns: 1fr; }
+            .sheet-header { flex-direction: column; align-items: flex-start; }
+            .doc-title { text-align: left; }
+        }
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; }
+            .sheet { box-shadow: none; margin: 0; padding: 0.5in 0.6in; max-width: 100%; }
+            @page { size: letter portrait; margin: 0.4in; }
+            .landlord-card, section.block { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="brand">M77 AG</div>
+        <div class="actions">
+            <a href="/admin/farming/wheat-2026.html">Full Wheat Report</a>
+            <a href="/admin/farming/crop-insurance-2026-wheat.html">Loss Notice</a>
+            <button onclick="window.print()" title="Use the browser's Save as PDF option in the print dialog to download">Print / Save PDF</button>
+        </div>
+    </div>
+
+    <div class="sheet">
+        <div class="sheet-header">
+            <div class="brand-block">
+                <div class="m77">M77 AG</div>
+                <div class="tag">McConnell Family Farms &middot; Haxtun, Colorado</div>
+            </div>
+            <div class="doc-title">
+                <div class="eyebrow">Landlord Statement</div>
+                <h1>Landlord Shares</h1>
+                <div class="subtitle">2026 Crop Year &middot; Wheat (Hard Red Winter) &middot; 35% Crop-Share</div>
+            </div>
+        </div>
+
+        <div class="kpi-row" style="margin-top: 22px;">
+            <div class="kpi-tile">
+                <div class="k">Landlord Share Rate</div>
+                <div class="v">35%</div>
+                <div class="sub">of crop and indemnity</div>
+            </div>
+            <div class="kpi-tile gold">
+                <div class="k">Bushels To Move at Elevator</div>
+                <div class="v">1,202.66</div>
+                <div class="sub">across 4 delivered fields</div>
+            </div>
+            <div class="kpi-tile warn">
+                <div class="k">Insurance Fields</div>
+                <div class="v">3</div>
+                <div class="sub">unharvested with landlord share</div>
+            </div>
+        </div>
+
+        <section class="block">
+            <h2>1. Ownership Map &mdash; 2026 Wheat Fields</h2>
+            <p class="lede">All 2026 wheat fields with elevator activity or insurance eligibility. Fields marked 100% M77 AG have no external landlord and no bushel movement is required.</p>
+
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th style="width:10%;">Field</th>
+                        <th style="width:34%;">Landlord</th>
+                        <th style="width:10%;">Share</th>
+                        <th style="width:12%;">Status</th>
+                        <th class="num" style="width:12%;">Delivered Bu</th>
+                        <th class="num" style="width:22%;">Landlord Bu Share</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fld">13</td>
+                        <td>Larry &amp; Adele McConnell</td>
+                        <td>35%</td>
+                        <td>Harvested</td>
+                        <td class="num">535.38</td>
+                        <td class="num strong-share">187.38</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">23-W</td>
+                        <td>Kyle &amp; Brandi McConnell</td>
+                        <td>35%</td>
+                        <td style="color:#a02818;">Not harvested</td>
+                        <td class="num">0</td>
+                        <td class="num placeholder">Indemnity share TBD</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">30.W</td>
+                        <td>Lynn Peterson</td>
+                        <td>35%</td>
+                        <td>Harvested</td>
+                        <td class="num">1,451.04</td>
+                        <td class="num strong-share">507.86</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">32-N</td>
+                        <td>Lynn Peterson</td>
+                        <td>35%</td>
+                        <td style="color:#a02818;">Not harvested</td>
+                        <td class="num">0</td>
+                        <td class="num placeholder">Indemnity share TBD</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">41</td>
+                        <td>Dorothy McConnell</td>
+                        <td>35%</td>
+                        <td>Harvested</td>
+                        <td class="num">360.23</td>
+                        <td class="num strong-share">126.08</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">54</td>
+                        <td style="color:#666;">M77 AG</td>
+                        <td style="color:#666;">100%</td>
+                        <td>Harvested</td>
+                        <td class="num">1,061.44</td>
+                        <td class="num" style="color:#666;">0 (M77 keeps)</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">55</td>
+                        <td style="color:#666;">M77 AG</td>
+                        <td style="color:#666;">100%</td>
+                        <td>Harvested</td>
+                        <td class="num">824.19</td>
+                        <td class="num" style="color:#666;">0 (M77 keeps)</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">60</td>
+                        <td>Adele McConnell</td>
+                        <td>35%</td>
+                        <td>Harvested</td>
+                        <td class="num">1,089.55</td>
+                        <td class="num strong-share">381.34</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">61-S</td>
+                        <td>Adele McConnell</td>
+                        <td>35%</td>
+                        <td style="color:#a02818;">Not harvested</td>
+                        <td class="num">0</td>
+                        <td class="num placeholder">Indemnity share TBD</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td colspan="4">Total delivered / landlord-share bushels to move</td>
+                        <td class="num">5,321.83</td>
+                        <td class="num">1,202.66</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="block">
+            <h2>2. Bushels To Move &mdash; Elevator Transfer Instructions</h2>
+            <p class="lede">Every transfer is at <strong>CHS Southern Plains &mdash; Haxtun</strong>. Nothing to move at Paoli. Read the block below to the scale office; it names each transfer in the order you should walk them.</p>
+
+            <div style="background:#1a1a1a; color:#f0ece0; padding:18px 20px; border-radius:6px; font-family:'Courier New', ui-monospace, monospace; font-size:12px; line-height:1.7; margin-bottom:14px;">
+<div style="color:#d4af37; font-family:'Oswald',sans-serif; font-size:13px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; letter-spacing:2px;">CHS Southern Plains &mdash; Haxtun &middot; 4 Transfers</div>
+
+<div style="border-top:1px dashed #555; padding-top:10px; margin-top:2px;">
+<strong style="color:#d4af37;">TRANSFER 1 &nbsp;&mdash;&nbsp; 187.38 bu HRW wheat</strong><br>
+&nbsp;&nbsp;FROM: M77 AG LLC &nbsp;<span style="color:#999;">(acct 950891)</span><br>
+&nbsp;&nbsp;TO: &nbsp;&nbsp;Larry &amp; Adele McConnell<br>
+&nbsp;&nbsp;Source: Ticket X045543 &middot; 07/12/26 &middot; Field 13
+</div>
+
+<div style="border-top:1px dashed #555; padding-top:10px; margin-top:10px;">
+<strong style="color:#d4af37;">TRANSFER 2 &nbsp;&mdash;&nbsp; 126.08 bu HRW wheat</strong><br>
+&nbsp;&nbsp;FROM: M77 AG LLC &nbsp;<span style="color:#999;">(acct 950891)</span><br>
+&nbsp;&nbsp;TO: &nbsp;&nbsp;Dorothy McConnell<br>
+&nbsp;&nbsp;Source: Ticket X045452 &middot; 07/07/26 &middot; Field 41
+</div>
+
+<div style="border-top:1px dashed #555; padding-top:10px; margin-top:10px;">
+<strong style="color:#d4af37;">TRANSFER 3 &nbsp;&mdash;&nbsp; 381.34 bu HRW wheat</strong><br>
+&nbsp;&nbsp;FROM: M77 AG LLC &nbsp;<span style="color:#999;">(acct 950891)</span><br>
+&nbsp;&nbsp;TO: &nbsp;&nbsp;Adele McConnell<br>
+&nbsp;&nbsp;Source: Ticket X045539 &middot; 07/12/26 &middot; Field 60
+</div>
+
+<div style="border-top:1px dashed #555; padding-top:10px; margin-top:10px;">
+<strong style="color:#d4af37;">TRANSFER 4 &nbsp;&mdash;&nbsp; 507.86 bu HRW wheat</strong><br>
+&nbsp;&nbsp;FROM: Kyle D McConnell personal &nbsp;<span style="color:#999;">(acct 391145)</span><br>
+&nbsp;&nbsp;TO: &nbsp;&nbsp;Lynn Peterson<br>
+&nbsp;&nbsp;Source: Tickets X045560 + X045565 &middot; 07/13/26 &middot; Field 30.W
+</div>
+
+<div style="border-top:2px solid #d4af37; padding-top:10px; margin-top:12px; color:#d4af37;">
+TOTAL TRANSFERRED &nbsp;&mdash;&nbsp; 1,202.66 bu HRW wheat
+</div>
+
+<div style="margin-top:8px; font-family:'Inter',sans-serif; font-size:11px; color:#999; letter-spacing:0.3px;">
+Paoli (NC 26): no transfers &mdash; Field 55 loads (824.19 bu total) stay 100% internal to M77 AG.
+</div>
+            </div>
+
+            <div style="background:#fff; border:2px solid #2d5016; border-radius:6px; padding:18px 20px; margin-top:14px;">
+                <div style="font-family:'Oswald',sans-serif; font-size:13px; color:#2d5016; letter-spacing:1.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid #2d5016; margin-bottom:12px;">Math Check &mdash; Every Number, Every Step</div>
+                <p style="font-size:11.5px; color:#444; margin-bottom:14px;">This is real money, so every calculation is shown. Verify each line against the elevator ticket copy.</p>
+
+                <div style="font-family:'Courier New', ui-monospace, monospace; font-size:12px; line-height:1.7; color:#1a1a1a;">
+
+<div style="background:#f5f3f0; padding:12px 14px; border-radius:4px; margin-bottom:10px;">
+<strong style="color:#2d5016;">FIELD 13 &mdash; Larry &amp; Adele McConnell (35%)</strong><br>
+&nbsp;&nbsp;Delivered:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>535.38 bu</strong> &nbsp;<span style="color:#666;">(Ticket X045543 &rarr; M77 AG LLC)</span><br>
+&nbsp;&nbsp;Landlord %:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; 0.35<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #999; display:inline-block; padding-top:2px; min-width:280px;">Landlord share:&nbsp;<strong style="color:#2d5016;">187.383 &rarr; 187.38 bu</strong></span><br>
+&nbsp;&nbsp;M77 AG keeps:&nbsp;&nbsp;&nbsp;535.38 &minus; 187.38 = <strong>348.00 bu</strong> (65%)
+</div>
+
+<div style="background:#f5f3f0; padding:12px 14px; border-radius:4px; margin-bottom:10px;">
+<strong style="color:#2d5016;">FIELD 41 &mdash; Dorothy McConnell (35%)</strong><br>
+&nbsp;&nbsp;Delivered:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>360.23 bu</strong> &nbsp;<span style="color:#666;">(Ticket X045452 &rarr; M77 AG LLC)</span><br>
+&nbsp;&nbsp;Landlord %:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; 0.35<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #999; display:inline-block; padding-top:2px; min-width:280px;">Landlord share:&nbsp;<strong style="color:#2d5016;">126.0805 &rarr; 126.08 bu</strong></span><br>
+&nbsp;&nbsp;M77 AG keeps:&nbsp;&nbsp;&nbsp;360.23 &minus; 126.08 = <strong>234.15 bu</strong> (65%)
+</div>
+
+<div style="background:#f5f3f0; padding:12px 14px; border-radius:4px; margin-bottom:10px;">
+<strong style="color:#2d5016;">FIELD 60 &mdash; Adele McConnell (35%)</strong><br>
+&nbsp;&nbsp;Delivered:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>1,089.55 bu</strong> &nbsp;<span style="color:#666;">(Ticket X045539 &rarr; M77 AG LLC)</span><br>
+&nbsp;&nbsp;Landlord %:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; 0.35<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #999; display:inline-block; padding-top:2px; min-width:280px;">Landlord share:&nbsp;<strong style="color:#2d5016;">381.3425 &rarr; 381.34 bu</strong></span><br>
+&nbsp;&nbsp;M77 AG keeps:&nbsp;&nbsp; 1,089.55 &minus; 381.34 = <strong>708.21 bu</strong> (65%)
+</div>
+
+<div style="background:#f5f3f0; padding:12px 14px; border-radius:4px; margin-bottom:14px;">
+<strong style="color:#2d5016;">FIELD 30.W &mdash; Lynn Peterson (35%)</strong><br>
+&nbsp;&nbsp;Ticket X045560:&nbsp;&nbsp;&nbsp;1,189.73 bu<br>
+&nbsp;&nbsp;Ticket X045565:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 261.31 bu<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #999; display:inline-block; padding-top:2px; min-width:220px;">Delivered total:&nbsp;<strong>1,451.04 bu</strong></span>&nbsp;<span style="color:#666;">(both &rarr; Kyle D McConnell personal)</span><br>
+&nbsp;&nbsp;Landlord %:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; 0.35<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #999; display:inline-block; padding-top:2px; min-width:280px;">Landlord share:&nbsp;<strong style="color:#2d5016;">507.864 &rarr; 507.86 bu</strong></span><br>
+&nbsp;&nbsp;Kyle keeps:&nbsp;&nbsp;&nbsp;&nbsp; 1,451.04 &minus; 507.86 = <strong>943.18 bu</strong> (65%)
+</div>
+
+<div style="background:#eef6e9; padding:12px 14px; border-radius:4px; border-left:3px solid #2d5016;">
+<strong style="color:#2d5016;">TOTAL BUSHELS TO MOVE</strong><br>
+&nbsp;&nbsp;187.38 + 126.08 + 381.34 + 507.86<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #2d5016; display:inline-block; padding-top:2px; min-width:280px;">= <strong style="color:#2d5016; font-size:14px;">1,202.66 bu</strong></span>&nbsp;<span style="color:#666;">across 4 transfers at Haxtun</span>
+
+<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #2d5016;">
+<strong>Cross-check &mdash; landlord % of pooled delivery:</strong><br>
+&nbsp;&nbsp;Sum of landlord-field deliveries:&nbsp;<br>
+&nbsp;&nbsp;535.38 + 360.23 + 1,089.55 + 1,451.04 = <strong>3,436.20 bu</strong><br>
+&nbsp;&nbsp;1,202.66 &divide; 3,436.20 = <strong>0.35000&hellip; = 35.00% &check;</strong>
+</div>
+</div>
+
+<div style="background:#faf9f5; padding:12px 14px; border-radius:4px; margin-top:10px; border-left:3px solid #d4a54a;">
+<strong style="color:#a37c1c;">100% M77 AG FIELDS (no landlord movement)</strong><br>
+&nbsp;&nbsp;Field 54 ME PAULS:&nbsp;&nbsp;&nbsp;&nbsp;1,061.44 bu &nbsp;<span style="color:#666;">(X045500 &rarr; McConnell Ent LLC)</span><br>
+&nbsp;&nbsp;Field 55 Kirby House:&nbsp;&nbsp;1,386.45 bu &nbsp;<span style="color:#666;">(X045342 + Paoli 80000577 split)</span><br>
+&nbsp;&nbsp;<span style="border-top:1px solid #999; display:inline-block; padding-top:2px; min-width:280px;">Internal-only total:&nbsp;&nbsp;<strong>2,447.89 bu</strong></span><br>
+&nbsp;&nbsp;<span style="color:#666; font-size:11px;">Both entities (M77 AG LLC and McConnell Ent LLC) are Kyle-controlled &mdash;</span><br>
+&nbsp;&nbsp;<span style="color:#666; font-size:11px;">so these deliveries stay internal; nothing to move for landlords.</span>
+</div>
+
+<div style="background:#1a1a1a; color:#f0ece0; padding:12px 14px; border-radius:4px; margin-top:10px;">
+<strong style="color:#d4af37;">GRAND TOTAL RECONCILIATION vs Elevator Report</strong><br>
+&nbsp;&nbsp;Landlord-field deliveries:&nbsp;&nbsp;&nbsp;&nbsp;3,436.20 bu<br>
+&nbsp;&nbsp;100% M77 AG field deliveries:&nbsp;&nbsp;+ 2,447.89 bu<br>
+&nbsp;&nbsp;<span style="border-top:1px solid #d4af37; display:inline-block; padding-top:2px; min-width:280px;">Total delivered:&nbsp;<strong style="color:#d4af37;">5,884.09 bu &check;</strong></span><br>
+&nbsp;&nbsp;<span style="color:#999; font-size:11px;">Matches Section 01 of the wheat harvest report exactly.</span>
+</div>
+
+                </div>
+            </div>
+
+            <p class="lede" style="margin-top:14px;">Reference table (same numbers, tabular view):</p>
+
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th style="width:22%;">Landlord</th>
+                        <th style="width:10%;">Field</th>
+                        <th style="width:24%;">Ticket(s)</th>
+                        <th class="num" style="width:11%;">Delivered</th>
+                        <th class="num" style="width:11%;">35%</th>
+                        <th style="width:22%;">Move From</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Larry &amp; Adele McConnell</td>
+                        <td class="fld">13</td>
+                        <td>X045543 (07/12)</td>
+                        <td class="num">535.38</td>
+                        <td class="num strong-share">187.38</td>
+                        <td>M77 AG LLC</td>
+                    </tr>
+                    <tr>
+                        <td>Dorothy McConnell</td>
+                        <td class="fld">41</td>
+                        <td>X045452 (07/07)</td>
+                        <td class="num">360.23</td>
+                        <td class="num strong-share">126.08</td>
+                        <td>M77 AG LLC</td>
+                    </tr>
+                    <tr>
+                        <td>Adele McConnell</td>
+                        <td class="fld">60</td>
+                        <td>X045539 (07/12)</td>
+                        <td class="num">1,089.55</td>
+                        <td class="num strong-share">381.34</td>
+                        <td>M77 AG LLC</td>
+                    </tr>
+                    <tr>
+                        <td>Lynn Peterson</td>
+                        <td class="fld">30.W</td>
+                        <td>X045560 + X045565 (07/13)</td>
+                        <td class="num">1,451.04</td>
+                        <td class="num strong-share">507.86</td>
+                        <td>Kyle D McConnell</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td colspan="3">Total bushels to move at CHS Haxtun</td>
+                        <td class="num">3,436.20</td>
+                        <td class="num">1,202.66</td>
+                        <td>4 transfers</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout action">
+                <strong>Action.</strong> Request four transfers of Hard Red Winter Wheat at CHS Southern Plains Haxtun: 187.38 bu to Larry &amp; Adele McConnell, 126.08 bu to Dorothy McConnell, 381.34 bu to Adele McConnell, 507.86 bu to Lynn Peterson. Each landlord then prices and settles independently.
+            </div>
+        </section>
+
+        <section class="block">
+            <h2>3. Crop Insurance Indemnity &mdash; Projected Landlord Shares</h2>
+            <p class="lede">Three landlord-owned fields went unharvested in 2026 (23-W, 32-N, 61-S). The landlord's 35% share of any indemnity is projected below. Fill in APH, coverage %, price election, and premium after the agent confirms.</p>
+
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th style="width:10%;">Field</th>
+                        <th style="width:22%;">Landlord</th>
+                        <th class="num" style="width:9%;">Acres</th>
+                        <th class="num" style="width:11%;">APH bu/ac</th>
+                        <th class="num" style="width:10%;">Coverage</th>
+                        <th class="num" style="width:10%;">Price / bu</th>
+                        <th class="num" style="width:14%;">Est. Indemnity</th>
+                        <th class="num" style="width:14%;">35% Landlord</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fld">23-W</td>
+                        <td>Kyle &amp; Brandi McConnell</td>
+                        <td class="num">77.20</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">32-N</td>
+                        <td>Lynn Peterson</td>
+                        <td class="num">79.20</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                    </tr>
+                    <tr>
+                        <td class="fld">61-S</td>
+                        <td>Adele McConnell</td>
+                        <td class="num">78.94</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td colspan="2">Insurance-eligible landlord acres</td>
+                        <td class="num">235.34</td>
+                        <td colspan="3">&mdash;</td>
+                        <td class="num placeholder">TBD</td>
+                        <td class="num placeholder">TBD</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout note">
+                <strong>Premium expense split.</strong> On a 35% crop-share, the landlord typically pays 35% of the crop insurance premium. Confirm the split in each lease and record on the field's ledger. M77 AG covers the remaining 65% of premium.
+            </div>
+        </section>
+
+        <section class="block">
+            <h2>4. Landlord Summary Cards</h2>
+
+            <div class="landlord-card">
+                <div class="name">Larry &amp; Adele McConnell</div>
+                <div class="sub">Field 13 LA BAM E/4 (35% crop-share)</div>
+                <div class="kpi-row">
+                    <div class="kpi-tile"><div class="k">Bu owed at elevator</div><div class="v">187.38</div><div class="sub">from Field 13</div></div>
+                    <div class="kpi-tile"><div class="k">Insurance indemnity share</div><div class="v" style="color:#999;">$0</div><div class="sub">no unharvested field</div></div>
+                    <div class="kpi-tile gold"><div class="k">Combined 2026 position</div><div class="v small">187.38 bu</div><div class="sub">CHS Haxtun account</div></div>
+                </div>
+            </div>
+
+            <div class="landlord-card">
+                <div class="name">Dorothy McConnell</div>
+                <div class="sub">Field 41 HD E/4 (35% crop-share)</div>
+                <div class="kpi-row">
+                    <div class="kpi-tile"><div class="k">Bu owed at elevator</div><div class="v">126.08</div><div class="sub">from Field 41</div></div>
+                    <div class="kpi-tile"><div class="k">Insurance indemnity share</div><div class="v" style="color:#999;">$0</div><div class="sub">no unharvested field</div></div>
+                    <div class="kpi-tile gold"><div class="k">Combined 2026 position</div><div class="v small">126.08 bu</div><div class="sub">CHS Haxtun account</div></div>
+                </div>
+            </div>
+
+            <div class="landlord-card">
+                <div class="name">Adele McConnell</div>
+                <div class="sub">Field 60 A1DAILEY RD (harvested) &middot; Field 61-S HIGHLAND E (unharvested, insurance) &middot; 35%</div>
+                <div class="kpi-row">
+                    <div class="kpi-tile"><div class="k">Bu owed at elevator</div><div class="v">381.34</div><div class="sub">from Field 60</div></div>
+                    <div class="kpi-tile"><div class="k">Insurance indemnity share</div><div class="v" style="color:#999;">TBD</div><div class="sub">35% of Field 61-S indemnity</div></div>
+                    <div class="kpi-tile gold"><div class="k">Combined 2026 position</div><div class="v small">381.34 bu + TBD</div><div class="sub">Haxtun account + cash</div></div>
+                </div>
+            </div>
+
+            <div class="landlord-card">
+                <div class="name">Lynn Peterson</div>
+                <div class="sub">Field 30.W Pole Rd (harvested) &middot; Field 32-N (unharvested, insurance) &middot; 35%</div>
+                <div class="kpi-row">
+                    <div class="kpi-tile"><div class="k">Bu owed at elevator</div><div class="v">507.86</div><div class="sub">from Field 30.W</div></div>
+                    <div class="kpi-tile"><div class="k">Insurance indemnity share</div><div class="v" style="color:#999;">TBD</div><div class="sub">35% of Field 32-N indemnity</div></div>
+                    <div class="kpi-tile gold"><div class="k">Combined 2026 position</div><div class="v small">507.86 bu + TBD</div><div class="sub">Haxtun account + cash</div></div>
+                </div>
+            </div>
+
+            <div class="landlord-card">
+                <div class="name">Kyle &amp; Brandi McConnell</div>
+                <div class="sub">Field 23-W KB SOUTHWEST (unharvested, insurance) &middot; 35%</div>
+                <div class="kpi-row">
+                    <div class="kpi-tile"><div class="k">Bu owed at elevator</div><div class="v" style="color:#999;">0</div><div class="sub">field not harvested</div></div>
+                    <div class="kpi-tile"><div class="k">Insurance indemnity share</div><div class="v" style="color:#999;">TBD</div><div class="sub">35% of Field 23-W indemnity</div></div>
+                    <div class="kpi-tile gold"><div class="k">Combined 2026 position</div><div class="v small">TBD (cash only)</div><div class="sub">indemnity settlement</div></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="signatures">
+            <div class="sig">
+                <div class="fill-name">&nbsp;</div>
+                <div class="line">Kyle McConnell &middot; M77 AG LLC</div>
+            </div>
+            <div class="sig">
+                <div class="fill-name">&nbsp;</div>
+                <div class="line">Date</div>
+            </div>
+        </div>
+
+        <div class="footer-strip">
+            <span>M77 AG LLC &middot; Landlord Shares Statement &middot; 2026 Wheat</span>
+            <span>Prepared Aug 13, 2026 &middot; Page 1 of 1</span>
+        </div>
+    </div>
+</body>
+</html>

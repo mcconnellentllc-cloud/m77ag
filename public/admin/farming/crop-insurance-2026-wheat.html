@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice of Loss - 2026 Wheat | M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+        .toolbar {
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .toolbar .brand {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: #d4af37;
+            letter-spacing: 1px;
+        }
+        .toolbar .actions { display: flex; gap: 10px; }
+        .toolbar button, .toolbar a {
+            color: #d4af37;
+            background: transparent;
+            border: 1px solid #d4af37;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .toolbar button:hover, .toolbar a:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .sheet {
+            max-width: 8.5in;
+            margin: 30px auto 60px;
+            background: white;
+            padding: 0.6in 0.7in 0.5in;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            border-radius: 4px;
+        }
+        .sheet-header {
+            padding-bottom: 16px;
+            border-bottom: 3px double #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+        }
+        .brand-block .m77 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #2d5016;
+        }
+        .brand-block .tag {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #d4a54a;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .doc-title {
+            text-align: right;
+        }
+        .doc-title .eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .doc-title h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .doc-title .subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px 40px;
+            margin-top: 22px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .info-block .heading {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #2d5016;
+        }
+        .info-block .row {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            font-size: 13px;
+            padding: 3px 0;
+        }
+        .info-block .row .k {
+            color: #666;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding-top: 2px;
+        }
+        .info-block .row .v {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        .info-block .row .v.fill {
+            color: #999;
+            font-style: italic;
+            border-bottom: 1px dotted #999;
+            min-height: 18px;
+        }
+
+        section.body {
+            margin-top: 20px;
+        }
+        section.body h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #2d5016;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #2d5016;
+            margin-bottom: 10px;
+            margin-top: 22px;
+        }
+
+        table.units {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        table.units th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.6px;
+            color: #2d5016;
+            text-transform: uppercase;
+            padding: 8px 8px;
+            border: 1px solid #2d5016;
+            text-align: left;
+            vertical-align: bottom;
+        }
+        table.units td {
+            padding: 10px 8px;
+            border: 1px solid #ccc;
+            vertical-align: top;
+        }
+        table.units td.num, table.units th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        table.units .field-id {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+        table.units .legal {
+            font-size: 11px;
+            line-height: 1.4;
+            color: #333;
+        }
+        table.units tr.total-row td {
+            background: #f5f3f0;
+            font-weight: 700;
+            font-size: 13px;
+            border-top: 2px solid #2d5016;
+        }
+
+        .attest {
+            margin-top: 22px;
+            padding: 14px 18px;
+            background: #faf9f5;
+            border-left: 3px solid #d4a54a;
+            font-size: 12px;
+            line-height: 1.55;
+            color: #333;
+        }
+
+        .signatures {
+            margin-top: 26px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .sig .line {
+            border-top: 1px solid #1a1a1a;
+            padding-top: 6px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #666;
+        }
+        .sig .fill-name,
+        .sig .fill-date {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+            margin-top: 30px;
+            padding-bottom: 2px;
+            border-bottom: 1px dotted #999;
+            min-height: 22px;
+        }
+        .sig .field-label {
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding-top: 2px;
+        }
+        .sig-row {
+            display: grid;
+            grid-template-columns: 3fr 1.5fr;
+            gap: 20px;
+        }
+
+        .footer-strip {
+            margin-top: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 10px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            letter-spacing: 0.5px;
+        }
+
+        .attach-list {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #333;
+            padding-left: 18px;
+        }
+        .attach-list li { margin: 3px 0; }
+
+        @media (max-width: 700px) {
+            .sheet { padding: 24px 20px; margin: 16px; }
+            .info-grid { grid-template-columns: 1fr; gap: 18px; }
+            .sheet-header { flex-direction: column; align-items: flex-start; text-align: left; }
+            .doc-title { text-align: left; }
+            .signatures { grid-template-columns: 1fr; }
+        }
+        @media print {
+            .toolbar { display: none; }
+            body { background: white; }
+            .sheet { box-shadow: none; margin: 0; padding: 0.5in 0.6in; max-width: 100%; }
+            @page { size: letter portrait; margin: 0.4in; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="brand">M77 AG</div>
+        <div class="actions">
+            <a href="/admin/farming/wheat-2026.html">Full Wheat Report</a>
+            <button onclick="window.print()" title="Use the browser's Save as PDF option in the print dialog to download">Print / Save PDF</button>
+        </div>
+    </div>
+
+    <div class="sheet">
+        <div class="sheet-header">
+            <div class="brand-block">
+                <div class="m77">M77 AG</div>
+                <div class="tag">McConnell Family Farms &middot; Haxtun, Colorado</div>
+            </div>
+            <div class="doc-title">
+                <div class="eyebrow">MPCI Filing</div>
+                <h1>Notice of Loss</h1>
+                <div class="subtitle">2026 Crop Year &middot; Wheat (Hard Red Winter)</div>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-block">
+                <div class="heading">Producer / Policyholder</div>
+                <div class="row"><div class="k">Name</div><div class="v">M77 AG LLC</div></div>
+                <div class="row"><div class="k">Operator</div><div class="v">Kyle McConnell</div></div>
+                <div class="row"><div class="k">Address</div><div class="v">Haxtun, CO 80731</div></div>
+                <div class="row"><div class="k">County</div><div class="v fill">&nbsp;</div></div>
+                <div class="row"><div class="k">Phone</div><div class="v fill">&nbsp;</div></div>
+            </div>
+            <div class="info-block">
+                <div class="heading">Policy Information</div>
+                <div class="row"><div class="k">Policy No.</div><div class="v fill">&nbsp;</div></div>
+                <div class="row"><div class="k">AIP</div><div class="v fill">&nbsp;</div></div>
+                <div class="row"><div class="k">Agent</div><div class="v fill">&nbsp;</div></div>
+                <div class="row"><div class="k">Agency</div><div class="v fill">&nbsp;</div></div>
+                <div class="row"><div class="k">Notice Date</div><div class="v">August 13, 2026</div></div>
+            </div>
+        </div>
+
+        <section class="body">
+            <div class="info-grid" style="border-bottom: none; padding-bottom: 0; margin-top: 0;">
+                <div class="info-block">
+                    <div class="heading">Crop Details</div>
+                    <div class="row"><div class="k">Commodity</div><div class="v">Wheat</div></div>
+                    <div class="row"><div class="k">Type / Class</div><div class="v">Hard Red Winter</div></div>
+                    <div class="row"><div class="k">Practice</div><div class="v">Non-Irrigated (Dryland)</div></div>
+                    <div class="row"><div class="k">Crop Year</div><div class="v">2026</div></div>
+                    <div class="row"><div class="k">Variety</div><div class="v">WB4347</div></div>
+                </div>
+                <div class="info-block">
+                    <div class="heading">Loss Summary</div>
+                    <div class="row"><div class="k">Fields Lost</div><div class="v">3</div></div>
+                    <div class="row"><div class="k">Total Acres</div><div class="v"><strong>235.34 ac</strong></div></div>
+                    <div class="row"><div class="k">Cause of Loss</div><div class="v fill">&nbsp;</div></div>
+                    <div class="row"><div class="k">Damage Date</div><div class="v fill">&nbsp;</div></div>
+                    <div class="row"><div class="k">Disposition</div><div class="v">Not harvested</div></div>
+                </div>
+            </div>
+
+            <h2>Insured Units &mdash; Unharvested Wheat Acreage</h2>
+            <table class="units">
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">Field ID</th>
+                        <th style="width: 38%;">Legal Description (6th P.M., Colorado)</th>
+                        <th style="width: 10%;" class="num">Acres</th>
+                        <th style="width: 12%;">Practice</th>
+                        <th style="width: 14%;">FSA Farm / Tract</th>
+                        <th style="width: 14%;">Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="field-id">23-W</td>
+                        <td class="legal">
+                            SW1/4, Section 17, Township 6 North, Range 47 West<br>
+                            <span style="color:#666; font-size:10px;">Field name: KB SOUTHWEST</span>
+                        </td>
+                        <td class="num">77.20</td>
+                        <td>Dryland</td>
+                        <td class="legal" style="color:#999; font-style:italic;">&mdash;</td>
+                        <td class="legal" style="color:#999; font-style:italic;">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id">32-N</td>
+                        <td class="legal">
+                            SW1/4, Section 35, Township 7 North, Range 47 West<br>
+                            <span style="color:#666; font-size:10px;">Field name: 32-N (north half of quarter)</span>
+                        </td>
+                        <td class="num">79.20</td>
+                        <td>Dryland</td>
+                        <td class="legal" style="color:#999; font-style:italic;">&mdash;</td>
+                        <td class="legal" style="color:#999; font-style:italic;">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id">61-S</td>
+                        <td class="legal">
+                            S1/2 of the SE1/4, Section 35, Township 7 North, Range 47 West<br>
+                            <span style="color:#666; font-size:10px;">Field name: HIGHLAND E (south half)</span>
+                        </td>
+                        <td class="num">78.94</td>
+                        <td>Dryland</td>
+                        <td class="legal" style="color:#999; font-style:italic;">&mdash;</td>
+                        <td class="legal" style="color:#999; font-style:italic;">&mdash;</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">Total Acreage &mdash; 2026 Wheat, Not Harvested</td>
+                        <td class="num">235.34</td>
+                        <td colspan="3">All acreage insured under 2026 MPCI wheat policy</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Proof of Yield &mdash; 2026 Wheat Production, All Fields</h2>
+            <p style="font-size: 12px; color: #444; margin-bottom: 8px;">Production evidence for every 2026 wheat field, harvested and unharvested, supporting the loss claim above. Every delivered bushel is documented by an elevator scale ticket at Paoli (NC 26) or CHS Southern Plains &mdash; Haxtun. Test weight, moisture, and protein are the elevator's grading numbers.</p>
+
+            <table class="units" style="font-size: 11px;">
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">Field</th>
+                        <th style="width: 28%;">Legal (6th P.M., CO)</th>
+                        <th class="num" style="width: 8%;">Acres</th>
+                        <th style="width: 20%;">Elevator Ticket(s)</th>
+                        <th class="num" style="width: 10%;">Delivered Bu</th>
+                        <th class="num" style="width: 7%;">TW</th>
+                        <th class="num" style="width: 8%;">MO %</th>
+                        <th class="num" style="width: 7%;">PR %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">13</td>
+                        <td class="legal">SE1/4 Sec 14, T7N R48W</td>
+                        <td class="num">74.88</td>
+                        <td class="legal">Haxtun X045543 (07/12)</td>
+                        <td class="num">535.38</td>
+                        <td class="num">56.4</td>
+                        <td class="num">13.2</td>
+                        <td class="num">15.3</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">30.W</td>
+                        <td class="legal">Pole Rd Full Quarter</td>
+                        <td class="num">80.30</td>
+                        <td class="legal">Haxtun X045560 + X045565 (07/13)</td>
+                        <td class="num">1,451.04</td>
+                        <td class="num">58.2</td>
+                        <td class="num">13.3</td>
+                        <td class="num">12.2</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">41</td>
+                        <td class="legal">NE1/4 Sec 11, T8N R47W</td>
+                        <td class="num">78.39</td>
+                        <td class="legal">Haxtun X045452 (07/07)</td>
+                        <td class="num">360.23</td>
+                        <td class="num">52.6</td>
+                        <td class="num">10.2</td>
+                        <td class="num">13.5</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">54</td>
+                        <td class="legal">SW Sec 33, T7N R46W</td>
+                        <td class="num">148.00</td>
+                        <td class="legal">Haxtun X045500 (07/09)</td>
+                        <td class="num">1,061.44</td>
+                        <td class="num">57.7</td>
+                        <td class="num">13.6</td>
+                        <td class="num">16.4</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">55</td>
+                        <td class="legal">NE Sec 20, T8N R47W</td>
+                        <td class="num">75.67</td>
+                        <td class="legal">Haxtun X045342 (07/03) + Paoli 80000577 split (07/08)</td>
+                        <td class="num">1,386.45</td>
+                        <td class="num">57.6</td>
+                        <td class="num">9.6</td>
+                        <td class="num">14.3</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">60</td>
+                        <td class="legal">NE Sec 28, T7N R48W</td>
+                        <td class="num">78.78</td>
+                        <td class="legal">Haxtun X045539 (07/12)</td>
+                        <td class="num">1,089.55</td>
+                        <td class="num">56.2</td>
+                        <td class="num">11.7</td>
+                        <td class="num">14.8</td>
+                    </tr>
+                    <tr style="background:#faf9f5;">
+                        <td colspan="8" style="font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#2d5016; font-family:'Oswald',sans-serif; padding:6px 8px;">Unharvested fields &mdash; zero production, included in loss notice above</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">23-W</td>
+                        <td class="legal">SW1/4 Sec 17, T6N R47W</td>
+                        <td class="num">77.20</td>
+                        <td class="legal" style="color:#a02818;">Not harvested</td>
+                        <td class="num">0.00</td>
+                        <td class="num">&mdash;</td>
+                        <td class="num">&mdash;</td>
+                        <td class="num">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">32-N</td>
+                        <td class="legal">SW1/4 Sec 35, T7N R47W</td>
+                        <td class="num">79.20</td>
+                        <td class="legal" style="color:#a02818;">Not harvested</td>
+                        <td class="num">0.00</td>
+                        <td class="num">&mdash;</td>
+                        <td class="num">&mdash;</td>
+                        <td class="num">&mdash;</td>
+                    </tr>
+                    <tr>
+                        <td class="field-id" style="font-size:12px;">61-S</td>
+                        <td class="legal">S1/2 SE1/4 Sec 35, T7N R47W</td>
+                        <td class="num">78.94</td>
+                        <td class="legal" style="color:#a02818;">Not harvested</td>
+                        <td class="num">0.00</td>
+                        <td class="num">&mdash;</td>
+                        <td class="num">&mdash;</td>
+                        <td class="num">&mdash;</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">2026 Wheat Production Total</td>
+                        <td class="num">771.36</td>
+                        <td>All delivered wheat &middot; 2 elevators &middot; 8 loads</td>
+                        <td class="num">5,884.09</td>
+                        <td colspan="3">All bushels documented</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 style="margin-top: 22px;">Attachments Provided</h2>
+            <ul class="attach-list">
+                <li>Field boundary maps for Fields 23-W, 32-N, and 61-S (available from M77 AG field manager on request)</li>
+                <li>Copies of the elevator scale tickets referenced in the Proof of Yield table above</li>
+                <li>M77 AG 2026 Wheat Harvest Report (full breakdown by delivery date, field attribution methodology, and landlord shares)</li>
+            </ul>
+
+            <div class="attest">
+                <strong>Producer certification.</strong> The producer certifies that the acreage listed above was planted to Hard Red Winter Wheat for the 2026 crop year, was not harvested, and represents an insurable loss under the producer's Multi-Peril Crop Insurance policy for the crop year indicated. Cause of loss and damage date are to be finalized with the adjuster upon inspection. Field 61-N is excluded from this notice; it was not planted to wheat in 2026.
+            </div>
+
+            <div class="signatures">
+                <div class="sig">
+                    <div class="fill-name">&nbsp;</div>
+                    <div class="line">Producer signature &middot; Kyle McConnell, M77 AG LLC</div>
+                    <div class="sig-row" style="margin-top:14px;">
+                        <div>
+                            <div class="fill-name">&nbsp;</div>
+                            <div class="line">Printed name</div>
+                        </div>
+                        <div>
+                            <div class="fill-name">&nbsp;</div>
+                            <div class="line">Date</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sig">
+                    <div class="fill-name">&nbsp;</div>
+                    <div class="line">Insurance agent signature</div>
+                    <div class="sig-row" style="margin-top:14px;">
+                        <div>
+                            <div class="fill-name">&nbsp;</div>
+                            <div class="line">Printed name / agency</div>
+                        </div>
+                        <div>
+                            <div class="fill-name">&nbsp;</div>
+                            <div class="line">Date received</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer-strip">
+            <span>M77 AG LLC &middot; Notice of Loss &middot; 2026 Wheat</span>
+            <span>Prepared Aug 13, 2026 &middot; Page 1 of 1</span>
+        </div>
+    </div>
+</body>
+</html>
