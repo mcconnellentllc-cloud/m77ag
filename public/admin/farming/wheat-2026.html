@@ -419,7 +419,7 @@
         <div class="header-actions">
             <a href="/admin/dashboard.html">Dashboard</a>
             <a href="/admin/fields.html">Fields</a>
-            <button onclick="window.print()">Print</button>
+            <button onclick="window.print()" title="Use the browser's Save as PDF option in the print dialog to download">Print / Save PDF</button>
         </div>
     </div>
 
@@ -439,29 +439,29 @@
 
         <div class="kpi-strip">
             <div class="kpi">
-                <div class="kpi-label">Total Bushels</div>
+                <div class="kpi-label">Delivered Bushels</div>
                 <div class="kpi-value">5,884.09</div>
-                <div class="kpi-sub">across 8 loads, 2 elevators</div>
+                <div class="kpi-sub">elevator scale &mdash; authoritative</div>
             </div>
             <div class="kpi accent">
-                <div class="kpi-label">Harvested Acres</div>
-                <div class="kpi-value">1,667.81</div>
-                <div class="kpi-sub">of 1,982.09 planted</div>
+                <div class="kpi-label">Fields Delivered From</div>
+                <div class="kpi-value">6</div>
+                <div class="kpi-sub">55.N, 41, 54, 13, 60, 30.W</div>
             </div>
             <div class="kpi accent">
-                <div class="kpi-label">Yield / Acre</div>
-                <div class="kpi-value">3.53</div>
-                <div class="kpi-sub">bu/ac &mdash; see note below</div>
+                <div class="kpi-label">Weighted Yield / Acre</div>
+                <div class="kpi-value">10.98</div>
+                <div class="kpi-sub">bu/ac across 536.02 delivered acres</div>
             </div>
             <div class="kpi warn">
                 <div class="kpi-label">Unharvested Acres</div>
-                <div class="kpi-value">314.28</div>
-                <div class="kpi-sub">4 fields &mdash; insurance filed</div>
+                <div class="kpi-value">235.34</div>
+                <div class="kpi-sub">fields 23-W, 32-N, 61-S</div>
             </div>
         </div>
 
-        <div class="callout callout-warn">
-            <strong>Note on yield.</strong> The 5,884.09 bushels reflected here match the scale tickets attached to this report only. At 1,667.81 harvested acres this comes to <strong>3.53 bu/ac</strong>, which is well below realistic wheat yield for these fields &mdash; this report captures loads delivered as of the CHS run date <strong>08/11/26</strong> and does not yet include any settlement bushels held in open storage that have not been fully reported, or any additional loads delivered after that date. Refresh when the final elevator settlement clears.
+        <div class="callout callout-note">
+            <strong>Source of truth.</strong> Every bushel on this report comes from an elevator scale ticket. Combine harvest timestamps are used only to attribute each load to the field it came from &mdash; a field must be harvested before its bushels can be delivered. No on-farm bin storage.
         </div>
 
         <section class="card" id="loads">
@@ -623,73 +623,335 @@
             </div>
         </section>
 
+        <section class="card" id="attribution">
+            <h2>Load Attribution &mdash; Combine to Elevator <span class="sec-num">Section 02</span></h2>
+            <p class="lede">Each elevator ticket matched back to the field it came from by combine end-time. Rule: harvest end &le; delivery date, and the field's remaining unshipped bushels have to cover the load. Where the elevator and combine moisture both point to the same field, confidence is high.</p>
+
+            <div class="scroll-x">
+                <table class="data">
+                    <thead>
+                        <tr>
+                            <th>Elevator Ticket</th>
+                            <th>Delivered</th>
+                            <th>Account</th>
+                            <th class="num">Bushels</th>
+                            <th>&rarr; Field</th>
+                            <th>Combine End</th>
+                            <th>MO combine &rarr; elev</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>X045342</td>
+                            <td>07/03</td>
+                            <td>M77 AG LLC</td>
+                            <td class="num">562.26</td>
+                            <td><strong>55.N Kirby House</strong></td>
+                            <td>07/07 11:52 AM</td>
+                            <td>14.8 &rarr; 9.8</td>
+                        </tr>
+                        <tr>
+                            <td>X045452</td>
+                            <td>07/07</td>
+                            <td>M77 AG LLC</td>
+                            <td class="num">360.23</td>
+                            <td><strong>41 HD E/4</strong></td>
+                            <td>07/07 4:19 PM</td>
+                            <td>10.2 &rarr; 10.2</td>
+                        </tr>
+                        <tr>
+                            <td>80000577-54368 (Paoli)</td>
+                            <td>07/08</td>
+                            <td>M77 AG LLC</td>
+                            <td class="num">412.09</td>
+                            <td><strong>55.N Kirby House</strong></td>
+                            <td>07/07 11:52 AM</td>
+                            <td>14.8 &rarr; 9.5</td>
+                        </tr>
+                        <tr>
+                            <td>80000577-54369 (Paoli)</td>
+                            <td>07/08</td>
+                            <td>McConnell Enterprises LLC</td>
+                            <td class="num">412.10</td>
+                            <td><strong>55.N Kirby House</strong></td>
+                            <td>07/07 11:52 AM</td>
+                            <td>14.8 &rarr; 9.5</td>
+                        </tr>
+                        <tr>
+                            <td>X045500</td>
+                            <td>07/09</td>
+                            <td>McConnell Enterprises LLC</td>
+                            <td class="num">1,061.44</td>
+                            <td><strong>54 ME PAULS</strong></td>
+                            <td>07/08 8:58 PM</td>
+                            <td>15.9 &rarr; 13.6</td>
+                        </tr>
+                        <tr>
+                            <td>X045543</td>
+                            <td>07/12</td>
+                            <td>M77 AG LLC</td>
+                            <td class="num">535.38</td>
+                            <td><strong>13 LA BAM E/4</strong></td>
+                            <td>07/12 1:41 PM</td>
+                            <td>14.4 &rarr; 13.2</td>
+                        </tr>
+                        <tr>
+                            <td>X045539</td>
+                            <td>07/12</td>
+                            <td>M77 AG LLC</td>
+                            <td class="num">1,089.55</td>
+                            <td><strong>60 A1DAILEY RD</strong></td>
+                            <td>07/11 6:35 PM</td>
+                            <td>10.5 &rarr; 11.7</td>
+                        </tr>
+                        <tr>
+                            <td>X045560</td>
+                            <td>07/13</td>
+                            <td>Kyle D McConnell</td>
+                            <td class="num">1,189.73</td>
+                            <td><strong>30.W Pole Rd</strong></td>
+                            <td>07/13 11:31 AM</td>
+                            <td>15.3 &rarr; 13.5</td>
+                        </tr>
+                        <tr>
+                            <td>X045565</td>
+                            <td>07/13</td>
+                            <td>Kyle D McConnell</td>
+                            <td class="num">261.31</td>
+                            <td><strong>30.W Pole Rd</strong></td>
+                            <td>07/13 11:31 AM</td>
+                            <td>15.3 &rarr; 13.1</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3">Attributed across 6 fields</td>
+                            <td class="num">5,884.09</td>
+                            <td colspan="3">All ticket-to-field assignments confirmed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-note">
+                <strong>How the Paoli 50/50 split reads with attribution.</strong> Both halves of Paoli load 80000577 (824.19 bu total) come from field <strong>55.N Kirby House</strong>. Field 55 is 100% M77 AG &mdash; the split between M77 AG LLC and McConnell Enterprises LLC at the scale is internal accounting between two Kyle-controlled entities, not a crop-share settlement.
+            </div>
+        </section>
+
         <section class="card" id="shares">
-            <h2>Landlord Share Administration <span class="sec-num">Section 02</span></h2>
-            <p class="lede">Crop-share arrangements are settled at the scale &mdash; each entity's bushels were written directly to their own elevator account. No follow-on split is required by M77 AG.</p>
+            <h2>Landlord Share Administration <span class="sec-num">Section 03</span></h2>
+            <p class="lede">Four fields carry an external 35% crop-share arrangement. Standalone printable statement with per-transfer math and elevator instructions: <a href="/admin/farming/landlord-shares-2026-wheat.html" style="color:#2d5016; font-weight:600;">/admin/farming/landlord-shares-2026-wheat.html</a> &mdash; 1,202.66 bu total to move at CHS Haxtun across 4 transfers.</p>
+
+            <div class="scroll-x" style="margin-bottom: 18px;">
+                <table class="data">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Landlord</th>
+                            <th>Share</th>
+                            <th class="num">Delivered Bu</th>
+                            <th class="num">35% Landlord</th>
+                            <th class="num">M77 AG keeps (65%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>13</strong> LA BAM E/4</td>
+                            <td>Larry &amp; Adele McConnell</td>
+                            <td>35%</td>
+                            <td class="num">535.38</td>
+                            <td class="num">187.38</td>
+                            <td class="num">348.00</td>
+                        </tr>
+                        <tr>
+                            <td><strong>41</strong> HD E/4</td>
+                            <td>Dorothy McConnell</td>
+                            <td>35%</td>
+                            <td class="num">360.23</td>
+                            <td class="num">126.08</td>
+                            <td class="num">234.15</td>
+                        </tr>
+                        <tr>
+                            <td><strong>60</strong> A1DAILEY RD</td>
+                            <td>Adele McConnell</td>
+                            <td>35%</td>
+                            <td class="num">1,089.55</td>
+                            <td class="num">381.34</td>
+                            <td class="num">708.21</td>
+                        </tr>
+                        <tr>
+                            <td><strong>30.W</strong> Pole Rd</td>
+                            <td>Lynn Peterson</td>
+                            <td>35%</td>
+                            <td class="num">1,451.04</td>
+                            <td class="num">507.86</td>
+                            <td class="num">943.18 <span style="color:#666; font-size:11px;">(Kyle personal)</span></td>
+                        </tr>
+                        <tr class="subtotal-row">
+                            <td colspan="3">Landlord fields subtotal</td>
+                            <td class="num">3,436.20</td>
+                            <td class="num">1,202.66</td>
+                            <td class="num">2,233.54</td>
+                        </tr>
+                        <tr>
+                            <td><strong>54</strong> ME PAULS</td>
+                            <td>M77 AG (internal)</td>
+                            <td>100%</td>
+                            <td class="num">1,061.44</td>
+                            <td class="num">&mdash;</td>
+                            <td class="num">1,061.44</td>
+                        </tr>
+                        <tr>
+                            <td><strong>55</strong> Kirby House</td>
+                            <td>M77 AG (internal)</td>
+                            <td>100%</td>
+                            <td class="num">1,386.45</td>
+                            <td class="num">&mdash;</td>
+                            <td class="num">1,386.45</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3">All delivered fields</td>
+                            <td class="num">5,884.09</td>
+                            <td class="num">1,202.66</td>
+                            <td class="num">4,681.43</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="lede">Insurance-eligible landlord fields (35% of indemnity to landlord): <strong>23-W</strong> Kyle &amp; Brandi McConnell &middot; <strong>32-N</strong> Lynn Peterson &middot; <strong>61-S</strong> Adele McConnell. Indemnity math on the landlord shares statement once APH and price election are entered.</p>
 
             <div class="account-grid">
                 <div class="account-card">
                     <div class="name">M77 AG LLC</div>
                     <div class="id">Paoli 805091 &middot; Haxtun 950891</div>
-                    <div class="bu-label">Producer share</div>
+                    <div class="bu-label">Operating entity</div>
                     <div class="bu">2,959.51</div>
-                    <div class="breakdown">Paoli 412.09 bu + Haxtun 2,547.42 bu across 5 tickets</div>
+                    <div class="breakdown">Delivered under M77 AG LLC account across 5 tickets; landlord transfers pending per Section 03.</div>
                 </div>
-                <div class="account-card landlord">
+                <div class="account-card">
                     <div class="name">McConnell Enterprises LLC</div>
                     <div class="id">Paoli 805097 &middot; Haxtun 124813</div>
-                    <div class="bu-label">Landlord entity share</div>
+                    <div class="bu-label">M77 AG-controlled entity (internal)</div>
                     <div class="bu">1,473.54</div>
-                    <div class="breakdown">Paoli 412.10 bu (50/50 split of load 80000577) + Haxtun 1,061.44 bu on ticket X045500</div>
+                    <div class="breakdown">Paoli half of load 80000577 (412.10) + Haxtun X045500 (1,061.44) &mdash; internal accounting only, both fields 100% M77 AG.</div>
                 </div>
                 <div class="account-card personal">
                     <div class="name">Kyle D McConnell</div>
                     <div class="id">Haxtun 391145</div>
                     <div class="bu-label">Personal account</div>
                     <div class="bu">1,451.04</div>
-                    <div class="breakdown">Haxtun tickets X045560 (1,189.73) + X045565 (261.31), both delivered 07/13/26</div>
+                    <div class="breakdown">Field 30.W Pole Rd on tickets X045560 + X045565. Landlord transfer to Lynn Peterson (507.86 bu) pending per Section 03.</div>
                 </div>
-            </div>
-
-            <div class="callout callout-note">
-                <strong>How the split reads.</strong> Load <strong>80000577</strong> on 07/08/26 at Paoli was a single physical truckload of 49,451 net lbs, weighed in twice at 24,725 and 24,726 lbs so that M77 AG LLC and McConnell Enterprises LLC each got their crop-share portion written to their own name at delivery. That is the landlord share &mdash; it is already administered. No further payout from M77 AG is owed on the Paoli load.
             </div>
         </section>
 
         <section class="card" id="fields">
-            <h2>Field Status &mdash; 2026 Wheat <span class="sec-num">Section 03</span></h2>
-            <p class="lede">All 23 fields listed as wheat in the 2026 rotation, with harvest status. Four fields did not make it to harvest and are being filed for crop insurance in Section 04.</p>
+            <h2>Field Yield &mdash; Delivered Bushels Per Acre <span class="sec-num">Section 04</span></h2>
+            <p class="lede">Yield per acre calculated from <strong>elevator-delivered bushels</strong> against the field's planted acres from the field registry. Acres shown are from the field registry, not combine-reported acres.</p>
 
-            <div class="field-grid">
-                <div class="field-mini"><div class="fid">12-E</div><div class="ac">78.55 ac</div><div class="legal">SW4 14-7-49</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">13-W</div><div class="ac">74.88 ac</div><div class="legal">SE4 14-7-48</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">16-W</div><div class="ac">80.09 ac</div><div class="legal">E2 7-9-46</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini unharvested"><div class="fid">23-W</div><div class="ac">77.20 ac</div><div class="legal">SW 17-6-47</div><div class="status-flag unharvested">Not Harv.</div></div>
-                <div class="field-mini"><div class="fid">24-E</div><div class="ac">128.40 ac</div><div class="legal">N2 17-6-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">28 SE</div><div class="ac">67.00 ac</div><div class="legal">&mdash;</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini unharvested"><div class="fid">32-N</div><div class="ac">79.20 ac</div><div class="legal">SW4 35-7-47</div><div class="status-flag unharvested">Not Harv.</div></div>
-                <div class="field-mini"><div class="fid">33-N</div><div class="ac">98.70 ac</div><div class="legal">NE4 6-6-46</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">35-E</div><div class="ac">101.90 ac</div><div class="legal">NW4 14-7-48</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">36-W</div><div class="ac">157.50 ac</div><div class="legal">NE4 15-7-48</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">41-W</div><div class="ac">78.39 ac</div><div class="legal">NE4 11-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">42-E</div><div class="ac">79.09 ac</div><div class="legal">NW4 12-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">42-W</div><div class="ac">79.09 ac</div><div class="legal">NW4 12-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">44-W</div><div class="ac">77.43 ac</div><div class="legal">NE4 32-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">45</div><div class="ac">117.25 ac</div><div class="legal">SW4 20-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">46</div><div class="ac">68.26 ac</div><div class="legal">NW4 8-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">54-N</div><div class="ac">80.00 ac</div><div class="legal">SW 33-7-46</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">54-S</div><div class="ac">68.00 ac</div><div class="legal">SW 33-7-46</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">55-N</div><div class="ac">75.67 ac</div><div class="legal">NE 20-8-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">56-E</div><div class="ac">78.83 ac</div><div class="legal">NW 29-7-47</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini"><div class="fid">60-W</div><div class="ac">78.78 ac</div><div class="legal">NE 28-7-48</div><div class="status-flag harvested">Harvested</div></div>
-                <div class="field-mini unharvested"><div class="fid">61-N</div><div class="ac">78.94 ac</div><div class="legal">SE4 35-7-47</div><div class="status-flag unharvested">Not Harv.</div></div>
-                <div class="field-mini unharvested"><div class="fid">61-S</div><div class="ac">78.94 ac</div><div class="legal">SE4 35-7-47</div><div class="status-flag unharvested">Not Harv.</div></div>
+            <div class="scroll-x">
+                <table class="data">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Legal</th>
+                            <th class="num">Acres</th>
+                            <th class="num">Delivered Bu</th>
+                            <th class="num">Yield bu/ac</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>13 LA BAM E/4</strong></td>
+                            <td>SE4 14-7-48</td>
+                            <td class="num">74.88</td>
+                            <td class="num">535.38</td>
+                            <td class="num">7.15</td>
+                            <td>Delivered</td>
+                        </tr>
+                        <tr>
+                            <td><strong>30.W Pole Rd Full Quarter</strong></td>
+                            <td>&mdash;</td>
+                            <td class="num">80.30</td>
+                            <td class="num">1,451.04</td>
+                            <td class="num">18.07</td>
+                            <td>Delivered (2 loads)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>41 HD E/4</strong> (41-W)</td>
+                            <td>NE4 11-8-47</td>
+                            <td class="num">78.39</td>
+                            <td class="num">360.23</td>
+                            <td class="num">4.60</td>
+                            <td>Delivered</td>
+                        </tr>
+                        <tr>
+                            <td><strong>54 ME PAULS</strong> (54-N + 54-S)</td>
+                            <td>SW 33-7-46</td>
+                            <td class="num">148.00</td>
+                            <td class="num">1,061.44</td>
+                            <td class="num">7.17</td>
+                            <td>Delivered (McConnell Ent)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>55.N Kirby House</strong> (55-N)</td>
+                            <td>NE 20-8-47</td>
+                            <td class="num">75.67</td>
+                            <td class="num">1,386.45</td>
+                            <td class="num">18.32</td>
+                            <td>Delivered (3 loads, incl Paoli split)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>60 A1DAILEY RD</strong> (60-W)</td>
+                            <td>NE 28-7-48</td>
+                            <td class="num">78.78</td>
+                            <td class="num">1,089.55</td>
+                            <td class="num">13.83</td>
+                            <td>Delivered</td>
+                        </tr>
+                        <tr class="subtotal-row">
+                            <td colspan="2">Delivered fields subtotal</td>
+                            <td class="num">536.02</td>
+                            <td class="num">5,884.09</td>
+                            <td class="num">10.98</td>
+                            <td>Weighted avg delivered</td>
+                        </tr>
+                        <tr>
+                            <td>23-W KB SOUTHWEST</td>
+                            <td>SW 17-6-47</td>
+                            <td class="num">77.20</td>
+                            <td class="num">0</td>
+                            <td class="num">0.00</td>
+                            <td style="color:#a02818; font-weight:600;">Not harvested (insurance)</td>
+                        </tr>
+                        <tr>
+                            <td>32-N</td>
+                            <td>SW4 35-7-47</td>
+                            <td class="num">79.20</td>
+                            <td class="num">0</td>
+                            <td class="num">0.00</td>
+                            <td style="color:#a02818; font-weight:600;">Not harvested (insurance)</td>
+                        </tr>
+                        <tr>
+                            <td>61-S HIGHLAND E (south)</td>
+                            <td>SE4 35-7-47</td>
+                            <td class="num">78.94</td>
+                            <td class="num">0</td>
+                            <td class="num">0.00</td>
+                            <td style="color:#a02818; font-weight:600;">Not harvested (insurance)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-warn">
+                <strong>Other wheat fields (12-E, 14, 16-W, 22, 24-E, 25, 28 SE, 33-N, 35-E, 36-W, 42-E, 42-W, 44-W, 45, 46, 56-E)</strong> have no elevator delivery attributed on this report. With no grain in on-farm bins, any of these that were not delivered under a different account belong on the crop insurance loss notice in Section 05. Confirm final list with the operator.
             </div>
         </section>
 
         <section class="card" id="insurance">
-            <h2>Crop Insurance Loss Notice &mdash; Unharvested Wheat <span class="sec-num">Section 04</span></h2>
-            <p class="lede">Filed per the un-harvested fields identified in Section 03. Use this sheet as the source document for the loss notice to the crop insurance agent.</p>
+            <h2>Crop Insurance Loss Notice &mdash; Unharvested Wheat <span class="sec-num">Section 05</span></h2>
+            <p class="lede">Filed per the un-harvested fields identified in Section 04. A standalone printable Notice of Loss with formal PLSS legal descriptions and signature block is at <a href="/admin/farming/crop-insurance-2026-wheat.html" style="color:#2d5016; font-weight:600;">/admin/farming/crop-insurance-2026-wheat.html</a> &mdash; use that page to hand to the agent.</p>
 
             <div class="loss-notice">
                 <h4>Notice of Loss &mdash; 2026 Hard Red Winter Wheat</h4>
@@ -721,13 +983,6 @@
                             <td>Not harvested</td>
                         </tr>
                         <tr>
-                            <td><strong>61-N</strong></td>
-                            <td>SE4 35-7-47</td>
-                            <td class="num">78.94</td>
-                            <td>Dryland</td>
-                            <td>Not harvested</td>
-                        </tr>
-                        <tr>
                             <td><strong>61-S</strong></td>
                             <td>SE4 35-7-47</td>
                             <td class="num">78.94</td>
@@ -736,7 +991,7 @@
                         </tr>
                         <tr class="total">
                             <td colspan="2">Total unharvested wheat acres to insure</td>
-                            <td class="num">314.28</td>
+                            <td class="num">235.34</td>
                             <td colspan="2">&mdash;</td>
                         </tr>
                     </tbody>
@@ -755,7 +1010,7 @@
             </div>
 
             <div class="callout callout-note" style="margin-top: 16px;">
-                <strong>Before filing.</strong> Confirm the cause of loss (drought, hail, disease, etc.) with the operator, add appraisal or adjuster notes if any, and attach the field boundary maps from the field manager for 23-W, 32-N, 61-N, and 61-S.
+                <strong>Before filing.</strong> Confirm the cause of loss (drought, hail, disease, etc.) with the operator, add appraisal or adjuster notes if any, and attach the field boundary maps from the field manager for 23-W, 32-N, and 61-S. Field 61-N was not planted to wheat in 2026 and is excluded from this notice.
             </div>
         </section>
 
