@@ -1,0 +1,37 @@
+{
+  "cropYear": 2026,
+  "crop": "wheat",
+  "cropClass": "HRW",
+  "sourceDocument": "Field_Report_Harvest_2026.pdf (John Deere Operations Center, generated Aug 13, 2026)",
+  "note": "Combine-reported acres and total bushels are known to be inaccurate. Use elevator scale tickets for authoritative bushel totals; use combine timestamps to attribute loads to fields.",
+  "operator": "Matt Allphin",
+  "combine": "1H0S680-15952531",
+  "records": [
+    { "field": "12 - LA BAM W_4",              "farm": "LAFARMS",   "start": "2026-07-11T13:56", "end": "2026-07-11T14:04", "acres": 0,     "totalBu": 0,     "yieldBuAc": 0,  "moisture": 7.2,  "wetLbs": 22,     "note": "calibration pass only" },
+    { "field": "13 - LA BAM E/4",              "farm": "LAFARMS",   "start": "2026-07-12T09:07", "end": "2026-07-12T13:41", "acres": 73.2,  "totalBu": 792,   "yieldBuAc": 11, "moisture": 14.4, "wetLbs": 48623 },
+    { "field": "14 - LA BAM S/4",              "farm": "LAFARMS",   "start": "2026-07-11T14:02", "end": "2026-07-11T14:03", "acres": 0,     "totalBu": 0,     "yieldBuAc": 0,  "moisture": 37.7, "wetLbs": 3,      "note": "calibration pass only" },
+    { "field": "22 - KB TOP HILL",             "farm": "M77 AG",    "start": "2026-07-11T12:55", "end": "2026-07-11T12:59", "acres": 0.5,   "totalBu": 5,     "yieldBuAc": 11, "moisture": 14.8, "wetLbs": 292,    "note": "tiny partial, likely edge pass" },
+    { "field": "23 - KB SOUTHWEST",            "farm": "M77 AG",    "start": "2026-07-11T12:46", "end": "2026-07-11T13:26", "acres": 6.8,   "totalBu": 96,    "yieldBuAc": 14, "moisture": 20.2, "wetLbs": 6146,   "note": "6.8 of 77.2 ac; user classifies field as NOT HARVESTED (partial strip only)" },
+    { "field": "25 - KB MADSEN",               "farm": "M77 AG",    "start": "2026-07-11T13:09", "end": "2026-07-11T13:09", "acres": 0,     "totalBu": 0,     "yieldBuAc": 26, "moisture": 25.4, "wetLbs": 0,      "note": "calibration pass only" },
+    { "field": "30.W - Pole Rd Full Quarter",  "farm": "M77 AG",    "start": "2026-07-12T19:56", "end": "2026-07-13T11:31", "acres": 80.3,  "totalBu": 2020,  "yieldBuAc": 25, "moisture": 15.3, "wetLbs": 128600 },
+    { "field": "41 - HD E/4",                  "farm": "M77 AG",    "start": "2026-07-07T12:30", "end": "2026-07-07T16:19", "acres": 82.7,  "totalBu": 2171,  "yieldBuAc": 26, "moisture": 10.2, "wetLbs": 130300 },
+    { "field": "42 - E/2 N",                   "farm": "M77 AG",    "start": "2026-07-07T16:35", "end": "2026-07-07T16:36", "acres": 0,     "totalBu": 0,     "yieldBuAc": 0,  "moisture": 10.0, "wetLbs": 0,      "note": "calibration pass only" },
+    { "field": "54 - ME PAULS",                "farm": "M77 AG",    "start": "2026-07-08T17:16", "end": "2026-07-08T20:58", "acres": 71.3,  "totalBu": 1275,  "yieldBuAc": 18, "moisture": 15.9, "wetLbs": 82000 },
+    { "field": "55.N - Kirby House",           "farm": "M77 AG",    "start": "2026-07-02T15:47", "end": "2026-07-07T11:52", "acres": 86.9,  "totalBu": 1471,  "yieldBuAc": 17, "moisture": 14.8, "wetLbs": 94000 },
+    { "field": "60 - A1DAILEY RD",             "farm": "M77 AG",    "start": "2026-07-11T14:18", "end": "2026-07-11T18:35", "acres": 80.2,  "totalBu": 1297,  "yieldBuAc": 16, "moisture": 10.5, "wetLbs": 79000 },
+    { "field": "61 - HIGHLAND E",              "farm": "M77 AG",    "start": "2026-07-09T12:41", "end": "2026-08-10T15:01", "acres": 28.4,  "totalBu": 379,   "yieldBuAc": 13, "moisture": 18.6, "wetLbs": 25000,  "note": "28.4 of 157.88 ac (61-N + 61-S); user classifies field as NOT HARVESTED (partial only)" },
+    { "field": "N Bins",                       "farm": "M77 AG",    "start": "2026-07-14T10:14", "end": "2026-07-14T10:54", "acres": 19.3,  "totalBu": 100,   "yieldBuAc": 5,  "moisture": 11.5, "wetLbs": 6000,   "note": "on-farm bin transfer, not a field" },
+    { "field": "Over East 1/2",                "farm": "M77 AG",    "start": "2026-07-07T16:34", "end": "2026-07-08T16:17", "acres": 82.0,  "totalBu": 1315,  "yieldBuAc": 16, "moisture": 11.0, "wetLbs": 82000 }
+  ],
+  "attributions": [
+    { "elevatorTicket": "X045342", "elevatorDate": "2026-07-03", "field": "55.N - Kirby House",         "bushels": 562.26,  "confidence": "high",   "reason": "Only field in progress by Jul 3 (started Jul 2)" },
+    { "elevatorTicket": "X045452", "elevatorDate": "2026-07-07", "field": "41 - HD E/4",                "bushels": 360.23,  "confidence": "high",   "reason": "MO% match exact (10.2 combine vs 10.2 elevator); same-day delivery" },
+    { "elevatorTicket": "80000577-54368", "elevatorDate": "2026-07-08", "field": "55.N - Kirby House",  "bushels": 412.09,  "confidence": "medium", "reason": "Paoli 50/50 crop-share split with landlord entity; 55.N is Kirby House (crop-share field)" },
+    { "elevatorTicket": "80000577-54369", "elevatorDate": "2026-07-08", "field": "55.N - Kirby House",  "bushels": 412.10,  "confidence": "medium", "reason": "Landlord's half of same Paoli load" },
+    { "elevatorTicket": "X045500", "elevatorDate": "2026-07-09", "field": "54 - ME PAULS",              "bushels": 1061.44, "confidence": "medium", "reason": "Bushels match 54 combine (1,275 harvested, 1,061 delivered); MO 15.9 combine dried to 13.6" },
+    { "elevatorTicket": "X045543", "elevatorDate": "2026-07-12", "field": "13 - LA BAM E/4",            "bushels": 535.38,  "confidence": "medium", "reason": "Same-day harvest and delivery; MO 14.4 combine dried to 13.2" },
+    { "elevatorTicket": "X045539", "elevatorDate": "2026-07-12", "field": "60 - A1DAILEY RD",           "bushels": 1089.55, "confidence": "medium", "reason": "60 was harvested Jul 11, ready to deliver Jul 12; bushel volume close to combine" },
+    { "elevatorTicket": "X045560", "elevatorDate": "2026-07-13", "field": "30.W - Pole Rd Full Quarter","bushels": 1189.73, "confidence": "high",   "reason": "30.W harvested Jul 12-13 by Kyle personally; delivered to Kyle personal account same day" },
+    { "elevatorTicket": "X045565", "elevatorDate": "2026-07-13", "field": "30.W - Pole Rd Full Quarter","bushels": 261.31,  "confidence": "high",   "reason": "Second load of same field, same account, same day" }
+  ]
+}
