@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Ledgers - M77 AG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+        }
+
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #d4af37;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #d4af37;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #1a5f2a;
+            background: rgba(45, 143, 74, 0.2);
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid #555;
+            color: #ccc;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 24px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 14px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 14px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            min-width: 180px;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            border-color: #2d5016;
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background: #1f3a0e;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #555;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            border-color: #2d5016;
+            color: #2d5016;
+            background: white;
+        }
+
+        .btn-print {
+            background: #1a1a1a;
+        }
+
+        .btn-print:hover {
+            background: #333;
+        }
+
+        /* Summary cards */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .summary-card .card-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .summary-card .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d5016;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .summary-card .card-value.negative {
+            color: #b3261e;
+        }
+
+        .summary-card .card-value.neutral {
+            color: #2c2c2c;
+        }
+
+        /* Table */
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c2c2c;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-wrap {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            padding: 14px 16px;
+            border-bottom: 2px solid #eee;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        th.r, td.r { text-align: right; }
+
+        tbody tr:hover {
+            background: #faf9f7;
+        }
+
+        .entry-type {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-due { background: #fff3cd; color: #856404; }
+        .type-paid { background: #d4edda; color: #155724; }
+        .type-overdue { background: #f8d7da; color: #721c24; }
+        .type-partial { background: #d1ecf1; color: #0c5460; }
+        .type-pending { background: #e2e3e5; color: #383d41; }
+
+        .owed-direction {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .amount-cell {
+            font-weight: 700;
+        }
+
+        .balance-cell {
+            font-weight: 700;
+            color: #b3261e;
+        }
+
+        .balance-cell.paid {
+            color: #2d5016;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: white; font-size: 11px; }
+            .header, .filters, .btn, .table-actions, .no-print { display: none !important; }
+            .container { padding: 0; max-width: 100%; }
+            .summary-row { gap: 10px; }
+            .summary-card { box-shadow: none; border: 1px solid #ddd; padding: 12px; }
+            .summary-card .card-value { font-size: 18px; }
+            .table-wrap { box-shadow: none; border: 1px solid #ddd; }
+            td, th { padding: 8px 10px; font-size: 11px; }
+            .print-header { display: block !important; }
+            @page { margin: 0.5in; size: letter landscape; }
+        }
+
+        .print-header {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 3px solid #2d5016;
+        }
+
+        .print-header .ph-brand {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #2d5016;
+        }
+
+        .print-header .ph-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .print-header .ph-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; flex-direction: column; gap: 12px; }
+            .nav-links { flex-wrap: wrap; gap: 10px; }
+            .container { padding: 20px; }
+            .summary-row { grid-template-columns: repeat(2, 1fr); }
+            .filters { flex-direction: column; }
+            .filter-group select, .filter-group input { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">M77 AG</div>
+            <nav class="nav-links">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/financials">Financials</a>
+                <a href="/admin/hunting-bookings">Hunting</a>
+                <a href="/admin/banking">Banking</a>
+                <a href="/admin/equipment">Equipment</a>
+                <a href="/admin/rentals">Rentals</a>
+                <a href="/admin/landlord-ledgers" class="active">Ledgers</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-role" id="userRole">Admin</span>
+                <span class="user-name" id="userName">Welcome</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Print header (only visible when printing) -->
+        <div class="print-header">
+            <div class="ph-brand">M77 AG</div>
+            <div class="ph-title">Landlord Ledger Statement</div>
+            <div class="ph-meta" id="printMeta"></div>
+        </div>
+
+        <h1 class="page-title">Landlord Ledgers</h1>
+        <p class="page-subtitle">View, filter, and print landlord account statements</p>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Landlord</label>
+                <select id="filterLandlord">
+                    <option value="">All Landlords</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Property / Farm</label>
+                <select id="filterProperty">
+                    <option value="">All Properties</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Crop Year</label>
+                <select id="filterYear">
+                    <option value="">All Years</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="due">Due</option>
+                    <option value="partial_paid">Partial</option>
+                    <option value="paid">Paid</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+            <button class="btn" onclick="loadLedger()">Filter</button>
+            <button class="btn btn-print" onclick="printReport()">Print Report</button>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-row" id="summaryRow">
+            <div class="summary-card">
+                <div class="card-label">Total Entries</div>
+                <div class="card-value neutral" id="sumCount">--</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-label">Farmer Owes Landlord</div>
+                <div class="card-value" id="sumFarmerOwes">--</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-label">Landlord Owes Farmer</div>
+                <div class="card-value" id="sumLandlordOwes">--</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-label">Net Balance</div>
+                <div class="card-value" id="sumNet">--</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-header">
+            <h3 id="tableTitle">Ledger Entries</h3>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Landlord</th>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Direction</th>
+                        <th class="r">Amount</th>
+                        <th class="r">Paid</th>
+                        <th class="r">Balance</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="ledgerBody">
+                    <tr><td colspan="10" class="loading">Loading ledger entries...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const token = getCookie('authToken') || localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/admin/login';
+            return;
+        }
+
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
+        function authHeaders() {
+            return {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function money(n) {
+            if (n == null) return '--';
+            return '$' + Math.abs(Number(n)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtDate(d) {
+            if (!d) return '--';
+            return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function esc(s) {
+            if (s == null) return '';
+            return String(s).replace(/[&<>"']/g, function(c) {
+                return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+            });
+        }
+
+        var typeLabels = {
+            'lease_payment_due': 'Lease Due',
+            'lease_payment_made': 'Lease Paid',
+            'crop_share_due': 'Crop Share Due',
+            'crop_share_paid': 'Crop Share Paid',
+            'expense_reimbursement': 'Expense Reimb.',
+            'custom_work_due': 'Custom Work Due',
+            'custom_work_paid': 'Custom Work Paid',
+            'adjustment': 'Adjustment',
+            'other': 'Other'
+        };
+
+        var statusClasses = {
+            'pending': 'type-pending',
+            'due': 'type-due',
+            'partial_paid': 'type-partial',
+            'paid': 'type-paid',
+            'overdue': 'type-overdue',
+            'cancelled': 'type-pending'
+        };
+
+        // Load user info
+        fetch('/api/auth/me', { headers: authHeaders() })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success && data.user) {
+                    document.getElementById('userName').textContent = data.user.firstName || data.user.email;
+                    document.getElementById('userRole').textContent = data.user.role;
+                }
+            })
+            .catch(function() {});
+
+        // Load landlord filter options
+        fetch('/api/auth/users?role=landlord', { headers: authHeaders() })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var sel = document.getElementById('filterLandlord');
+                var users = data.users || data.data || [];
+                users.forEach(function(u) {
+                    var opt = document.createElement('option');
+                    opt.value = u._id;
+                    opt.textContent = (u.firstName || '') + ' ' + (u.lastName || '') + (u.username ? ' (' + u.username + ')' : '');
+                    sel.appendChild(opt);
+                });
+            })
+            .catch(function() {});
+
+        // Load property filter options
+        fetch('/api/fields', { headers: authHeaders() })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var sel = document.getElementById('filterProperty');
+                var fields = data.fields || data.data || [];
+                fields.forEach(function(f) {
+                    var opt = document.createElement('option');
+                    opt.value = f._id;
+                    opt.textContent = f.name || f.fieldName || f._id;
+                    sel.appendChild(opt);
+                });
+            })
+            .catch(function() {});
+
+        window.loadLedger = function() {
+            var landlord = document.getElementById('filterLandlord').value;
+            var property = document.getElementById('filterProperty').value;
+            var year = document.getElementById('filterYear').value;
+            var status = document.getElementById('filterStatus').value;
+
+            var params = [];
+            if (landlord) params.push('landlord=' + landlord);
+            if (property) params.push('property=' + property);
+            if (year) params.push('cropYear=' + year);
+            if (status) params.push('status=' + status);
+
+            var url = '/api/ledger' + (params.length ? '?' + params.join('&') : '');
+            var body = document.getElementById('ledgerBody');
+            body.innerHTML = '<tr><td colspan="10" class="loading">Loading...</td></tr>';
+
+            fetch(url, { headers: authHeaders() })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    var entries = data.entries || [];
+                    renderEntries(entries);
+                    computeSummary(entries);
+                    updatePrintMeta();
+                })
+                .catch(function(err) {
+                    body.innerHTML = '<tr><td colspan="10" class="empty-state"><h3>Error loading ledger</h3><p>' + esc(err.message) + '</p></td></tr>';
+                });
+        };
+
+        function renderEntries(entries) {
+            var body = document.getElementById('ledgerBody');
+            if (!entries.length) {
+                body.innerHTML = '<tr><td colspan="10" class="empty-state"><h3>No ledger entries found</h3><p>Try adjusting your filters or add entries via the ledger API.</p></td></tr>';
+                return;
+            }
+
+            body.innerHTML = entries.map(function(e) {
+                var landlordName = e.landlord ? ((e.landlord.firstName || '') + ' ' + (e.landlord.lastName || '')).trim() : '--';
+                var propName = e.property ? (e.property.name || '--') : '--';
+                var typeLabel = typeLabels[e.entryType] || e.entryType;
+                var statusLabel = (e.status || 'pending').replace('_', ' ');
+                var statusClass = statusClasses[e.status] || 'type-pending';
+                var direction = (e.owedBy === 'farmer' ? 'Farmer owes Landlord' : 'Landlord owes Farmer');
+                var balance = e.balanceRemaining != null ? e.balanceRemaining : (e.amount - (e.amountPaid || 0));
+                var balanceClass = balance <= 0 ? 'balance-cell paid' : 'balance-cell';
+
+                return '<tr>' +
+                    '<td>' + fmtDate(e.entryDate) + '</td>' +
+                    '<td><strong>' + esc(landlordName) + '</strong></td>' +
+                    '<td>' + esc(propName) + '</td>' +
+                    '<td><span class="entry-type ' + statusClass + '">' + esc(typeLabel) + '</span></td>' +
+                    '<td>' + esc(e.description || '') + '</td>' +
+                    '<td><span class="owed-direction">' + esc(direction) + '</span></td>' +
+                    '<td class="r amount-cell">' + money(e.amount) + '</td>' +
+                    '<td class="r">' + money(e.amountPaid || 0) + '</td>' +
+                    '<td class="r ' + balanceClass + '">' + money(balance) + '</td>' +
+                    '<td><span class="entry-type ' + statusClass + '">' + esc(statusLabel) + '</span></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function computeSummary(entries) {
+            var farmerOwes = 0;
+            var landlordOwes = 0;
+            var count = 0;
+
+            entries.forEach(function(e) {
+                if (e.status === 'cancelled' || e.status === 'paid') return;
+                var bal = e.balanceRemaining != null ? e.balanceRemaining : (e.amount - (e.amountPaid || 0));
+                if (bal <= 0) return;
+                count++;
+                if (e.owedBy === 'farmer') {
+                    farmerOwes += bal;
+                } else {
+                    landlordOwes += bal;
+                }
+            });
+
+            var net = farmerOwes - landlordOwes;
+
+            document.getElementById('sumCount').textContent = entries.length;
+            document.getElementById('sumFarmerOwes').textContent = money(farmerOwes);
+            document.getElementById('sumLandlordOwes').textContent = money(landlordOwes);
+
+            var netEl = document.getElementById('sumNet');
+            netEl.textContent = (net >= 0 ? '' : '-') + money(net);
+            netEl.className = 'card-value' + (net < 0 ? ' negative' : '');
+        }
+
+        function updatePrintMeta() {
+            var landlordSel = document.getElementById('filterLandlord');
+            var yearSel = document.getElementById('filterYear');
+            var landlordText = landlordSel.selectedIndex > 0 ? landlordSel.options[landlordSel.selectedIndex].text : 'All Landlords';
+            var yearText = yearSel.value || 'All Years';
+            document.getElementById('printMeta').textContent = landlordText + ' | Crop Year: ' + yearText + ' | Printed: ' + new Date().toLocaleDateString('en-US');
+        }
+
+        window.printReport = function() {
+            updatePrintMeta();
+            window.print();
+        };
+
+        window.logout = function() {
+            document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            localStorage.removeItem('authToken');
+            window.location.href = '/admin/login';
+        };
+
+        // Load on page init
+        loadLedger();
+    })();
+    </script>
+</body>
+</html>
