@@ -22,10 +22,34 @@ const { createDefaultAdmin, createDefaultFarmer } = require('./models/user');
 const { createDefaultFarm } = require('./controllers/landManagementAuthController');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
+// Drop indexes left on the users collection by earlier schema versions. The
+// unique index on "username" refers to a field the User model no longer has,
+// so every account is written with username null and the second one fails with
+// a duplicate key error. Runs on boot so a deploy repairs it.
+async function dropStaleUserIndexes() {
+  try {
+    const collection = mongoose.connection.db.collection('users');
+    const indexes = await collection.indexes();
+
+    if (!indexes.some(index => index.name === 'username_1')) return;
+
+    await collection.dropIndex('username_1');
+    const result = await collection.updateMany(
+      { username: { $exists: true } },
+      { $unset: { username: '' } }
+    );
+    console.log(`Dropped stale users.username_1 index and cleared the field from ${result.modifiedCount} account(s)`);
+  } catch (error) {
+    console.error('Could not drop stale user indexes:', error.message);
+  }
+}
+
 mongoose.connect(MONGODB_URI)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB connected successfully');
     console.log('Database:', MONGODB_URI.split('@')[1] || 'localhost');
+    // Repair stale indexes before any account is created
+    await dropStaleUserIndexes();
     // Create default admin user
     createDefaultAdmin();
     // Create default farmer user
@@ -54,6 +78,7 @@ const equipmentRoutes = require('./routes/equipment');
 const equipmentInventoryRoutes = require('./routes/equipmentInventory');
 const rentalRoutes = require('./routes/rentals');
 const seasonPassRoutes = require('./routes/seasonPass');
+const customerPortalRoutes = require('./routes/customerPortal');
 const landlordRoutes = require('./routes/landlord');
 const farmerRoutes = require('./routes/farmer');
 const reviewRoutes = require('./routes/reviews');
@@ -105,6 +130,7 @@ app.use('/api/equipment', equipmentRoutes);
 app.use('/api/equipment/inventory', equipmentInventoryRoutes);
 app.use('/api/rentals', rentalRoutes);
 app.use('/api/season-pass', seasonPassRoutes);
+app.use('/api/customer-portal', customerPortalRoutes);
 app.use('/api/landlord', landlordRoutes);
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/reviews', reviewRoutes);
@@ -375,6 +401,10 @@ app.get('/admin/rentals', (req, res) => {
 
 app.get('/rental-agreement', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/rental-agreement.html'));
+});
+
+app.get('/customer-card', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/customer-card.html'));
 });
 
 app.get('/season-pass', (req, res) => {

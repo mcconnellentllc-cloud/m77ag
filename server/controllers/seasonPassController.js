@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const { sendSeasonPassConfirmation } = require('../utils/emailservice');
+const { issueCardLink } = require('./customerPortalController');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '30d'; // Season pass users get longer sessions
@@ -40,6 +41,18 @@ const deliverPassDocuments = async (user) => {
       { _id: user._id },
       { $set: { 'seasonPass.documentsSentAt': new Date() } }
     );
+
+    // Follow with a sign-in link to their customer card, where the pass,
+    // reservations, waivers and invoices all live
+    try {
+      await issueCardLink({
+        email: user.email,
+        name: user.name,
+        issuedBy: 'season pass confirmation'
+      });
+    } catch (linkError) {
+      console.error('Failed to send customer card link to', user.email, linkError);
+    }
 
     return true;
   } catch (emailError) {

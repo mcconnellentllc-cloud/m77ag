@@ -5,6 +5,7 @@ const { getServiceContractEmail, getAdminServiceNotification } = require('../ema
 const { getEquipmentPurchaseEmail, getAdminEquipmentNotification } = require('../email-templates/equipment-purchase-email');
 const { getSeasonPassConfirmationEmail, getAdminSeasonPassNotification } = require('../email-templates/season-pass-confirmation-email');
 const { getWaiverReminderEmail } = require('../email-templates/waiver-reminder-email');
+const { getCustomerCardLinkEmail } = require('../email-templates/customer-card-link-email');
 
 // SMTP transport. The mailboxes are Microsoft 365, so the default host is
 // Microsoft's SMTP relay on port 587 with STARTTLS. Set MAIL_SERVICE (for
@@ -335,6 +336,15 @@ const sendSeasonPassConfirmation = async (passHolder) => {
   }
 };
 
+// Email a customer their passwordless customer card link
+const sendCustomerCardLink = async ({ email, name, url, expiresAt }) => {
+  return sendHuntingEmail({
+    to: email,
+    subject: 'Your M77 AG Customer Card',
+    html: getCustomerCardLinkEmail({ name, url, expiresAt })
+  });
+};
+
 // Send waiver reminder to a booked hunter who has not signed yet
 const sendWaiverReminder = async (booking) => {
   try {
@@ -374,6 +384,7 @@ const sendStandaloneWaiverConfirmation = async (waiver) => {
 
 module.exports = {
   verifyMailConfiguration,
+  sendCustomerCardLink,
   sendHuntingEmail,
   HUNTING_NOTIFICATION_RECIPIENTS,
   sendBookingConfirmation,

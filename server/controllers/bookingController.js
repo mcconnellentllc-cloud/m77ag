@@ -232,6 +232,14 @@ const bookingController = {
         console.error('Failed to send booking confirmation email:', emailError);
       }
 
+      // Send a sign-in link to their customer card
+      try {
+        const { issueCardLink } = require('./customerPortalController');
+        await issueCardLink({ email: booking.email, name: booking.customerName, issuedBy: 'booking confirmation' });
+      } catch (linkError) {
+        console.error('Failed to send customer card link:', linkError);
+      }
+
       res.status(201).json({
         success: true,
         message: 'Booking created successfully',
@@ -999,6 +1007,14 @@ const bookingController = {
         console.log('Confirmation email sent to:', email);
       } catch (emailError) {
         console.error('Failed to send confirmation email:', emailError);
+      }
+
+      // Send a sign-in link to their customer card
+      try {
+        const { issueCardLink } = require('./customerPortalController');
+        await issueCardLink({ email: booking.email, name: booking.customerName, issuedBy: 'manual booking' });
+      } catch (linkError) {
+        console.error('Failed to send customer card link:', linkError);
       }
 
       res.status(201).json({

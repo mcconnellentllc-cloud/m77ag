@@ -686,7 +686,14 @@
                     <button onclick="updateCustomerSpend()" style="padding: 10px 20px; background: #2c5530; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; min-width: 180px;">
                         Update Lifetime Spend
                     </button>
+                    <button onclick="sendCustomerCardLink()" style="padding: 10px 20px; background: #d4a54a; color: #2c5530; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; min-width: 180px;">
+                        Send Customer Card Link
+                    </button>
                 </div>
+                <p style="margin: 12px 0 0 0; font-size: 13px; color: #666;">
+                    The customer card link signs the customer in with no password, showing their reservations,
+                    signed waivers, season pass credits, invoices and property maps.
+                </p>
                 <div id="spendResult" style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; display: none;"></div>
             </div>
         </div>
@@ -1533,6 +1540,41 @@
             } catch (error) {
                 console.error('Error sending email:', error);
                 alert('Error sending confirmation email');
+            }
+        }
+
+        // Email a customer the passwordless link to their customer card
+        async function sendCustomerCardLink() {
+            const email = document.getElementById('customerEmailInput').value.trim();
+            const resultDiv = document.getElementById('spendResult');
+
+            if (!email) {
+                alert('Enter the customer email address first');
+                return;
+            }
+
+            if (!confirm(`Email a customer card sign-in link to ${email}?`)) return;
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/customer-portal/admin/send-link', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                resultDiv.style.display = 'block';
+                resultDiv.style.borderLeft = data.success ? '4px solid #2c5530' : '4px solid #c62828';
+                resultDiv.innerHTML = `<strong>${data.success ? '' : 'Error: '}${data.message}</strong>`;
+            } catch (error) {
+                console.error('Error sending customer card link:', error);
+                resultDiv.style.display = 'block';
+                resultDiv.style.borderLeft = '4px solid #c62828';
+                resultDiv.innerHTML = '<strong>Error: Failed to send the customer card link</strong>';
             }
         }
 

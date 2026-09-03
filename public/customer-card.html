@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Customer Card - M77 AG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f3f0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .top-bar {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .brand { color: #d4a54a; font-size: 20px; font-weight: bold; letter-spacing: 2px; }
+        .brand span { color: #fff; font-weight: normal; font-size: 15px; margin-left: 10px; letter-spacing: 0; }
+
+        .sign-out {
+            background: none;
+            border: 1px solid #666;
+            color: #ccc;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 25px 20px 60px 20px; }
+
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #2c5530;
+            font-size: 18px;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #d4a54a;
+        }
+
+        .customer-name { font-size: 26px; color: #2c5530; margin-bottom: 4px; }
+        .customer-contact { color: #666; font-size: 15px; }
+
+        .pass-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .pass-stat {
+            background: #f5f3f0;
+            padding: 16px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .pass-stat .value { font-size: 26px; font-weight: bold; color: #2c5530; }
+        .pass-stat .label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .record {
+            border: 1px solid #e6e3de;
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .record-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .record-title { font-weight: bold; color: #2c5530; font-size: 16px; }
+        .record-sub { color: #666; font-size: 14px; }
+
+        .detail-row { font-size: 14px; padding: 3px 0; }
+        .detail-row .label { color: #666; display: inline-block; min-width: 130px; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-good { background: #e3f0e4; color: #2c5530; }
+        .badge-warn { background: #fdf3e0; color: #8a6314; }
+        .badge-flat { background: #eee; color: #555; }
+
+        .empty { color: #888; font-style: italic; padding: 10px 0; }
+
+        .btn {
+            padding: 13px 28px;
+            background: #2d5016;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background: #fff;
+            color: #2c5530;
+            border: 2px solid #2c5530;
+        }
+
+        .link-list a {
+            display: inline-block;
+            margin: 0 18px 10px 0;
+            color: #2c5530;
+            font-weight: 600;
+        }
+
+        .signin-wrap { max-width: 460px; margin: 60px auto; padding: 0 20px; }
+
+        .signin-wrap input {
+            width: 100%;
+            padding: 13px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 15px;
+        }
+
+        .message-error { background: #fdecea; color: #8a1c14; border-left: 4px solid #c62828; }
+        .message-ok { background: #e3f0e4; color: #2c5530; border-left: 4px solid #2c5530; }
+
+        @media (max-width: 600px) {
+            .detail-row .label { display: block; min-width: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="brand">M77 AG <span>Customer Card</span></div>
+        <button class="sign-out" id="signOutBtn" onclick="signOut()" style="display: none;">Sign Out</button>
+    </div>
+
+    <!-- Sign in -->
+    <div class="signin-wrap" id="signinView" style="display: none;">
+        <div class="card">
+            <h2>Open Your Customer Card</h2>
+            <div class="message" id="signinMessage"></div>
+            <p style="margin-bottom: 18px; color: #555;">
+                Enter the email address on your reservation. We will send a sign-in link. No password needed.
+            </p>
+            <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
+            <button class="btn" style="width: 100%;" onclick="requestLink()" id="requestBtn">Email My Sign-In Link</button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="container" id="loadingView">
+        <div class="card"><p>Loading your customer card...</p></div>
+    </div>
+
+    <!-- Card -->
+    <div class="container" id="cardView" style="display: none;">
+        <div class="card">
+            <div class="customer-name" id="customerName"></div>
+            <div class="customer-contact" id="customerContact"></div>
+        </div>
+
+        <div class="card" id="passCard" style="display: none;">
+            <h2>Season Pass</h2>
+            <div class="pass-grid" id="passGrid"></div>
+            <p style="margin-top: 15px; color: #666; font-size: 14px;" id="passExpiry"></p>
+        </div>
+
+        <div class="card">
+            <h2>Reservations</h2>
+            <div id="bookingsList"></div>
+        </div>
+
+        <div class="card">
+            <h2>Signed Waivers</h2>
+            <div id="waiversList"></div>
+        </div>
+
+        <div class="card" id="invoicesCard">
+            <h2>Invoices</h2>
+            <div id="invoicesList"></div>
+        </div>
+
+        <div class="card">
+            <h2>Property Maps</h2>
+            <p style="margin-bottom: 14px; color: #555;">Hunting is permitted only inside the marked boundaries.</p>
+            <div class="link-list">
+                <a href="/heritage-farm-map-printable.html">Heritage Farm Guide (print)</a>
+                <a href="/prairie-peace-map-printable.html">Prairie Peace Guide (print)</a>
+                <a href="/heritage-farm-map.html">Heritage Farm Map</a>
+                <a href="/prairie-peace-map.html">Prairie Peace Map</a>
+                <a href="/maps/Heritage-Farm-Boundaries.kml">Heritage Farm Boundaries (KML)</a>
+                <a href="/maps/Prairie-Peace-Boundaries.kml">Prairie Peace Boundaries (KML)</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Need Help</h2>
+            <p>Email <a href="mailto:hunting@m77ag.com" style="color: #2c5530; font-weight: 600;">hunting@m77ag.com</a> or call 970-520-1807.</p>
+            <p style="margin-top: 12px;"><a href="/sign-waiver.html" class="btn btn-outline" style="margin-top: 8px;">Sign a Waiver</a></p>
+        </div>
+    </div>
+
+    <script>
+        const SESSION_KEY = 'customerCardToken';
+
+        function show(view) {
+            ['signinView', 'loadingView', 'cardView'].forEach(id => {
+                document.getElementById(id).style.display = id === view ? 'block' : 'none';
+            });
+            document.getElementById('signOutBtn').style.display = view === 'cardView' ? 'block' : 'none';
+        }
+
+        function showMessage(text, isError) {
+            const el = document.getElementById('signinMessage');
+            el.textContent = text;
+            el.className = 'message ' + (isError ? 'message-error' : 'message-ok');
+            el.style.display = 'block';
+        }
+
+        function formatDate(value) {
+            if (!value) return 'Not set';
+            return new Date(value).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function formatMoney(value) {
+            return '$' + (Number(value) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function badge(text, kind) {
+            return `<span class="badge badge-${kind}">${text}</span>`;
+        }
+
+        // Exchange the emailed token for a session, then clear it from the URL
+        async function redeemToken(token) {
+            const response = await fetch('/api/customer-portal/redeem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                localStorage.setItem(SESSION_KEY, data.token);
+                window.history.replaceState({}, document.title, '/customer-card.html');
+                return true;
+            }
+
+            show('signinView');
+            showMessage(data.message || 'That link is no longer valid. Request a new one.', true);
+            return false;
+        }
+
+        async function loadCard() {
+            const token = localStorage.getItem(SESSION_KEY);
+
+            if (!token) {
+                show('signinView');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/customer-portal/card', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem(SESSION_KEY);
+                    show('signinView');
+                    showMessage('Your session has expired. Request a new sign-in link.', true);
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    show('signinView');
+                    showMessage(data.message || 'Could not load your customer card.', true);
+                    return;
+                }
+
+                renderCard(data);
+                show('cardView');
+            } catch (error) {
+                console.error('Error loading customer card:', error);
+                show('signinView');
+                showMessage('Could not reach the server. Please try again.', true);
+            }
+        }
+
+        function renderCard(data) {
+            document.getElementById('customerName').textContent = data.customer.name;
+            document.getElementById('customerContact').textContent =
+                [data.customer.email, data.customer.phone].filter(Boolean).join('  |  ');
+
+            // Season pass
+            const pass = data.seasonPass;
+            if (pass) {
+                document.getElementById('passCard').style.display = 'block';
+                document.getElementById('passGrid').innerHTML = `
+                    <div class="pass-stat">
+                        <div class="value">${pass.type === '10-day' ? '10' : '5'}</div>
+                        <div class="label">Day Pass</div>
+                    </div>
+                    <div class="pass-stat">
+                        <div class="value">${pass.creditsRemaining}</div>
+                        <div class="label">Credits Left</div>
+                    </div>
+                    <div class="pass-stat">
+                        <div class="value">${pass.creditsTotal - pass.creditsRemaining}</div>
+                        <div class="label">Credits Used</div>
+                    </div>
+                    <div class="pass-stat">
+                        <div class="value">${formatMoney(pass.amountPaid)}</div>
+                        <div class="label">Paid</div>
+                    </div>
+                `;
+                document.getElementById('passExpiry').textContent =
+                    `Valid through ${formatDate(pass.expiresAt)}. Your pass covers both properties, 2,710 acres.`;
+            }
+
+            // Reservations
+            const bookings = data.bookings || [];
+            document.getElementById('bookingsList').innerHTML = bookings.length ? bookings.map(b => `
+                <div class="record">
+                    <div class="record-head">
+                        <div>
+                            <div class="record-title">${b.parcel}</div>
+                            <div class="record-sub">${formatDate(b.checkinDate)} to ${formatDate(b.checkoutDate)}</div>
+                        </div>
+                        <div>
+                            ${badge(b.status || 'pending', b.status === 'confirmed' ? 'good' : 'flat')}
+                            ${badge(b.waiverSigned ? 'waiver signed' : 'waiver needed', b.waiverSigned ? 'good' : 'warn')}
+                        </div>
+                    </div>
+                    <div class="detail-row"><span class="label">Hunters:</span> ${b.numHunters}</div>
+                    <div class="detail-row"><span class="label">Game:</span> ${b.gameSpecies || 'Not specified'}</div>
+                    ${b.campingFee ? `<div class="detail-row"><span class="label">Camping:</span> ${formatMoney(b.campingFee)}</div>` : ''}
+                    <div class="detail-row"><span class="label">Total:</span> ${b.paymentMethod === 'season-pass' ? 'Season pass credit' : formatMoney(b.totalPrice)}</div>
+                    <div class="detail-row"><span class="label">Payment:</span> ${b.paymentStatus}${b.paymentMethod ? ' (' + b.paymentMethod + ')' : ''}</div>
+                    ${!b.waiverSigned ? `<p style="margin-top: 12px;"><a href="/sign-waiver.html?bookingId=${b._id}" class="btn" style="padding: 10px 20px; font-size: 14px;">Sign Waiver</a></p>` : ''}
+                </div>
+            `).join('') : '<div class="empty">No reservations on file yet.</div>';
+
+            // Waivers
+            const waivers = data.waivers || [];
+            document.getElementById('waiversList').innerHTML = waivers.length ? waivers.map(w => {
+                const vehicle = [w.vehicleColor, w.vehicleMake, w.vehicleModel].filter(Boolean).join(' ');
+                return `
+                    <div class="record">
+                        <div class="record-head">
+                            <div>
+                                <div class="record-title">${w.hunterName}</div>
+                                <div class="record-sub">${w.property} - hunt date ${formatDate(w.huntDate)}</div>
+                            </div>
+                            ${badge('signed', 'good')}
+                        </div>
+                        <div class="detail-row"><span class="label">Signed:</span> ${formatDate(w.signedAt)}</div>
+                        ${vehicle ? `<div class="detail-row"><span class="label">Vehicle:</span> ${vehicle}${w.vehicleLicense ? ' - ' + w.vehicleLicense : ''}</div>` : ''}
+                    </div>
+                `;
+            }).join('') : '<div class="empty">No signed waivers yet. Every hunter must sign before hunting.</div>';
+
+            // Invoices
+            const invoices = data.invoices || [];
+            document.getElementById('invoicesList').innerHTML = invoices.length ? invoices.map(i => `
+                <div class="record">
+                    <div class="record-head">
+                        <div>
+                            <div class="record-title">Invoice ${i.invoiceNumber}</div>
+                            <div class="record-sub">Issued ${formatDate(i.issueDate)} - due ${formatDate(i.dueDate)}</div>
+                        </div>
+                        ${badge(i.status, i.balanceDue > 0 ? 'warn' : 'good')}
+                    </div>
+                    <div class="detail-row"><span class="label">Total:</span> ${formatMoney(i.total)}</div>
+                    <div class="detail-row"><span class="label">Paid:</span> ${formatMoney(i.amountPaid)}</div>
+                    <div class="detail-row"><span class="label">Balance Due:</span> <strong>${formatMoney(i.balanceDue)}</strong></div>
+                </div>
+            `).join('') : '<div class="empty">No invoices on file.</div>';
+        }
+
+        async function requestLink() {
+            const email = document.getElementById('emailInput').value.trim();
+            const button = document.getElementById('requestBtn');
+
+            if (!email) {
+                showMessage('Enter the email address on your reservation.', true);
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('/api/customer-portal/request-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                showMessage(data.message, !data.success);
+            } catch (error) {
+                console.error('Error requesting link:', error);
+                showMessage('Could not reach the server. Please try again.', true);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Email My Sign-In Link';
+            }
+        }
+
+        function signOut() {
+            localStorage.removeItem(SESSION_KEY);
+            show('signinView');
+            showMessage('You are signed out.', false);
+        }
+
+        // Start: redeem a token from the URL, otherwise use an existing session
+        (async () => {
+            const token = new URLSearchParams(window.location.search).get('token');
+
+            if (token) {
+                const ok = await redeemToken(token);
+                if (!ok) return;
+            }
+
+            loadCard();
+        })();
+    </script>
+</body>
+</html>
