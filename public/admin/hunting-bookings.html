@@ -683,6 +683,82 @@
             </div>
         </div>
 
+        <!-- Season Passes -->
+        <div class="bookings-section" style="margin-bottom: 20px;">
+            <div class="section-header">
+                <h2 class="section-title">Season Passes</h2>
+            </div>
+            <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                <p style="margin: 0 0 20px 0; color: #555; font-size: 14px;">
+                    Record a season pass paid for outside the website (PayPal invoice, check or cash). Recording the pass
+                    creates the customer account if needed and emails the liability waiver link and property maps.
+                </p>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 220px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Customer Name</label>
+                        <input type="text" id="passName" placeholder="Full name" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 220px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Email</label>
+                        <input type="email" id="passEmail" placeholder="customer@example.com" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Phone (required for new customers)</label>
+                        <input type="tel" id="passPhone" placeholder="970-555-0100" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                    <div style="flex: 1; min-width: 180px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Pass Type</label>
+                        <select id="passType" onchange="updatePassAmount()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="5-day">5-Day Pass</option>
+                            <option value="10-day">10-Day Pass</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Amount Paid</label>
+                        <input type="number" id="passAmount" value="750" step="0.01" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Payment Method</label>
+                        <select id="passPaymentMethod" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="paypal-invoice">PayPal Invoice</option>
+                            <option value="paypal">PayPal (website)</option>
+                            <option value="check">Check</option>
+                            <option value="cash">Cash</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Payment Reference</label>
+                        <input type="text" id="passReference" placeholder="Transaction or check number" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button onclick="recordSeasonPass()" style="padding: 12px 25px; background: #2c5530; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        Record Pass and Send Waiver and Maps
+                    </button>
+                </div>
+
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Resend Waiver and Maps to an Existing Pass Holder</label>
+                    <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <input type="email" id="resendPassEmail" placeholder="Pass holder email" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                        </div>
+                        <button onclick="resendSeasonPassDocuments()" style="padding: 10px 20px; background: #d4a54a; color: #2c5530; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; min-width: 180px;">
+                            Resend Waiver and Maps
+                        </button>
+                    </div>
+                </div>
+
+                <div id="passResult" style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; display: none;"></div>
+            </div>
+        </div>
+
         <!-- Bookings Table -->
         <div class="bookings-section">
             <div class="section-header">
@@ -1263,6 +1339,102 @@
             } catch (error) {
                 console.error('Error sending email:', error);
                 alert('Error sending confirmation email');
+            }
+        }
+
+        // Season Passes
+        function updatePassAmount() {
+            const passType = document.getElementById('passType').value;
+            document.getElementById('passAmount').value = passType === '10-day' ? 1400 : 750;
+        }
+
+        function showPassResult(message, isError) {
+            const resultDiv = document.getElementById('passResult');
+            resultDiv.style.display = 'block';
+            resultDiv.style.borderLeft = isError ? '4px solid #c62828' : '4px solid #2c5530';
+            resultDiv.innerHTML = message;
+        }
+
+        async function recordSeasonPass() {
+            const name = document.getElementById('passName').value.trim();
+            const email = document.getElementById('passEmail').value.trim();
+
+            if (!name || !email) {
+                alert('Customer name and email are required');
+                return;
+            }
+
+            const payload = {
+                name,
+                email,
+                phone: document.getElementById('passPhone').value.trim(),
+                passType: document.getElementById('passType').value,
+                amountPaid: document.getElementById('passAmount').value,
+                paymentMethod: document.getElementById('passPaymentMethod').value,
+                paymentReference: document.getElementById('passReference').value.trim()
+            };
+
+            if (!confirm(`Record a ${payload.passType} season pass for ${name} and email the waiver link and property maps to ${email}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/season-pass/admin/record', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let message = `<strong>${data.message}</strong>`;
+                    if (data.accountCreated && data.temporaryPassword) {
+                        message += `<br><br>A new customer account was created. Temporary password: <strong>${data.temporaryPassword}</strong><br>Give this to the customer so they can sign in at m77ag.com and reset it.`;
+                    }
+                    showPassResult(message, !data.documentsSent);
+
+                    document.getElementById('passName').value = '';
+                    document.getElementById('passEmail').value = '';
+                    document.getElementById('passPhone').value = '';
+                    document.getElementById('passReference').value = '';
+                } else {
+                    showPassResult(`<strong>Error:</strong> ${data.message || 'Failed to record season pass'}`, true);
+                }
+            } catch (error) {
+                console.error('Error recording season pass:', error);
+                showPassResult('<strong>Error:</strong> Failed to record season pass', true);
+            }
+        }
+
+        async function resendSeasonPassDocuments() {
+            const email = document.getElementById('resendPassEmail').value.trim();
+
+            if (!email) {
+                alert('Please enter the pass holder email address');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/season-pass/admin/resend-documents', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                showPassResult(`<strong>${data.success ? '' : 'Error: '}${data.message}</strong>`, !data.success);
+            } catch (error) {
+                console.error('Error resending season pass documents:', error);
+                showPassResult('<strong>Error:</strong> Failed to resend waiver and maps', true);
             }
         }
 

@@ -104,7 +104,7 @@ function getWaiverReminderEmail(booking) {
 </head>
 <body>
   <div class="header">
-    <h1>⚠️ WAIVER REMINDER ⚠️</h1>
+    <h1>WAIVER REMINDER</h1>
   </div>
 
   <div class="content">
@@ -143,7 +143,7 @@ function getWaiverReminderEmail(booking) {
         Or they can sign manually at the link above.
       </p>
       <p style="margin-top: 15px; color: #721c24; font-weight: bold; font-size: 16px;">
-        ⚠️ WARNING: No one will be allowed to hunt without a signed waiver.
+        WARNING: No one will be allowed to hunt without a signed waiver.
       </p>
     </div>
 

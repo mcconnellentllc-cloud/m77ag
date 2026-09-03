@@ -115,6 +115,18 @@ const userSchema = new mongoose.Schema({
       default: 0
     },
     amountPaid: Number,
+    // How the pass was paid for. Off-site payments (PayPal invoice, check, cash)
+    // are recorded by the office rather than captured through the website.
+    paymentMethod: {
+      type: String,
+      enum: ['paypal', 'paypal-invoice', 'check', 'cash', 'other'],
+      default: 'paypal'
+    },
+    // PayPal transaction/order ID, check number, or invoice number
+    paymentReference: String,
+    // Set when the waiver link and property maps were last emailed to the holder
+    documentsSentAt: Date,
+    recordedBy: String,
     bookingIds: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Booking'

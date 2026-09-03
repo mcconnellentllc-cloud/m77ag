@@ -1,6 +1,11 @@
 const Booking = require('../models/booking');
 const GameRest = require('../models/gameRest');
-const { sendBookingConfirmation, sendWaiverConfirmation } = require('../utils/emailservice');
+const {
+  sendBookingConfirmation,
+  sendWaiverConfirmation,
+  sendWaiverReminder: sendWaiverReminderEmail,
+  sendStandaloneWaiverConfirmation
+} = require('../utils/emailservice');
 
 // Helper function to create automatic game rest periods after booking
 async function createGameRestPeriods(booking) {
@@ -301,6 +306,17 @@ const bookingController = {
           } catch (emailError) {
             console.error('Failed to send waiver confirmation email:', emailError);
           }
+        }
+      }
+
+      // A waiver signed without a booking belongs to a season pass holder or a
+      // walk-up hunter. Send them the same dash card and property maps.
+      if (!booking && waiver.email) {
+        try {
+          await sendStandaloneWaiverConfirmation(waiver);
+          console.log('Waiver documents and maps sent to:', waiver.email);
+        } catch (emailError) {
+          console.error('Failed to send standalone waiver documents:', emailError);
         }
       }
 
@@ -657,32 +673,7 @@ const bookingController = {
         });
       }
 
-      // Import waiver reminder email template
-      const { getWaiverReminderEmail } = require('../email-templates/waiver-reminder-email');
-      const nodemailer = require('nodemailer');
-
-      // Create transporter
-      const transporter = nodemailer.createTransporter({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER || 'hunting@m77ag.com',
-          pass: process.env.EMAIL_PASS
-        }
-      });
-
-      // Generate email HTML from template
-      const emailHTML = getWaiverReminderEmail(booking);
-
-      // Send email to customer
-      await transporter.sendMail({
-        from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-        replyTo: 'hunting@m77ag.com',
-        to: booking.email,
-        subject: '⚠️ WAIVER REMINDER - Action Required for Your M77 AG Hunting Reservation',
-        html: emailHTML
-      });
-
-      console.log('Waiver reminder email sent to:', booking.email);
+      await sendWaiverReminderEmail(booking);
 
       res.json({
         success: true,
