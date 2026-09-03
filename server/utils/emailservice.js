@@ -6,18 +6,48 @@ const { getEquipmentPurchaseEmail, getAdminEquipmentNotification } = require('..
 const { getSeasonPassConfirmationEmail, getAdminSeasonPassNotification } = require('../email-templates/season-pass-confirmation-email');
 const { getWaiverReminderEmail } = require('../email-templates/waiver-reminder-email');
 
-// Hunting mail goes through the hunting mailbox, never the office mailbox.
-// Set HUNTING_EMAIL_USER and HUNTING_EMAIL_PASS to the hunting account and its
-// app password. Without those, hunting mail falls back to the shared account,
-// and Gmail will rewrite the sender to whatever account actually authenticated.
-const HUNTING_EMAIL_USER = process.env.HUNTING_EMAIL_USER || process.env.EMAIL_USER || 'hunting@m77ag.com';
-const HUNTING_EMAIL_PASS = process.env.HUNTING_EMAIL_PASS || process.env.EMAIL_PASS;
-const HUNTING_FROM = `"M77 AG Hunting" <${HUNTING_EMAIL_USER}>`;
-const HUNTING_REPLY_TO = 'hunting@m77ag.com';
+// SMTP transport. The mailboxes are Microsoft 365, so the default host is
+// Microsoft's SMTP relay on port 587 with STARTTLS. Set MAIL_SERVICE (for
+// example 'gmail') to use a provider shortcut instead, or MAIL_HOST/MAIL_PORT
+// for any other server.
+const MAIL_HOST = process.env.MAIL_HOST || 'smtp.office365.com';
+const MAIL_PORT = Number(process.env.MAIL_PORT) || 587;
+const MAIL_SERVICE = process.env.MAIL_SERVICE;
 
-// Office mail (custom farming, equipment, rentals) keeps the shared account.
-const OFFICE_EMAIL_USER = process.env.OFFICE_EMAIL_USER || process.env.EMAIL_USER || 'office@m77ag.com';
-const OFFICE_EMAIL_PASS = process.env.OFFICE_EMAIL_PASS || process.env.EMAIL_PASS;
+const buildTransport = (user, pass) => {
+  if (MAIL_SERVICE) {
+    return nodemailer.createTransport({ service: MAIL_SERVICE, auth: { user, pass } });
+  }
+
+  return nodemailer.createTransport({
+    host: MAIL_HOST,
+    port: MAIL_PORT,
+    // Port 587 upgrades through STARTTLS rather than connecting over TLS
+    secure: MAIL_PORT === 465,
+    requireTLS: MAIL_PORT !== 465,
+    auth: { user, pass },
+    tls: { minVersion: 'TLSv1.2' }
+  });
+};
+
+// Hunting mail goes through the hunting mailbox, never the office mailbox.
+//
+// hunting@m77ag.com is a SHARED Microsoft 365 mailbox. A shared mailbox has no
+// licence and no password of its own, so it cannot authenticate directly.
+// Authenticate as a licensed account that holds "Send As" permission on it
+// (HUNTING_SMTP_USER / HUNTING_SMTP_PASS) and send with the shared address in
+// the From header (HUNTING_FROM_ADDRESS).
+const HUNTING_SMTP_USER = process.env.HUNTING_SMTP_USER || process.env.HUNTING_EMAIL_USER || process.env.EMAIL_USER;
+const HUNTING_SMTP_PASS = process.env.HUNTING_SMTP_PASS || process.env.HUNTING_EMAIL_PASS || process.env.EMAIL_PASS;
+const HUNTING_FROM_ADDRESS = process.env.HUNTING_FROM_ADDRESS || 'hunting@m77ag.com';
+const HUNTING_FROM = `"M77 AG Hunting" <${HUNTING_FROM_ADDRESS}>`;
+const HUNTING_REPLY_TO = HUNTING_FROM_ADDRESS;
+
+// Office mail (custom farming, equipment, rentals) uses the office mailbox.
+const OFFICE_SMTP_USER = process.env.OFFICE_SMTP_USER || process.env.OFFICE_EMAIL_USER || process.env.EMAIL_USER;
+const OFFICE_SMTP_PASS = process.env.OFFICE_SMTP_PASS || process.env.OFFICE_EMAIL_PASS || process.env.EMAIL_PASS;
+const OFFICE_FROM_ADDRESS = process.env.OFFICE_FROM_ADDRESS || 'office@m77ag.com';
+const OFFICE_EMAIL_USER = OFFICE_FROM_ADDRESS;
 
 // Internal recipients for hunting notifications. Hunting bookings, waivers,
 // season passes and reviews are handled out of the hunting inbox, not the office.
@@ -27,26 +57,43 @@ const HUNTING_NOTIFICATION_RECIPIENTS = (process.env.HUNTING_NOTIFY_EMAILS || 'h
   .filter(Boolean)
   .join(', ');
 
-// Transporter for the hunting mailbox
-const createHuntingTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: HUNTING_EMAIL_USER,
-      pass: HUNTING_EMAIL_PASS
-    }
-  });
-};
+// Transporter authenticating as the account that can send as the hunting mailbox
+const createHuntingTransporter = () => buildTransport(HUNTING_SMTP_USER, HUNTING_SMTP_PASS);
 
 // Transporter for the office mailbox
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: OFFICE_EMAIL_USER,
-      pass: OFFICE_EMAIL_PASS
+const createTransporter = () => buildTransport(OFFICE_SMTP_USER, OFFICE_SMTP_PASS);
+
+// Confirm both mailboxes can authenticate and send. Returns a result per
+// mailbox rather than throwing, so a startup check can report both.
+const verifyMailConfiguration = async () => {
+  const targets = [
+    { name: 'hunting', authUser: HUNTING_SMTP_USER, from: HUNTING_FROM_ADDRESS, transport: createHuntingTransporter },
+    { name: 'office', authUser: OFFICE_SMTP_USER, from: OFFICE_FROM_ADDRESS, transport: createTransporter }
+  ];
+
+  const results = [];
+  for (const target of targets) {
+    const detail = {
+      mailbox: target.name,
+      host: MAIL_SERVICE ? `service:${MAIL_SERVICE}` : `${MAIL_HOST}:${MAIL_PORT}`,
+      authenticatesAs: target.authUser || '(not configured)',
+      sendsAs: target.from
+    };
+
+    if (!target.authUser || !(target.name === 'hunting' ? HUNTING_SMTP_PASS : OFFICE_SMTP_PASS)) {
+      results.push({ ...detail, ok: false, error: 'SMTP username or password is not set' });
+      continue;
     }
-  });
+
+    try {
+      await target.transport().verify();
+      results.push({ ...detail, ok: true });
+    } catch (error) {
+      results.push({ ...detail, ok: false, error: error.message });
+    }
+  }
+
+  return results;
 };
 
 // Property label for subject lines. Bookings store either the display name
@@ -197,16 +244,17 @@ const sendServiceContract = async (serviceData) => {
 };
 
 // Generic send email function (used by rental management flows)
-const sendEmail = async ({ to, subject, html, from, replyTo }) => {
+const sendEmail = async ({ to, subject, html, text, from, replyTo }) => {
   try {
     const transporter = createTransporter();
 
     await transporter.sendMail({
       from: from || `"M77 AG" <${OFFICE_EMAIL_USER}>`,
-      replyTo: replyTo || 'office@m77ag.com',
+      replyTo: replyTo || OFFICE_FROM_ADDRESS,
       to,
       subject,
-      html
+      html,
+      text
     });
 
     console.log(`Email sent successfully to ${to}`);
@@ -325,6 +373,7 @@ const sendStandaloneWaiverConfirmation = async (waiver) => {
 };
 
 module.exports = {
+  verifyMailConfiguration,
   sendHuntingEmail,
   HUNTING_NOTIFICATION_RECIPIENTS,
   sendBookingConfirmation,

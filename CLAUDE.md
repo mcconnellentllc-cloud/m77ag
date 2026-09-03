@@ -180,9 +180,30 @@ PORT=3000
 NODE_ENV=production|development
 MONGODB_URI=mongodb+srv://...
 JWT_SECRET=your-secret-key
+
+# Mail. The mailboxes are Microsoft 365, so the default SMTP host is
+# smtp.office365.com on port 587. Set MAIL_SERVICE=gmail to use Google instead.
+MAIL_HOST=smtp.office365.com
+MAIL_PORT=587
+
+# hunting@m77ag.com and office@m77ag.com are SHARED mailboxes. A shared mailbox
+# has no licence and no password, so it cannot authenticate on its own.
+# Authenticate as a licensed account holding "Send As" permission on the shared
+# mailbox, and put the shared address in the From header.
+HUNTING_SMTP_USER=licensed-account@m77ag.com
+HUNTING_SMTP_PASS=account-password
+HUNTING_FROM_ADDRESS=hunting@m77ag.com
+
+OFFICE_SMTP_USER=licensed-account@m77ag.com
+OFFICE_SMTP_PASS=account-password
+OFFICE_FROM_ADDRESS=office@m77ag.com
+
+# Falls back to these when the per-mailbox variables above are unset
 EMAIL_USER=email@domain.com
-EMAIL_PASS=app-password
+EMAIL_PASS=account-password
 ```
+
+Verify mail can authenticate and send with `npm run check:email`.
 
 ---
 

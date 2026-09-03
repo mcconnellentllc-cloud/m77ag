@@ -18,7 +18,8 @@
     "migrate:hierarchy:dry": "DRY_RUN=1 node server/scripts/seed-and-migrate-hierarchy.js",
     "ingest:fsa-filings": "node server/scripts/ingest-fsa-filings.js",
     "ingest:fsa-filings:dry": "DRY_RUN=1 node server/scripts/ingest-fsa-filings.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check:email": "node server/scripts/check-email.js"
   },
   "keywords": [
     "agriculture",

@@ -1191,22 +1191,13 @@ router.post('/appointment', async (req, res) => {
       ? preferredTimes.join(', ')
       : 'Not specified';
 
-    // Try to send email via nodemailer if configured
+    // Try to send email through the shared mail service if configured
     try {
-      const nodemailer = require('nodemailer');
+      const { sendEmail } = require('../utils/emailservice');
 
       // Check if email credentials are configured
       if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-          }
-        });
-
         const mailOptions = {
-          from: process.env.EMAIL_USER,
           to: 'office@m77ag.com',
           subject: `Rental Showing Request - ${property}`,
           html: `
@@ -1247,7 +1238,7 @@ Submitted: ${new Date().toLocaleString()}
           `
         };
 
-        await transporter.sendMail(mailOptions);
+        await sendEmail(mailOptions);
         console.log('Appointment email sent to office@m77ag.com');
       } else {
         // Log the appointment request if email not configured
