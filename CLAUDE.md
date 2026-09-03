@@ -182,9 +182,14 @@ MONGODB_URI=mongodb+srv://...
 JWT_SECRET=your-secret-key
 
 # Mail. The mailboxes are Microsoft 365, so the default SMTP host is
-# smtp.office365.com on port 587. Set MAIL_SERVICE=gmail to use Google instead.
-MAIL_HOST=smtp.office365.com
-MAIL_PORT=587
+# smtp.office365.com on port 587. SMTP_HOST and SMTP_PORT are read too.
+# Set MAIL_SERVICE=gmail to use Google instead.
+SMTP_HOST=smtp.office365.com
+SMTP_PORT=587
+
+# EMAIL_AUTH_USER is the licensed account that authenticates. EMAIL_USER is the
+# address mail is sent as. They differ when sending as a shared mailbox.
+EMAIL_AUTH_USER=licensed-account@m77ag.com
 
 # hunting@m77ag.com and office@m77ag.com are SHARED mailboxes. A shared mailbox
 # has no licence and no password, so it cannot authenticate on its own.

@@ -8,11 +8,11 @@ const { getWaiverReminderEmail } = require('../email-templates/waiver-reminder-e
 const { getCustomerCardLinkEmail } = require('../email-templates/customer-card-link-email');
 
 // SMTP transport. The mailboxes are Microsoft 365, so the default host is
-// Microsoft's SMTP relay on port 587 with STARTTLS. Set MAIL_SERVICE (for
-// example 'gmail') to use a provider shortcut instead, or MAIL_HOST/MAIL_PORT
-// for any other server.
-const MAIL_HOST = process.env.MAIL_HOST || 'smtp.office365.com';
-const MAIL_PORT = Number(process.env.MAIL_PORT) || 587;
+// Microsoft's SMTP relay on port 587 with STARTTLS. SMTP_HOST and SMTP_PORT
+// are read as well, since the deployment already sets those names. Set
+// MAIL_SERVICE (for example 'gmail') to use a provider shortcut instead.
+const MAIL_HOST = process.env.MAIL_HOST || process.env.SMTP_HOST || 'smtp.office365.com';
+const MAIL_PORT = Number(process.env.MAIL_PORT || process.env.SMTP_PORT) || 587;
 const MAIL_SERVICE = process.env.MAIL_SERVICE;
 
 const buildTransport = (user, pass) => {
@@ -38,14 +38,22 @@ const buildTransport = (user, pass) => {
 // Authenticate as a licensed account that holds "Send As" permission on it
 // (HUNTING_SMTP_USER / HUNTING_SMTP_PASS) and send with the shared address in
 // the From header (HUNTING_FROM_ADDRESS).
-const HUNTING_SMTP_USER = process.env.HUNTING_SMTP_USER || process.env.HUNTING_EMAIL_USER || process.env.EMAIL_USER;
+// EMAIL_AUTH_USER is the licensed account that authenticates; EMAIL_USER is
+// the address mail is sent as. They differ for a shared mailbox.
+const HUNTING_SMTP_USER = process.env.HUNTING_SMTP_USER
+  || process.env.HUNTING_EMAIL_USER
+  || process.env.EMAIL_AUTH_USER
+  || process.env.EMAIL_USER;
 const HUNTING_SMTP_PASS = process.env.HUNTING_SMTP_PASS || process.env.HUNTING_EMAIL_PASS || process.env.EMAIL_PASS;
 const HUNTING_FROM_ADDRESS = process.env.HUNTING_FROM_ADDRESS || 'hunting@m77ag.com';
 const HUNTING_FROM = `"M77 AG Hunting" <${HUNTING_FROM_ADDRESS}>`;
 const HUNTING_REPLY_TO = HUNTING_FROM_ADDRESS;
 
 // Office mail (custom farming, equipment, rentals) uses the office mailbox.
-const OFFICE_SMTP_USER = process.env.OFFICE_SMTP_USER || process.env.OFFICE_EMAIL_USER || process.env.EMAIL_USER;
+const OFFICE_SMTP_USER = process.env.OFFICE_SMTP_USER
+  || process.env.OFFICE_EMAIL_USER
+  || process.env.EMAIL_AUTH_USER
+  || process.env.EMAIL_USER;
 const OFFICE_SMTP_PASS = process.env.OFFICE_SMTP_PASS || process.env.OFFICE_EMAIL_PASS || process.env.EMAIL_PASS;
 const OFFICE_FROM_ADDRESS = process.env.OFFICE_FROM_ADDRESS || 'office@m77ag.com';
 const OFFICE_EMAIL_USER = OFFICE_FROM_ADDRESS;
@@ -66,6 +74,17 @@ const createTransporter = () => buildTransport(OFFICE_SMTP_USER, OFFICE_SMTP_PAS
 
 // Confirm both mailboxes can authenticate and send. Returns a result per
 // mailbox rather than throwing, so a startup check can report both.
+const describeMailSources = () => ({
+  host: process.env.MAIL_HOST ? 'MAIL_HOST' : (process.env.SMTP_HOST ? 'SMTP_HOST' : 'default'),
+  port: process.env.MAIL_PORT ? 'MAIL_PORT' : (process.env.SMTP_PORT ? 'SMTP_PORT' : 'default'),
+  service: MAIL_SERVICE ? 'MAIL_SERVICE' : 'not set',
+  huntingAuth: process.env.HUNTING_SMTP_USER ? 'HUNTING_SMTP_USER'
+    : process.env.HUNTING_EMAIL_USER ? 'HUNTING_EMAIL_USER'
+    : process.env.EMAIL_AUTH_USER ? 'EMAIL_AUTH_USER'
+    : process.env.EMAIL_USER ? 'EMAIL_USER' : 'not set',
+  huntingFrom: process.env.HUNTING_FROM_ADDRESS ? 'HUNTING_FROM_ADDRESS' : 'default'
+});
+
 const verifyMailConfiguration = async () => {
   const targets = [
     { name: 'hunting', authUser: HUNTING_SMTP_USER, from: HUNTING_FROM_ADDRESS, transport: createHuntingTransporter },
@@ -384,6 +403,7 @@ const sendStandaloneWaiverConfirmation = async (waiver) => {
 
 module.exports = {
   verifyMailConfiguration,
+  describeMailSources,
   sendCustomerCardLink,
   sendHuntingEmail,
   HUNTING_NOTIFICATION_RECIPIENTS,

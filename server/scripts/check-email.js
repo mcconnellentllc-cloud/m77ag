@@ -7,10 +7,18 @@
 // goes in the From header.
 require('dotenv').config();
 
-const { verifyMailConfiguration } = require('../utils/emailservice');
+const { verifyMailConfiguration, describeMailSources } = require('../utils/emailservice');
 
 (async () => {
   console.log('Checking mail configuration...\n');
+
+  const sources = describeMailSources();
+  console.log('Resolved from these environment variables:');
+  console.log(`  SMTP host:         ${sources.host}`);
+  console.log(`  SMTP port:         ${sources.port}`);
+  console.log(`  Provider shortcut: ${sources.service}`);
+  console.log(`  Hunting auth user: ${sources.huntingAuth}`);
+  console.log(`  Hunting From:      ${sources.huntingFrom}\n`);
 
   const results = await verifyMailConfiguration();
   let failed = 0;
