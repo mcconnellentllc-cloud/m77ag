@@ -743,12 +743,6 @@ function getReminderEmail(invoice, isOverdue) {
   `;
 }
 
-module.exports = {
-  generateMonthlyInvoice,
-  autoGenerateInvoices,
-  recordPayment,
-  getAllInvoices,
-  getInvoiceById,
-  applyLateFees,
-  sendPaymentReminders
-};
+// Handlers are exported individually above via exports.<name>. A trailing
+// module.exports listing bare identifiers threw a ReferenceError on require,
+// which crashed the server at startup.
