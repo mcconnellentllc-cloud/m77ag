@@ -593,9 +593,17 @@
     <!-- Main Container -->
     <div class="container">
         <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Hunting Bookings</h1>
-            <p class="page-subtitle">Manage reservations for Heritage Farm and Prairie Peace</p>
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1 class="page-title">Hunting Bookings</h1>
+                <p class="page-subtitle">Manage reservations for Heritage Farm and Prairie Peace</p>
+            </div>
+            <div style="min-width: 240px;">
+                <label for="seasonSelect" style="display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 14px;">Hunting Season</label>
+                <select id="seasonSelect" onchange="changeSeason()" style="width: 100%; padding: 12px; border: 2px solid #2c5530; border-radius: 6px; font-size: 16px; font-weight: 600; color: #2c5530; background: white;">
+                </select>
+                <p id="seasonRange" style="margin: 6px 0 0 0; font-size: 12px; color: #666;"></p>
+            </div>
         </div>
 
         <!-- Stats Grid -->
@@ -1036,6 +1044,64 @@
         });
 
         // Load all bookings
+        // A hunting season runs April 1 through March 31, so a hunt in January 2027
+        // belongs to the 2026 season. seasonOf returns the season's start year.
+        let selectedSeason = null;
+
+        function seasonOf(dateValue) {
+            const date = new Date(dateValue);
+            if (isNaN(date)) return null;
+            return date.getMonth() >= 3 ? date.getFullYear() : date.getFullYear() - 1;
+        }
+
+        function currentSeason() {
+            return seasonOf(new Date());
+        }
+
+        function seasonRangeText(season) {
+            return `April 1, ${season} through March 31, ${season + 1}`;
+        }
+
+        // Bookings for the season currently selected in the dropdown
+        function seasonBookings() {
+            if (selectedSeason === null) return allBookings;
+            return allBookings.filter(b => seasonOf(b.checkinDate) === selectedSeason);
+        }
+
+        // Build the dropdown from the seasons present in the data, newest first,
+        // always including the current season even when it has no bookings yet.
+        function populateSeasons() {
+            const seasons = new Set(allBookings.map(b => seasonOf(b.checkinDate)).filter(s => s !== null));
+            seasons.add(currentSeason());
+
+            const sorted = Array.from(seasons).sort((a, b) => b - a);
+
+            if (selectedSeason === null || !seasons.has(selectedSeason)) {
+                selectedSeason = sorted.includes(currentSeason()) ? currentSeason() : sorted[0];
+            }
+
+            const select = document.getElementById('seasonSelect');
+            select.innerHTML = sorted.map(season => {
+                const count = allBookings.filter(b => seasonOf(b.checkinDate) === season).length;
+                return `<option value="${season}"${season === selectedSeason ? ' selected' : ''}>${season} Hunting Season (${count})</option>`;
+            }).join('');
+
+            document.getElementById('seasonRange').textContent = seasonRangeText(selectedSeason);
+        }
+
+        function changeSeason() {
+            selectedSeason = parseInt(document.getElementById('seasonSelect').value, 10);
+            document.getElementById('seasonRange').textContent = seasonRangeText(selectedSeason);
+
+            // Reset the date buttons so the season is the active view
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const allBtn = document.querySelector('.filter-btn');
+            if (allBtn) allBtn.classList.add('active');
+
+            updateStats();
+            applyFilters();
+        }
+
         async function loadBookings() {
             try {
                 const token = localStorage.getItem('adminToken');
@@ -1061,8 +1127,9 @@
                 if (data.success) {
                     allBookings = data.bookings || [];
                     console.log('Loaded bookings count:', allBookings.length);
+                    populateSeasons();
                     updateStats();
-                    renderBookings(allBookings);
+                    renderBookings(seasonBookings());
                 } else {
                     showError('Failed to load bookings: ' + (data.message || 'Unknown error'));
                 }
@@ -1072,21 +1139,24 @@
 
                 // Still render empty table to show "No bookings found" instead of "Loading..."
                 allBookings = [];
+                populateSeasons();
                 updateStats();
-                renderBookings(allBookings);
+                renderBookings([]);
             }
         }
 
         // Update statistics
         function updateStats() {
-            const total = allBookings.length;
-            const totalRev = allBookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
-            const pending = allBookings.filter(b => b.paymentStatus === 'pending').reduce((sum, b) => sum + (b.totalPrice || 0), 0);
-            const upcoming = allBookings.filter(b => {
-                const checkinDate = new Date(b.checkinDate);
-                const today = new Date();
-                return checkinDate > today && b.status === 'confirmed';
-            }).length;
+            const bookings = seasonBookings();
+            const total = bookings.length;
+            const totalRev = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+            const pending = bookings.filter(b => b.paymentStatus === 'pending').reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+            const today = new Date();
+            const upcoming = bookings.filter(b => new Date(b.checkinDate) > today && b.status === 'confirmed').length;
+
+            const seasonLabel = selectedSeason === null ? '' : `${selectedSeason} season`;
+            document.getElementById('bookingChange').textContent = seasonLabel;
+            document.getElementById('revenueChange').textContent = seasonLabel;
 
             document.getElementById('totalBookings').textContent = total;
             document.getElementById('totalRevenue').textContent = '$' + totalRev.toLocaleString();
@@ -1354,14 +1424,14 @@
             const payment = document.getElementById('filterPayment').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
 
-            let filtered = allBookings.filter(booking => {
-                const matchProperty = !property || booking.property === property;
+            const filtered = seasonBookings().filter(booking => {
+                const matchProperty = !property || booking.parcel === property;
                 const matchStatus = !status || booking.status === status;
                 const matchPayment = !payment || booking.paymentStatus === payment;
-                const matchSearch = !search || 
-                    booking.hunterInfo.name.toLowerCase().includes(search) ||
-                    booking.hunterInfo.email.toLowerCase().includes(search) ||
-                    booking.hunterInfo.phone.includes(search);
+                const matchSearch = !search ||
+                    (booking.customerName || '').toLowerCase().includes(search) ||
+                    (booking.email || '').toLowerCase().includes(search) ||
+                    (booking.phone || '').includes(search);
 
                 return matchProperty && matchStatus && matchPayment && matchSearch;
             });
@@ -1379,25 +1449,26 @@
         function filterByDate(period) {
             // Update active button
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
 
             const now = new Date();
-            let filtered = allBookings;
+            let filtered = seasonBookings();
 
             if (period === 'today') {
-                filtered = allBookings.filter(b => {
-                    const start = new Date(b.startDate);
-                    return start.toDateString() === now.toDateString();
-                });
+                filtered = filtered.filter(b => new Date(b.checkinDate).toDateString() === now.toDateString());
             } else if (period === 'week') {
-                const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
-                filtered = allBookings.filter(b => {
-                    const start = new Date(b.startDate);
-                    return start >= weekStart;
+                const weekStart = new Date(now);
+                weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                weekStart.setHours(0, 0, 0, 0);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 7);
+                filtered = filtered.filter(b => {
+                    const start = new Date(b.checkinDate);
+                    return start >= weekStart && start < weekEnd;
                 });
             } else if (period === 'month') {
-                filtered = allBookings.filter(b => {
-                    const start = new Date(b.startDate);
+                filtered = filtered.filter(b => {
+                    const start = new Date(b.checkinDate);
                     return start.getMonth() === now.getMonth() && start.getFullYear() === now.getFullYear();
                 });
             }
@@ -1408,31 +1479,36 @@
         // Export to CSV
         function exportToCSV() {
             const csvData = [
-                ['Booking ID', 'Hunter Name', 'Email', 'Phone', 'Property', 'Start Date', 'End Date', 'Hunters', 'Total Cost', 'Payment Status', 'Status']
+                ['Booking ID', 'Hunter Name', 'Email', 'Phone', 'Property', 'Check-in', 'Check-out', 'Hunters', 'Total Price', 'Payment Method', 'Payment Status', 'Waiver Signed', 'Status']
             ];
 
-            allBookings.forEach(booking => {
+            seasonBookings().forEach(booking => {
                 csvData.push([
                     booking._id,
-                    booking.hunterInfo.name,
-                    booking.hunterInfo.email,
-                    booking.hunterInfo.phone,
-                    booking.property,
-                    booking.startDate,
-                    booking.endDate,
-                    booking.numberOfHunters,
-                    booking.totalCost,
+                    booking.customerName,
+                    booking.email,
+                    booking.phone,
+                    booking.parcel,
+                    formatDate(booking.checkinDate),
+                    formatDate(booking.checkoutDate),
+                    booking.numHunters,
+                    booking.totalPrice,
+                    booking.paymentMethod,
                     booking.paymentStatus,
+                    booking.waiverSigned ? 'Yes' : 'No',
                     booking.status
                 ]);
             });
 
-            const csv = csvData.map(row => row.join(',')).join('\n');
+            // Quote every value so names and notes containing commas stay in one column
+            const csv = csvData
+                .map(row => row.map(value => `"${String(value === undefined || value === null ? '' : value).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'hunting-bookings-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.download = `hunting-bookings-${selectedSeason}-season.csv`;
             a.click();
         }
 

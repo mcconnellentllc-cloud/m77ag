@@ -113,7 +113,7 @@ function getReviewThankYouEmail(review) {
     <p>Your feedback helps us continue to provide the best hunting experience possible and helps other hunters know what to expect when they visit M77 AG.</p>
 
     <div class="discount-box">
-      <h2>Here's a Special Thank You! 🎁</h2>
+      <h2>Here's a Special Thank You</h2>
       <div class="discount-code">
         REVIEW
       </div>
@@ -229,7 +229,7 @@ function getAdminReviewNotificationEmail(review) {
       </div>
       ` : `
       <div class="negative">
-        <strong>⚠ Negative Review</strong><br>
+        <strong>Negative Review</strong><br>
         No discount code sent. Please follow up with customer.
       </div>
       `}

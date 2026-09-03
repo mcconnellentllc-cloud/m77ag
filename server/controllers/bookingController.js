@@ -4,7 +4,9 @@ const {
   sendBookingConfirmation,
   sendWaiverConfirmation,
   sendWaiverReminder: sendWaiverReminderEmail,
-  sendStandaloneWaiverConfirmation
+  sendStandaloneWaiverConfirmation,
+  sendHuntingEmail,
+  HUNTING_NOTIFICATION_RECIPIENTS
 } = require('../utils/emailservice');
 
 // Helper function to create automatic game rest periods after booking
@@ -700,16 +702,6 @@ const bookingController = {
         });
       }
 
-      // Send email notification to admin
-      const nodemailer = require('nodemailer');
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
-      });
-
       const dateObj = new Date(date);
       const formattedDate = dateObj.toLocaleDateString('en-US', {
         weekday: 'long',
@@ -718,9 +710,8 @@ const bookingController = {
         day: 'numeric'
       });
 
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: 'hunting@m77ag.com',
+      await sendHuntingEmail({
+        to: HUNTING_NOTIFICATION_RECIPIENTS,
         subject: `Game Rest Move Request - ${property} - ${formattedDate}`,
         html: `
           <h2>Game Rest Period Move Request</h2>
@@ -735,9 +726,7 @@ const bookingController = {
           <hr>
           <p>Please contact this customer within 24 hours to discuss moving the game rest period.</p>
         `
-      };
-
-      await transporter.sendMail(mailOptions);
+      });
 
       res.json({
         success: true,

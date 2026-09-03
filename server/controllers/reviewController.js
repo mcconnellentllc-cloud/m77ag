@@ -1,41 +1,24 @@
 const Review = require('../models/review');
-const nodemailer = require('nodemailer');
 const { getReviewThankYouEmail, getAdminReviewNotificationEmail } = require('../email-templates/review-thank-you-email');
-
-// Create email transporter for Gmail
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER || 'hunting@m77ag.com',
-      pass: process.env.EMAIL_PASS
-    }
-  });
-};
+const { sendHuntingEmail, HUNTING_NOTIFICATION_RECIPIENTS } = require('../utils/emailservice');
 
 // Send review thank you email with discount code (for positive reviews)
 const sendReviewThankYouEmail = async (review) => {
   try {
-    const transporter = createTransporter();
-
     // Generate HTML emails from templates
     const customerEmailHTML = getReviewThankYouEmail(review);
     const adminEmailHTML = getAdminReviewNotificationEmail(review);
 
     // Email to customer with REVIEW discount code
-    await transporter.sendMail({
-      from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'hunting@m77ag.com',
+    await sendHuntingEmail({
       to: review.email,
-      subject: 'Thank You! Here\'s 75% Off Your Next Hunt 🎁',
+      subject: 'Thank You - 75% Off Your Next Hunt',
       html: customerEmailHTML
     });
 
-    // Email to admin/Kyle at hunting@m77ag.com
-    await transporter.sendMail({
-      from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'hunting@m77ag.com',
-      to: 'hunting@m77ag.com',
+    // Email to the hunting inbox
+    await sendHuntingEmail({
+      to: HUNTING_NOTIFICATION_RECIPIENTS,
       subject: `New Review: ${review.customerName} - ${review.rating} Stars`,
       html: adminEmailHTML
     });
@@ -51,17 +34,13 @@ const sendReviewThankYouEmail = async (review) => {
 // Send admin notification only (for negative reviews)
 const sendAdminReviewNotification = async (review) => {
   try {
-    const transporter = createTransporter();
-
     // Generate admin notification email
     const adminEmailHTML = getAdminReviewNotificationEmail(review);
 
-    // Email to admin/Kyle at hunting@m77ag.com
-    await transporter.sendMail({
-      from: `"M77 AG Hunting" <${process.env.EMAIL_USER || 'hunting@m77ag.com'}>`,
-      replyTo: 'hunting@m77ag.com',
-      to: 'hunting@m77ag.com',
-      subject: `⚠ New Review (Follow Up): ${review.customerName} - ${review.rating} Stars`,
+    // Email to the hunting inbox
+    await sendHuntingEmail({
+      to: HUNTING_NOTIFICATION_RECIPIENTS,
+      subject: `New Review (Follow Up): ${review.customerName} - ${review.rating} Stars`,
       html: adminEmailHTML
     });
 
