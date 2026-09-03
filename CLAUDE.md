@@ -205,6 +205,24 @@ EMAIL_PASS=account-password
 
 Verify mail can authenticate and send with `npm run check:email`.
 
+### Mail history
+
+Until 2026-01-30 the site relayed mail through a Gmail account,
+`m77ag.notify@gmail.com`, using the display name "M77 AG Hunting". Delivery
+into the Microsoft mailboxes worked, but the visible sender was that Gmail
+address. Sending stopped when those credentials went out of use.
+
+Two working configurations are supported:
+
+- **Microsoft 365 (preferred).** Mail sends from `hunting@m77ag.com` itself.
+  A shared mailbox cannot authenticate, so `HUNTING_SMTP_USER` must be a
+  licensed account holding "Send As" on the shared mailbox. Requires SMTP
+  AUTH to be enabled for that account in the Microsoft 365 admin center.
+- **Gmail relay (legacy).** Set `MAIL_SERVICE=gmail` with the relay account
+  and an app password. Google rewrites the From header to the authenticated
+  account unless `hunting@m77ag.com` is added there as a verified
+  "Send mail as" alias.
+
 ---
 
 ## Design Guidelines (CRITICAL)
