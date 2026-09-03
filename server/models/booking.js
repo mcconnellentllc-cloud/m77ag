@@ -80,7 +80,7 @@ const bookingSchema = new mongoose.Schema({
   // Payment Information
   paymentMethod: {
     type: String,
-    enum: ['cash', 'check', 'venmo', 'paypal', 'complimentary'],
+    enum: ['cash', 'check', 'venmo', 'paypal', 'paypal-invoice', 'season-pass', 'complimentary'],
     default: 'cash'
   },
   paymentStatus: {

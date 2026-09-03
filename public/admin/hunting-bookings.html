@@ -683,6 +683,124 @@
             </div>
         </div>
 
+        <!-- Book for a Customer -->
+        <div class="bookings-section" style="margin-bottom: 20px;">
+            <div class="section-header">
+                <h2 class="section-title">Book for a Customer</h2>
+            </div>
+            <div style="padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                <p style="margin: 0 0 20px 0; color: #555; font-size: 14px;">
+                    Create a reservation on behalf of a customer who booked by phone, email or off-site payment.
+                    The customer is emailed the confirmation and liability waiver link automatically.
+                </p>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 220px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Customer Name</label>
+                        <input type="text" id="mbName" placeholder="Full name" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 220px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Email</label>
+                        <input type="email" id="mbEmail" placeholder="customer@example.com" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Phone</label>
+                        <input type="tel" id="mbPhone" placeholder="970-555-0100" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Property</label>
+                        <select id="mbParcel" onchange="updateManualBookingTotal()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="Heritage Farm">Heritage Farm</option>
+                            <option value="Prairie Peace">Prairie Peace</option>
+                            <option value="Both Properties">Both Properties</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 160px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Check-in</label>
+                        <input type="date" id="mbCheckin" onchange="updateManualBookingTotal()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 160px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Check-out</label>
+                        <input type="date" id="mbCheckout" onchange="updateManualBookingTotal()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 120px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Hunters</label>
+                        <input type="number" id="mbHunters" value="1" min="1" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 180px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Game Species</label>
+                        <select id="mbSpecies" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="Pheasant">Pheasant</option>
+                            <option value="Mule Deer Buck">Mule Deer Buck</option>
+                            <option value="Mule Deer Doe">Mule Deer Doe</option>
+                            <option value="Whitetail Deer Buck">Whitetail Deer Buck</option>
+                            <option value="Whitetail Deer Doe">Whitetail Deer Doe</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="Coyote">Coyote</option>
+                            <option value="Prairie Dog">Prairie Dog</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #d4a54a;">
+                    <label style="display: flex; align-items: center; font-weight: 600; color: #333; cursor: pointer;">
+                        <input type="checkbox" id="mbUseSeasonPass" onchange="toggleSeasonPassBooking()" style="width: auto; margin-right: 10px;">
+                        Apply a season pass - draws one credit per day, no charge
+                    </label>
+                    <p style="margin: 8px 0 0 28px; font-size: 13px; color: #666;">
+                        The customer must already have an active pass under the same email. Record it under Season Passes first.
+                    </p>
+                </div>
+
+                <div id="mbPaymentFields" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Total Price</label>
+                        <input type="number" id="mbTotal" step="0.01" placeholder="0.00" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="flex: 1; min-width: 170px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Payment Method</label>
+                        <select id="mbPaymentMethod" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="paypal-invoice">PayPal Invoice</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="check">Check</option>
+                            <option value="cash">Cash</option>
+                            <option value="venmo">Venmo</option>
+                            <option value="complimentary">Complimentary</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 160px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Payment Status</label>
+                        <select id="mbPaymentStatus" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option value="paid">Paid</option>
+                            <option value="deposit_paid">Deposit Paid</option>
+                            <option value="pending">Pending</option>
+                            <option value="complimentary">Complimentary</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Payment Reference</label>
+                        <input type="text" id="mbReference" placeholder="Transaction or check number" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Notes</label>
+                    <textarea id="mbNotes" rows="2" placeholder="Internal notes about this reservation" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit;"></textarea>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button onclick="createManualBooking()" style="padding: 12px 25px; background: #2c5530; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        Create Booking and Send Confirmation
+                    </button>
+                </div>
+
+                <div id="manualBookingResult" style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; display: none;"></div>
+            </div>
+        </div>
+
         <!-- Season Passes -->
         <div class="bookings-section" style="margin-bottom: 20px;">
             <div class="section-header">
@@ -1339,6 +1457,126 @@
             } catch (error) {
                 console.error('Error sending email:', error);
                 alert('Error sending confirmation email');
+            }
+        }
+
+        // Book for a Customer
+        function huntDayCount() {
+            const checkin = document.getElementById('mbCheckin').value;
+            const checkout = document.getElementById('mbCheckout').value;
+            if (!checkin || !checkout) return 0;
+            const days = Math.ceil((new Date(checkout) - new Date(checkin)) / 86400000);
+            return days > 0 ? days : 0;
+        }
+
+        function updateManualBookingTotal() {
+            if (document.getElementById('mbUseSeasonPass').checked) return;
+            const days = huntDayCount();
+            if (!days) return;
+            const dailyRate = document.getElementById('mbParcel').value === 'Both Properties' ? 300 : 200;
+            document.getElementById('mbTotal').value = (dailyRate * days).toFixed(2);
+        }
+
+        function toggleSeasonPassBooking() {
+            const usePass = document.getElementById('mbUseSeasonPass').checked;
+            document.getElementById('mbPaymentFields').style.display = usePass ? 'none' : 'flex';
+            if (!usePass) updateManualBookingTotal();
+        }
+
+        function showManualBookingResult(message, isError) {
+            const resultDiv = document.getElementById('manualBookingResult');
+            resultDiv.style.display = 'block';
+            resultDiv.style.borderLeft = isError ? '4px solid #c62828' : '4px solid #2c5530';
+            resultDiv.innerHTML = message;
+        }
+
+        async function createManualBooking() {
+            const name = document.getElementById('mbName').value.trim();
+            const email = document.getElementById('mbEmail').value.trim();
+            const phone = document.getElementById('mbPhone').value.trim();
+            const checkinDate = document.getElementById('mbCheckin').value;
+            const checkoutDate = document.getElementById('mbCheckout').value;
+
+            if (!name || !email || !checkinDate || !checkoutDate) {
+                alert('Customer name, email, check-in and check-out are required');
+                return;
+            }
+
+            const days = huntDayCount();
+            if (!days) {
+                alert('Check-out must be after check-in');
+                return;
+            }
+
+            const useSeasonPassCredits = document.getElementById('mbUseSeasonPass').checked;
+
+            const payload = {
+                customerName: name,
+                email,
+                phone,
+                parcel: document.getElementById('mbParcel').value,
+                checkinDate,
+                checkoutDate,
+                numHunters: parseInt(document.getElementById('mbHunters').value, 10) || 1,
+                gameSpecies: document.getElementById('mbSpecies').value,
+                useSeasonPassCredits,
+                notes: document.getElementById('mbNotes').value.trim()
+            };
+
+            if (!useSeasonPassCredits) {
+                payload.totalPrice = parseFloat(document.getElementById('mbTotal').value) || 0;
+                payload.paymentMethod = document.getElementById('mbPaymentMethod').value;
+                payload.paymentStatus = document.getElementById('mbPaymentStatus').value;
+                payload.paymentReference = document.getElementById('mbReference').value.trim();
+            }
+
+            const summary = useSeasonPassCredits
+                ? `${days} day(s) drawn from the season pass`
+                : `$${payload.totalPrice.toFixed(2)}`;
+
+            if (!confirm(`Book ${payload.parcel} for ${name} from ${checkinDate} to ${checkoutDate} (${summary}) and email the confirmation and waiver link?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/hunting/bookings/manual', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let message = '<strong>Booking created. Confirmation and waiver link emailed to the customer.</strong>';
+                    if (data.creditsRemaining !== null && data.creditsRemaining !== undefined) {
+                        message += `<br><br>Season pass credits remaining: <strong>${data.creditsRemaining}</strong>`;
+                    }
+                    showManualBookingResult(message, false);
+
+                    document.getElementById('mbName').value = '';
+                    document.getElementById('mbEmail').value = '';
+                    document.getElementById('mbPhone').value = '';
+                    document.getElementById('mbCheckin').value = '';
+                    document.getElementById('mbCheckout').value = '';
+                    document.getElementById('mbHunters').value = '1';
+                    document.getElementById('mbTotal').value = '';
+                    document.getElementById('mbReference').value = '';
+                    document.getElementById('mbNotes').value = '';
+                    document.getElementById('mbUseSeasonPass').checked = false;
+                    toggleSeasonPassBooking();
+
+                    loadBookings();
+                } else {
+                    showManualBookingResult(`<strong>Error:</strong> ${data.message || 'Failed to create booking'}`, true);
+                }
+            } catch (error) {
+                console.error('Error creating manual booking:', error);
+                showManualBookingResult('<strong>Error:</strong> Failed to create booking', true);
             }
         }
 

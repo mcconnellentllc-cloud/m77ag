@@ -853,11 +853,21 @@ const bookingController = {
         checkoutDate,
         numHunters,
         gameSpecies,
+        coyoteHuntingType,
         totalPrice,
         paymentMethod,
         paymentStatus,
+        paymentReference,
+        useSeasonPassCredits,
         notes
       } = req.body;
+
+      if (!customerName || !email || !parcel || !checkinDate || !checkoutDate) {
+        return res.status(400).json({
+          success: false,
+          message: 'Customer name, email, property, check-in and check-out are required'
+        });
+      }
 
       // Create dates at noon local time
       const checkinDateTime = new Date(checkinDate);
@@ -866,9 +876,46 @@ const bookingController = {
       const checkoutDateTime = new Date(checkoutDate);
       checkoutDateTime.setHours(12, 0, 0, 0);
 
+      if (checkoutDateTime <= checkinDateTime) {
+        return res.status(400).json({
+          success: false,
+          message: 'Check-out must be after check-in'
+        });
+      }
+
       // Calculate days
       const numNights = Math.ceil((checkoutDateTime - checkinDateTime) / 86400000);
       const dailyRate = parcel === 'Both Properties' ? 300 : 200;
+
+      // A season pass hunt draws one credit per day. Verify the pass covers the
+      // stay before the booking is written so credits and bookings stay in step.
+      const User = require('../models/user');
+      let passHolder = null;
+
+      if (useSeasonPassCredits) {
+        passHolder = await User.findOne({ email: email.toLowerCase() });
+
+        if (!passHolder || !passHolder.seasonPass || !passHolder.seasonPass.active) {
+          return res.status(400).json({
+            success: false,
+            message: 'No active season pass found for this email. Record the pass under Season Passes first.'
+          });
+        }
+
+        if (passHolder.seasonPass.expiresAt && new Date(passHolder.seasonPass.expiresAt) < checkinDateTime) {
+          return res.status(400).json({
+            success: false,
+            message: 'The season pass expires before these hunt dates'
+          });
+        }
+
+        if (passHolder.seasonPass.creditsRemaining < numNights) {
+          return res.status(400).json({
+            success: false,
+            message: `This hunt needs ${numNights} credit(s) but only ${passHolder.seasonPass.creditsRemaining} remain on the pass`
+          });
+        }
+      }
 
       // Check if dates are available
       let existingBooking;
@@ -912,12 +959,14 @@ const bookingController = {
         checkoutDate: checkoutDateTime,
         numHunters: numHunters || 1,
         gameSpecies: gameSpecies || 'Pheasant',
-        dailyRate,
+        coyoteHuntingType,
+        dailyRate: useSeasonPassCredits ? 0 : dailyRate,
         numNights,
         campingFee: 0,
-        totalPrice: totalPrice || (dailyRate * numNights),
-        paymentMethod: paymentMethod || 'cash',
-        paymentStatus: paymentStatus || 'paid',
+        totalPrice: useSeasonPassCredits ? 0 : (totalPrice || (dailyRate * numNights)),
+        paymentMethod: useSeasonPassCredits ? 'season-pass' : (paymentMethod || 'cash'),
+        paymentStatus: useSeasonPassCredits ? 'paid' : (paymentStatus || 'paid'),
+        paypalTransactionId: paymentReference,
         status: 'confirmed',
         waiverSigned: false,
         notes: notes || 'Manual booking created by admin'
@@ -925,9 +974,18 @@ const bookingController = {
 
       await booking.save();
 
+      // Draw the season pass credits now that the booking exists
+      let creditsRemaining = null;
+      if (passHolder) {
+        passHolder.seasonPass.creditsRemaining -= numNights;
+        passHolder.seasonPass.bookingIds.push(booking._id);
+        await passHolder.save();
+        creditsRemaining = passHolder.seasonPass.creditsRemaining;
+        console.log(`Season pass: drew ${numNights} credit(s) from ${email}, ${creditsRemaining} remaining`);
+      }
+
       // Update customer spend
       try {
-        const User = require('../models/user');
         const user = await User.findOne({ email: email.toLowerCase() });
         if (user && booking.totalPrice > 0) {
           user.lifetimeSpend = (user.lifetimeSpend || 0) + booking.totalPrice;
@@ -957,6 +1015,7 @@ const bookingController = {
       res.status(201).json({
         success: true,
         message: 'Manual booking created successfully',
+        creditsRemaining,
         booking
       });
 
