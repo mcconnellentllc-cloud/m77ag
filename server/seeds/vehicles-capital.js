@@ -84,14 +84,17 @@ const vehicleData = [
 
   // Personal Vehicles
   {
-    name: 'Cadillac Escalade',
+    name: '2017 Cadillac Escalade ESV',
     type: 'vehicle',
     category: 'car',
-    description: 'Cadillac Escalade SUV',
+    description: '2017 Cadillac Escalade ESV Luxury 4WD - 6.2L V8',
     vehicleDetails: {
+      year: 2017,
       make: 'Cadillac',
-      model: 'Escalade',
-      mileage: 104000
+      model: 'Escalade ESV',
+      vin: '1GYS4HKJ3HR132303',
+      mileage: 104000,
+      fuelType: 'Gasoline'
     },
     acquisition: {
       notes: 'Personal vehicle'
@@ -99,10 +102,11 @@ const vehicleData = [
     currentValue: {
       estimatedValue: 20900,  // 85% of 2018 KBB $16,602-$32,622 avg ~$24,600
       lastAppraisalDate: new Date('2026-01-30'),
-      notes: '2018 model range per KBB/CARFAX with high mileage'
+      notes: 'Estimate was built on 2018 KBB/CARFAX comps. VIN confirms a 2017 ESV Luxury 4WD, ' +
+             'so this figure needs a re-run against 2017 ESV comps.'
     },
     status: 'owned',
-    notes: 'Personal vehicle - 104,000 miles'
+    notes: 'Personal vehicle - 2017 Escalade ESV Luxury 4WD, 6.2L V8 (L86), 104,000 miles'
   },
   {
     name: 'Toyota Camry',

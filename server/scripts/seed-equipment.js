@@ -145,13 +145,18 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
-    title: 'Cadillac Escalade',
-    subtitle: 'SUV',
-    category: 'Other',
+    title: '2017 Cadillac Escalade ESV',
+    subtitle: 'ESV Luxury 4WD - 6.2L V8',
+    category: 'Personal Vehicles',
+    year: 2017,
     make: 'Cadillac',
-    model: 'Escalade',
+    model: 'Escalade ESV',
+    vin: '1GYS4HKJ3HR132303',
     currentMiles: 104000,
-    notes: 'Owner: Personal, Insured: Yes',
+    notes: 'Owner: Personal, Insured: Yes. Engine 6.2L V8 (L86), 4WD, built Arlington TX. ' +
+           'Oil filter ACDelco PF63E (GM 19330000), air filter ACDelco A3218C (GM 23349854), ' +
+           'cabin filter ACDelco CF188 (GM 23281440). No serviceable fuel filter - integral to in-tank pump module. ' +
+           'Oil: 8.0 qt SAE 0W-20 dexos1. See /admin/equipment/escalade-guide.html',
     forSale: false,
     saleStatus: 'not-for-sale'
   },

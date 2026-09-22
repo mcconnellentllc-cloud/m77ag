@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escalade Filter and Service Guide - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .back-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .page-eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: #d4a54a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        .toc {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #2d5016;
+        }
+        .toc-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            padding: 6px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+        }
+        .toc li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            color: #d4a54a;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        .toc a {
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2d5016;
+            text-decoration: underline;
+        }
+        section.guide-section {
+            background: white;
+            padding: 28px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        section.guide-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        section.guide-section .section-lede {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        section.guide-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin: 22px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        section.guide-section p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        section.guide-section ul,
+        section.guide-section ol {
+            margin: 0 0 14px 22px;
+            font-size: 15px;
+        }
+        section.guide-section li {
+            margin-bottom: 6px;
+        }
+        .callout {
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .callout-answer {
+            background: #eef6e9;
+            border-left: 4px solid #2d5016;
+        }
+        .callout-answer strong {
+            color: #2d5016;
+        }
+        .callout-warn {
+            background: #fff8e6;
+            border-left: 4px solid #d4a54a;
+        }
+        .callout-warn strong {
+            color: #a37c1c;
+        }
+        .callout-note {
+            background: #f5f3f0;
+            border-left: 4px solid #999;
+        }
+        table.spec {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.spec th,
+        table.spec td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table.spec th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.spec td:first-child {
+            font-weight: 600;
+            width: 40%;
+        }
+        table.parts {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.parts th,
+        table.parts td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        table.parts th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.parts td.pn {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #2d5016;
+            white-space: nowrap;
+        }
+        .pn-inline {
+            font-family: 'Courier New', monospace;
+            background: #f5f3f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d5016;
+            font-weight: 700;
+        }
+        .counter-sheet {
+            background: #1a1a1a;
+            color: #f5f3f0;
+            border-radius: 8px;
+            padding: 26px 30px;
+            margin-bottom: 24px;
+        }
+        .counter-sheet h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            margin-bottom: 4px;
+        }
+        .counter-sheet .cs-sub {
+            font-size: 13px;
+            color: #b9b4ab;
+            margin-bottom: 18px;
+        }
+        .cs-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+        .cs-line:last-of-type { border-bottom: none; }
+        .cs-line .cs-item { color: #f5f3f0; }
+        .cs-line .cs-pn {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #d4af37;
+            white-space: nowrap;
+        }
+        .print-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        .print-btn:hover {
+            background: #1e3a0e;
+        }
+        .footer-actions {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .sources {
+            font-size: 13px;
+            color: #666;
+        }
+        .sources li { margin-bottom: 4px; }
+        @media (max-width: 700px) {
+            .header { padding: 12px 16px; }
+            .container { padding: 20px 14px 40px; }
+            .page-title { font-size: 26px; }
+            section.guide-section { padding: 20px 18px; }
+            .counter-sheet { padding: 20px 18px; }
+            table.parts { font-size: 13px; }
+            table.parts th, table.parts td { padding: 8px 6px; }
+            .cs-line { flex-direction: column; gap: 2px; }
+        }
+        @media print {
+            .header, .back-link, .print-btn, .toc { display: none; }
+            body { background: white; }
+            section.guide-section { box-shadow: none; page-break-inside: avoid; }
+            .counter-sheet { background: white; color: #1a1a1a; border: 2px solid #1a1a1a; page-break-inside: avoid; }
+            .counter-sheet h2, .cs-line .cs-pn { color: #1a1a1a; }
+            .cs-line { border-bottom: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">M77 AG</div>
+        <a href="/admin/equipment-manager.html" class="back-link">Back to Equipment</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-eyebrow">2017 Cadillac Escalade ESV Luxury 4WD &middot; VIN 1GYS4HKJ3HR132303</div>
+            <h1 class="page-title">Escalade Filter and Service Guide</h1>
+            <p class="page-subtitle">6.2L V8 (L86) &middot; Filter part numbers, fluid specs, and pre-trip service</p>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">In This Guide</div>
+            <ol>
+                <li><a href="#counter">Parts Counter Sheet</a></li>
+                <li><a href="#vehicle">Vehicle Identification and Specs</a></li>
+                <li><a href="#oil">Engine Oil and Oil Filter</a></li>
+                <li><a href="#air">Engine Air Filter</a></li>
+                <li><a href="#fuel">Fuel Filter</a></li>
+                <li><a href="#cabin">Passenger Compartment Air Filter</a></li>
+                <li><a href="#pretrip">Pre-Trip Service at 104,000 Miles</a></li>
+                <li><a href="#sources">Sources</a></li>
+            </ol>
+        </div>
+
+        <div class="counter-sheet" id="counter">
+            <h2>Parts Counter Sheet</h2>
+            <p class="cs-sub">Print this page or read these numbers at the counter. Ask them to confirm against VIN 1GYS4HKJ3HR132303.</p>
+            <div class="cs-line">
+                <span class="cs-item">Engine oil filter (qty 1)</span>
+                <span class="cs-pn">ACDelco PF63E &middot; GM 19330000</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Engine air filter (qty 1)</span>
+                <span class="cs-pn">ACDelco A3218C &middot; GM 23349854</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Fuel filter</span>
+                <span class="cs-pn">NONE - NOT SERVICEABLE</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Cabin air filter (qty 1)</span>
+                <span class="cs-pn">ACDelco CF188 &middot; GM 23281440</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Engine oil (8.0 qt, dexos1 full synthetic)</span>
+                <span class="cs-pn">SAE 0W-20</span>
+            </div>
+        </div>
+
+        <section class="guide-section" id="vehicle">
+            <h2>1. Vehicle Identification and Specs</h2>
+            <p class="section-lede">Decoded from the VIN on the windshield plate and the door jamb label. The engine and body code drive every part number on this page.</p>
+
+            <table class="spec">
+                <tr><th colspan="2">Vehicle</th></tr>
+                <tr><td>VIN</td><td><span class="pn-inline">1GYS4HKJ3HR132303</span></td></tr>
+                <tr><td>Year / Make / Model</td><td>2017 Cadillac Escalade ESV Luxury</td></tr>
+                <tr><td>Drive</td><td>4WD</td></tr>
+                <tr><td>Engine</td><td>6.2L V8, GM code L86 (VIN position 8 = J), direct injection, VVT, Active Fuel Management, E85 capable</td></tr>
+                <tr><td>Assembly plant</td><td>Arlington, Texas</td></tr>
+                <tr><td>GVWR class</td><td>Class 2F, 7,001-8,000 lb</td></tr>
+                <tr><td>Fuel tank (long wheelbase)</td><td>31.5 gal (119.2 L)</td></tr>
+                <tr><td>Engine oil with filter</td><td>8.0 qt (7.6 L)</td></tr>
+                <tr><td>Cooling system</td><td>17.4 qt (16.5 L), DEX-COOL only</td></tr>
+                <tr><td>Wheel nut torque</td><td>140 lb-ft (190 N&middot;m)</td></tr>
+            </table>
+
+            <h3>Door jamb tire and loading label</h3>
+            <table class="spec">
+                <tr><th>Position</th><th>Size and cold pressure</th></tr>
+                <tr><td>Front</td><td>P285/45R22 &middot; 35 psi (240 kPa)</td></tr>
+                <tr><td>Rear</td><td>P285/45R22 &middot; 35 psi (240 kPa)</td></tr>
+                <tr><td>Spare</td><td>P265/70R17 &middot; 35 psi (240 kPa)</td></tr>
+                <tr><td>Seating / cargo</td><td>8 total (2 front, 6 rear) &middot; occupants plus cargo not to exceed 1,337 lb</td></tr>
+            </table>
+        </section>
+
+        <section class="guide-section" id="oil">
+            <h2>2. Engine Oil and Oil Filter</h2>
+            <p class="section-lede">The oil fill cap on this engine reads "SAE 0W-20 dexos." That is the requirement, not a suggestion. Oil that does not meet dexos1 can void warranty coverage on engine damage.</p>
+
+            <table class="parts">
+                <tr><th>Part</th><th>Number</th><th>Notes</th></tr>
+                <tr>
+                    <td>Oil filter (OE)</td>
+                    <td class="pn">ACDelco PF63E<br>GM 19330000</td>
+                    <td>The number listed in the 2017 owner manual replacement parts table. Both O'Reilly and AutoZone stock the ACDelco line.</td>
+                </tr>
+                <tr>
+                    <td>Oil filter (older OE number)</td>
+                    <td class="pn">ACDelco PF63<br>GM 89017525</td>
+                    <td>Superseded by PF63E. Same filter, same fitment. If the counter shows PF63, it is correct.</td>
+                </tr>
+                <tr>
+                    <td>Engine oil</td>
+                    <td class="pn">SAE 0W-20</td>
+                    <td>Must carry the dexos1 approval mark. 8.0 quarts with filter change. Buy two 5-quart jugs.</td>
+                </tr>
+            </table>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>On aftermarket cross-references.</strong> Published crosses for the PF63 are inconsistent between catalogs, and several common substitutes use a lower bypass valve setting than the GM filter. Commonly listed equivalents are Wix 57502, NAPA Gold 7502, Purolator L22500, Fram PH10575, MicroGard MGL10575 (O'Reilly house brand), and STP S10590. Buy the ACDelco unless the counter can confirm the substitute by VIN.</p>
+            </div>
+
+            <h3>Change interval</h3>
+            <p>Change the oil and filter when the CHANGE ENGINE OIL SOON message appears, within the next 600 miles, or at least once a year regardless of mileage. Reset the oil life system after every change. Before a long trip, change it regardless of remaining oil life percentage if the vehicle is anywhere near due.</p>
+        </section>
+
+        <section class="guide-section" id="air">
+            <h2>3. Engine Air Filter</h2>
+            <p class="section-lede">Read this section before buying. The printed owner manual gives the wrong part number for this vehicle.</p>
+
+            <table class="parts">
+                <tr><th>Part</th><th>Number</th><th>Notes</th></tr>
+                <tr>
+                    <td>Engine air filter (correct)</td>
+                    <td class="pn">ACDelco A3218C<br>GM 23349854</td>
+                    <td>GM parts catalog fitment is 2017-2020 Escalade and Escalade ESV. This is the one to buy.</td>
+                </tr>
+                <tr>
+                    <td>Listed cross-reference</td>
+                    <td class="pn">Wix 42488</td>
+                    <td>Published as a cross for GM 23349854. Confirm at the counter by VIN before buying a substitute.</td>
+                </tr>
+            </table>
+
+            <div class="callout callout-warn">
+                <p><strong>Do not buy ACDelco A3181C / GM 22845992.</strong> The 2017 Escalade owner manual replacement parts table lists that number, but the manual was printed 7/6/16 and the number is wrong for this model year. GM's parts catalog shows 22845992 fitting 2002-2016 Escalade only.</p>
+                <p style="margin-bottom:0;">If a counter system pulls up A3181C for this VIN, stop and have them look up GM 23349854 directly.</p>
+            </div>
+
+            <h3>Change interval</h3>
+            <p>GM's schedule calls for replacement every 45,000 miles or four years, whichever comes first, on both the normal and severe schedules. The manual adds: if driving in dusty conditions, inspect at every oil change or more often. This vehicle runs farm roads, so treat the four-year clock as the governing one.</p>
+        </section>
+
+        <section class="guide-section" id="fuel">
+            <h2>4. Fuel Filter</h2>
+            <p class="section-lede">There is nothing to buy. This is the correct answer, not a gap in the research.</p>
+
+            <div class="callout callout-answer">
+                <p style="margin-bottom:0;"><strong>The 2017 Escalade has no serviceable fuel filter.</strong> The filter is built into the fuel pump module inside the fuel tank and is not sold or replaced separately. The phrase "fuel filter" does not appear once in the 397-page factory owner manual, and no fuel filter replacement appears anywhere in the maintenance schedule.</p>
+            </div>
+
+            <p>What the manual does require for the fuel system, at each 7,500-mile service:</p>
+            <ul>
+                <li>Visually inspect the fuel system for damage or leaks.</li>
+                <li>Inspect the evaporative control system at 30,000-mile intervals, checking all fuel and vapor lines and hoses for proper attachment, routing, and condition.</li>
+            </ul>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>If a parts store offers to sell you a fuel filter for this VIN</strong>, it is either the wrong application or a complete in-tank fuel pump module assembly running several hundred dollars. Neither is routine maintenance. Decline it. A pump module is replaced only when the pump fails or fuel delivery is diagnosed as restricted.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="cabin">
+            <h2>5. Passenger Compartment Air Filter</h2>
+            <p class="section-lede">Not one of the three asked for, but it is the shortest interval on the schedule and the cheapest comfort item on a long drive.</p>
+
+            <table class="parts">
+                <tr><th>Part</th><th>Number</th><th>Notes</th></tr>
+                <tr>
+                    <td>Cabin air filter</td>
+                    <td class="pn">ACDelco CF188<br>GM 23281440</td>
+                    <td>Listed in the 2017 owner manual replacement parts table. Behind the glove box.</td>
+                </tr>
+            </table>
+
+            <p>Interval is every 22,500 miles or two years, whichever comes first. Replace sooner with reduced airflow, window fogging, or odors.</p>
+        </section>
+
+        <section class="guide-section" id="pretrip">
+            <h2>6. Pre-Trip Service at 104,000 Miles</h2>
+            <p class="section-lede">Where this vehicle sits against the factory schedule, and what that means before a long trip.</p>
+
+            <table class="spec">
+                <tr><th>Item</th><th>Status at 104,000 miles</th></tr>
+                <tr><td>Oil and filter</td><td>Change before departure. Do not leave on a partial oil life reading.</td></tr>
+                <tr><td>Engine air filter</td><td>Last scheduled replacement was 90,000 mi; next is 135,000 mi. The four-year clock governs on a 2017. Replace.</td></tr>
+                <tr><td>Fuel filter</td><td>No action. Not a serviceable part.</td></tr>
+                <tr><td>Cabin air filter</td><td>Last scheduled replacement was 90,000 mi. Replace.</td></tr>
+                <tr><td>Tire pressures</td><td>Set all four to 35 psi cold. Check the spare, which is a different size (P265/70R17).</td></tr>
+                <tr><td>Fluid levels</td><td>Check coolant (DEX-COOL), brake fluid, and washer fluid before leaving.</td></tr>
+            </table>
+
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;">Also listed in the manual for reference: spark plugs are GM 12622441 / ACDelco 41-114, gap 0.037-0.043 in. Transfer case takes DEXRON-VI, 1.6 qt. Rear axle takes SAE 75W-85 synthetic; front axle takes SAE 75W-90 synthetic.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="sources">
+            <h2>7. Sources</h2>
+            <p class="section-lede">Every number on this page traces to one of the following. Nothing here is estimated.</p>
+            <ul class="sources">
+                <li>2017 Cadillac Escalade / ESV Owner Manual (GMNA-Localizing-U.S./Canada/Mexico-9955979, printed 7/6/16): replacement parts table p. 357, maintenance schedule pp. 348-352, capacities p. 360, engine specs p. 361.</li>
+                <li>NHTSA vPIC VIN decoder: model, trim, drive type, engine code, and plant for VIN 1GYS4HKJ3HR132303.</li>
+                <li>GM / ACDelco parts catalog fitment for GM 23349854 (2017-2020 Escalade and ESV) and GM 22845992 (2002-2016 Escalade).</li>
+                <li>Door jamb Tire and Loading Information label on the vehicle.</li>
+            </ul>
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;">Parts counters look up by year, make, model, and engine. Give them the VIN. If a number they pull differs from this page, the VIN lookup wins for fitment, but check the air filter section above first, because the manual itself is wrong on that one.</p>
+            </div>
+        </section>
+
+        <div class="footer-actions">
+            <a href="#" class="print-btn" onclick="window.print(); return false;">Print This Guide</a>
+            <a href="/admin/equipment-manager.html" class="print-btn" style="background:#666;">Back to Equipment</a>
+        </div>
+    </div>
+</body>
+</html>

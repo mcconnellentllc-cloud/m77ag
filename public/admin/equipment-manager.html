@@ -1414,6 +1414,16 @@
                 url: '/admin/equipment/terragator-guide.html',
                 label: 'John Deere 2630 Setup Guide',
                 sublabel: 'Control valve calibration, flowmeter cal, and troubleshooting'
+            },
+            {
+                match: (item) => {
+                    const title = (item.title || '').toLowerCase();
+                    const model = (item.model || '').toLowerCase();
+                    return title.includes('escalade') || model.includes('escalade');
+                },
+                url: '/admin/equipment/escalade-guide.html',
+                label: 'Escalade Filter and Service Guide',
+                sublabel: 'Oil, air, and fuel filter part numbers, fluid specs, and pre-trip service'
             }
         ];
 
