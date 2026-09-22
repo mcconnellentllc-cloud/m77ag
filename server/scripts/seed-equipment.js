@@ -378,7 +378,10 @@ const equipmentData = [
     purchasePrice: 15000,
     currentValue: 3500,
     serialNumber: '1P9AB19339S276116',
-    notes: 'Unit #154, Owner: M77 AG, Insured: Yes',
+    notes: 'Unit #154, Owner: M77 AG, Insured: Yes. Avery Weigh-Tronix 640 scale head, hydraulic auger drive, ' +
+           '3000 RPM maximum. Engine: Briggs Vanguard 16 HP V-twin 479cc (series 305447), 1 in. shaft, 1/4 in. key. ' +
+           'Replacement: Harbor Freight Predator 459cc item 58383. Wagon manual line 800-291-5487. ' +
+           'See /admin/equipment/weigh-wagon-guide.html',
     forSale: false,
     saleStatus: 'not-for-sale'
   },

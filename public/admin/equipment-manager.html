@@ -1424,6 +1424,16 @@
                 url: '/admin/equipment/escalade-guide.html',
                 label: 'Escalade Filter and Service Guide',
                 sublabel: 'Oil, air, and fuel filter part numbers, fluid specs, and pre-trip service'
+            },
+            {
+                match: (item) => {
+                    const title = (item.title || '').toLowerCase();
+                    const model = (item.model || '').toLowerCase();
+                    return model === 'pk-302618' || title.includes('parkan weigh wagon');
+                },
+                url: '/admin/equipment/weigh-wagon-guide.html',
+                label: 'Weigh Wagon Engine Guide',
+                sublabel: 'Vanguard 16 HP replacement, Predator item numbers, and swap measurements'
             }
         ];
 

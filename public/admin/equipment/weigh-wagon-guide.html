@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weigh Wagon Engine Guide - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .back-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .page-eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: #d4a54a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        .toc {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #2d5016;
+        }
+        .toc-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            padding: 6px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+        }
+        .toc li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            color: #d4a54a;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        .toc a {
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2d5016;
+            text-decoration: underline;
+        }
+        section.guide-section {
+            background: white;
+            padding: 28px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        section.guide-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        section.guide-section .section-lede {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        section.guide-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin: 22px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        section.guide-section p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        section.guide-section ul,
+        section.guide-section ol {
+            margin: 0 0 14px 22px;
+            font-size: 15px;
+        }
+        section.guide-section li {
+            margin-bottom: 6px;
+        }
+        .callout {
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .callout-answer {
+            background: #eef6e9;
+            border-left: 4px solid #2d5016;
+        }
+        .callout-answer strong {
+            color: #2d5016;
+        }
+        .callout-warn {
+            background: #fff8e6;
+            border-left: 4px solid #d4a54a;
+        }
+        .callout-warn strong {
+            color: #a37c1c;
+        }
+        .callout-note {
+            background: #f5f3f0;
+            border-left: 4px solid #999;
+        }
+        table.spec {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.spec th,
+        table.spec td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table.spec th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.spec td:first-child {
+            font-weight: 600;
+            width: 40%;
+        }
+        table.parts {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.parts th,
+        table.parts td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        table.parts th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.parts td.pn {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #2d5016;
+            white-space: nowrap;
+        }
+        .pn-inline {
+            font-family: 'Courier New', monospace;
+            background: #f5f3f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d5016;
+            font-weight: 700;
+        }
+        .counter-sheet {
+            background: #1a1a1a;
+            color: #f5f3f0;
+            border-radius: 8px;
+            padding: 26px 30px;
+            margin-bottom: 24px;
+        }
+        .counter-sheet h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 22px;
+            color: #d4af37;
+            margin-bottom: 4px;
+        }
+        .counter-sheet .cs-sub {
+            font-size: 13px;
+            color: #b9b4ab;
+            margin-bottom: 18px;
+        }
+        .cs-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+        .cs-line:last-of-type { border-bottom: none; }
+        .cs-line .cs-item { color: #f5f3f0; }
+        .cs-line .cs-pn {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #d4af37;
+            white-space: nowrap;
+        }
+        .print-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        .print-btn:hover {
+            background: #1e3a0e;
+        }
+        .footer-actions {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .sources {
+            font-size: 13px;
+            color: #666;
+        }
+        .sources li { margin-bottom: 4px; }
+        @media (max-width: 700px) {
+            .header { padding: 12px 16px; }
+            .container { padding: 20px 14px 40px; }
+            .page-title { font-size: 26px; }
+            section.guide-section { padding: 20px 18px; }
+            .counter-sheet { padding: 20px 18px; }
+            table.parts { font-size: 13px; }
+            table.parts th, table.parts td { padding: 8px 6px; }
+            .cs-line { flex-direction: column; gap: 2px; }
+        }
+        @media print {
+            .header, .back-link, .print-btn, .toc { display: none; }
+            body { background: white; }
+            section.guide-section { box-shadow: none; page-break-inside: avoid; }
+            .counter-sheet { background: white; color: #1a1a1a; border: 2px solid #1a1a1a; page-break-inside: avoid; }
+            .counter-sheet h2, .cs-line .cs-pn { color: #1a1a1a; }
+            .cs-line { border-bottom: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">M77 AG</div>
+        <a href="/admin/equipment-manager.html" class="back-link">Back to Equipment</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-eyebrow">Unit #154 &middot; Model PK-302618 &middot; VIN 1P9AB19339S276116</div>
+            <h1 class="page-title">Weigh Wagon Engine Guide</h1>
+            <p class="page-subtitle">Briggs Vanguard 16 HP V-twin replacement &middot; Harbor Freight Predator specs and swap checks</p>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">In This Guide</div>
+            <ol>
+                <li><a href="#counter">Parts Counter Sheet</a></li>
+                <li><a href="#wagon">Wagon Identification</a></li>
+                <li><a href="#current">Current Engine</a></li>
+                <li><a href="#options">Harbor Freight Replacement Options</a></li>
+                <li><a href="#measure">Measure Before You Buy</a></li>
+                <li><a href="#setup">Setup Notes After the Swap</a></li>
+                <li><a href="#sources">Sources</a></li>
+            </ol>
+        </div>
+
+        <div class="counter-sheet" id="counter">
+            <h2>Parts Counter Sheet</h2>
+            <p class="cs-sub">Harbor Freight item numbers. Confirm the shaft and mount measurements in section 5 before ordering.</p>
+            <div class="cs-line">
+                <span class="cs-item">Replacement engine (recommended)</span>
+                <span class="cs-pn">PREDATOR 459cc &middot; ITEM 58383</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Alternate, V-twin, more power</span>
+                <span class="cs-pn">PREDATOR 670cc &middot; ITEM 61614</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Engine oil (459cc takes 1.16 qt)</span>
+                <span class="cs-pn">SAE 10W-30</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Battery, if the onboard one is due</span>
+                <span class="cs-pn">12V &middot; 300 CCA &middot; 36 AH</span>
+            </div>
+            <div class="cs-line">
+                <span class="cs-item">Wagon operator manual</span>
+                <span class="cs-pn">CALL 800-291-5487</span>
+            </div>
+        </div>
+
+        <section class="guide-section" id="wagon">
+            <h2>1. Wagon Identification</h2>
+            <p class="section-lede">Read off the serial tag and the decals on the machine. Have all of this in hand before calling for the manual or ordering parts.</p>
+
+            <table class="spec">
+                <tr><th colspan="2">Machine</th></tr>
+                <tr><td>Unit number</td><td>154</td></tr>
+                <tr><td>Model number</td><td><span class="pn-inline">PK-302618</span></td></tr>
+                <tr><td>VIN / serial</td><td><span class="pn-inline">1P9AB19339S276116</span></td></tr>
+                <tr><td>Year</td><td>2009</td></tr>
+                <tr><td>Scale indicator</td><td>Avery Weigh-Tronix, Model 640</td></tr>
+                <tr><td>Auger drive</td><td>Hydraulic, engine-driven pump</td></tr>
+                <tr><td>Maximum operating speed</td><td>3,000 RPM (control door decal)</td></tr>
+                <tr><td>Manual replacement line</td><td>800-291-5487 (caution decal, part no. 250063)</td></tr>
+            </table>
+
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;">The wagon carries Pioneer "Yield Comparison Scale" decals, which are dealer branding on the machine, not the manufacturer. Order parts by the model and VIN above.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="current">
+            <h2>2. Current Engine</h2>
+            <p class="section-lede">Briggs and Stratton Vanguard 16 HP V-twin, 479cc, model series 305447. Electric start, with a spin-on oil filter and a pulse fuel pump.</p>
+
+            <table class="spec">
+                <tr><td>Displacement</td><td>479cc, V-twin, OHV</td></tr>
+                <tr><td>Rated power</td><td>16 HP gross</td></tr>
+                <tr><td>Crankshaft diameter</td><td>1 in.</td></tr>
+                <tr><td>Keyway</td><td>1/4 in.</td></tr>
+                <tr><td>Crankshaft length</td><td>Varies by variant: 2-29/32 in., 3 in., or 3-25/64 in. Measure yours.</td></tr>
+                <tr><td>Rotation</td><td>Counterclockwise viewed from the PTO</td></tr>
+                <tr><td>Oil filter currently fitted</td><td>NAPA Gold spin-on</td></tr>
+            </table>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>Get the model number off the engine before ordering.</strong> The Briggs tag is stamped on the blower housing and gives model, type, and code. The 305447 series was built with three different crankshaft lengths, and that measurement decides whether the pump coupler bolts back on without a spacer.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="options">
+            <h2>3. Harbor Freight Replacement Options</h2>
+            <p class="section-lede">Both current Predator engines large enough for this wagon use the same 1 in. shaft with a 1/4 in. key and a 3/8-24 tapped end as the Vanguard, and the same 7.7 in. by 4 in. base pattern as each other.</p>
+
+            <table class="parts">
+                <tr><th>Spec</th><th>Predator 459cc</th><th>Predator 670cc V-twin</th></tr>
+                <tr><td>Item number</td><td class="pn">58383</td><td class="pn">61614</td></tr>
+                <tr><td>Price</td><td>$449.99</td><td>$949.99</td></tr>
+                <tr><td>Power</td><td>15.8 HP at 3,600 RPM<br>24.5 ft-lb at 2,800 RPM</td><td>22 HP</td></tr>
+                <tr><td>Cylinders</td><td>Single</td><td>V-twin</td></tr>
+                <tr><td>Shaft</td><td class="pn">1 in. x 3.5 in.</td><td class="pn">1 in. x 3.56 in.</td></tr>
+                <tr><td>Keyway</td><td>1/4 in.</td><td>1/4 in.</td></tr>
+                <tr><td>Shaft end</td><td>Tapped 3/8-24 UNF</td><td>Tapped 3/8-24 UNF</td></tr>
+                <tr><td>Base bolt pattern</td><td>7.7 in. x 4 in., 11 mm holes</td><td>7.7 in. x 4 in.</td></tr>
+                <tr><td>Rotation</td><td>Counterclockwise from PTO</td><td>Counterclockwise from PTO</td></tr>
+                <tr><td>Starting</td><td>Electric and recoil</td><td>Electric</td></tr>
+                <tr><td>Oil</td><td>1.16 qt, no filter</td><td>2 qt, spin-on (Fram PH4967)</td></tr>
+                <tr><td>Low oil shutdown</td><td>Yes</td><td>Not listed</td></tr>
+                <tr><td>Max no-load speed</td><td>3,800 RPM</td><td>4,000 RPM</td></tr>
+                <tr><td>Dry weight</td><td>Not published</td><td>110 lb</td></tr>
+            </table>
+
+            <div class="callout callout-answer">
+                <p><strong>Buy the Predator 459cc, item 58383.</strong> At 15.8 HP it matches the Vanguard's 16 HP, the 1 in. shaft with a 1/4 in. key means the existing pump coupler slides straight on, and it costs half what the V-twin does.</p>
+                <p style="margin-bottom:0;">Move up to the 670cc V-twin only if the pump is rigidly direct-coupled and you want the smoother twin, or the wagon has been short on power under a full hopper. It is physically larger and weighs 110 lb, so measure the compartment first.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="measure">
+            <h2>4. Measure Before You Buy</h2>
+            <p class="section-lede">Five checks. Each one is a return trip if it is wrong.</p>
+
+            <h3>Crankshaft length</h3>
+            <p>Measure from the block face to the end of the shaft. The Predator is 3.5 in. If yours is the 2-29/32 in. Vanguard, the new shaft sits over half an inch proud and the coupler will need a spacer or the shaft will need shortening.</p>
+
+            <h3>Base bolt pattern</h3>
+            <p>Both Predators use the Honda-style 7.7 in. by 4 in. pattern with 11 mm holes. The Vanguard V-twin does not. Plan on drilling the mount plate or fabricating a new one.</p>
+
+            <h3>Pump adapter</h3>
+            <p>If a bell housing bolts to the engine's PTO face to carry the hydraulic pump, that bolt pattern will not carry over from the Vanguard. Measure the bolt circle and hole size before ordering.</p>
+
+            <h3>Charging output</h3>
+            <p>The 459cc has a charging coil in its parts list, but Harbor Freight does not publish the amp rating. Some 16 HP Vanguards carried a 16 amp alternator. If the Avery Weigh-Tronix head and the hydraulic solenoids run off the onboard battery, confirm the charging output covers the load, or plan to charge the battery off the wagon.</p>
+
+            <h3>Exhaust and controls</h3>
+            <p>The muffler sits in a different place on a single-cylinder engine, and the throttle and choke cable routing moves with it. The current exhaust and cable setup will not bolt over.</p>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>Call for the wagon manual first.</strong> The caution decal on the control door lists 800-291-5487 for a replacement manual. With model PK-302618 it will give you the engine mount plate and pump coupling dimensions on paper, which beats measuring blind and turns three trips to the store into one.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="setup">
+            <h2>5. Setup Notes After the Swap</h2>
+
+            <h3>Governed speed</h3>
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>Set the governor to 3,000 RPM.</strong> The control door decal reads 3000 RPM MAXIMUM. The 459cc is rated at 3,600 RPM and free-runs to 3,800. Out of the crate it will overspeed this wagon's hydraulic system. Set it before the first load goes through the auger.</p>
+            </div>
+
+            <h3>Oil</h3>
+            <p>SAE 10W-30 above 32 F, 5W-30 at 32 F or below. Capacity is 1.16 quart on the 459cc. It has no oil filter, unlike the Vanguard it replaces, so the old NAPA Gold filter and its mount come off with the engine. The 670cc takes 2 quarts and does use a spin-on, Fram PH4967 or STP S4967.</p>
+
+            <h3>Fuel</h3>
+            <p>87 octane or better, treated with stabilizer. The wagon sits between harvests, so treat the fuel and shut the valve at the end of the season.</p>
+
+            <h3>Battery</h3>
+            <p>The Predator manual specifies a 12 volt, 300 CCA, 36 AH lead-acid battery, not included. Connect the negative cable to one of the engine mounting bolts per the manual.</p>
+
+            <h3>Break-in</h3>
+            <p>Run the first tank at light load, then change the oil. A new engine shedding assembly debris into a fresh crankcase is the cheapest maintenance there is.</p>
+        </section>
+
+        <section class="guide-section" id="sources">
+            <h2>6. Sources</h2>
+            <p class="section-lede">Every figure on this page comes from one of the following. Nothing here is estimated.</p>
+            <ul class="sources">
+                <li>Harbor Freight owner's manual, item 58383 (Predator 459cc): specifications page, mounting hole diagram, power take-off diagram, parts list.</li>
+                <li>Harbor Freight owner's manual, item 61614 (Predator 670cc V-twin): specifications page.</li>
+                <li>Harbor Freight product listings for items 58383 and 61614: current pricing and dry weight.</li>
+                <li>Briggs and Stratton catalog listings for the Vanguard 305447 series: crankshaft diameter, keyway, and the three published shaft lengths.</li>
+                <li>The wagon's own serial tag, control door decals, and engine photographs.</li>
+            </ul>
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;">Harbor Freight pricing changes. Check the item numbers above against the current listing before you drive to the store.</p>
+            </div>
+        </section>
+
+        <div class="footer-actions">
+            <a href="#" class="print-btn" onclick="window.print(); return false;">Print This Guide</a>
+            <a href="/admin/equipment-manager.html" class="print-btn" style="background:#666;">Back to Equipment</a>
+        </div>
+    </div>
+</body>
+</html>
