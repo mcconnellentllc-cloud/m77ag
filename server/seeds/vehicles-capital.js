@@ -93,7 +93,7 @@ const vehicleData = [
       make: 'Cadillac',
       model: 'Escalade ESV',
       vin: '1GYS4HKJ3HR132303',
-      mileage: 104000,
+      mileage: 114933,
       fuelType: 'Gasoline'
     },
     acquisition: {
@@ -106,7 +106,7 @@ const vehicleData = [
              'so this figure needs a re-run against 2017 ESV comps.'
     },
     status: 'owned',
-    notes: 'Personal vehicle - 2017 Escalade ESV Luxury 4WD, 6.2L V8 (L86), 104,000 miles'
+    notes: 'Personal vehicle - 2017 Escalade ESV Luxury 4WD, 6.2L V8 (L86), 114,933 miles as of 2026-09-23'
   },
   {
     name: 'Toyota Camry',

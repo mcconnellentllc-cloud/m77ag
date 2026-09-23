@@ -152,7 +152,26 @@ const equipmentData = [
     make: 'Cadillac',
     model: 'Escalade ESV',
     vin: '1GYS4HKJ3HR132303',
-    currentMiles: 104000,
+    currentMiles: 114933,
+    maintenanceRecords: [
+      {
+        date: new Date('2026-09-23T19:37:00Z'),
+        type: 'oil_change',
+        description: 'Pre-trip service: engine oil and filter, engine air filter, cabin air filter',
+        milesAtService: 114933,
+        parts: [
+          { name: 'Engine oil filter', partNumber: 'ACDelco PF63E (GM 19330000)', quantity: 1 },
+          { name: 'Engine air filter', partNumber: 'ACDelco A3218C (GM 23349854)', quantity: 1 },
+          { name: 'Cabin air filter', partNumber: 'ACDelco CF188 (GM 23281440)', quantity: 1 },
+          { name: 'Engine oil, SAE 0W-20 dexos1 full synthetic', partNumber: '0W-20', quantity: 8 }
+        ],
+        performedBy: 'self',
+        vendor: "O'Reilly Auto Parts (parts)",
+        notes: 'No fuel filter serviced - not a serviceable part on this vehicle. ' +
+               'Next engine air filter 135,000 mi or Sept 2030. Next cabin air filter 135,000 mi or Sept 2028. ' +
+               'Reset oil life system.'
+      }
+    ],
     notes: 'Owner: Personal, Insured: Yes. Engine 6.2L V8 (L86), 4WD, built Arlington TX. ' +
            'Oil filter ACDelco PF63E (GM 19330000), air filter ACDelco A3218C (GM 23349854), ' +
            'cabin filter ACDelco CF188 (GM 23281440). No serviceable fuel filter - integral to in-tank pump module. ' +
