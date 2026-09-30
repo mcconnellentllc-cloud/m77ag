@@ -1254,14 +1254,14 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
-    title: '2015 Walker Super Bee 72"',
-    subtitle: 'Commercial Mower',
+    title: '2008 Walker MBSSD Super B 72"',
+    subtitle: 'Commercial Mower — 27 HP',
     category: 'Other',
-    year: 2015,
+    year: 2008,
     make: 'Walker',
-    model: 'Super Bee 72"',
-    description: '72" commercial mower',
-    notes: 'Owner: M77 AG, Insured: Yes',
+    model: 'MBSSD',
+    description: '72" commercial Super B mower, 27 HP, dual fuel tanks, GHS collection deck. Unit weight 730 lbs.',
+    notes: 'Owner: M77 AG · Insured: Yes · Engine: 27 HP (likely Kohler Command Pro CH740, pending engine tag confirmation) · Main drive belt (engine to hydro pumps): Walker MFG. PN 2248',
     forSale: false,
     saleStatus: 'not-for-sale'
   },

@@ -1,105 +1,161 @@
 /**
- * Update the 2015 Walker Super Bee 72" record with serial number,
- * engine info, and an open maintenance entry for the main drive belt
- * replacement.
+ * Update the Walker MBSSD Super B 72" record — a rolling capture of
+ * everything we learn about this mower. Kyle sent photos of the frame
+ * plate, engine, shroud decal, and belt markings; each new detail is
+ * merged into WALKER_UPDATE below.
  *
- * Fill in the TODO fields once serial/engine/part number are confirmed.
  * Run: node scripts/update-walker-superbee.js
+ *
+ * Confirmed (2026-09-30):
+ *  - Manufacturer: Walker MFG. Co., Fort Collins, CO
+ *  - Year: 2008 (seed originally had this wrong as 2015)
+ *  - Model No: MBSSD
+ *  - Serial No: 07208
+ *  - Engine: 27 HP / 20.1 kW (likely Kohler Command Pro CH740, pending
+ *    engine-tag close-up to confirm exact model + engine serial)
+ *  - Unit weight: 730 lbs / 331 kg
+ *  - Fuel: dual fuel tanks (left + right with FUEL TANK selector)
+ *  - Main drive belt (engine → hydro pumps): Walker MFG. PN 2248
+ *    (confirmed off the belt itself; Made in Mexico; date code 2919MX)
  */
 
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const FarmEquipment = require('../server/models/farmEquipment');
 const Equipment = require('../server/models/equipment');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
-// Fill these in once we have them:
 const WALKER_UPDATE = {
-  serialNumber: 'TODO',              // e.g. from frame plate under seat
-  engineMake: 'TODO',                // e.g. 'Kohler' or 'Kawasaki'
-  engineModel: 'TODO',               // e.g. 'Command Pro EFI 27hp' or 'FX801V'
-  engineSerialNumber: 'TODO',        // stamped on engine shroud
-  hourMeter: null,                   // current hours
+  correctedTitle: '2008 Walker MBSSD Super B 72"',
+  correctedModel: 'MBSSD',
+  correctedYear: 2008,
+  serialNumber: '07208',
+  unitWeightLbs: 730,
+  hourMeter: null,                   // pending — need to read the hour meter
+
+  engine: {
+    make: 'Kohler',                  // pending engine-tag close-up
+    model: 'Command Pro CH740',      // pending engine-tag close-up
+    horsepower: 27,                  // confirmed (plate + shroud decal)
+    kilowatts: 20.1,                 // confirmed off Walker plate
+    serialNumber: 'TODO',            // need engine-tag close-up
+    fuelType: 'Gasoline',            // dual fuel tank config, non-EFI
+    confidence: 'engine make/model inferred from OHV housing style, wing-nut air cleaner, and standard 2008 MBSSD spec — pending engine-tag close-up'
+  },
+
+  configuration: {
+    deckSize: '72"',
+    deckType: 'GHS (Grass Handling System) — collection',
+    fuelTanks: 'Dual (left + right, with FUEL TANK selector valve)',
+    manufacturer: {
+      name: 'Walker Mfg. Co.',
+      address: '5925 E. Harmony Road, Fort Collins, CO 80528',
+      phone: '(970) 221-5614',
+      web: 'www.walkermowers.com'
+    }
+  },
+
+  parts: [
+    {
+      name: 'Main drive belt (engine to hydro pumps)',
+      walkerPartNumber: '2248',
+      manufacturer: 'Walker MFG. (Made in Mexico)',
+      dateCodeSeen: '2919MX',
+      notes: 'Confirmed off the belt itself. Engine-to-pump drive belt.'
+    }
+    // TODO: deck belts, spindle bearings, blades, filters, plugs, mule drive.
+  ]
 };
 
-// Main drive belt maintenance entry — open (not yet purchased).
-// Once we confirm the Walker part number with the serial/engine, and
-// once the belt is purchased, fill in partNumber, vendor, cost, and
-// installedDate.
 const BELT_MAINTENANCE = {
   date: new Date(),
   category: 'repair',
-  description: 'Main drive belt replacement — needed',
-  status: 'pending_purchase',
+  description: 'Main drive belt (engine to hydro pumps) replacement',
+  status: 'part_identified',
   parts: [{
-    name: 'Main drive belt (engine to hydro pumps)',
-    partNumber: 'TODO — pending serial/engine confirmation',
+    name: 'Main drive belt',
+    partNumber: 'Walker MFG. 2248',
     quantity: 1,
     unitCost: null,
-    vendor: 'Walker Manufacturing (or local Walker dealer)',
-    vendorPhone: '800-279-8537'
+    vendor: null
   }],
   laborHours: null,
   totalCost: null,
   performedBy: '',
-  notes: 'Kyle to source and install. Confirm part number by calling Walker parts with serial number in hand.'
+  notes: 'Part number confirmed off the OEM belt (Walker MFG. 2248, date code 2919MX). Source from Walker Parts (800-279-8537) or any Walker dealer. Reference: MBSSD, SN 07208.'
 };
 
 async function updateWalker() {
   await mongoose.connect(MONGODB_URI);
   console.log('Connected to MongoDB');
 
-  // Look up either FarmEquipment or Equipment record for the Walker.
-  // Seed put it in the sale-inventory Equipment collection, so try that first.
   const walker = await Equipment.findOne({
     make: 'Walker',
-    model: /Super Bee/i
+    $or: [
+      { model: /MBSSD/i },
+      { model: /Super B/i },
+      { model: /Super Bee/i }
+    ]
   });
 
   if (!walker) {
-    console.error('Walker Super Bee record not found. Has seed-equipment been run?');
+    console.error('Walker record not found. Has seed-equipment been run?');
     process.exit(1);
   }
 
   console.log('Found:', walker.title, `(${walker._id})`);
 
-  // Apply serial/engine updates when populated.
-  let dirty = false;
-  if (WALKER_UPDATE.serialNumber !== 'TODO') {
-    walker.serialNumber = WALKER_UPDATE.serialNumber;
-    dirty = true;
-  }
-  if (WALKER_UPDATE.hourMeter != null) {
-    walker.hourMeter = WALKER_UPDATE.hourMeter;
-    dirty = true;
-  }
-  const engineParts = [];
-  if (WALKER_UPDATE.engineMake !== 'TODO') engineParts.push(WALKER_UPDATE.engineMake);
-  if (WALKER_UPDATE.engineModel !== 'TODO') engineParts.push(WALKER_UPDATE.engineModel);
-  if (WALKER_UPDATE.engineSerialNumber !== 'TODO') engineParts.push(`SN: ${WALKER_UPDATE.engineSerialNumber}`);
-  if (engineParts.length) {
-    walker.notes = [walker.notes, `Engine: ${engineParts.join(' — ')}`].filter(Boolean).join(' · ');
-    dirty = true;
+  if (WALKER_UPDATE.correctedTitle) walker.title = WALKER_UPDATE.correctedTitle;
+  if (WALKER_UPDATE.correctedModel) walker.model = WALKER_UPDATE.correctedModel;
+  if (WALKER_UPDATE.correctedYear) walker.year = WALKER_UPDATE.correctedYear;
+  if (WALKER_UPDATE.serialNumber !== 'TODO') walker.serialNumber = WALKER_UPDATE.serialNumber;
+  if (WALKER_UPDATE.hourMeter != null) walker.hourMeter = WALKER_UPDATE.hourMeter;
+
+  const facts = [];
+  facts.push('Owner: M77 AG');
+  facts.push('Insured: Yes');
+  facts.push(`Serial: ${WALKER_UPDATE.serialNumber}`);
+  facts.push(`Unit weight: ${WALKER_UPDATE.unitWeightLbs} lbs`);
+  facts.push(`Deck: ${WALKER_UPDATE.configuration.deckSize} ${WALKER_UPDATE.configuration.deckType}`);
+  facts.push(`Fuel: ${WALKER_UPDATE.configuration.fuelTanks}`);
+
+  const eng = WALKER_UPDATE.engine;
+  const engParts = [];
+  if (eng.make !== 'TODO') engParts.push(eng.make);
+  if (eng.model !== 'TODO') engParts.push(eng.model);
+  if (eng.horsepower) engParts.push(`${eng.horsepower} HP / ${eng.kilowatts} kW`);
+  if (eng.serialNumber !== 'TODO') engParts.push(`Engine SN: ${eng.serialNumber}`);
+  if (engParts.length) facts.push(`Engine: ${engParts.join(' — ')}`);
+
+  if (WALKER_UPDATE.parts.length) {
+    const partsLines = WALKER_UPDATE.parts
+      .map(p => `${p.name}: Walker PN ${p.walkerPartNumber}`)
+      .join(' · ');
+    facts.push(`Known parts: ${partsLines}`);
   }
 
-  // Attach the open belt maintenance entry.
-  if (BELT_MAINTENANCE.parts[0].partNumber && BELT_MAINTENANCE.parts[0].partNumber !== 'TODO — pending serial/engine confirmation') {
-    walker.maintenanceLog = walker.maintenanceLog || [];
+  walker.notes = facts.join(' · ');
+
+  walker.maintenanceLog = walker.maintenanceLog || [];
+  const alreadyLogged = walker.maintenanceLog.some(m =>
+    m.description === BELT_MAINTENANCE.description &&
+    m.status === 'part_identified'
+  );
+  if (!alreadyLogged) {
     walker.maintenanceLog.push(BELT_MAINTENANCE);
-    dirty = true;
-    console.log('Added maintenance entry: main drive belt replacement');
-  } else {
-    console.log('SKIPPING maintenance entry — part number still TODO');
+    console.log('Added maintenance entry: main drive belt (Walker PN 2248)');
   }
 
-  if (dirty) {
-    await walker.save();
-    console.log('Walker record updated.');
-  } else {
-    console.log('No updates applied — all fields still TODO. Fill in WALKER_UPDATE at top of script.');
-  }
+  await walker.save();
+  console.log('---');
+  console.log('Walker record updated:');
+  console.log('  Title:      ', walker.title);
+  console.log('  Year:       ', walker.year);
+  console.log('  Model:      ', walker.model);
+  console.log('  Serial:     ', walker.serialNumber);
+  console.log('  Notes:      ', walker.notes);
+  console.log('  Maint entries:', walker.maintenanceLog?.length || 0);
 
   await mongoose.disconnect();
 }
