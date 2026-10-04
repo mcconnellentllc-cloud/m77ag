@@ -314,6 +314,11 @@
                     <tr><td>Roll / pitch (parked)</td><td>-0.4&deg; / 3.5&deg;</td></tr>
                     <tr><td>Steer Sensitivity</td><td>90</td></tr>
                     <tr><td>Acquire Sensitivity</td><td>95</td></tr>
+                    <tr><td>Advanced: Tracking Sensitivity</td><td>120</td></tr>
+                    <tr><td>Advanced: Heading Sensitivity</td><td>105</td></tr>
+                    <tr><td>Advanced: Heading Lead</td><td>105</td></tr>
+                    <tr><td>Advanced: Curvature Sensitivity</td><td>120</td></tr>
+                    <tr><td>Advanced: Steer Play</td><td>50</td></tr>
                     <tr><td>Raven Viper Pro SmarTrax</td><td>Still installed. Showing &ldquo;NoA-B Msg&rdquo;</td></tr>
                 </tbody>
             </table>
@@ -426,6 +431,21 @@
                 </tbody>
             </table>
 
+            <h3>Advanced Settings</h3>
+            <p>Path: <span class="path">AutoTrac Settings &rarr; Advanced Settings</span>. Press Accept to save changes. Change one setting at a time, by 10, and run the same line at the same speed after each change.</p>
+            <table class="spec">
+                <thead>
+                    <tr><th>Setting</th><th>What it does and when to change it</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Tracking Sensitivity</td><td>How hard it steers back toward the line. Too high gives an overshooting S-curve; too low gives a slow drift. Currently 120. Lower it first when the machine weaves.</td></tr>
+                    <tr><td>Heading Lead</td><td>Makes the system steer ahead of time to make up for lag in the steering. On a sprayer with hydrostatic steering, raise this if it still overshoots after Tracking Sensitivity is lowered.</td></tr>
+                    <tr><td>Steer Play</td><td>Makes up for free play in the steering wheel. Raise it if the wheel has noticeable play before the tires move. Lower it if the wheel starts making short, jerky corrections.</td></tr>
+                    <tr><td>Heading Sensitivity</td><td>How hard it corrects heading. Leave it alone until the three settings above are set.</td></tr>
+                    <tr><td>Curvature Sensitivity</td><td>Only matters on curved lines. It has no effect on straight AB passes.</td></tr>
+                </tbody>
+            </table>
+
             <div class="callout callout-warn">
                 <p style="margin-bottom:0;"><strong>If the weave stays the same at every sensitivity setting,</strong> the problem is in Section 3: slack, a slipping motor, wrong measurements, or a second steering system. Use Restore Defaults to get back to a known starting point, and send a photo of the Advanced Settings screen before changing anything there.</p>
             </div>
@@ -441,7 +461,7 @@
                 </thead>
                 <tbody>
                     <tr><td>Oct 4, 2026</td><td>Starting point (no change)</td><td>90 / 95</td><td></td><td></td><td></td><td>Regular S-curve weave on SF1</td></tr>
-                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>Oct 4, 2026</td><td>Calibration completed. Advanced: Tracking 120, Heading 105, Heading Lead 105, Curvature 120, Steer Play 50</td><td>90 / 95</td><td></td><td>6.8 (last pass 6.3)</td><td>1.23 (last pass 1.28)</td><td>Much improved over the starting point. Still above target.</td></tr>
                     <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                     <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                     <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
