@@ -1414,6 +1414,17 @@
                 url: '/admin/equipment/terragator-guide.html',
                 label: 'John Deere 2630 Setup Guide',
                 sublabel: 'Control valve calibration, flowmeter cal, and troubleshooting'
+            },
+            {
+                match: (item) => {
+                    const title = (item.title || '').toLowerCase();
+                    // Exclude the separately tracked "Raven Viper Pro Rogator Display".
+                    return (title.includes('rogator') && !title.includes('display'))
+                        || (item.serialNumber || '') === 'AGCA1300JCNSL1103';
+                },
+                url: '/admin/equipment/rogator-guide.html',
+                label: 'RoGator Setup Guide',
+                sublabel: 'AutoTrac Universal steering setup, weave diagnosis, and tuning log'
             }
         ];
 
