@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoGator Setup Guide - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .back-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .page-eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: #d4a54a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        .toc {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #2d5016;
+        }
+        .toc-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            padding: 6px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+        }
+        .toc li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            color: #d4a54a;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        .toc a {
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2d5016;
+            text-decoration: underline;
+        }
+        section.guide-section {
+            background: white;
+            padding: 28px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        section.guide-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        section.guide-section .section-lede {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        section.guide-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin: 22px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        section.guide-section p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        section.guide-section ul,
+        section.guide-section ol {
+            margin: 0 0 14px 22px;
+            font-size: 15px;
+        }
+        section.guide-section li {
+            margin-bottom: 6px;
+        }
+        .callout {
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .callout-answer {
+            background: #eef6e9;
+            border-left: 4px solid #2d5016;
+        }
+        .callout-answer strong {
+            color: #2d5016;
+        }
+        .callout-warn {
+            background: #fff8e6;
+            border-left: 4px solid #d4a54a;
+        }
+        .callout-warn strong {
+            color: #a37c1c;
+        }
+        .callout-note {
+            background: #f5f3f0;
+            border-left: 4px solid #999;
+        }
+        table.spec {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.spec th,
+        table.spec td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table.spec th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.spec td:first-child {
+            font-weight: 600;
+            width: 40%;
+        }
+        .path {
+            font-family: 'Courier New', monospace;
+            background: #f5f3f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d5016;
+            font-weight: 600;
+        }
+        .digit-key {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 8px 16px;
+            margin: 10px 0 18px;
+            font-size: 14px;
+        }
+        .digit-key .k {
+            font-family: 'Courier New', monospace;
+            background: #2d5016;
+            color: #d4a54a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .print-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        .print-btn:hover {
+            background: #1e3a0e;
+        }
+        .footer-actions {
+            text-align: center;
+            padding: 20px 0;
+        }
+        @media (max-width: 700px) {
+            .header { padding: 12px 16px; }
+            .container { padding: 20px 14px 40px; }
+            .page-title { font-size: 26px; }
+            section.guide-section { padding: 20px 18px; }
+        }
+        @media print {
+            .header, .back-link, .print-btn, .toc { display: none; }
+            body { background: white; }
+            section.guide-section { box-shadow: none; page-break-inside: avoid; }
+        }
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table.spec.log {
+            min-width: 640px;
+        }
+        table.spec.log td:first-child {
+            width: auto;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">M77 AG</div>
+        <a href="/admin/equipment-manager.html" class="back-link">Back to Equipment</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-eyebrow">Ag Chem 1300 RoGator &middot; Unit #208</div>
+            <h1 class="page-title">RoGator Setup Guide</h1>
+            <p class="page-subtitle">John Deere AutoTrac Universal on StarFire 7000 &middot; guidance and steering setup</p>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">In This Guide</div>
+            <ol>
+                <li><a href="#atu-current">AutoTrac Universal: Current Configuration</a></li>
+                <li><a href="#atu-weave">Problem: Weaving Instead of a Straight Line</a></li>
+                <li><a href="#atu-checks">Checks Before Tuning</a></li>
+                <li><a href="#atu-tune">Dialing In Steer Sensitivity</a></li>
+                <li><a href="#atu-log">AutoTrac Tuning Log</a></li>
+            </ol>
+        </div>
+
+        <section class="guide-section" id="atu-current">
+            <h2>1. AutoTrac Universal: Current Configuration</h2>
+            <p class="section-lede">Settings recorded from the cab displays on October 4, 2026. Steering is the John Deere AutoTrac Universal (ATU) running through the StarFire 7000, shown on the John Deere display as ISOBUS VT screens.</p>
+
+            <table class="spec">
+                <thead>
+                    <tr><th>Item</th><th>Recorded value</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Receiver</td><td>StarFire 7000</td></tr>
+                    <tr><td>Position mode</td><td><strong>SF1</strong> (not RTK)</td></tr>
+                    <tr><td>Accuracy / GNSS signal</td><td>100% / 100%</td></tr>
+                    <tr><td>SF signal</td><td>21.9 dB</td></tr>
+                    <tr><td>Roll / pitch (parked)</td><td>-0.4&deg; / 3.5&deg;</td></tr>
+                    <tr><td>Steer Sensitivity</td><td>90</td></tr>
+                    <tr><td>Acquire Sensitivity</td><td>95</td></tr>
+                    <tr><td>Raven Viper Pro SmarTrax</td><td>Still installed. Showing &ldquo;NoA-B Msg&rdquo;</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Where the settings are</h3>
+            <ul>
+                <li>Steering: <span class="path">ISOBUS VT &rarr; AutoTrac &rarr; AutoTrac Settings</span>. The Steer Sensitivity and Acquire Sensitivity bars, plus the Restore Defaults and Advanced Settings buttons. The Setup and Diagnostics buttons are on the right side.</li>
+                <li>Receiver: <span class="path">ISOBUS VT &rarr; StarFire 7000 &rarr; Main</span>. Tabs are Info, Setup, License Type and Serial Port.</li>
+            </ul>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>Position mode is SF1, not RTK.</strong> SF1 is a basic correction level, accurate to several inches from pass to pass, and it drifts over time. It does not cause the S-curves described in Section 2, but it limits how straight and repeatable any pass can be. Check the License Type tab for an active RTK license, and check that the RTK radio is receiving the base station. Fix those before judging guidance accuracy.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="atu-weave">
+            <h2>2. Problem: Weaving Instead of a Straight Line</h2>
+            <p class="section-lede">On guidance the RoGator drives a smooth, repeating S-curve instead of a straight line. The tracks swing several feet each side of the line and cross the passes next to them.</p>
+
+            <div class="callout callout-answer">
+                <p><strong>A regular S-curve is an oscillation, not a GPS problem.</strong> The steering corrects too late, overshoots the line, then corrects back the other way.</p>
+                <p style="margin-bottom:0;">On a sprayer with hydrostatic steering, the usual causes are, in order: slack between the ATU motor and the steering, wrong machine measurements, a bad steering calibration, and sensitivity set wrong for that slack. Work through Section 3 before changing sensitivity. Tuning sensitivity will not fix a mechanical or measurement problem.</p>
+            </div>
+
+            <h3>Read the pattern</h3>
+            <table class="spec">
+                <thead>
+                    <tr><th>What the machine does</th><th>What it points to</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Crosses the line again and again in a regular S-curve</td><td>Overshoot. There is lag in the steering, or sensitivity is too high for the slack.</td></tr>
+                    <tr><td>Drifts slowly to one side and stays off the line</td><td>Sensitivity too low, or the ATU motor is slipping on the wheel.</td></tr>
+                    <tr><td>Short, fast jerks of the wheel</td><td>Sensitivity too high.</td></tr>
+                    <tr><td>Good one direction, off-line the other direction</td><td>Receiver offsets or terrain compensation calibration (Section 3).</td></tr>
+                    <tr><td>Weaves only on a side slope</td><td>Terrain compensation calibration or receiver height.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="guide-section" id="atu-checks">
+            <h2>3. Checks Before Tuning</h2>
+            <p class="section-lede">Do these in order. Each one can cause weaving on its own, and no sensitivity setting will make up for them.</p>
+
+            <h3>1. Only one steering system active</h3>
+            <ul>
+                <li>The Raven Viper Pro still shows SmarTrax. Confirm SmarTrax is disengaged and cannot steer while the ATU is driving.</li>
+                <li>If the SmarTrax hydraulic steering valve is still plumbed into the steering circuit, confirm it is not leaking oil past the orbital. Two systems acting on the same steering will fight and weave.</li>
+            </ul>
+
+            <h3>2. Mechanical slack</h3>
+            <ul>
+                <li>ATU motor mounting: tight to the steering column, with the anti-rotation bracket firm and not flexing.</li>
+                <li>Motor to steering wheel: no slipping. Mark the wheel and the motor, run a pass, and check that the marks still line up.</li>
+                <li>Steering free play: with the engine running, measure how far the wheel turns before the tires move. Excess play in the orbital, the cylinders or the tie rods shows up as overshoot.</li>
+                <li>Tire pressures equal side to side. Front end alignment and toe within spec.</li>
+            </ul>
+
+            <h3>3. Machine measurements</h3>
+            <p>On the Setup screen, check the machine type is a self-propelled sprayer. Measure and enter:</p>
+            <ul>
+                <li>Wheelbase: front axle center to rear axle center.</li>
+                <li>Receiver fore/aft: the receiver's distance from the rear axle (or whatever reference point the screen asks for).</li>
+                <li>Receiver height: ground to the top of the receiver.</li>
+                <li>Receiver left/right offset: 0 if it is centered on the cab.</li>
+            </ul>
+            <div class="callout callout-note">
+                <p style="margin-bottom:0;"><strong>Wrong wheelbase or receiver fore/aft is a common cause of a regular S-curve.</strong> The controller steers for a machine that turns differently from the real one. Use a tape measure; don't estimate.</p>
+            </div>
+
+            <h3>4. Terrain compensation (TCM) calibration</h3>
+            <ol>
+                <li>Park on level, firm ground.</li>
+                <li>Run the calibration from the StarFire 7000 Setup tab.</li>
+                <li>When it asks, turn 180&deg; and park in the same tire tracks. Then complete the calibration.</li>
+            </ol>
+            <p>A pitch reading of 3.5&deg; while parked is fine on a slope. On level ground, pitch and roll should both read close to 0&deg; after calibration.</p>
+
+            <h3>5. ATU steering calibration</h3>
+            <p>Run the steering calibration from the AutoTrac Setup screen in an open, level area at the speed the screen asks for. Run it again after any change to the motor mounting or the steering hydraulics.</p>
+        </section>
+
+        <section class="guide-section" id="atu-tune">
+            <h2>4. Dialing In Steer Sensitivity</h2>
+            <p class="section-lede">Only after Section 3 is complete. Steer Sensitivity sets how hard the system turns the wheel to get back to the line. Acquire Sensitivity only affects how quickly it pulls onto a new line.</p>
+
+            <h3>Procedure</h3>
+            <ol>
+                <li>Pick a straight AB line on level ground, at least 1,000 ft long. Run it at normal spraying speed.</li>
+                <li>Engage AutoTrac and let the machine settle on the line for about 15 seconds.</li>
+                <li>Watch the 95% Lateral Error and 95% Heading Error for the Current Pass on the AutoTrac Settings screen. Record both values in the log at the end of the pass.</li>
+                <li>Change Steer Sensitivity by 5 at a time:
+                    <ul>
+                        <li>Overshoots and crosses the line in a regular S-curve: <strong>lower</strong> it by 5.</li>
+                        <li>Drifts off the line and is slow to come back: <strong>raise</strong> it by 5.</li>
+                    </ul>
+                </li>
+                <li>Run the same line again at the same speed. Keep the setting that gives the lowest 95% lateral error with no visible weave.</li>
+                <li>Change one setting at a time. Leave Acquire Sensitivity at 95 until the straight-line steering is right.</li>
+            </ol>
+
+            <h3>Targets</h3>
+            <table class="spec">
+                <thead>
+                    <tr><th>Reading</th><th>Target on SF1</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>95% lateral error</td><td>Under 4 in on a straight line, with no visible S-curve in the tracks</td></tr>
+                    <tr><td>95% heading error</td><td>Under 1.0&deg;</td></tr>
+                    <tr><td>Steering wheel</td><td>Small, smooth corrections. No hunting back and forth.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>If the weave stays the same at every sensitivity setting,</strong> the problem is in Section 3: slack, a slipping motor, wrong measurements, or a second steering system. Use Restore Defaults to get back to a known starting point, and send a photo of the Advanced Settings screen before changing anything there.</p>
+            </div>
+        </section>
+
+        <section class="guide-section" id="atu-log">
+            <h2>5. AutoTrac Tuning Log</h2>
+            <p class="section-lede">Record every change. The display does not keep a history of changes.</p>
+            <div class="table-scroll">
+            <table class="spec log">
+                <thead>
+                    <tr><th>Date</th><th>Change made</th><th>Steer / Acquire</th><th>Speed</th><th>95% Lateral (in)</th><th>95% Heading (&deg;)</th><th>Result</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Oct 4, 2026</td><td>Starting point (no change)</td><td>90 / 95</td><td></td><td></td><td></td><td>Regular S-curve weave on SF1</td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </section>
+
+        <div class="footer-actions">
+            <button class="print-btn" onclick="window.print()">Print Guide</button>
+            <a href="/admin/equipment-manager.html" class="print-btn" style="background:#666;">Back to Equipment</a>
+        </div>
+    </div>
+</body>
+</html>
