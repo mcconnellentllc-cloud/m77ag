@@ -74,6 +74,11 @@ const invoiceSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Field'
     },
+    // M77 field registry reference (landlord statements).
+    m77Field: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'M77Field'
+    },
     acres: Number,
     cropYear: Number
   }],
@@ -136,6 +141,11 @@ const invoiceSchema = new mongoose.Schema({
   farm: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Farm'
+  },
+  // M77 field hierarchy farm (landlord statements).
+  m77Farm: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'M77Farm'
   },
   property: {
     type: mongoose.Schema.Types.ObjectId,

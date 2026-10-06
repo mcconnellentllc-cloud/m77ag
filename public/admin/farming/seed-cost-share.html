@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seed Cost Share - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+        .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; max-width: 640px; }
+        .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 24px; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-size: 20px; color: #2d5016; margin-bottom: 4px; }
+        .card .lede { font-size: 13px; color: #666; margin-bottom: 16px; }
+        .btn { padding: 12px 30px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .btn:hover { background: #234012; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+        .btn-secondary:hover { background: #f0f0f0; }
+        .btn-sm { padding: 8px 14px; font-size: 13px; }
+        input[type=text], input[type=number], input[type=date] { padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; background: #f5f3f0; color: #2d5016; font-family: 'Oswald', sans-serif; font-weight: 500; letter-spacing: 0.5px; padding: 10px 12px; white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        td.num, th.num { text-align: right; }
+        .muted { color: #888; font-size: 12px; }
+        .status-billed { color: #1e3d10; font-weight: 600; }
+        .status-ready { color: #2d5016; }
+        .status-pending { color: #8a6d00; }
+        .alert { padding: 12px 16px; border-radius: 5px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert.show { display: block; }
+        .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
+        .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
+        .product-block { border: 1px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        .product-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .product-name { font-weight: 700; font-size: 16px; }
+        .price-row { display: grid; grid-template-columns: 1fr 160px auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .price-row label { font-size: 13px; color: #666; }
+        .row-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .season-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px; }
+            .page-title { font-size: 26px; }
+            .card { padding: 18px 16px; }
+            .price-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/fields.html" class="active">Fields</a>
+            <a href="/admin/farming-dashboard">Farming</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="alert" id="banner"></div>
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Seed Cost Share</h1>
+                <p class="page-subtitle">Seed and seed treatment placed on each field, and the landlord's share of the cost. Pounds are entered on each field card. Prices are set here per seed.</p>
+            </div>
+            <div class="season-bar">
+                <input type="text" id="season" value="2026 Fall Wheat" aria-label="Season">
+                <button class="btn btn-secondary btn-sm" id="btnLoad">Load</button>
+                <a href="/admin/fields.html" class="btn btn-secondary btn-sm" style="text-decoration:none;">Field Cards</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Prices</h2>
+            <p class="lede">Prices are per bushel. Leave a price blank until the vendor invoice is in. Saving updates every entry for that seed that is not already on a statement.</p>
+            <div id="products"><p class="muted">Loading...</p></div>
+        </div>
+
+        <div class="card">
+            <h2>Landlord Totals</h2>
+            <p class="lede">Only entries with known prices and final pounds can be billed.</p>
+            <div class="table-wrap"><table id="landlordTable"></table></div>
+        </div>
+
+        <div class="card">
+            <h2>Seed by Field</h2>
+            <div class="table-wrap"><table id="entryTable"></table></div>
+        </div>
+
+        <div class="card">
+            <h2>Landlord Statements</h2>
+            <p class="lede">Creates one draft statement per landlord from every entry that is ready to bill. Drafts are listed under Banking and are not sent until you send them.</p>
+            <div class="row-actions" style="align-items:center;">
+                <label class="muted" for="dueDate">Due date</label>
+                <input type="date" id="dueDate">
+                <button class="btn" id="btnGenerate">Create Draft Statements</button>
+            </div>
+            <div id="generateResult" style="margin-top:16px;"></div>
+            <div class="table-wrap" style="margin-top:16px;"><table id="statementTable"></table></div>
+        </div>
+    </main>
+
+    <script>
+        const API = '/api/seed-cost-shares';
+        let entries = [];
+
+        function getToken() { return localStorage.getItem('adminToken'); }
+        if (!getToken()) window.location.href = '/admin/login';
+
+        async function request(url, opts = {}) {
+            const res = await fetch(url, {
+                ...opts,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken(), ...(opts.headers || {}) }
+            });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function money(n) {
+            if (n === null || n === undefined) return '—';
+            return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function num(n, d = 0) { return Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: d }); }
+        function share(s) {
+            if (!s) return 'None';
+            if (Math.abs(s - 1 / 3) < 0.0001) return '1/3';
+            return (s * 100).toFixed(1) + '%';
+        }
+        function isNull(v) { return v === null || v === undefined; }
+        function season() { return document.getElementById('season').value.trim(); }
+
+        function banner(kind, msg) {
+            const b = document.getElementById('banner');
+            b.className = 'alert alert-' + kind + ' show';
+            b.textContent = msg;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function statusOf(e) {
+            if (e.statementNumber) return ['billed', 'Billed ' + e.statementNumber];
+            if (!e.landlordShare) return ['pending', 'No landlord share'];
+            if (e.estimated) return ['pending', 'Pounds estimated'];
+            if (!e.priced) return ['pending', 'Price pending'];
+            return ['ready', 'Ready to bill'];
+        }
+
+        function renderProducts() {
+            const el = document.getElementById('products');
+            const byProduct = {};
+            for (const e of entries) (byProduct[e.product] = byProduct[e.product] || []).push(e);
+            const names = Object.keys(byProduct).sort();
+            if (!names.length) {
+                el.innerHTML = '<p class="muted">No seed entered for this season yet. Add pounds on each field card first.</p>';
+                return;
+            }
+            el.innerHTML = names.map((name, i) => {
+                const list = byProduct[name];
+                // Prices come from an unbilled entry when there is one, so the
+                // form shows what the next statement will use.
+                const ref = list.find(e => !e.statementNumber) || list[0];
+                const lb = list.reduce((s, e) => s + e.quantityLb, 0);
+                const bu = list.reduce((s, e) => s + e.bushels, 0);
+                const allBilled = list.every(e => e.statementNumber);
+                const treatRows = (ref.treatments || []).map(t => treatmentRow(t.name, t.pricePerBu, allBilled)).join('');
+                return `
+                    <div class="product-block" data-product-index="${i}" data-product="${esc(name)}">
+                        <div class="product-head">
+                            <span class="product-name">${esc(name)}</span>
+                            <span class="muted">${list.length} field${list.length === 1 ? '' : 's'} &middot; ${num(lb)} lb &middot; ${num(bu, 2)} bu${allBilled ? ' &middot; all billed' : ''}</span>
+                        </div>
+                        <div class="price-row">
+                            <label for="seedPrice-${i}">Seed price ($/bu)</label>
+                            <input type="number" step="0.01" min="0" id="seedPrice-${i}" value="${isNull(ref.seedPricePerBu) ? '' : ref.seedPricePerBu}" placeholder="Pending" ${allBilled ? 'disabled' : ''}>
+                            <span></span>
+                        </div>
+                        <div id="treatments-${i}">${treatRows}</div>
+                        ${allBilled ? '' : `
+                        <div class="row-actions">
+                            <button class="btn btn-secondary btn-sm" data-add-treatment="${i}">Add treatment</button>
+                            <button class="btn btn-sm" data-save-prices="${i}">Save prices</button>
+                        </div>`}
+                    </div>`;
+            }).join('');
+        }
+
+        function treatmentRow(name, price, locked) {
+            const dis = locked ? 'disabled' : '';
+            return `
+                <div class="price-row" data-treatment-row>
+                    <input type="text" placeholder="Treatment (e.g. Pivot Bio)" value="${esc(name || '')}" data-t-name ${dis}>
+                    <input type="number" step="0.01" min="0" placeholder="$/bu, pending" value="${isNull(price) ? '' : price}" data-t-price ${dis}>
+                    ${locked ? '<span></span>' : '<button class="btn btn-secondary btn-sm" data-remove-treatment>Remove</button>'}
+                </div>`;
+        }
+
+        function renderLandlords() {
+            const groups = {};
+            for (const e of entries) {
+                if (!e.landlordShare) continue;
+                const k = e.landlordName || e.farmName || 'Landlord';
+                const g = groups[k] = groups[k] || { fields: new Set(), billed: 0, ready: 0, pending: 0 };
+                g.fields.add(e.fieldName);
+                if (e.statementNumber) g.billed += e.landlordAmount || 0;
+                else if (e.priced && !e.estimated) g.ready += e.landlordAmount || 0;
+                else g.pending += 1;
+            }
+            const rows = Object.keys(groups).sort().map(k => {
+                const g = groups[k];
+                return `<tr><td><strong>${esc(k)}</strong><div class="muted">${esc(Array.from(g.fields).join(', '))}</div></td>
+                    <td class="num">${money(g.billed)}</td><td class="num">${money(g.ready)}</td>
+                    <td class="num">${g.pending ? g.pending + ' entr' + (g.pending === 1 ? 'y' : 'ies') : '—'}</td></tr>`;
+            }).join('');
+            document.getElementById('landlordTable').innerHTML = `
+                <thead><tr><th>Landlord</th><th class="num">Billed</th><th class="num">Ready to bill</th><th class="num">Waiting</th></tr></thead>
+                <tbody>${rows || '<tr><td colspan="4" class="muted">No landlord fields entered.</td></tr>'}</tbody>`;
+        }
+
+        function renderEntries() {
+            const rows = entries.map(e => {
+                const [cls, label] = statusOf(e);
+                const treat = (e.treatments || []).map(t => esc(t.name)).join(', ') || '—';
+                return `<tr>
+                    <td><strong>${esc(e.fieldName)}</strong><div class="muted">${esc(e.farmName || '')}</div></td>
+                    <td>${esc(e.landlordShare ? e.landlordName : 'Owned')}</td>
+                    <td>${esc(e.product)}<div class="muted">${treat}</div></td>
+                    <td class="num">${num(e.quantityLb)}${e.estimated ? ' (est.)' : ''}<div class="muted">${num(e.bushels, 2)} bu</div></td>
+                    <td class="num">${money(e.totalCost)}</td>
+                    <td class="num">${share(e.landlordShare)}<div><strong>${money(e.landlordAmount)}</strong></div></td>
+                    <td class="status-${cls}">${esc(label)}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('entryTable').innerHTML = `
+                <thead><tr><th>Field</th><th>Landlord</th><th>Seed</th><th class="num">Placed (lb)</th><th class="num">Total cost</th><th class="num">Landlord share</th><th>Status</th></tr></thead>
+                <tbody>${rows || '<tr><td colspan="7" class="muted">No seed entered for this season yet.</td></tr>'}</tbody>`;
+        }
+
+        async function loadStatements() {
+            const numbers = new Set(entries.map(e => e.statementNumber).filter(Boolean));
+            const table = document.getElementById('statementTable');
+            if (!numbers.size) { table.innerHTML = ''; return; }
+            try {
+                const data = await request('/api/invoices?type=landlord_statement&limit=200');
+                const rows = (data.data || []).filter(inv => numbers.has(inv.invoiceNumber)).map(inv => `
+                    <tr><td><strong>${esc(inv.invoiceNumber)}</strong></td><td>${esc(inv.to && inv.to.name)}</td>
+                    <td>${esc(inv.status)}</td><td>${new Date(inv.dueDate).toLocaleDateString()}</td>
+                    <td class="num">${money(inv.total)}</td><td class="num">${money(inv.balanceDue)}</td></tr>`).join('');
+                table.innerHTML = `<thead><tr><th>Statement</th><th>Landlord</th><th>Status</th><th>Due</th><th class="num">Total</th><th class="num">Balance</th></tr></thead><tbody>${rows}</tbody>`;
+            } catch (e) {
+                table.innerHTML = `<tr><td class="muted">Could not load statements: ${esc(e.message)}</td></tr>`;
+            }
+        }
+
+        async function load() {
+            try {
+                const data = await request(API + '?season=' + encodeURIComponent(season()));
+                entries = data.data || [];
+                renderProducts();
+                renderLandlords();
+                renderEntries();
+                await loadStatements();
+            } catch (e) {
+                banner('error', 'Could not load seed cost share: ' + e.message);
+            }
+        }
+
+        async function savePrices(i) {
+            const block = document.querySelector(`[data-product-index="${i}"]`);
+            const product = block.getAttribute('data-product');
+            const treatments = Array.from(block.querySelectorAll('[data-treatment-row]')).map(r => ({
+                name: r.querySelector('[data-t-name]').value.trim(),
+                pricePerBu: r.querySelector('[data-t-price]').value.trim()
+            })).filter(t => t.name);
+            try {
+                const data = await request(API + '/prices', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        season: season(),
+                        product,
+                        seedPricePerBu: document.getElementById('seedPrice-' + i).value.trim(),
+                        treatments
+                    })
+                });
+                banner('success', `${product}: ${data.message}.`);
+                await load();
+            } catch (e) {
+                banner('error', 'Could not save prices: ' + e.message);
+            }
+        }
+
+        async function generate() {
+            const ready = entries.filter(e => !e.statementNumber && e.landlordShare && e.priced && !e.estimated);
+            if (!ready.length) return banner('error', 'No entries are ready to bill. Enter prices and final pounds first.');
+            if (!confirm(`Create draft landlord statements from ${ready.length} entr${ready.length === 1 ? 'y' : 'ies'}? Billed entries are locked.`)) return;
+            const btn = document.getElementById('btnGenerate');
+            btn.disabled = true;
+            try {
+                const dueDate = document.getElementById('dueDate').value;
+                const data = await request(API + '/statements', {
+                    method: 'POST',
+                    body: JSON.stringify({ season: season(), dueDate: dueDate || undefined })
+                });
+                const { created, skipped } = data.data;
+                document.getElementById('generateResult').innerHTML = `
+                    ${created.length ? `<p><strong>Created:</strong> ${created.map(c => `${esc(c.invoiceNumber)} ${esc(c.landlordName)} ${money(c.total)}`).join('; ')}</p>` : ''}
+                    ${skipped.length ? `<p class="muted" style="margin-top:6px;">Not billed yet: ${skipped.map(s => `${esc(s.fieldName)} (${esc(s.product)}): ${esc(s.reason)}`).join('; ')}</p>` : ''}`;
+                banner('success', data.message + '.');
+                await load();
+            } catch (e) {
+                banner('error', 'Could not create statements: ' + e.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('products').addEventListener('click', e => {
+            const add = e.target.closest('[data-add-treatment]');
+            if (add) {
+                const i = add.getAttribute('data-add-treatment');
+                document.getElementById('treatments-' + i).insertAdjacentHTML('beforeend', treatmentRow('', null, false));
+                return;
+            }
+            const rm = e.target.closest('[data-remove-treatment]');
+            if (rm) { rm.closest('[data-treatment-row]').remove(); return; }
+            const save = e.target.closest('[data-save-prices]');
+            if (save) savePrices(save.getAttribute('data-save-prices'));
+        });
+        document.getElementById('btnLoad').addEventListener('click', load);
+        document.getElementById('btnGenerate').addEventListener('click', generate);
+        load();
+    </script>
+</body>
+</html>
