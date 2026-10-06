@@ -530,6 +530,7 @@
                 <button class="btn btn-secondary btn-sm" id="btnJdDisconnect" style="display:none;">Disconnect JD</button>
                 <a href="/admin/farming/wheat-2026.html" class="btn btn-secondary btn-sm">2026 Wheat Report</a>
                 <a href="/admin/farming/landlord-shares-2026-wheat.html" class="btn btn-secondary btn-sm">Landlord Shares</a>
+                <a href="/admin/farming/seed-cost-share.html" class="btn btn-secondary btn-sm">Seed Cost Share</a>
                 <a href="/admin/farming/crop-insurance-2026-wheat.html" class="btn btn-secondary btn-sm">Loss Notice</a>
                 <button class="btn" id="btnNewField">Add Field</button>
             </div>
@@ -637,6 +638,7 @@
             </div>
         </div>
 
+        <datalist id="seedProductList"></datalist>
         <div id="hierarchy" class="hierarchy">
             <div class="empty">Loading...</div>
         </div>
@@ -801,6 +803,12 @@
         let lastClients = [];  // most recent /api/clients response (for tab order + meta)
         let lastFarms = [];    // most recent /api/m77-farms response (for landlord/type/share)
 
+        // Seed placed per field and the landlord's share of its cost.
+        // Season and harvest year match /admin/farming/seed-cost-share.html.
+        const SEED_SEASON = '2026 Fall Wheat';
+        const SEED_CROP_YEAR = 2027;
+        let seedByField = {};  // m77Field id -> [seed cost share entries]
+
         function fmtAcres(n) {
             if (n == null) return '-';
             return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -959,6 +967,7 @@
                         <div class="group"><div class="label">JD Last Synced</div><div class="value">${f.jdLastSyncedAt ? new Date(f.jdLastSyncedAt).toLocaleString() : '—'}</div></div>
                         ${f.notes ? `<div class="group" style="grid-column: 1 / -1;"><div class="label">Notes</div><div class="value">${escapeHtml(f.notes)}</div></div>` : ''}
                         ${renderFsaSection(f)}
+                        ${renderSeedCostShareSection(f)}
                         <div class="actions">
                             <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit field</button>
                         </div>
@@ -1022,6 +1031,186 @@
                     ${historyBlock}
                 </details>
             `;
+        }
+
+        function fmtMoney(n) {
+            if (n === null || n === undefined) return '—';
+            return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtShare(s) {
+            if (!s) return 'None';
+            if (Math.abs(s - 1 / 3) < 0.0001) return '1/3';
+            return (s * 100).toFixed(1) + '%';
+        }
+
+        function seedEntryStatus(e) {
+            if (e.statementNumber) return `<span style="color:#1e3d10; font-weight:600;">Billed ${escapeHtml(e.statementNumber)}</span>`;
+            if (!e.landlordShare) return '<span style="color:#888;">No landlord share</span>';
+            if (e.estimated) return '<span style="color:#8a6d00;">Pounds estimated</span>';
+            if (!e.priced) return '<span style="color:#8a6d00;">Price pending</span>';
+            return '<span style="color:#2d5016;">Ready to bill</span>';
+        }
+
+        function renderSeedCostShareSection(f) {
+            const entries = seedByField[f._id] || [];
+            const landlordTotal = entries.reduce((sum, e) => sum + (e.landlordAmount || 0), 0);
+            const pending = entries.some(e => e.landlordShare > 0 && (!e.priced || e.estimated));
+            let badgeText = '';
+            if (entries.length) {
+                if (!entries.some(e => e.landlordShare > 0)) badgeText = 'No landlord share';
+                else if (landlordTotal > 0) badgeText = `Landlord ${fmtMoney(landlordTotal)}${pending ? ' + more pending' : ''}`;
+                else badgeText = 'Landlord share: price pending';
+            }
+            const headerBadge = badgeText
+                ? `<span style="background:#e8f5e9; color:#1e3d10; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">${badgeText}</span>`
+                : '';
+
+            const line = (label, value) => `<div style="display:flex; justify-content:space-between; gap:12px;"><span style="color:#888;">${label}</span><span style="text-align:right;">${value}</span></div>`;
+            const blocks = entries.map(e => {
+                const treat = (e.treatments || []).map(t =>
+                    `${escapeHtml(t.name)} ${t.pricePerBu === null || t.pricePerBu === undefined ? '(price pending)' : fmtMoney(t.pricePerBu) + '/bu'}`
+                ).join('<br>') || 'None';
+                const actions = e.statementNumber ? '' : `
+                    <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                        <button class="btn btn-secondary btn-sm" data-seed-update="${e._id}">Update lb</button>
+                        <button class="btn btn-secondary btn-sm" data-seed-remove="${e._id}">Remove</button>
+                    </div>`;
+                const source = [e.vendor, e.ticketNumber ? 'Ticket ' + e.ticketNumber : ''].filter(Boolean).join(' · ');
+                return `
+                    <div style="background:#fff; border:1px solid #e3ecdb; border-radius:5px; padding:10px 12px; margin-top:8px; font-size:12px; display:grid; gap:4px;">
+                        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                            <strong style="font-size:13px;">${escapeHtml(e.product)}</strong>
+                            ${seedEntryStatus(e)}
+                        </div>
+                        ${source ? `<div style="color:#888;">${escapeHtml(source)}</div>` : ''}
+                        ${line('Placed', `${Number(e.quantityLb).toLocaleString()} lb${e.estimated ? ' (est.)' : ''} &middot; ${e.bushels} bu`)}
+                        ${line('Seed price', e.seedPricePerBu === null || e.seedPricePerBu === undefined ? 'Pending' : fmtMoney(e.seedPricePerBu) + '/bu')}
+                        ${line('Treatment', treat)}
+                        ${line('Total cost', fmtMoney(e.totalCost))}
+                        ${line('Landlord share (' + fmtShare(e.landlordShare) + ')', '<strong>' + fmtMoney(e.landlordAmount) + '</strong>')}
+                        ${actions}
+                    </div>`;
+            }).join('');
+
+            const table = entries.length ? blocks
+                : '<div style="margin-top:8px; font-size:12px; color:#888;">No seed recorded for this field this season.</div>';
+
+            const fid = escapeHtml(f._id);
+            const form = `
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:8px; margin-top:12px; font-size:12px;">
+                    <input type="text" id="seedProduct-${fid}" list="seedProductList" placeholder="Seed (e.g. KS Providence)" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:16px;">
+                    <input type="text" id="seedVendor-${fid}" placeholder="Vendor" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:16px;">
+                    <input type="text" id="seedTicket-${fid}" placeholder="Ticket #" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:16px;">
+                    <input type="number" id="seedLb-${fid}" min="0" step="1" placeholder="Pounds placed" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:16px;">
+                    <label style="display:flex; align-items:center; gap:6px;"><input type="checkbox" id="seedEst-${fid}"> Pounds are an estimate</label>
+                    <button class="btn btn-sm" data-seed-add="${fid}">Add seed</button>
+                </div>
+                <div style="margin-top:6px; font-size:11px; color:#888;">Set seed and treatment prices for all fields on the <a href="/admin/farming/seed-cost-share.html" style="color:#2d5016;">Seed Cost Share</a> page.</div>`;
+
+            return `
+                <details class="seed-section" style="grid-column: 1 / -1; background:#f3f8ef; border:1px solid #cfe0c3; border-radius:5px; padding:10px 14px; margin-top:6px;">
+                    <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#2d5016; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        Seed &amp; Landlord Cost Share &middot; ${escapeHtml(SEED_SEASON)} ${headerBadge}
+                    </summary>
+                    ${table}
+                    ${form}
+                </details>
+            `;
+        }
+
+        async function loadSeedCostShares() {
+            try {
+                const res = await fetch('/api/seed-cost-shares?season=' + encodeURIComponent(SEED_SEASON), { headers: authHeaders() });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.message || 'Request failed (' + res.status + ')');
+                seedByField = {};
+                for (const e of data.data || []) {
+                    const k = String(e.m77Field);
+                    (seedByField[k] = seedByField[k] || []).push(e);
+                }
+                const products = Array.from(new Set((data.data || []).map(e => e.product)));
+                document.getElementById('seedProductList').innerHTML = products.map(p => `<option value="${escapeHtml(p)}"></option>`).join('');
+            } catch (e) {
+                console.warn('Seed cost share load failed:', e.message);
+            }
+        }
+
+        async function seedRequest(path, opts) {
+            const res = await fetch('/api/seed-cost-shares' + path, { ...opts, headers: authHeaders() });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+
+        // Re-render while keeping open cards open.
+        async function refreshSeedSection() {
+            const open = Array.from(hierarchyEl.querySelectorAll('details[open]')).map(d =>
+                d.getAttribute('data-field-id') ? 'f:' + d.getAttribute('data-field-id') : null).filter(Boolean);
+            await loadSeedCostShares();
+            renderHierarchy(lastFields);
+            for (const key of open) {
+                const card = hierarchyEl.querySelector(`details[data-field-id="${key.slice(2)}"]`);
+                if (card) {
+                    card.open = true;
+                    let p = card.parentElement;
+                    while (p && p !== hierarchyEl) { if (p.tagName === 'DETAILS') p.open = true; p = p.parentElement; }
+                    const seed = card.querySelector('.seed-section');
+                    if (seed) seed.open = true;
+                }
+            }
+        }
+
+        async function addSeedEntry(fieldId) {
+            const val = id => document.getElementById(id + '-' + fieldId);
+            const product = val('seedProduct').value.trim();
+            const lb = val('seedLb').value.trim();
+            if (!product) return showBanner('error', 'Enter the seed (variety) first.');
+            if (!lb || Number(lb) <= 0) return showBanner('error', 'Enter the pounds placed on the field.');
+            try {
+                await seedRequest('', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        m77Field: fieldId,
+                        season: SEED_SEASON,
+                        cropYear: SEED_CROP_YEAR,
+                        product,
+                        vendor: val('seedVendor').value.trim(),
+                        ticketNumber: val('seedTicket').value.trim(),
+                        quantityLb: Number(lb),
+                        estimated: val('seedEst').checked
+                    })
+                });
+                showBanner('success', 'Seed entry added.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not add seed: ' + e.message);
+            }
+        }
+
+        async function updateSeedEntry(id) {
+            const lb = prompt('Final pounds placed on this field:');
+            if (lb === null) return;
+            if (!lb.trim() || Number(lb) <= 0) return showBanner('error', 'Enter a number of pounds greater than 0.');
+            const estimated = !confirm('Is this the final number? OK = final, Cancel = still an estimate.');
+            try {
+                await seedRequest('/' + id, { method: 'PUT', body: JSON.stringify({ quantityLb: Number(lb), estimated }) });
+                showBanner('success', 'Seed entry updated.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not update seed: ' + e.message);
+            }
+        }
+
+        async function removeSeedEntry(id) {
+            if (!confirm('Remove this seed entry?')) return;
+            try {
+                await seedRequest('/' + id, { method: 'DELETE' });
+                showBanner('success', 'Seed entry removed.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not remove seed: ' + e.message);
+            }
         }
 
         function hasActiveFilters() {
@@ -1127,7 +1316,10 @@
             else if (fsaFilter === 'has') params.set('needsFsaAssignment', 'false');
             try {
                 if (!lastClients.length) await loadHierarchy();
-                const data = await api('/' + (params.toString() ? '?' + params.toString() : ''));
+                const [data] = await Promise.all([
+                    api('/' + (params.toString() ? '?' + params.toString() : '')),
+                    loadSeedCostShares()
+                ]);
                 lastFields = data.fields || [];
                 renderHierarchy(lastFields);
                 updateStats(lastFields);
@@ -1293,6 +1485,12 @@
                 editFieldById(editBtn.getAttribute('data-edit'));
                 return;
             }
+            const seedAdd = e.target.closest('[data-seed-add]');
+            if (seedAdd) return addSeedEntry(seedAdd.getAttribute('data-seed-add'));
+            const seedUpdate = e.target.closest('[data-seed-update]');
+            if (seedUpdate) return updateSeedEntry(seedUpdate.getAttribute('data-seed-update'));
+            const seedRemove = e.target.closest('[data-seed-remove]');
+            if (seedRemove) return removeSeedEntry(seedRemove.getAttribute('data-seed-remove'));
         });
 
         // ----- Bulk selection -----

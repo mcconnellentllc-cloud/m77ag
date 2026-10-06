@@ -105,6 +105,7 @@ const jdRoutes = require('./routes/jd');
 const jdController = require('./controllers/jdController');
 const clientRoutes = require('./routes/clients');
 const m77FarmRoutes = require('./routes/m77Farms');
+const seedCostShareRoutes = require('./routes/seedCostShares');
 // Rental management (PR #191) — note: distinct from rentalRoutes above
 // (which is ./routes/rentals plural). These are renamed to avoid collision.
 const rentalApplicationRoutes = require('./routes/rental');
@@ -155,6 +156,7 @@ app.use('/api/m77-fields', m77FieldRoutes);
 app.use('/api/jd', jdRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/m77-farms', m77FarmRoutes);
+app.use('/api/seed-cost-shares', seedCostShareRoutes);
 // Rental management (PR #191): mounted at /api so the inner paths resolve
 // to /api/rental-applications/* and /api/billing/invoices/*.
 app.use('/api', rentalApplicationRoutes);
