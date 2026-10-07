@@ -898,6 +898,20 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
+    title: 'USC AT500H Box-to-Box Seed Treater',
+    subtitle: 'Seed Treater',
+    category: 'Planting',
+    make: 'USC',
+    model: 'AT500H',
+    description: 'Box-to-box seed treater with treating auger and chemical pump',
+    currentValue: 21000,
+    amountOwed: 0,
+    hasLoan: false,
+    notes: 'Owner: M77 AG',
+    forSale: false,
+    saleStatus: 'not-for-sale'
+  },
+  {
     title: 'John Deere 24 Row Planter',
     subtitle: '24 Row Planter',
     category: 'Planting',

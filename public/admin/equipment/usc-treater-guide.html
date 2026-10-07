@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USC AT500H Seed Treater Guide - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .back-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .page-eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: #d4a54a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        .toc {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #2d5016;
+        }
+        .toc-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            padding: 6px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+        }
+        .toc li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            color: #d4a54a;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        .toc a {
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2d5016;
+            text-decoration: underline;
+        }
+        section.guide-section {
+            background: white;
+            padding: 28px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        section.guide-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        section.guide-section .section-lede {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        section.guide-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin: 22px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        section.guide-section p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        section.guide-section ul,
+        section.guide-section ol {
+            margin: 0 0 14px 22px;
+            font-size: 15px;
+        }
+        section.guide-section li {
+            margin-bottom: 6px;
+        }
+        .callout {
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .callout-answer {
+            background: #eef6e9;
+            border-left: 4px solid #2d5016;
+        }
+        .callout-answer strong {
+            color: #2d5016;
+        }
+        .callout-warn {
+            background: #fff8e6;
+            border-left: 4px solid #d4a54a;
+        }
+        .callout-warn strong {
+            color: #a37c1c;
+        }
+        .callout-note {
+            background: #f5f3f0;
+            border-left: 4px solid #999;
+        }
+        table.spec {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.spec th,
+        table.spec td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table.spec th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.spec td:first-child {
+            font-weight: 600;
+            width: 40%;
+        }
+        .path {
+            font-family: 'Courier New', monospace;
+            background: #f5f3f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d5016;
+            font-weight: 600;
+        }
+        .digit-key {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 8px 16px;
+            margin: 10px 0 18px;
+            font-size: 14px;
+        }
+        .digit-key .k {
+            font-family: 'Courier New', monospace;
+            background: #2d5016;
+            color: #d4a54a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .print-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        .print-btn:hover {
+            background: #1e3a0e;
+        }
+        .footer-actions {
+            text-align: center;
+            padding: 20px 0;
+        }
+        @media (max-width: 700px) {
+            .header { padding: 12px 16px; }
+            .container { padding: 20px 14px 40px; }
+            .page-title { font-size: 26px; }
+            section.guide-section { padding: 20px 18px; }
+        }
+        @media print {
+            .header, .back-link, .print-btn, .toc { display: none; }
+            body { background: white; }
+            section.guide-section { box-shadow: none; page-break-inside: avoid; }
+        }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table.spec.log { min-width: 640px; }
+        table.spec.log td:first-child { width: auto; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">M77 AG</div>
+        <a href="/admin/equipment-manager.html" class="back-link">Back to Equipment</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-eyebrow">USC AT500H Box-to-Box Seed Treater</div>
+            <h1 class="page-title">Seed Treater Guide</h1>
+            <p class="page-subtitle">Seed flow calibration, chemical pump calibration, and wheat treating with Pivot Bio</p>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">In This Guide</div>
+            <ol>
+                <li><a href="#manuals">Operator Manuals</a></li>
+                <li><a href="#seed-flow">Seed Flow Calibration (gate notch)</a></li>
+                <li><a href="#pump">Chemical Pump Calibration</a></li>
+                <li><a href="#wheat">Treating Wheat with Pivot Bio</a></li>
+                <li><a href="#log">Calibration Log</a></li>
+            </ol>
+        </div>
+
+        <section class="guide-section" id="manuals">
+            <h2>1. Operator Manuals</h2>
+            <p class="section-lede">Manufacturer manuals from USC, LLC. The control panel on our treater (Auger, Agitation Pump and Chemical Pump switches with Hand/Off/Auto) matches the AT500 manual. The AT500H manual covers the touch-screen loss-in-weight version.</p>
+            <ul>
+                <li><a href="https://uscllc.com/sites/default/files/2019-02/AT500_Manual_2012-Revision_A-112111_CMP.pdf" target="_blank" rel="noopener">USC AT500 Operator's Manual (2012, Revision A), PDF</a>. Seed gate, seed flow calibration, chemical pump calibration and nozzle charts are on pages 20 to 25.</li>
+                <li><a href="https://uscllc.com/sites/default/files/2019-12/TD-09-06-1054B%20=%20MANUAL%20-%20AT500H%20TRTR%20B2B%20LIW%20AUTO%20(05NOV18).pdf" target="_blank" rel="noopener">USC AT500H Loss-in-Weight Automated Treater Manual (TD-09-06-1054B, 2018), PDF</a></li>
+            </ul>
+            <p>USC, LLC: <a href="https://uscllc.com" target="_blank" rel="noopener">uscllc.com</a></p>
+        </section>
+
+        <section class="guide-section" id="seed-flow">
+            <h2>2. Seed Flow Calibration (gate notch)</h2>
+            <p class="section-lede">The seed gate sets how fast seed moves through the treater. USC does not publish a notch number for each crop. The notch is found with a dry run, and it must be checked again for every new seed type or seed size.</p>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>Do not run more than 500 lb per minute (8.3 lb per second).</strong> Above that the auger motor can overload (AT500 manual, page 20).</p>
+            </div>
+
+            <h3>Adjusting the gate</h3>
+            <ul>
+                <li>Pull back on the spring-loaded coupling and move it to the notch you want on the shaft.</li>
+                <li>Black lever down: gate closed. Black lever up: gate open.</li>
+            </ul>
+
+            <h3>Dry calibration run</h3>
+            <ol>
+                <li>Set up so untreated seed can run through and be caught again. Use at least 2,000 lb.</li>
+                <li>Set the gate to a middle notch to start.</li>
+                <li>Turn the auger on. Start the stopwatch when the first seed lands in the bottom of the supply hopper. <strong>Keep the supply hopper full the whole time</strong>, or the reading is not accurate.</li>
+                <li>Stop the watch when the last seed leaves the supply hopper.</li>
+                <li>Calculate the rate:
+                    <p style="margin-left:22px; font-family:'Courier New',monospace; background:#f5f3f0; padding:10px 14px; border-radius:4px;">
+                        lb per second = pounds run &divide; seconds<br>
+                        lb per minute = lb per second &times; 60<br>
+                        cwt per minute = lb per minute &divide; 100
+                    </p>
+                </li>
+                <li>Adjust the notch and repeat until the rate is where you want it. Write the notch and rate in the log below.</li>
+            </ol>
+
+            <h3>Wheat target</h3>
+            <table class="spec">
+                <thead><tr><th>Item</th><th>Target</th></tr></thead>
+                <tbody>
+                    <tr><td>Seed flow</td><td>About 400 to 465 lb per minute (6.7 to 7.75 lb per second). USC's own example is 2,000 lb in 4 min 18 sec = 7.75 lb per second.</td></tr>
+                    <tr><td>Maximum</td><td>500 lb per minute (8.3 lb per second)</td></tr>
+                    <tr><td>Time for 2,000 lb</td><td>4 min 18 sec to 5 min 0 sec</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="guide-section" id="pump">
+            <h2>3. Chemical Pump Calibration</h2>
+            <p class="section-lede">The pump must deliver the label rate in ounces per hundredweight (cwt) at the seed flow set in Section 2.</p>
+            <ol>
+                <li>Premix the slurry in the 35-gallon tank. Mix about 20% extra to fill the lines. Turn on the agitation pump.</li>
+                <li>Work out ounces needed per minute:
+                    <p style="margin-left:22px; font-family:'Courier New',monospace; background:#f5f3f0; padding:10px 14px; border-radius:4px;">
+                        oz per minute = seed flow (cwt per minute) &times; slurry rate (oz per cwt)
+                    </p>
+                </li>
+                <li>Pick a nozzle and pressure from the chart below.</li>
+                <li>Hold the nozzle over a measuring pitcher, put the Chemical Pump switch on Hand, and run until all air is out. Set pressure with the regulator. Pour the liquid back into the tank.</li>
+                <li>Run exactly one minute into the pitcher. The pitcher should hold the ounces per minute worked out in step 2. Adjust the regulator and repeat until it does.</li>
+                <li>For treating, set the Chemical Pump switch to Auto. The proximity switch in the supply hopper starts and stops the pump with the seed.</li>
+            </ol>
+
+            <h3>Nozzle chart, ounces per minute (water)</h3>
+            <div class="table-scroll">
+            <table class="spec log">
+                <thead><tr><th>Nozzle</th><th>20 psi</th><th>30 psi</th><th>40 psi</th><th>60 psi</th></tr></thead>
+                <tbody>
+                    <tr><td>TG-1</td><td>18</td><td>20</td><td>24</td><td>29</td></tr>
+                    <tr><td>TG-2</td><td>36</td><td>42</td><td>49</td><td>59</td></tr>
+                    <tr><td>TG-3</td><td>52</td><td>64</td><td>73</td><td>87</td></tr>
+                    <tr><td>TG-4</td><td>70</td><td>84</td><td>97</td><td>116</td></tr>
+                    <tr><td>TG-6</td><td>105</td><td>127</td><td>146</td><td>175</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <p style="font-size:13px; color:#666;">From the AT500 manual, page 24. Measured with water, so use it as a starting point and confirm with the one-minute catch.</p>
+        </section>
+
+        <section class="guide-section" id="wheat">
+            <h2>4. Treating Wheat with Pivot Bio</h2>
+            <p class="section-lede">Fall 2026: Certified Byrd CL from Carlson Grain, 502 bu (30,120 lb), already treated with CruiserMaxx Vibrance. The treater applies Pivot Bio only.</p>
+
+            <div class="callout callout-warn">
+                <p style="margin-bottom:0;"><strong>Use the rate, water volume and planting window on the Pivot Bio product label for the lot in hand.</strong> Pivot Bio's public pages do not list the wheat on-seed rate. Pivot Bio support: 1-877-451-1977, support@pivotbio.com. Pivot Bio is a live microbial product: follow its handling, storage and time-to-plant limits.</p>
+            </div>
+
+            <h3>Worked example</h3>
+            <p>Seed flow 450 lb per minute = 4.5 cwt per minute. If the label slurry rate were 5 oz per cwt:</p>
+            <p style="margin-left:22px; font-family:'Courier New',monospace; background:#f5f3f0; padding:10px 14px; border-radius:4px;">
+                4.5 cwt/min &times; 5 oz/cwt = 22.5 oz per minute &rarr; TG-1 at about 40 psi
+            </p>
+            <p>The 5 oz figure is only for the arithmetic. Replace it with the label rate.</p>
+
+            <h3>Run time</h3>
+            <p>30,120 lb at 450 lb per minute is about 67 minutes of treating time.</p>
+        </section>
+
+        <section class="guide-section" id="log">
+            <h2>5. Calibration Log</h2>
+            <p class="section-lede">Record the notch and rates for each seed so the next run starts from a known setting.</p>
+            <div class="table-scroll">
+            <table class="spec log">
+                <thead><tr><th>Date</th><th>Seed</th><th>Gate notch</th><th>lb run</th><th>Seconds</th><th>lb/min</th><th>Product</th><th>oz/cwt</th><th>Nozzle / psi</th><th>oz/min caught</th></tr></thead>
+                <tbody>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </section>
+
+        <div class="footer-actions">
+            <button class="print-btn" onclick="window.print()">Print Guide</button>
+            <a href="/admin/equipment-manager.html" class="print-btn" style="background:#666;">Back to Equipment</a>
+        </div>
+    </div>
+</body>
+</html>
