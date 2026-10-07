@@ -1425,6 +1425,15 @@
                 url: '/admin/equipment/rogator-guide.html',
                 label: 'RoGator Setup Guide',
                 sublabel: 'AutoTrac Universal steering setup, weave diagnosis, and tuning log'
+            },
+            {
+                match: (item) => {
+                    const text = [item.title, item.make, item.model].join(' ').toLowerCase();
+                    return text.includes('at500') || (text.includes('usc') && text.includes('treater'));
+                },
+                url: '/admin/equipment/usc-treater-guide.html',
+                label: 'Seed Treater Guide and Manuals',
+                sublabel: 'USC manuals, seed gate and pump calibration, wheat with Pivot Bio'
             }
         ];
 
