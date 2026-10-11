@@ -235,16 +235,16 @@
             opacity: 0.8;
         }
         .crop-filter[data-crop="all"].active { background: #2d5016; }
-        .crop-filter[data-crop="CORN"].active { background: #e65100; }
-        .crop-filter[data-crop="WHEAT"].active { background: #ff8f00; color: #333; }
-        .crop-filter[data-crop="SORGHUM"].active { background: #5d4037; }
-        .crop-filter[data-crop="FALLOW"].active { background: #757575; }
-        .crop-filter[data-crop="PASTURE"].active { background: #2d5016; }
-        .crop-filter[data-crop="TRITICALE"].active { background: #558b2f; }
-        .crop-filter[data-crop="PEARL MILLET"].active { background: #7b1fa2; }
-        .crop-filter[data-crop="SORGHUM SUDAN"].active { background: #bf360c; }
-        .crop-filter[data-crop="WASTE"].active { background: #607d8b; }
-        .crop-filter[data-crop="BUILDING SITE"].active { background: #263238; }
+        .crop-filter[data-crop^="CORN|"].active { background: #e65100; }
+        .crop-filter[data-crop^="WHEAT|"].active { background: #ff8f00; color: #333; }
+        .crop-filter[data-crop^="SORGHUM|"].active { background: #5d4037; }
+        .crop-filter[data-crop^="FALLOW|"].active { background: #757575; }
+        .crop-filter[data-crop^="PASTURE|"].active { background: #2d5016; }
+        .crop-filter[data-crop^="TRITICALE|"].active { background: #558b2f; }
+        .crop-filter[data-crop^="PEARL MILLET|"].active { background: #7b1fa2; }
+        .crop-filter[data-crop^="SORGHUM SUDAN|"].active { background: #bf360c; }
+        .crop-filter[data-crop^="WASTE|"].active { background: #607d8b; }
+        .crop-filter[data-crop^="BUILDING SITE|"].active { background: #263238; }
         .filter-label {
             font-size: 11px;
             text-transform: uppercase;
@@ -278,6 +278,23 @@
             width: 100%;
             border-collapse: collapse;
         }
+        .bulk-crop-bar {
+            display: none;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f5f3f0;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 14px;
+        }
+        .bulk-crop-bar.active { display: flex; }
+        .bulk-crop-bar span { font-weight: 600; color: #2d5016; }
+        .bulk-crop-bar select { padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .bulk-crop-bar button { padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; }
+        .bulk-crop-bar .bulk-apply { background: #2d5016; color: #fff; }
+        .bulk-crop-bar .bulk-clear { background: #fff; color: #666; }
+        .bulk-check, #bulkSelectAll { width: 18px; height: 18px; cursor: pointer; }
         .fields-table th, .fields-table td {
             padding: 12px 15px;
             text-align: left;
@@ -1126,9 +1143,17 @@
 
         <!-- Fields Table -->
         <div class="fields-table-container" id="fieldsTableContainer">
+            <div class="bulk-crop-bar" id="bulkCropBar">
+                <span id="bulkCropCount">0 fields selected</span>
+                <label for="bulkCrop2027">Set 2027 crop:</label>
+                <select id="bulkCrop2027"></select>
+                <button class="bulk-apply" onclick="applyBulkCrop2027()">Apply</button>
+                <button class="bulk-clear" onclick="clearBulkSelection()">Clear</button>
+            </div>
             <table class="fields-table">
                 <thead>
                     <tr>
+                        <th style="width:36px"><input type="checkbox" id="bulkSelectAll" aria-label="Select all shown fields" onclick="toggleBulkSelectAll(this.checked)"></th>
                         <th>Farm</th>
                         <th>Field</th>
                         <th>Legal</th>
@@ -1795,7 +1820,8 @@
             let fields = getFilteredFields();
 
             if (fields.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
+                updateBulkBar();
                 return;
             }
 
@@ -1803,6 +1829,7 @@
                 const codes = fieldCropCodes(f);
                 return `
                     <tr onclick="openFieldModal('${f._id}')" style="cursor:pointer">
+                        <td onclick="event.stopPropagation()"><input type="checkbox" class="bulk-check" aria-label="Select ${f.field}" ${bulkSelected.has(f._id) ? 'checked' : ''} onchange="toggleBulkField('${f._id}', this.checked)"></td>
                         <td>${f.farm}</td>
                         <td class="field-name">${f.field}</td>
                         <td class="legal">${f.legal || '-'}</td>
@@ -1815,6 +1842,69 @@
                     </tr>
                 `;
             }).join('');
+            updateBulkBar();
+        }
+
+        // Bulk 2027 crop assignment from the list view.
+        const bulkSelected = new Set();
+
+        function toggleBulkField(id, checked) {
+            if (checked) bulkSelected.add(id); else bulkSelected.delete(id);
+            updateBulkBar();
+        }
+
+        function toggleBulkSelectAll(checked) {
+            getFilteredFields().forEach(f => { if (checked) bulkSelected.add(f._id); else bulkSelected.delete(f._id); });
+            renderFieldsTable();
+        }
+
+        function clearBulkSelection() {
+            bulkSelected.clear();
+            renderFieldsTable();
+        }
+
+        function updateBulkBar() {
+            const sel = document.getElementById('bulkCrop2027');
+            if (!sel.options.length) {
+                sel.innerHTML = '<option value="">Not set</option>' +
+                    CROP_CHOICES.map(c => `<option value="${c}" ${c === 'WHEAT' ? 'selected' : ''}>${cropLabel(c, 2027)}</option>`).join('');
+            }
+            const selectedAcres = allFields.filter(f => bulkSelected.has(f._id)).reduce((sum, f) => sum + (f.acres || 0), 0);
+            document.getElementById('bulkCropCount').textContent =
+                `${bulkSelected.size} field${bulkSelected.size === 1 ? '' : 's'} selected` +
+                (bulkSelected.size ? ` (${selectedAcres.toLocaleString('en-US', { maximumFractionDigits: 1 })} ac)` : '');
+            document.getElementById('bulkCropBar').classList.toggle('active', bulkSelected.size > 0);
+            const shown = getFilteredFields();
+            document.getElementById('bulkSelectAll').checked = shown.length > 0 && shown.every(f => bulkSelected.has(f._id));
+        }
+
+        async function applyBulkCrop2027() {
+            const value = document.getElementById('bulkCrop2027').value;
+            const ids = Array.from(bulkSelected);
+            if (!ids.length) return;
+            const label = value ? cropLabel(value, 2027) : 'Not set';
+            if (!confirm(`Set the 2027 crop to ${label} on ${ids.length} field${ids.length === 1 ? '' : 's'}?`)) return;
+            const failed = [];
+            for (const id of ids) {
+                try {
+                    const res = await fetch('/api/cropping-fields/' + encodeURIComponent(id), {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ crop2027: value || null })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok || !data.success) throw new Error(data.error || 'Save failed (' + res.status + ')');
+                    const idx = allFields.findIndex(x => x._id === id);
+                    if (idx >= 0) allFields[idx] = { ...allFields[idx], crop2027: data.field.crop2027 };
+                    bulkSelected.delete(id);
+                } catch (e) {
+                    const f = allFields.find(x => x._id === id);
+                    failed.push((f ? f.field : id) + ': ' + e.message);
+                }
+            }
+            renderCropFilters();
+            renderView();
+            if (failed.length) alert('Some fields were not saved:\n' + failed.join('\n'));
         }
 
         function openFieldModal(id) {
