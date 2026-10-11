@@ -1136,7 +1136,8 @@
                         <th>Tract</th>
                         <th>Acres</th>
                         <th>2026 Crop</th>
-                        <th>Crop Code</th>
+                        <th>2027 Crop</th>
+                        <th>Crop Codes</th>
                     </tr>
                 </thead>
                 <tbody id="fieldsTable">
@@ -1180,6 +1181,29 @@
             if (!crop || !year) return '';
             if (NON_PRODUCTIVE.includes(crop.toUpperCase())) return '';
             return crop.toUpperCase().replace(/\s+/g, '-') + String(year).slice(-2);
+        }
+
+        // Crop years shown on this page. A field's crop is always labeled with
+        // its harvest year (CORN 26, WHEAT 27) so seasons are never confused.
+        const CROP_YEARS = [2026, 2027];
+
+        function cropLabel(crop, year) {
+            if (!crop) return '';
+            return crop.toUpperCase() + ' ' + String(year).slice(-2);
+        }
+
+        function cropClassOf(crop) {
+            return crop ? crop.replace(/\s+/g, '-') : '';
+        }
+
+        function cropBadge(crop, year) {
+            if (!crop) return '<span class="crop-code">--</span>';
+            return `<span class="crop-badge ${cropClassOf(crop)}">${cropLabel(crop, year)}</span>`;
+        }
+
+        // Crop codes for every year set on a field, e.g. ['CORN26', 'WHEAT27'].
+        function fieldCropCodes(f) {
+            return CROP_YEARS.map(y => getCropCode(f['crop' + y], y)).filter(Boolean);
         }
 
         // Farm color map for reference
@@ -1331,7 +1355,7 @@
                 const cropClass = crop.crop.replace(/\s+/g, '-');
                 return `
                     <div class="crop-bar">
-                        <div class="crop-name">${crop.crop}</div>
+                        <div class="crop-name">${cropLabel(crop.crop, 2026)}</div>
                         <div class="bar-container">
                             <div class="bar ${cropClass}" style="width: ${pct}%">${crop.fieldCount} fields</div>
                         </div>
@@ -1366,19 +1390,25 @@
         function renderCropFilters() {
             const container = document.getElementById('cropFilters');
             // Build crop list from actual data
+            // One filter per crop and year: "CORN 26", "WHEAT 27".
             const cropCounts = {};
             allFields.forEach(f => {
-                const crop = f.crop2026 || 'UNKNOWN';
-                if (!cropCounts[crop]) cropCounts[crop] = { count: 0, acres: 0 };
-                cropCounts[crop].count++;
-                cropCounts[crop].acres += f.acres || 0;
+                CROP_YEARS.forEach(y => {
+                    const crop = f['crop' + y];
+                    if (!crop) return;
+                    const key = crop + '|' + y;
+                    if (!cropCounts[key]) cropCounts[key] = { crop, year: y, count: 0, acres: 0 };
+                    cropCounts[key].count++;
+                    cropCounts[key].acres += f.acres || 0;
+                });
             });
 
-            const sortedCrops = Object.entries(cropCounts).sort((a, b) => b[1].acres - a[1].acres);
+            const sortedCrops = Object.entries(cropCounts).sort((a, b) =>
+                (a[1].year - b[1].year) || (b[1].acres - a[1].acres));
 
             let html = `<button class="crop-filter active" data-crop="all" onclick="selectCrop('all')">All Crops <span class="count">${allFields.length}</span></button>`;
-            sortedCrops.forEach(([crop, data]) => {
-                html += `<button class="crop-filter" data-crop="${crop}" onclick="selectCrop('${crop}')">${crop} <span class="count">${data.count}</span></button>`;
+            sortedCrops.forEach(([key, data]) => {
+                html += `<button class="crop-filter" data-crop="${key}" onclick="selectCrop('${key}')">${cropLabel(data.crop, data.year)} <span class="count">${data.count}</span></button>`;
             });
 
             container.innerHTML = html;
@@ -1399,7 +1429,8 @@
                 fields = fields.filter(f => f.farm === currentFarm);
             }
             if (currentCrop !== 'all') {
-                fields = fields.filter(f => f.crop2026 === currentCrop);
+                const [crop, year] = currentCrop.split('|');
+                fields = fields.filter(f => f['crop' + year] === crop);
             }
             return fields;
         }
@@ -1417,7 +1448,10 @@
 
             let parts = [];
             if (currentFarm !== 'all') parts.push(currentFarm);
-            if (currentCrop !== 'all') parts.push(currentCrop);
+            if (currentCrop !== 'all') {
+                const [crop, year] = currentCrop.split('|');
+                parts.push(cropLabel(crop, year));
+            }
 
             container.innerHTML = `Showing <span class="filter-count">${quarters.length}</span> quarters / <span class="filter-count">${fields.length}</span> fields / <span class="filter-count">${totalAcres.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> acres${parts.length ? ' -- ' + parts.join(' + ') : ''}`;
         }
@@ -1585,9 +1619,10 @@
                 // Determine crop codes present in this quarter
                 const cropCodes = {};
                 q.fields.forEach(f => {
-                    const code = getCropCode(f.crop2026, 2026);
-                    const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
-                    if (code) cropCodes[code] = cropClass;
+                    CROP_YEARS.forEach(y => {
+                        const code = getCropCode(f['crop' + y], y);
+                        if (code) cropCodes[code] = cropClassOf(f['crop' + y]);
+                    });
                 });
                 const codeEntries = Object.entries(cropCodes);
                 const primaryCrop = firstField.crop2026 ? firstField.crop2026.replace(/\s+/g, '-') : '';
@@ -1627,8 +1662,9 @@
                 if (isMulti) {
                     subFieldsHtml = `<div class="quarter-subfields">${q.fields.map(f => {
                         const dir = f._parsed.dir || '';
-                        const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
-                        const code = getCropCode(f.crop2026, 2026);
+                        const fCodes = CROP_YEARS
+                            .map(y => ({ code: getCropCode(f['crop' + y], y), cls: cropClassOf(f['crop' + y]) }))
+                            .filter(c => c.code);
                         const fAcres = f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-';
                         return `<div class="quarter-subfield-row" onclick="event.stopPropagation(); openFieldModal('${f._id}')">
                             <div class="qsf-left">
@@ -1636,7 +1672,7 @@
                                 <span class="qsf-name">${f.field}</span>
                             </div>
                             <div class="qsf-right">
-                                ${code ? `<span class="qsf-crop ${cropClass}">${code}</span>` : ''}
+                                ${fCodes.map(c => `<span class="qsf-crop ${c.cls}">${c.code}</span>`).join(' ')}
                                 <span class="qsf-acres">${fAcres} ac</span>
                             </div>
                         </div>`;
@@ -1658,7 +1694,7 @@
                                     ? `<div class="field-card-crop-code">${codeEntries[0][0]}</div>`
                                     : codeEntries.length > 1
                                     ? `<div class="field-card-crops">${codeEntries.map(([c, cls]) => `<div class="field-card-crop-code">${c}</div>`).join('')}</div>`
-                                    : `<div class="field-card-crop-code">${firstField.crop2026 || '--'}</div>`}
+                                    : `<div class="field-card-crop-code">${firstField.crop2026 ? cropLabel(firstField.crop2026, 2026) : '--'}</div>`}
                                 <div class="field-card-acres">${acresStr} ac</div>
                             </div>
                         </div>
@@ -1715,18 +1751,56 @@
             }).join('');
         }
 
+        const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE',
+            'PEARL MILLET', 'SORGHUM SUDAN', 'WASTE', 'BUILDING SITE'];
+
+        function renderCropYearSection(f) {
+            const choices = Array.from(new Set(CROP_CHOICES.concat(f.crop2027 ? [f.crop2027] : [])));
+            const options = ['<option value="">Not set</option>'].concat(choices.map(c =>
+                `<option value="${c}" ${f.crop2027 === c ? 'selected' : ''}>${cropLabel(c, 2027)}</option>`)).join('');
+            return `
+                <div style="background:#f8f8f8;padding:12px 14px;border-radius:6px;margin-bottom:20px;">
+                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:8px;">Crop by Year</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+                        <span>2026: ${cropBadge(f.crop2026, 2026)}</span>
+                        <label for="crop2027Select" style="font-size:13px;color:#666;">2027:</label>
+                        <select id="crop2027Select" style="padding:8px;border:2px solid #ddd;border-radius:5px;font-size:16px;">${options}</select>
+                        <button onclick="saveCrop2027('${f._id}')" style="padding:8px 16px;background:#2d5016;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:600;">Save</button>
+                    </div>
+                </div>`;
+        }
+
+        async function saveCrop2027(id) {
+            const value = document.getElementById('crop2027Select').value;
+            try {
+                const res = await fetch('/api/cropping-fields/' + encodeURIComponent(id), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ crop2027: value || null })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.error || 'Save failed (' + res.status + ')');
+                const idx = allFields.findIndex(x => x._id === id);
+                if (idx >= 0) allFields[idx] = { ...allFields[idx], crop2027: data.field.crop2027 };
+                renderCropFilters();
+                renderView();
+                openFieldModal(id);
+            } catch (e) {
+                alert('Could not save the 2027 crop: ' + e.message);
+            }
+        }
+
         function renderFieldsTable() {
             const tbody = document.getElementById('fieldsTable');
             let fields = getFilteredFields();
 
             if (fields.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#999;padding:40px">No fields found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = fields.map(f => {
-                const cropClass = f.crop2026 ? f.crop2026.replace(/\s+/g, '-') : '';
-                const code = getCropCode(f.crop2026, 2026);
+                const codes = fieldCropCodes(f);
                 return `
                     <tr onclick="openFieldModal('${f._id}')" style="cursor:pointer">
                         <td>${f.farm}</td>
@@ -1735,8 +1809,9 @@
                         <td>${f.fsaFarm || '-'}</td>
                         <td>${f.tract || '-'}</td>
                         <td class="acres">${f.acres ? f.acres.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
-                        <td><span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span></td>
-                        <td>${code ? `<span class="crop-code has-code">${code}</span>` : '<span class="crop-code">--</span>'}</td>
+                        <td>${cropBadge(f.crop2026, 2026)}</td>
+                        <td>${cropBadge(f.crop2027, 2027)}</td>
+                        <td>${codes.length ? codes.map(c => `<span class="crop-code has-code">${c}</span>`).join(' ') : '<span class="crop-code">--</span>'}</td>
                     </tr>
                 `;
             }).join('');
@@ -1746,9 +1821,7 @@
             const f = allFields.find(x => x._id === id);
             if (!f) return;
 
-            const code = getCropCode(f.crop2026, 2026);
             const split = calcCostSplit(f);
-            const cropClass = (f.crop2026 || '').replace(/\s+/g, '-');
             const c = f.costs || {};
             const acres = f.acres || 0;
             const isShare = split.leaseType === 'crop-share' && split.sharePct > 0;
@@ -1757,8 +1830,7 @@
             document.getElementById('modalFieldName').textContent = f.field;
             document.getElementById('modalSubtitle').innerHTML =
                 `<span style="color:${FARM_COLORS[f.farm] || '#333'};font-weight:600">${f.farm}</span>` +
-                ` -- <span class="crop-badge ${cropClass}">${f.crop2026 || '-'}</span>` +
-                (code ? ` -- <span class="crop-code has-code">${code}</span>` : '') +
+                ` -- ${cropBadge(f.crop2026, 2026)} ${f.crop2027 ? cropBadge(f.crop2027, 2027) : ''}` +
                 ` -- ${acres.toLocaleString('en-US', { minimumFractionDigits: 2 })} ac`;
 
             const costRows = [
@@ -1812,7 +1884,8 @@
                 ? `Cash Rent${split.landlordName ? ' -- ' + split.landlordName : ''}`
                 : 'Owned -- M77 AG 100%';
 
-            document.getElementById('modalBody').innerHTML = `
+            const cropYearSection = renderCropYearSection(f);
+            document.getElementById('modalBody').innerHTML = cropYearSection + `
                 <!-- Key Metrics -->
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px;">
                     <div style="background:#f8f8f8;padding:12px;border-radius:6px;text-align:center;">
@@ -1926,6 +1999,9 @@
         // EXPENSE INPUT PANEL
         // =============================================
         let selectedFieldIds = new Set();
+        // Crop code picked with a quick-select button (e.g. WHEAT27). Needed
+        // when a field carries crops for two years.
+        let activeExpenseCropCode = null;
         let recentExpenses = [];
 
         function toggleExpensePanel() {
@@ -1948,12 +2024,12 @@
             // Build crop code quick-select buttons
             const cropCodes = {};
             allFields.forEach(f => {
-                const code = getCropCode(f.crop2026, 2026);
-                if (!code) return;
-                if (!cropCodes[code]) cropCodes[code] = { count: 0, acres: 0, ids: [] };
-                cropCodes[code].count++;
-                cropCodes[code].acres += f.acres || 0;
-                cropCodes[code].ids.push(f._id);
+                fieldCropCodes(f).forEach(code => {
+                    if (!cropCodes[code]) cropCodes[code] = { count: 0, acres: 0, ids: [] };
+                    cropCodes[code].count++;
+                    cropCodes[code].acres += f.acres || 0;
+                    cropCodes[code].ids.push(f._id);
+                });
             });
 
             let actionsHtml = `<button onclick="selectAllFields()">Select All</button>`;
@@ -1966,8 +2042,7 @@
             // Build field checkboxes grouped by farm
             const byFarm = {};
             allFields.forEach(f => {
-                const code = getCropCode(f.crop2026, 2026);
-                if (!code) return; // skip non-productive
+                if (!fieldCropCodes(f).length) return; // skip non-productive
                 if (!byFarm[f.farm]) byFarm[f.farm] = [];
                 byFarm[f.farm].push(f);
             });
@@ -1975,14 +2050,14 @@
             let gridHtml = '';
             Object.keys(byFarm).sort().forEach(farm => {
                 byFarm[farm].sort((a, b) => a.field.localeCompare(b.field)).forEach(f => {
-                    const code = getCropCode(f.crop2026, 2026);
+                    const codes = fieldCropCodes(f).join(' ');
                     const checked = selectedFieldIds.has(f._id) ? 'checked' : '';
                     gridHtml += `
-                        <label class="field-select-item" data-crop-code="${code}" data-farm="${f.farm}">
+                        <label class="field-select-item" data-crop-code="${codes}" data-farm="${f.farm}">
                             <input type="checkbox" value="${f._id}" ${checked}
                                    onchange="toggleFieldSelect(this, '${f._id}', ${f.acres || 0})">
                             <span class="fsi-name">${f.field}</span>
-                            <span class="fsi-acres">${f.acres || 0} ac</span>
+                            <span class="fsi-acres">${f.acres || 0} ac &middot; ${codes}</span>
                         </label>`;
                 });
             });
@@ -2002,9 +2077,10 @@
         function selectByCropCode(code) {
             // First deselect all, then select matching
             selectedFieldIds.clear();
+            activeExpenseCropCode = code;
             document.querySelectorAll('#fieldSelectGrid input[type="checkbox"]').forEach(cb => {
                 const item = cb.closest('.field-select-item');
-                if (item.dataset.cropCode === code) {
+                if ((item.dataset.cropCode || '').split(' ').includes(code)) {
                     cb.checked = true;
                     selectedFieldIds.add(cb.value);
                 } else {
@@ -2027,6 +2103,7 @@
 
         function deselectAllFields() {
             selectedFieldIds.clear();
+            activeExpenseCropCode = null;
             document.querySelectorAll('#fieldSelectGrid input[type="checkbox"]').forEach(cb => {
                 cb.checked = false;
             });
@@ -2082,9 +2159,21 @@
             if (!date) { alert('Select a date'); return; }
 
             // Determine crop code from selected fields
-            const selectedField = allFields.find(f => f._id === fieldIds[0]);
-            const cropCode = getCropCode(selectedField.crop2026, 2026);
-            if (!cropCode) { alert('Selected fields have no crop code'); return; }
+            // Use the crop code shared by every selected field. When fields carry
+            // crops for two years, the quick-select button picks which one.
+            const selected = fieldIds.map(id => allFields.find(f => f._id === id)).filter(Boolean);
+            const shared = selected.length
+                ? selected.map(fieldCropCodes).reduce((acc, codes) => acc.filter(c => codes.includes(c)))
+                : [];
+            let cropCode = null;
+            if (activeExpenseCropCode && shared.includes(activeExpenseCropCode)) cropCode = activeExpenseCropCode;
+            else if (shared.length === 1) cropCode = shared[0];
+            if (!cropCode) {
+                alert(shared.length > 1
+                    ? 'These fields have crops for more than one year. Click a crop code button (for example WHEAT27) to choose which crop this expense is for.'
+                    : 'The selected fields do not share a crop code. Select fields with the same crop and year.');
+                return;
+            }
 
             const btn = document.getElementById('expSubmitBtn');
             btn.disabled = true;
