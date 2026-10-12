@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Holland P2085 Air Drill Guide - M77 AG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3f0;
+            color: #2c2c2c;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .back-link {
+            color: #d4af37;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2d5016;
+        }
+        .page-eyebrow {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            color: #d4a54a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 34px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .page-subtitle {
+            font-size: 15px;
+            color: #666;
+        }
+        .toc {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #2d5016;
+        }
+        .toc-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            color: #2d5016;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            padding: 6px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+        }
+        .toc li::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            color: #d4a54a;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+        }
+        .toc a {
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2d5016;
+            text-decoration: underline;
+        }
+        section.guide-section {
+            background: white;
+            padding: 28px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        section.guide-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #2d5016;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        section.guide-section .section-lede {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+        section.guide-section h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin: 22px 0 10px;
+            letter-spacing: 0.5px;
+        }
+        section.guide-section p {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        section.guide-section ul,
+        section.guide-section ol {
+            margin: 0 0 14px 22px;
+            font-size: 15px;
+        }
+        section.guide-section li {
+            margin-bottom: 6px;
+        }
+        .callout {
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .callout-answer {
+            background: #eef6e9;
+            border-left: 4px solid #2d5016;
+        }
+        .callout-answer strong {
+            color: #2d5016;
+        }
+        .callout-warn {
+            background: #fff8e6;
+            border-left: 4px solid #d4a54a;
+        }
+        .callout-warn strong {
+            color: #a37c1c;
+        }
+        .callout-note {
+            background: #f5f3f0;
+            border-left: 4px solid #999;
+        }
+        table.spec {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+            font-size: 14px;
+        }
+        table.spec th,
+        table.spec td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table.spec th {
+            background: #f5f3f0;
+            font-family: 'Oswald', sans-serif;
+            color: #2d5016;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+        table.spec td:first-child {
+            font-weight: 600;
+            width: 40%;
+        }
+        .path {
+            font-family: 'Courier New', monospace;
+            background: #f5f3f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d5016;
+            font-weight: 600;
+        }
+        .digit-key {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 8px 16px;
+            margin: 10px 0 18px;
+            font-size: 14px;
+        }
+        .digit-key .k {
+            font-family: 'Courier New', monospace;
+            background: #2d5016;
+            color: #d4a54a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .print-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        .print-btn:hover {
+            background: #1e3a0e;
+        }
+        .footer-actions {
+            text-align: center;
+            padding: 20px 0;
+        }
+        @media (max-width: 700px) {
+            .header { padding: 12px 16px; }
+            .container { padding: 20px 14px 40px; }
+            .page-title { font-size: 26px; }
+            section.guide-section { padding: 20px 18px; }
+        }
+        @media print {
+            .header, .back-link, .print-btn, .toc { display: none; }
+            body { background: white; }
+            section.guide-section { box-shadow: none; page-break-inside: avoid; }
+        }
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table.spec.log { min-width: 640px; }
+        table.spec.log td:first-child { width: auto; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">M77 AG</div>
+        <a href="/admin/equipment-manager.html" class="back-link">Back to Equipment</a>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-eyebrow">2015 New Holland P2085 Air Drill, Unit #311</div>
+            <h1 class="page-title">P2085 Air Drill Guide</h1>
+            <p class="page-subtitle">Digi-Star seed tank scale: manuals, wiring and troubleshooting</p>
+        </div>
+
+        <div class="toc">
+            <div class="toc-title">In This Guide</div>
+            <ol>
+                <li><a href="#scale">Digi-Star Seed Tank Scale</a></li>
+                <li><a href="#manuals">Manuals</a></li>
+                <li><a href="#trouble">Troubleshooting: Scale Drops Off the Display</a></li>
+                <li><a href="#log">Scale Troubleshooting Log</a></li>
+            </ol>
+        </div>
+
+        <section class="guide-section" id="scale">
+            <h2>1. Digi-Star Seed Tank Scale</h2>
+            <p class="section-lede">Weigh bars under the seed tank feed a Digi-Star ISOBUS scale module. The module has no screen of its own. It shows on the tractor's John Deere display through ISOBUS, where it appears as <span class="path">Sensor System - Digi-Star, LLC</span>.</p>
+
+            <div class="callout callout-warn">
+                <strong>Confirm the module model.</strong> The wiring and manual details below are for the Digi-Star Scale Link SL2 ISOBUS module (SL2110 or SL2140), the Digi-Star ISOBUS scale module that matches this setup. Read the model and part number off the label on the scale box on the drill and record them here before relying on the pin numbers.
+            </div>
+
+            <table class="spec">
+                <thead>
+                    <tr><th>Item</th><th>Value</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Module model / part number</td><td>To be read from the label on the drill</td></tr>
+                    <tr><td>Display</td><td>John Deere display in the 8320R (ISOBUS VT)</td></tr>
+                    <tr><td>Supply voltage, ISOBUS</td><td>11 to 16 V DC. Below 11 V the weight stops and no data is sent on ISOBUS (SL2 manual, pages 5 and 27).</td></tr>
+                    <tr><td>Current draw</td><td>Under 0.2 A at 13.8 V for a 4 load cell scale (page 5)</td></tr>
+                    <tr><td>Load cell excitation</td><td>8.0 V DC regulated (page 5)</td></tr>
+                    <tr><td>Sealing</td><td>IP65. Not rated for pressure washing (pages 5 and 27).</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Power and ISOBUS connector (6-pin Deutsch on the scale box)</h3>
+            <table class="spec">
+                <thead>
+                    <tr><th>Pin</th><th>Function (wire color)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>+VIN, system power (Red)</td></tr>
+                    <tr><td>2</td><td>CAN High (Yellow)</td></tr>
+                    <tr><td>3</td><td><strong>0 V, system ground (Black)</strong></td></tr>
+                    <tr><td>4</td><td>CAN Low (Green)</td></tr>
+                    <tr><td>5, 6</td><td>Plugged, not used</td></tr>
+                </tbody>
+            </table>
+            <p style="font-size:13px; color:#666;">SL2 Technical Manual D4204-EN Rev B, page 9. The module's CAN connection is not terminated. ISOBUS needs an active terminator at the end of the bus.</p>
+        </section>
+
+        <section class="guide-section" id="manuals">
+            <h2>2. Manuals</h2>
+            <ul>
+                <li><a href="https://www.manualslib.com/manual/1572883/Digistar-Scale-Link-Sl2.html" target="_blank" rel="noopener">Digi-Star Scale Link SL2 Technical Manual (D4204-EN, Rev B, December 2018)</a>. Specifications page 5, wiring pages 8 to 9, ISOBUS settings page 23, troubleshooting page 27. Hosted by ManualsLib.</li>
+                <li><a href="https://support.scale-tec.com/portal/en/kb/articles/scale-link-series-2000-operators-manual" target="_blank" rel="noopener">Digi-Star Scale Link SL2110 / SL2140 Operator's Manual (D4196)</a>. Operating the scale on the tractor display. Hosted by Scale-Tec.</li>
+                <li>New Holland P2085 Disk Drill Operator's Manual, publication 47492255 (5/13). Order through the New Holland dealer with serial number YES046407.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section" id="trouble">
+            <h2>3. Troubleshooting: Scale Drops Off the Display</h2>
+            <p class="section-lede">Symptom on October 12, 2026: the John Deere display shows the disconnected-plug icon with <span class="path">Sensor System - Digi-Star, LLC</span> and the scale screen is blank. Unplugging and reconnecting the black wire brought it back for about 5 minutes, then it dropped off again.</p>
+
+            <div class="callout callout-answer">
+                <p><strong>What the symptom means.</strong> The disconnected-plug message means the scale module itself stopped talking on ISOBUS. A bad weigh bar or load cell cable gives a wrong or unsteady weight, but the module stays on the screen. A module that drops off the display has lost power, lost ground, or lost its ISOBUS connection.</p>
+                <p style="margin-bottom:0;"><strong>Most likely cause: the ground circuit.</strong> Black is the system ground on the module's power connector. Reseating it restored the scale for a few minutes, which points to a loose, corroded or broken ground connection that makes contact only briefly. Start there.</p>
+            </div>
+
+            <h3>Step 1. Check the display's view of the connection</h3>
+            <ol>
+                <li>On the John Deere display, open Status Center and the ISOBUS Controllers page. It shows whether the Digi-Star module is connected.</li>
+                <li>If the scale comes back at any point, run <span class="path">DAN 1997</span> on the scale screen. It shows the module's supply voltage and an estimated load cell count (SL2 manual, page 27). Record the voltage in the log.</li>
+            </ol>
+
+            <h3>Step 2. Ground and power at the scale box (most likely)</h3>
+            <ol>
+                <li>Tractor running, scale dropped out. Back-probe the 6-pin connector at the scale box: red (pin 1) to black (pin 3). It must read <strong>11 V or more</strong>. Below 11 V the module stops sending data.</li>
+                <li>Leave the meter connected and wiggle the harness from the scale box back toward the hitch. If the voltage drops out while you move it, the break is where you were wiggling.</li>
+                <li>Measure from black (pin 3) to the tractor battery negative while running. A good ground reads close to 0 V. A reading of several tenths of a volt or more means a bad ground connection between those two points.</li>
+                <li>Open the Deutsch connector. Look for a pin pushed back in its cavity, a missing or loose wedge lock, green corrosion, or water. A pin that backs out under pressure makes contact only until the connector moves. Seat the pins, replace the wedge lock if loose, and apply dielectric grease.</li>
+                <li>Follow the black wire to its other end (ring terminal, splice or harness connector). Check the crimp and the mounting point for rust or paint under the terminal.</li>
+            </ol>
+
+            <h3>Step 3. The harness run from the tractor</h3>
+            <ol>
+                <li>Inspect the harness at the hitch, the drill's fold and hinge points, and anywhere it crosses the frame. Look for chafed insulation or a pinched spot.</li>
+                <li>Check the ISOBUS breakaway connector at the back of the tractor is fully seated and locked.</li>
+                <li>Check the ISOBUS terminator at the end of the bus is in place and tight. A loose terminator usually drops every ISOBUS device, not only the scale.</li>
+            </ol>
+
+            <h3>Step 4. If power and ground hold steady and it still drops off</h3>
+            <ol>
+                <li>Check the yellow (CAN High) and green (CAN Low) wires for the same damage as above.</li>
+                <li>Check for water inside the scale box and the junction boxes.</li>
+                <li>Unplug the module's power for 10 seconds and reconnect (SL2 manual, page 16). After a power cycle the scale screen can take several minutes to reload on the display.</li>
+                <li>If nothing else has changed on the ISOBUS, an address conflict is unlikely. If another ISOBUS device was added, change the scale's Preferred Address on its System Setup screen (page 27).</li>
+            </ol>
+
+            <h3>Weigh bars (only if the scale stays on screen but the weight is wrong)</h3>
+            <ol>
+                <li>Confirm the setup and calibration numbers.</li>
+                <li>Disconnect all bars but one and check its reading. Repeat for each bar. A bar that reads wrong or jumps has a bad load cell or cable (page 27).</li>
+            </ol>
+        </section>
+
+        <section class="guide-section" id="log">
+            <h2>4. Scale Troubleshooting Log</h2>
+            <p class="section-lede">Record each check and its result.</p>
+            <div class="table-scroll">
+            <table class="spec log">
+                <thead>
+                    <tr><th>Date</th><th>Check or repair</th><th>Voltage (red to black)</th><th>Result</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Oct 12, 2026</td><td>Scale dropped off the display. Disconnected and reconnected the black wire.</td><td></td><td>Worked about 5 minutes, then dropped off again</td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
+            </div>
+        </section>
+
+        <div class="footer-actions">
+            <button class="print-btn" onclick="window.print()">Print Guide</button>
+            <a href="/admin/equipment-manager.html" class="print-btn" style="background:#666;">Back to Equipment</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1434,6 +1434,15 @@
                 url: '/admin/equipment/usc-treater-guide.html',
                 label: 'Seed Treater Guide and Manuals',
                 sublabel: 'USC manuals, seed gate and pump calibration, wheat with Pivot Bio'
+            },
+            {
+                match: (item) => {
+                    const text = [item.title, item.model].join(' ').toLowerCase();
+                    return text.includes('p2085') || (item.serialNumber || '') === 'YES046407';
+                },
+                url: '/admin/equipment/p2085-drill-guide.html',
+                label: 'P2085 Air Drill Guide',
+                sublabel: 'Digi-Star seed tank scale manuals, wiring and troubleshooting'
             }
         ];
 
