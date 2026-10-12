@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-// Crop code generator: "WHEAT" + 2026 => "WHEAT26"
+// Crop code generator: "WHEAT" + 2026 => "WHEAT26". Every crop gets a code,
+// including FALLOW26 and PASTURE26, so each season is labeled by year.
 function makeCropCode(crop, year) {
   if (!crop || !year) return '';
   const c = crop.toUpperCase().trim();
-  if (['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'].includes(c)) return '';
   const yr = String(year).slice(-2);
   return c.replace(/\s+/g, '-') + yr;
 }
