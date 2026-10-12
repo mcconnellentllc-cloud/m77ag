@@ -1201,10 +1201,9 @@
         let currentCrop = 'all';
         let currentView = 'list'; // 'list' or 'cards'
 
-        const NON_PRODUCTIVE = ['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'];
+        // Every crop gets a year code, including FALLOW26 and PASTURE26.
         function getCropCode(crop, year) {
             if (!crop || !year) return '';
-            if (NON_PRODUCTIVE.includes(crop.toUpperCase())) return '';
             return crop.toUpperCase().replace(/\s+/g, '-') + String(year).slice(-2);
         }
 

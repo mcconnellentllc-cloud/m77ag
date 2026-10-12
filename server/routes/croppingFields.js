@@ -571,10 +571,8 @@ router.get('/summary/crop-codes', async (req, res) => {
       years.forEach(yr => {
         const crop = f[`crop${yr}`];
         if (!crop || !f.acres) return;
-        const nonProductive = ['WASTE', 'BUILDING SITE', 'PASTURE', 'FALLOW'];
-        if (nonProductive.includes(crop)) return;
 
-        const code = crop.toUpperCase().replace(/\s+/g, '-') + String(yr).slice(-2);
+        const code = CroppingField.makeCropCode(crop, yr);
         if (!codeSummary[code]) {
           codeSummary[code] = {
             cropCode: code,
