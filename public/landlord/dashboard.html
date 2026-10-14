@@ -63,6 +63,10 @@
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .season-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .season-bar label { font-size: 13px; color: #666; }
+        .season-bar select { width: auto; min-width: 140px; }
+        .season-note { font-size: 12px; color: #888; margin-top: 8px; }
 
         /* Stats Grid */
         .stats-grid {
@@ -251,6 +255,7 @@
         <!-- Nav Tabs -->
         <div class="nav-tabs">
             <button class="nav-tab active" data-tab="overview">Overview</button>
+            <button class="nav-tab" data-tab="season">Season Summary</button>
             <button class="nav-tab" data-tab="fields">Fields</button>
             <button class="nav-tab" data-tab="preferences">Preferences</button>
         </div>
@@ -292,6 +297,20 @@
                 <div class="section-title">County Breakdown</div>
                 <div class="county-grid" id="countyGrid"></div>
             </div>
+        </div>
+
+        <!-- TAB: Season Summary -->
+        <div id="tab-season" class="tab-content">
+            <div class="section">
+                <div class="season-bar">
+                    <label for="seasonYear">Crop year</label>
+                    <select id="seasonYear" class="form-control"></select>
+                    <label for="seasonFarm">Farm</label>
+                    <select id="seasonFarm" class="form-control"><option value="">All my farms</option></select>
+                </div>
+                <p class="season-note">Wheat 26 is the crop planted in fall 2025 and harvested in 2026.</p>
+            </div>
+            <div id="seasonContainer" class="loading">Loading season summary...</div>
         </div>
 
         <!-- TAB: Fields -->
@@ -355,6 +374,7 @@
         </div>
     </div>
 
+    <script src="/js/landlord-summary-view.js"></script>
     <script src="/landlord/dashboard.js"></script>
 </body>
 </html>

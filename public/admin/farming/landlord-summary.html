@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Summary - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+        .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; max-width: 640px; }
+        .filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+        .filters label { display: grid; gap: 4px; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input[type=text], input[type=email], input[type=tel], input[type=password] { padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; background: #fff; font-family: inherit; }
+        .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 24px; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-size: 20px; color: #2d5016; margin-bottom: 4px; font-weight: 500; }
+        .card .lede { font-size: 13px; color: #666; margin-bottom: 16px; }
+        .btn { padding: 12px 30px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .btn:hover { background: #234012; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+        .btn-secondary:hover { background: #f0f0f0; }
+        .btn-sm { padding: 8px 14px; font-size: 13px; }
+        .alert { padding: 12px 16px; border-radius: 5px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert.show { display: block; }
+        .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
+        .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
+        .access-farm { padding: 14px 0; border-bottom: 1px solid #eee; }
+        .access-farm:last-child { border-bottom: none; }
+        .access-farm h3 { font-size: 15px; font-weight: 600; }
+        .access-user { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 0; font-size: 14px; }
+        .access-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; align-items: end; }
+        .access-form label { display: grid; gap: 4px; font-size: 12px; color: #666; }
+        .muted { color: #888; font-size: 12px; }
+        .loading { color: #888; padding: 24px 0; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px; }
+            .page-title { font-size: 26px; }
+            .card { padding: 18px 16px; }
+            .filters, .filters label, .filters select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/fields.html">Fields</a>
+            <a href="/admin/farming/landlord-summary.html" class="active">Landlords</a>
+            <a href="/admin/farming-dashboard">Farming</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="alert" id="banner"></div>
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Landlord Summary</h1>
+                <p class="page-subtitle">Crop-share farms by landlord: fields, harvest, landlord bushels, crop insurance and seed cost share for the selected crop year. Wheat 26 is the crop planted fall 2025 and harvested 2026.</p>
+            </div>
+            <div class="filters">
+                <label>Crop year
+                    <select id="yearSelect" aria-label="Crop year"></select>
+                </label>
+                <label>Landlord
+                    <select id="farmSelect" aria-label="Landlord">
+                        <option value="">All landlords</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <div id="summary" class="loading">Loading...</div>
+
+        <section class="card" id="accessCard" hidden>
+            <h2>Landlord Portal Access</h2>
+            <p class="lede">Each login sees only the farms listed here. A couple can share one farm with two logins.</p>
+            <div id="accessList" class="loading">Loading...</div>
+            <form id="accessForm" class="access-form" autocomplete="off">
+                <label>Farm
+                    <select id="accFarm" required></select>
+                </label>
+                <label>Email
+                    <input type="email" id="accEmail" required>
+                </label>
+                <label>Name (new login)
+                    <input type="text" id="accName">
+                </label>
+                <label>Phone (new login)
+                    <input type="tel" id="accPhone">
+                </label>
+                <label>Temporary password (new login, 10+ characters)
+                    <input type="password" id="accPassword" autocomplete="new-password">
+                </label>
+                <div><button type="submit" class="btn" id="accSubmit">Grant Access</button></div>
+            </form>
+            <p class="muted" style="margin-top:10px;">An existing landlord login only needs the email. Landlords sign in at /landlord/login.html.</p>
+        </section>
+    </main>
+
+    <script src="/js/landlord-summary-view.js"></script>
+    <script>
+        const YEARS = [2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020];
+        const View = window.LandlordSummaryView;
+        const esc = View.esc;
+        let selectedYear = 2026;
+        let selectedFarm = '';
+        let farmOptionsLoaded = false;
+
+        function getToken() { return localStorage.getItem('adminToken'); }
+        if (!getToken()) window.location.href = '/admin/login';
+
+        async function request(url, opts = {}) {
+            const res = await fetch(url, {
+                ...opts,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken(), ...(opts.headers || {}) }
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) {
+                const err = new Error(data.message || 'Request failed (' + res.status + ')');
+                err.status = res.status;
+                throw err;
+            }
+            return data;
+        }
+
+        function banner(msg, type) {
+            const el = document.getElementById('banner');
+            el.textContent = msg;
+            el.className = 'alert show alert-' + (type || 'error');
+            if (type === 'success') setTimeout(() => { el.className = 'alert'; }, 5000);
+        }
+
+        async function loadSummary() {
+            const el = document.getElementById('summary');
+            el.className = 'loading';
+            el.textContent = 'Loading...';
+            try {
+                const q = '?cropYear=' + selectedYear + (selectedFarm ? '&farm=' + encodeURIComponent(selectedFarm) : '');
+                const { data } = await request('/api/landlord-summary' + q);
+                if (!farmOptionsLoaded && !selectedFarm) {
+                    const sel = document.getElementById('farmSelect');
+                    for (const f of data.farms) {
+                        const o = document.createElement('option');
+                        o.value = f.id;
+                        o.textContent = f.landlordName + ' (' + f.name + ')';
+                        sel.appendChild(o);
+                    }
+                    farmOptionsLoaded = true;
+                }
+                el.className = '';
+                View.render(el, data, {
+                    overview: !selectedFarm,
+                    onPickFarm: id => { selectedFarm = id; document.getElementById('farmSelect').value = id; loadSummary(); }
+                });
+            } catch (e) {
+                el.className = '';
+                el.innerHTML = '<p class="muted">Could not load the summary: ' + esc(e.message) + '</p>';
+            }
+        }
+
+        async function loadAccess() {
+            const card = document.getElementById('accessCard');
+            const list = document.getElementById('accessList');
+            try {
+                const { data } = await request('/api/landlord-summary/access');
+                card.hidden = false;
+                const farmSel = document.getElementById('accFarm');
+                const keep = farmSel.value;
+                farmSel.innerHTML = data.map(f => '<option value="' + esc(f.id) + '">' + esc(f.landlordName) + ' (' + esc(f.name) + ')</option>').join('');
+                if (keep) farmSel.value = keep;
+                list.className = '';
+                list.innerHTML = data.map(f =>
+                    '<div class="access-farm"><h3>' + esc(f.landlordName) + ' <span class="muted">' + esc(f.name) + '</span></h3>' +
+                    (f.users.length ? f.users.map(u =>
+                        '<div class="access-user"><span>' + esc(u.name) + ' <span class="muted">' + esc(u.email) +
+                        (u.isActive ? '' : ', inactive') + '</span></span>' +
+                        '<button type="button" class="btn btn-secondary btn-sm" data-revoke-farm="' + esc(f.id) + '" data-revoke-user="' + esc(u.id) +
+                        '" data-label="' + esc(u.email + ' from ' + f.name) + '">Remove</button></div>').join('')
+                    : '<div class="muted">No portal logins yet.</div>') + '</div>').join('');
+                list.querySelectorAll('[data-revoke-farm]').forEach(b => b.addEventListener('click', () => revoke(b)));
+            } catch (e) {
+                // Employees can view the summary but not manage logins.
+                if (e.status === 403) { card.hidden = true; return; }
+                card.hidden = false;
+                list.className = '';
+                list.innerHTML = '<p class="muted">Could not load portal access: ' + esc(e.message) + '</p>';
+            }
+        }
+
+        async function revoke(btn) {
+            if (!confirm('Remove portal access for ' + btn.getAttribute('data-label') + '?')) return;
+            btn.disabled = true;
+            try {
+                const r = await request('/api/landlord-summary/access/' + btn.getAttribute('data-revoke-farm') + '/' + btn.getAttribute('data-revoke-user'), { method: 'DELETE' });
+                banner(r.message, 'success');
+                loadAccess();
+            } catch (e) {
+                btn.disabled = false;
+                banner(e.message);
+            }
+        }
+
+        document.getElementById('accessForm').addEventListener('submit', async (ev) => {
+            ev.preventDefault();
+            const btn = document.getElementById('accSubmit');
+            btn.disabled = true;
+            try {
+                const body = {
+                    farm: document.getElementById('accFarm').value,
+                    email: document.getElementById('accEmail').value.trim(),
+                    name: document.getElementById('accName').value.trim(),
+                    phone: document.getElementById('accPhone').value.trim(),
+                    password: document.getElementById('accPassword').value
+                };
+                const r = await request('/api/landlord-summary/access', { method: 'POST', body: JSON.stringify(body) });
+                banner(r.message, 'success');
+                ['accEmail', 'accName', 'accPhone', 'accPassword'].forEach(id => { document.getElementById(id).value = ''; });
+                loadAccess();
+            } catch (e) {
+                banner(e.message);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        (function init() {
+            View.injectStyles();
+            try { const y = parseInt(localStorage.getItem('m77CropYear'), 10); if (YEARS.includes(y)) selectedYear = y; } catch (e) {}
+            const ys = document.getElementById('yearSelect');
+            ys.innerHTML = YEARS.map(y => '<option value="' + y + '"' + (y === selectedYear ? ' selected' : '') + '>' + y + '</option>').join('');
+            ys.addEventListener('change', () => {
+                selectedYear = parseInt(ys.value, 10);
+                try { localStorage.setItem('m77CropYear', String(selectedYear)); } catch (e) {}
+                loadSummary();
+            });
+            document.getElementById('farmSelect').addEventListener('change', e => { selectedFarm = e.target.value; loadSummary(); });
+            loadSummary();
+            loadAccess();
+        })();
+    </script>
+</body>
+</html>
