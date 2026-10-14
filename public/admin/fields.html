@@ -535,6 +535,7 @@
                 <button class="btn btn-secondary btn-sm" id="btnJdDisconnect" style="display:none;">Disconnect JD</button>
                 <a href="/admin/farming/wheat-2026.html" class="btn btn-secondary btn-sm">2026 Wheat Report</a>
                 <a href="/admin/farming/landlord-summary.html" class="btn btn-secondary btn-sm">Landlord Summary</a>
+                <a href="/admin/farming/custom-work.html" class="btn btn-secondary btn-sm">Custom Work</a>
                 <a href="/admin/farming/landlord-shares-2026-wheat.html" class="btn btn-secondary btn-sm">Landlord Shares</a>
                 <a href="/admin/farming/seed-cost-share.html" class="btn btn-secondary btn-sm">Seed Cost Share</a>
                 <button class="btn btn-secondary btn-sm" id="btnSeasonImport">2026 Season Records</button>
@@ -904,6 +905,7 @@
 
             const farmsByClient = new Map();
             for (const farm of lastFarms) {
+                if (farm.type === 'custom') continue;
                 const cid = String(farm.client?._id || farm.client);
                 if (!farmsByClient.has(cid)) farmsByClient.set(cid, []);
                 farmsByClient.get(cid).push(farm);
@@ -914,6 +916,7 @@
             const clientCardsHtml = lastClients.map(c => {
                 const cid = String(c._id);
                 const farms = (farmsByClient.get(cid) || []).sort((a, b) => a.name.localeCompare(b.name));
+                if (!farms.length && lastFarms.some(f => f.type === 'custom' && String(f.client?._id || f.client) === cid)) return '';
                 const farmsHtml = farms.map(farm => {
                     const fields = (fieldsByFarm.get(String(farm._id)) || [])
                         .sort((a, b) => a.name.localeCompare(b.name));
@@ -974,7 +977,10 @@
                 `;
             }).filter(Boolean).join('');
 
-            hierarchyEl.innerHTML = clientCardsHtml || '<div class="empty">No fields match the current filters.</div>';
+            hierarchyEl.innerHTML = (clientCardsHtml || '<div class="empty">No fields match the current filters.</div>') +
+                (lastFarms.some(f => f.type === 'custom')
+                    ? '<p style="margin:12px 4px; font-size:13px; color:#666;">Custom acres are billed on <a href="/admin/farming/custom-work.html" style="color:#2d5016; font-weight:600;">Custom Work Billing</a>.</p>'
+                    : '');
             renderBulkBar();
         }
 
@@ -1726,7 +1732,9 @@
                     loadOperations(),
                     Object.keys(croppingById).length ? null : loadCropping()
                 ]);
-                lastFields = data.fields || [];
+                // Custom acres are billed on the Custom Work page, not carried as cards.
+                const customFarmIds = new Set(lastFarms.filter(f => f.type === 'custom').map(f => String(f._id)));
+                lastFields = (data.fields || []).filter(f => !customFarmIds.has(String(f.farm?._id || f.farm)));
                 renderHierarchy(lastFields);
                 updateStats(lastFields);
             } catch (e) {

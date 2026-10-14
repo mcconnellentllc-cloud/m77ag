@@ -65,6 +65,14 @@ const m77FarmSchema = new mongoose.Schema({
     default: 0
   },
 
+  // Who receives invoices for custom work (type='custom').
+  billingContact: {
+    name:    { type: String, trim: true },
+    email:   { type: String, trim: true, lowercase: true },
+    phone:   { type: String, trim: true },
+    address: { type: String, trim: true }
+  },
+
   active: { type: Boolean, default: true },
   notes:  { type: String }
 }, {
