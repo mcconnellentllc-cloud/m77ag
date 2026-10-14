@@ -809,6 +809,13 @@
         const SEED_CROP_YEAR = 2027;
         let seedByField = {};  // m77Field id -> [seed cost share entries]
 
+        // Crop insurance units per field, by crop year and crop.
+        const INS_CROP_YEAR = 2026;
+        const INS_CROP = 'WHEAT';
+        const INS_CLAIM_ID = 'rcis-2026-wheat';
+        let insByField = {};   // m77Field id -> [insurance units]
+        let insClaim = null;   // { policy, units } for INS_CLAIM_ID
+
         function fmtAcres(n) {
             if (n == null) return '-';
             return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -968,6 +975,7 @@
                         ${f.notes ? `<div class="group" style="grid-column: 1 / -1;"><div class="label">Notes</div><div class="value">${escapeHtml(f.notes)}</div></div>` : ''}
                         ${renderFsaSection(f)}
                         ${renderSeedCostShareSection(f)}
+                        ${renderInsuranceSection(f)}
                         <div class="actions">
                             <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit field</button>
                         </div>
@@ -1119,6 +1127,157 @@
             `;
         }
 
+        function fmtPct(s) {
+            return s === null || s === undefined ? '—' : (Math.round(s * 1000) / 10) + '%';
+        }
+
+        // Field number from a card name: "42.W E/2 N/4" -> { num: '42', suffix: 'W' }.
+        function fieldNumber(name) {
+            const m = String(name || '').trim().match(/^#?(\d+)(?:\.?([NSEW]{1,2}))?/i);
+            return m ? { num: m[1], suffix: (m[2] || '').toUpperCase() } : null;
+        }
+
+        function unitMatchesField(unit, f) {
+            const fn = fieldNumber(f.name);
+            const hint = fieldNumber(unit.fieldHint);
+            if (!fn || !hint || fn.num !== hint.num) return false;
+            return !hint.suffix || hint.suffix === fn.suffix;
+        }
+
+        function renderInsuranceSection(f) {
+            const entries = insByField[f._id] || [];
+            const fid = escapeHtml(f._id);
+            const cropLabel = INS_CROP + ' ' + String(INS_CROP_YEAR).slice(-2);
+            const paid = entries.reduce((sum, e) => sum + (e.totalPayable || 0), 0);
+            const badge = entries.length
+                ? `<span style="background:#e8f5e9; color:#1e3d10; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">${paid > 0 ? 'Indemnity ' + fmtMoney(paid) : entries.length + ' unit' + (entries.length === 1 ? '' : 's')}</span>`
+                : '';
+            const line = (label, value) => `<div style="display:flex; justify-content:space-between; gap:12px;"><span style="color:#888;">${label}</span><span style="text-align:right;">${value}</span></div>`;
+            const num = (n, d) => n === null || n === undefined ? '—' : Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+
+            const blocks = entries.map(e => {
+                const prodLabel = e.stage === 'UH' ? 'Appraised (unharvested)' : 'Harvested';
+                return `
+                    <div style="background:#fff; border:1px solid #d9e2ef; border-radius:5px; padding:10px 12px; margin-top:8px; font-size:12px; display:grid; gap:4px;">
+                        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                            <strong style="font-size:13px;">Unit ${escapeHtml(e.unitNumber)}</strong>
+                            <span style="color:#888;">${escapeHtml([e.company, 'Policy ' + e.policyNumber, e.fsn ? 'FSN ' + e.fsn : ''].filter(Boolean).join(' · '))}</span>
+                        </div>
+                        ${e.location ? `<div style="color:#888;">${escapeHtml(e.location)}${e.practice ? ' · ' + escapeHtml(e.practice) : ''}</div>` : ''}
+                        ${line('Plan', `${escapeHtml(e.plan || '—')} at ${e.coverageLevel ? e.coverageLevel + '%' : '—'}`)}
+                        ${line('Insured acres', num(e.insuredAcres, 2))}
+                        ${line('APH', num(e.aph, 0) + ' bu/ac')}
+                        ${line('Guarantee', `${num(e.guaranteeBuPerAcre, 1)} bu/ac · ${num(e.guaranteeBu, 2)} bu`)}
+                        ${line('Prices (projected / harvest)', `${e.projectedPrice != null ? fmtMoney(e.projectedPrice) : '—'} / ${e.harvestPrice != null ? fmtMoney(e.harvestPrice) : '—'}`)}
+                        ${line('Revenue guarantee', fmtMoney(e.adjustedGuarantee))}
+                        ${line('Production to count', `${num(e.productionToCountBu, 1)} bu (${prodLabel}) · ${fmtMoney(e.productionToCountValue)}`)}
+                        ${line('Insured share', fmtPct(e.insuredShare) + (e.otherShare ? ' · ' + escapeHtml(e.otherShare) : ''))}
+                        ${line('Indemnity (production + revenue)', e.totalPayable != null ? `<strong>${fmtMoney(e.totalPayable)}</strong> (${fmtMoney(e.productionPayable)} + ${fmtMoney(e.revenuePayable)})` : 'Not settled')}
+                        ${e.claimNumber ? line('Claim', `${escapeHtml(e.claimNumber)}${e.checkNumber ? ' · check ' + escapeHtml(e.checkNumber) : ''}${e.claimDate ? ' · ' + new Date(e.claimDate).toLocaleDateString(undefined, { timeZone: 'UTC' }) : ''}`) : ''}
+                        ${line('Landlord share of indemnity (' + fmtPct(e.landlordShare) + ')', '<strong>' + fmtMoney(e.landlordIndemnity) + '</strong>')}
+                        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                            <button class="btn btn-secondary btn-sm" data-ins-share="${e._id}">Set landlord share</button>
+                            <button class="btn btn-secondary btn-sm" data-ins-remove="${e._id}">Remove from field</button>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            let attach = '';
+            const open = insClaim ? insClaim.units.filter(u => !u.attachedTo) : [];
+            if (open.length) {
+                const suggested = open.filter(u => unitMatchesField(u, f));
+                const sugg = suggested.map(u => `
+                    <button class="btn btn-sm" data-ins-attach="${fid}" data-unit="${escapeHtml(u.unitNumber)}" style="margin-top:6px;">
+                        Attach unit ${escapeHtml(u.unitNumber)} (${num(u.insuredAcres, 2)} ac, FSN ${escapeHtml(u.fsn)})
+                    </button>`).join('');
+                const options = open.map(u => `<option value="${escapeHtml(u.unitNumber)}">${escapeHtml(u.unitNumber)} · ${num(u.insuredAcres, 2)} ac · FSN ${escapeHtml(u.fsn)} · ${escapeHtml(u.location)}</option>`).join('');
+                attach = `
+                    <div style="margin-top:10px; font-size:12px;">
+                        ${suggested.length ? '<div style="color:#2d5016; font-weight:600;">Suggested from the claim by field number:</div>' + sugg : ''}
+                        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;">
+                            <select id="insUnit-${fid}" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:100%;">${options}</select>
+                            <button class="btn btn-secondary btn-sm" data-ins-attach-select="${fid}">Attach selected unit</button>
+                        </div>
+                        <div style="margin-top:6px; font-size:11px; color:#888;">Units from ${escapeHtml(insClaim.policy.company)} claim ${escapeHtml(insClaim.policy.claimNumber)} not yet on a field card.</div>
+                    </div>`;
+            }
+
+            const body = entries.length ? blocks
+                : '<div style="margin-top:8px; font-size:12px; color:#888;">No crop insurance unit on this field for ' + cropLabel + '.</div>';
+
+            return `
+                <details class="ins-section" style="grid-column: 1 / -1; background:#f1f5fa; border:1px solid #cfdcec; border-radius:5px; padding:10px 14px; margin-top:6px;">
+                    <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#1f3d63; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        Crop Insurance &middot; ${cropLabel} ${badge}
+                    </summary>
+                    ${body}
+                    ${attach}
+                </details>
+            `;
+        }
+
+        async function insRequest(path, opts) {
+            const res = await fetch('/api/field-insurance' + path, { ...(opts || {}), headers: authHeaders() });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+
+        async function loadInsurance() {
+            try {
+                const [list, claim] = await Promise.all([
+                    insRequest('?cropYear=' + INS_CROP_YEAR + '&crop=' + INS_CROP),
+                    insRequest('/claims/' + INS_CLAIM_ID)
+                ]);
+                insByField = {};
+                for (const e of list.data || []) {
+                    const k = String(e.m77Field);
+                    (insByField[k] = insByField[k] || []).push(e);
+                }
+                insClaim = claim.data || null;
+            } catch (e) {
+                console.warn('Crop insurance load failed:', e.message);
+            }
+        }
+
+        async function attachInsuranceUnit(fieldId, unitNumber) {
+            if (!unitNumber) return;
+            try {
+                const data = await insRequest('/claims/' + INS_CLAIM_ID + '/attach', {
+                    method: 'POST', body: JSON.stringify({ unitNumber, m77Field: fieldId })
+                });
+                showBanner('success', data.message || 'Unit attached.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not attach the unit: ' + e.message);
+            }
+        }
+
+        async function setInsuranceLandlordShare(id) {
+            const v = prompt('Landlord share of the indemnity, in percent (for example 35):');
+            if (v === null) return;
+            const pct = Number(v);
+            if (!v.trim() || !Number.isFinite(pct) || pct < 0 || pct > 100) return showBanner('error', 'Enter a percent from 0 to 100.');
+            try {
+                await insRequest('/' + id, { method: 'PUT', body: JSON.stringify({ landlordShare: pct / 100 }) });
+                showBanner('success', 'Landlord share updated.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not update the share: ' + e.message);
+            }
+        }
+
+        async function removeInsuranceUnit(id) {
+            if (!confirm('Remove this insurance unit from the field? It can be attached again.')) return;
+            try {
+                await insRequest('/' + id, { method: 'DELETE' });
+                showBanner('success', 'Insurance unit removed from the field.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not remove the unit: ' + e.message);
+            }
+        }
+
         async function loadSeedCostShares() {
             try {
                 const res = await fetch('/api/seed-cost-shares?season=' + encodeURIComponent(SEED_SEASON), { headers: authHeaders() });
@@ -1147,7 +1306,13 @@
         async function refreshSeedSection() {
             const open = Array.from(hierarchyEl.querySelectorAll('details[open]')).map(d =>
                 d.getAttribute('data-field-id') ? 'f:' + d.getAttribute('data-field-id') : null).filter(Boolean);
-            await loadSeedCostShares();
+            const sectionOpen = cls => new Set(Array.from(hierarchyEl.querySelectorAll('details.' + cls + '[open]')).map(d => {
+                const card = d.closest('details[data-field-id]');
+                return card ? 'f:' + card.getAttribute('data-field-id') : null;
+            }).filter(Boolean));
+            const seedWasOpen = sectionOpen('seed-section');
+            const insWasOpen = sectionOpen('ins-section');
+            await Promise.all([loadSeedCostShares(), loadInsurance()]);
             renderHierarchy(lastFields);
             for (const key of open) {
                 const card = hierarchyEl.querySelector(`details[data-field-id="${key.slice(2)}"]`);
@@ -1156,7 +1321,9 @@
                     let p = card.parentElement;
                     while (p && p !== hierarchyEl) { if (p.tagName === 'DETAILS') p.open = true; p = p.parentElement; }
                     const seed = card.querySelector('.seed-section');
-                    if (seed) seed.open = true;
+                    if (seed && seedWasOpen.has(key)) seed.open = true;
+                    const ins = card.querySelector('.ins-section');
+                    if (ins && insWasOpen.has(key)) ins.open = true;
                 }
             }
         }
@@ -1318,7 +1485,8 @@
                 if (!lastClients.length) await loadHierarchy();
                 const [data] = await Promise.all([
                     api('/' + (params.toString() ? '?' + params.toString() : '')),
-                    loadSeedCostShares()
+                    loadSeedCostShares(),
+                    loadInsurance()
                 ]);
                 lastFields = data.fields || [];
                 renderHierarchy(lastFields);
@@ -1485,6 +1653,17 @@
                 editFieldById(editBtn.getAttribute('data-edit'));
                 return;
             }
+            const insAttach = e.target.closest('[data-ins-attach]');
+            if (insAttach) return attachInsuranceUnit(insAttach.getAttribute('data-ins-attach'), insAttach.getAttribute('data-unit'));
+            const insAttachSel = e.target.closest('[data-ins-attach-select]');
+            if (insAttachSel) {
+                const fid = insAttachSel.getAttribute('data-ins-attach-select');
+                return attachInsuranceUnit(fid, document.getElementById('insUnit-' + fid).value);
+            }
+            const insShare = e.target.closest('[data-ins-share]');
+            if (insShare) return setInsuranceLandlordShare(insShare.getAttribute('data-ins-share'));
+            const insRemove = e.target.closest('[data-ins-remove]');
+            if (insRemove) return removeInsuranceUnit(insRemove.getAttribute('data-ins-remove'));
             const seedAdd = e.target.closest('[data-seed-add]');
             if (seedAdd) return addSeedEntry(seedAdd.getAttribute('data-seed-add'));
             const seedUpdate = e.target.closest('[data-seed-update]');
