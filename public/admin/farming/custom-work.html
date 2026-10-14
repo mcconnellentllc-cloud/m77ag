@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Work Billing - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+        .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; max-width: 640px; }
+        .filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+        label.f { display: grid; gap: 4px; font-size: 12px; color: #666; }
+        select, input[type=text], input[type=number], input[type=date], input[type=email], input[type=tel], textarea { padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; background: #fff; font-family: inherit; width: 100%; }
+        textarea { min-height: 70px; }
+        .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 24px; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-size: 20px; color: #2d5016; margin-bottom: 4px; font-weight: 500; }
+        .card .lede { font-size: 13px; color: #666; margin-bottom: 16px; }
+        .btn { padding: 12px 30px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .btn:hover { background: #234012; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #ddd; }
+        .btn-secondary:hover { background: #f0f0f0; }
+        .btn-sm { padding: 8px 14px; font-size: 13px; }
+        .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .alert { padding: 12px 16px; border-radius: 5px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert.show { display: block; }
+        .alert-error { background: #fdecea; color: #962d22; border: 1px solid #f5c6c0; }
+        .alert-success { background: #e8f5e9; color: #1e3d10; border: 1px solid #c8e6c9; }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; background: #f5f3f0; color: #2d5016; font-family: 'Oswald', sans-serif; font-weight: 500; letter-spacing: 0.5px; padding: 10px 12px; white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        tfoot td { border-top: 2px solid #2d5016; font-weight: 600; }
+        .num { text-align: right; white-space: nowrap; }
+        .muted { color: #888; font-size: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .grid .wide { grid-column: 1 / -1; }
+        .prod-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 8px; }
+        .total-line { font-family: 'Oswald', sans-serif; font-size: 20px; color: #2d5016; margin: 12px 0; }
+        .pill { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; padding: 2px 8px; border-radius: 999px; background: #e8efe1; color: #2d5016; white-space: nowrap; }
+        .pill.unbilled { background: #fbf3e2; color: #8a6d00; }
+        .pill.overdue, .pill.cancelled { background: #fdecea; color: #962d22; }
+        .bill-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; }
+        .bill-bar label.f { width: 180px; }
+        .pay-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; align-items: end; background: #faf8f4; padding: 12px; border-radius: 6px; margin-top: 8px; }
+        details.sub > summary { cursor: pointer; font-weight: 600; color: #2d5016; padding: 6px 0; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px; }
+            .page-title { font-size: 26px; }
+            .card { padding: 18px 16px; }
+            .filters, .filters label.f { width: 100%; }
+            .prod-row { grid-template-columns: 1fr 1fr; }
+            .prod-row .pname { grid-column: 1 / -1; }
+            .bill-bar label.f { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/fields.html">Fields</a>
+            <a href="/admin/farming/landlord-summary.html">Landlords</a>
+            <a href="/admin/farming/custom-work.html" class="active">Custom Work</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="alert" id="banner" role="status"></div>
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Custom Work Billing</h1>
+                <p class="page-subtitle">Acres, rates, products, invoices and payments for custom customers. Custom acres are billed here and are not field cards.</p>
+            </div>
+            <div class="filters">
+                <label class="f">Crop year <select id="yearSelect"></select></label>
+                <label class="f">Customer <select id="customerFilter"><option value="">All customers</option></select></label>
+            </div>
+        </div>
+
+        <section class="card">
+            <h2>Customers</h2>
+            <p class="lede">Acres and amounts for the selected crop year. Invoiced, paid and balance due are across all years.</p>
+            <div class="table-wrap" id="customerTable">Loading...</div>
+            <details class="sub" style="margin-top:12px;">
+                <summary>Add or edit a customer</summary>
+                <form id="customerForm" class="grid" style="margin-top:10px;" autocomplete="off">
+                    <label class="f">Customer
+                        <select id="cuPick"><option value="">New customer</option></select>
+                    </label>
+                    <label class="f">Name (new customer) <input type="text" id="cuName"></label>
+                    <label class="f">Bill to <input type="text" id="cuContact"></label>
+                    <label class="f">Email <input type="email" id="cuEmail"></label>
+                    <label class="f">Phone <input type="tel" id="cuPhone"></label>
+                    <label class="f wide">Address <input type="text" id="cuAddress"></label>
+                    <div><button class="btn" type="submit">Save Customer</button></div>
+                </form>
+            </details>
+        </section>
+
+        <section class="card" id="jobCard">
+            <h2 id="jobFormTitle">Add Job</h2>
+            <p class="lede">Rate defaults from the rate list for the crop year and service. Products bill at retail plus the interest carry.</p>
+            <form id="jobForm" autocomplete="off">
+                <input type="hidden" id="jobId">
+                <div class="grid">
+                    <label class="f">Customer <select id="jCustomer" required></select></label>
+                    <label class="f">Date <input type="date" id="jDate" required></label>
+                    <label class="f">Crop year <select id="jYear"></select></label>
+                    <label class="f">Service <select id="jService" required></select></label>
+                    <label class="f">Description (optional) <input type="text" id="jDesc" placeholder="Fall atrazine burndown"></label>
+                    <label class="f">Field on file <select id="jField"><option value="">None</option></select></label>
+                    <label class="f">Location on invoice <input type="text" id="jLocation" required></label>
+                    <label class="f">Acres <input type="number" id="jAcres" min="0" step="0.01" required></label>
+                    <label class="f">Rate $/ac <input type="number" id="jRate" min="0" step="0.01" required></label>
+                    <label class="f">Interest carry % on products <input type="number" id="jCarry" min="0" max="100" step="0.1" value="0"></label>
+                </div>
+                <h3 style="font-size:14px; margin:16px 0 8px;">Products supplied</h3>
+                <div id="prodRows"></div>
+                <button type="button" class="btn btn-secondary btn-sm" id="addProd">Add product</button>
+                <label class="f" style="margin-top:12px;">Notes <textarea id="jNotes"></textarea></label>
+                <div class="total-line" id="jTotal">Total $0.00</div>
+                <div class="row-actions">
+                    <button class="btn" type="submit" id="jSave">Save Job</button>
+                    <button class="btn btn-secondary" type="button" id="jCancel" hidden>Cancel Edit</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Jobs</h2>
+            <p class="lede">Check unbilled jobs for one customer and create an invoice. Billed jobs are locked until their invoice is cancelled.</p>
+            <div class="table-wrap" id="jobTable">Loading...</div>
+            <div class="bill-bar">
+                <label class="f">Terms
+                    <select id="billTerms">
+                        <option value="due_on_receipt">Due on receipt</option>
+                        <option value="net_15">Net 15</option>
+                        <option value="net_30" selected>Net 30</option>
+                        <option value="net_60">Net 60</option>
+                    </select>
+                </label>
+                <label class="f">Invoice date <input type="date" id="billDate"></label>
+                <button class="btn" type="button" id="billBtn" disabled>Create Invoice</button>
+                <span class="muted" id="billSel">No jobs selected</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Invoices</h2>
+            <div class="table-wrap" id="invoiceTable">Loading...</div>
+        </section>
+
+        <section class="card">
+            <h2>Rates</h2>
+            <p class="lede">Price list per crop year. Saving the same year, service and description updates that rate.</p>
+            <div class="table-wrap" id="rateTable">Loading...</div>
+            <form id="rateForm" class="grid" style="margin-top:12px;" autocomplete="off">
+                <label class="f">Crop year <select id="rYear"></select></label>
+                <label class="f">Service <select id="rService"></select></label>
+                <label class="f">Description (optional) <input type="text" id="rDesc"></label>
+                <label class="f">Rate $/ac <input type="number" id="rRate" min="0" step="0.01" required></label>
+                <div><button class="btn" type="submit">Save Rate</button></div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const API = '/api/custom-work';
+        const YEARS = [2027, 2026, 2025, 2024];
+        const SERVICES = { drilling: 'Drilling', planting: 'Planting', spraying: 'Spraying', fertilizer: 'Fertilizer application', tillage: 'Tillage', harvesting: 'Harvesting', trucking: 'Trucking', other: 'Other' };
+        const PAY_METHODS = { check: 'Check', ach: 'ACH', wire: 'Wire', cash: 'Cash', grain_settlement: 'Grain settlement', other: 'Other' };
+        let year = 2027, customerFilter = '', customers = [], jobs = [], invoices = [], rates = [];
+
+        function getToken() { return localStorage.getItem('adminToken'); }
+        if (!getToken()) window.location.href = '/admin/login';
+
+        async function request(url, opts = {}) {
+            const res = await fetch(url, { ...opts, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken(), ...(opts.headers || {}) } });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                throw new Error('Session expired');
+            }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+        function num(n, d) { return (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+        function money(n) { return '$' + num(n, 2); }
+        function r2(n) { return Math.round((n || 0) * 100) / 100; }
+        function dstr(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : ''; }
+        function today() { return new Date().toISOString().slice(0, 10); }
+        function banner(msg, type) {
+            const el = document.getElementById('banner');
+            el.textContent = msg;
+            el.className = 'alert show alert-' + (type || 'error');
+            if (type === 'success') setTimeout(() => { el.className = 'alert'; }, 5000);
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function opts(map, sel) { return Object.entries(map).map(([v, l]) => `<option value="${esc(v)}"${v === sel ? ' selected' : ''}>${esc(l)}</option>`).join(''); }
+        function customerName(id) { const c = customers.find(x => String(x.id) === String(id)); return c ? c.name : ''; }
+
+        // ---------- Customers ----------
+        async function loadCustomers() {
+            const { data } = await request(API + '/customers?cropYear=' + year);
+            customers = data;
+            const t = { acres: 0, unbilled: 0, billed: 0, invoiced: 0, paid: 0, balanceDue: 0 };
+            const rows = data.filter(c => !customerFilter || String(c.id) === customerFilter).map(c => {
+                for (const k of Object.keys(t)) t[k] += c.totals[k] || 0;
+                const svc = Object.entries(c.totals.acresByService).map(([s, a]) => esc(SERVICES[s] || s) + ' ' + num(a, 1)).join(', ');
+                const bc = c.billingContact || {};
+                return `<tr><td><strong>${esc(c.name)}</strong><div class="muted">${esc([bc.name, bc.phone, bc.email].filter(Boolean).join(' | ')) || 'No billing contact'}</div></td>
+                    <td class="num">${num(c.totals.acres, 2)}</td><td>${svc || '<span class="muted">-</span>'}</td>
+                    <td class="num">${money(c.totals.unbilled)}</td><td class="num">${money(c.totals.billed)}</td>
+                    <td class="num">${money(c.totals.invoiced)}</td><td class="num">${money(c.totals.paid)}</td><td class="num"><strong>${money(c.totals.balanceDue)}</strong></td></tr>`;
+            }).join('');
+            document.getElementById('customerTable').innerHTML = `<table><thead><tr><th>Customer</th><th class="num">Acres ${year}</th><th>By service</th><th class="num">Unbilled</th><th class="num">Billed ${year}</th><th class="num">Invoiced</th><th class="num">Paid</th><th class="num">Balance due</th></tr></thead>
+                <tbody>${rows || '<tr><td colspan="8" class="muted">No custom customers yet.</td></tr>'}</tbody>
+                <tfoot><tr><td>Total</td><td class="num">${num(t.acres, 2)}</td><td></td><td class="num">${money(t.unbilled)}</td><td class="num">${money(t.billed)}</td><td class="num">${money(t.invoiced)}</td><td class="num">${money(t.paid)}</td><td class="num">${money(t.balanceDue)}</td></tr></tfoot></table>`;
+
+            const custOpts = data.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+            const cf = document.getElementById('customerFilter'); cf.innerHTML = '<option value="">All customers</option>' + custOpts; cf.value = customerFilter;
+            const jc = document.getElementById('jCustomer'); const keep = jc.value; jc.innerHTML = custOpts; if (keep) jc.value = keep; else if (customerFilter) jc.value = customerFilter;
+            const cp = document.getElementById('cuPick'); const keep2 = cp.value; cp.innerHTML = '<option value="">New customer</option>' + custOpts; cp.value = keep2;
+            fillFieldSelect();
+        }
+
+        document.getElementById('cuPick').addEventListener('change', e => {
+            const c = customers.find(x => String(x.id) === e.target.value);
+            const bc = (c && c.billingContact) || {};
+            document.getElementById('cuName').value = c ? c.name : '';
+            document.getElementById('cuName').disabled = !!c;
+            document.getElementById('cuContact').value = bc.name || '';
+            document.getElementById('cuEmail').value = bc.email || '';
+            document.getElementById('cuPhone').value = bc.phone || '';
+            document.getElementById('cuAddress').value = bc.address || '';
+        });
+        document.getElementById('customerForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('cuPick').value;
+            const billingContact = { name: cuContact.value.trim(), email: cuEmail.value.trim(), phone: cuPhone.value.trim(), address: cuAddress.value.trim() };
+            try {
+                const r = id
+                    ? await request(API + '/customers/' + id, { method: 'PUT', body: JSON.stringify({ billingContact }) })
+                    : await request(API + '/customers', { method: 'POST', body: JSON.stringify({ name: cuName.value.trim(), billingContact }) });
+                banner(r.message, 'success');
+                await loadCustomers();
+            } catch (err) { banner(err.message); }
+        });
+
+        // ---------- Job form ----------
+        function fillFieldSelect() {
+            const c = customers.find(x => String(x.id) === document.getElementById('jCustomer').value);
+            const sel = document.getElementById('jField'); const keep = sel.value;
+            sel.innerHTML = '<option value="">None</option>' + ((c && c.fields) || []).map(f => `<option value="${esc(f.id)}" data-acres="${f.acres || ''}" data-name="${esc(f.name)}">${esc(f.name)} (${num(f.acres, 2)} ac)</option>`).join('');
+            sel.value = [...sel.options].some(o => o.value === keep) ? keep : '';
+        }
+        function prodRow(p) {
+            p = p || {};
+            const div = document.createElement('div');
+            div.className = 'prod-row';
+            div.innerHTML = `<label class="f pname">Product <input type="text" data-p="name" value="${esc(p.name || '')}"></label>
+                <label class="f">Type <select data-p="category">${opts({ chemicals: 'Chemical', seed: 'Seed', fertilizer: 'Fertilizer', other: 'Other' }, p.category || 'chemicals')}</select></label>
+                <label class="f">Quantity <input type="number" data-p="quantity" min="0" step="0.001" value="${p.quantity != null ? p.quantity : ''}"></label>
+                <label class="f">Unit <input type="text" data-p="unit" value="${esc(p.unit || 'gal')}"></label>
+                <label class="f">Retail $/unit <input type="number" data-p="retailPrice" min="0" step="0.01" value="${p.retailPrice != null ? p.retailPrice : ''}"></label>
+                <button type="button" class="btn btn-secondary btn-sm" aria-label="Remove product">Remove</button>`;
+            div.querySelector('button').addEventListener('click', () => { div.remove(); updateTotal(); });
+            div.querySelectorAll('input,select').forEach(i => i.addEventListener('input', updateTotal));
+            document.getElementById('prodRows').appendChild(div);
+        }
+        function readProducts() {
+            return [...document.querySelectorAll('#prodRows .prod-row')].map(r => {
+                const g = k => r.querySelector(`[data-p="${k}"]`).value;
+                return { name: g('name').trim(), category: g('category'), quantity: parseFloat(g('quantity')) || 0, unit: g('unit').trim(), retailPrice: parseFloat(g('retailPrice')) || 0 };
+            }).filter(p => p.name);
+        }
+        function updateTotal() {
+            const acres = parseFloat(jAcres.value) || 0, rate = parseFloat(jRate.value) || 0, carry = parseFloat(jCarry.value) || 0;
+            const svc = r2(acres * rate);
+            const prod = readProducts().reduce((s, p) => s + r2(p.quantity * r2(p.retailPrice * (1 + carry / 100))), 0);
+            document.getElementById('jTotal').textContent = `Total ${money(svc + prod)}  (service ${money(svc)}, products ${money(prod)})`;
+        }
+        function defaultRate() {
+            const r = rates.find(x => x.cropYear === parseInt(jYear.value, 10) && x.service === jService.value && !x.description);
+            if (r && !document.getElementById('jobId').value) jRate.value = r.ratePerAcre;
+        }
+        function resetJobForm() {
+            jobForm.reset();
+            document.getElementById('jobId').value = '';
+            document.getElementById('jobFormTitle').textContent = 'Add Job';
+            document.getElementById('jCancel').hidden = true;
+            document.getElementById('prodRows').innerHTML = '';
+            jDate.value = today(); jYear.value = String(year); jCarry.value = '0';
+            if (customerFilter) jCustomer.value = customerFilter;
+            fillFieldSelect(); defaultRate(); updateTotal();
+        }
+        function editJob(id) {
+            const j = jobs.find(x => x._id === id);
+            if (!j) return;
+            document.getElementById('jobId').value = j._id;
+            document.getElementById('jobFormTitle').textContent = 'Edit Job';
+            document.getElementById('jCancel').hidden = false;
+            jCustomer.value = j.customer; fillFieldSelect();
+            jDate.value = String(j.date).slice(0, 10); jYear.value = String(j.cropYear); jService.value = j.service;
+            jDesc.value = j.description || ''; jField.value = j.m77Field || ''; jLocation.value = j.location;
+            jAcres.value = j.acres; jRate.value = j.ratePerAcre; jCarry.value = j.interestCarryPct || 0; jNotes.value = j.notes || '';
+            document.getElementById('prodRows').innerHTML = '';
+            (j.products || []).forEach(prodRow);
+            updateTotal();
+            document.getElementById('jobCard').scrollIntoView({ behavior: 'smooth' });
+        }
+        jCustomer.addEventListener('change', () => { fillFieldSelect(); updateTotal(); });
+        jField.addEventListener('change', () => {
+            const o = jField.selectedOptions[0];
+            if (o && o.value) { jLocation.value = o.dataset.name; if (o.dataset.acres && !jAcres.value) jAcres.value = o.dataset.acres; updateTotal(); }
+        });
+        [jYear, jService].forEach(el => el.addEventListener('change', () => { if (!document.getElementById('jobId').value) defaultRate(); updateTotal(); }));
+        [jAcres, jRate, jCarry].forEach(el => el.addEventListener('input', updateTotal));
+        document.getElementById('addProd').addEventListener('click', () => prodRow());
+        document.getElementById('jCancel').addEventListener('click', resetJobForm);
+        jobForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('jobId').value;
+            const body = {
+                customer: jCustomer.value, date: jDate.value, cropYear: parseInt(jYear.value, 10), service: jService.value,
+                description: jDesc.value.trim(), m77Field: jField.value || null, location: jLocation.value.trim(),
+                acres: parseFloat(jAcres.value), ratePerAcre: parseFloat(jRate.value), interestCarryPct: parseFloat(jCarry.value) || 0,
+                products: readProducts(), notes: jNotes.value.trim()
+            };
+            const btn = document.getElementById('jSave'); btn.disabled = true;
+            try {
+                const r = await request(API + '/jobs' + (id ? '/' + id : ''), { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
+                banner(r.message, 'success');
+                resetJobForm();
+                await refresh();
+            } catch (err) { banner(err.message); } finally { btn.disabled = false; }
+        });
+
+        // ---------- Jobs table ----------
+        async function loadJobs() {
+            const q = '?cropYear=' + year + (customerFilter ? '&customer=' + customerFilter : '');
+            jobs = (await request(API + '/jobs' + q)).data;
+            let tAc = 0, tSvc = 0, tProd = 0, tAll = 0;
+            const rows = jobs.map(j => {
+                tAc += j.acres; tSvc += j.serviceAmount; tProd += j.productAmount; tAll += j.total;
+                const prods = (j.products || []).map(p => `${esc(p.name)} ${num(p.quantity, 2)} ${esc(p.unit)} @ ${money(p.unitPrice)}`).join('<br>');
+                return `<tr>
+                    <td>${j.invoice ? '' : `<input type="checkbox" data-bill="${esc(j._id)}" data-cust="${esc(j.customer)}" aria-label="Select job">`}</td>
+                    <td>${dstr(j.date)}</td><td>${esc(j.customerName)}</td>
+                    <td><strong>${esc(j.description || SERVICES[j.service])}</strong><div class="muted">${esc(j.location)}</div>${prods ? `<div class="muted">${prods}${j.interestCarryPct ? '<br>includes ' + num(j.interestCarryPct, 1) + '% interest carry' : ''}</div>` : ''}</td>
+                    <td class="num">${num(j.acres, 2)}</td><td class="num">${money(j.ratePerAcre)}</td>
+                    <td class="num">${money(j.serviceAmount)}</td><td class="num">${money(j.productAmount)}</td><td class="num"><strong>${money(j.total)}</strong></td>
+                    <td>${j.invoice ? `<span class="pill">${esc(j.invoiceNumber)}</span>` : '<span class="pill unbilled">Unbilled</span>'}</td>
+                    <td>${j.invoice ? '' : `<div class="row-actions"><button class="btn btn-secondary btn-sm" data-edit="${esc(j._id)}">Edit</button><button class="btn btn-secondary btn-sm" data-del="${esc(j._id)}">Delete</button></div>`}</td></tr>`;
+            }).join('');
+            document.getElementById('jobTable').innerHTML = `<table><thead><tr><th></th><th>Date</th><th>Customer</th><th>Work</th><th class="num">Acres</th><th class="num">$/ac</th><th class="num">Service</th><th class="num">Products</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+                <tbody>${rows || `<tr><td colspan="11" class="muted">No jobs for ${year}.</td></tr>`}</tbody>
+                <tfoot><tr><td></td><td colspan="3">Total</td><td class="num">${num(tAc, 2)}</td><td></td><td class="num">${money(tSvc)}</td><td class="num">${money(tProd)}</td><td class="num">${money(tAll)}</td><td colspan="2"></td></tr></tfoot></table>`;
+            document.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => editJob(b.dataset.edit)));
+            document.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
+                if (!confirm('Delete this job?')) return;
+                try { banner((await request(API + '/jobs/' + b.dataset.del, { method: 'DELETE' })).message, 'success'); await refresh(); } catch (err) { banner(err.message); }
+            }));
+            document.querySelectorAll('[data-bill]').forEach(c => c.addEventListener('change', updateBillSel));
+            updateBillSel();
+        }
+        function selectedJobs() { return [...document.querySelectorAll('[data-bill]:checked')]; }
+        function updateBillSel() {
+            const sel = selectedJobs();
+            const custs = new Set(sel.map(c => c.dataset.cust));
+            const total = sel.reduce((s, c) => s + (jobs.find(j => j._id === c.dataset.bill) || {}).total, 0);
+            const btn = document.getElementById('billBtn');
+            const note = document.getElementById('billSel');
+            btn.disabled = !sel.length || custs.size !== 1;
+            note.textContent = !sel.length ? 'No jobs selected'
+                : custs.size > 1 ? 'Selected jobs are for more than one customer'
+                : `${sel.length} job${sel.length === 1 ? '' : 's'} for ${customerName([...custs][0])}, ${money(total)}`;
+        }
+        document.getElementById('billBtn').addEventListener('click', async () => {
+            const ids = selectedJobs().map(c => c.dataset.bill);
+            const btn = document.getElementById('billBtn'); btn.disabled = true;
+            try {
+                const r = await request(API + '/invoices', { method: 'POST', body: JSON.stringify({ jobIds: ids, terms: billTerms.value, issueDate: billDate.value || undefined }) });
+                banner(r.message, 'success');
+                await refresh();
+            } catch (err) { banner(err.message); updateBillSel(); }
+        });
+
+        // ---------- Invoices ----------
+        async function loadInvoices() {
+            invoices = (await request(API + '/invoices' + (customerFilter ? '?customer=' + customerFilter : ''))).data;
+            const rows = invoices.map(i => `<tr>
+                <td><strong>${esc(i.invoiceNumber)}</strong></td><td>${esc(customerName(i.m77Farm) || (i.to && i.to.company) || '')}</td>
+                <td>${dstr(i.issueDate)}</td><td>${dstr(i.dueDate)}</td>
+                <td class="num">${money(i.total)}</td><td class="num">${money(i.amountPaid)}</td><td class="num"><strong>${money(i.status === 'cancelled' ? 0 : i.balanceDue)}</strong></td>
+                <td><span class="pill ${esc(i.status)}">${esc(i.status)}</span></td>
+                <td><div class="row-actions">
+                    <button class="btn btn-secondary btn-sm" data-print="${esc(i._id)}">Print</button>
+                    ${i.status !== 'cancelled' && i.balanceDue > 0 ? `<button class="btn btn-secondary btn-sm" data-pay="${esc(i._id)}">Record Payment</button>` : ''}
+                    ${i.status !== 'cancelled' && !(i.amountPaid > 0) ? `<button class="btn btn-secondary btn-sm" data-cancel="${esc(i._id)}">Cancel</button>` : ''}
+                </div><div id="pay-${esc(i._id)}"></div></td></tr>`).join('');
+            document.getElementById('invoiceTable').innerHTML = `<table><thead><tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Due</th><th class="num">Total</th><th class="num">Paid</th><th class="num">Balance</th><th>Status</th><th></th></tr></thead>
+                <tbody>${rows || '<tr><td colspan="9" class="muted">No custom work invoices yet.</td></tr>'}</tbody></table>`;
+            document.querySelectorAll('[data-print]').forEach(b => b.addEventListener('click', () => printInvoice(b.dataset.print)));
+            document.querySelectorAll('[data-pay]').forEach(b => b.addEventListener('click', () => payForm(b.dataset.pay)));
+            document.querySelectorAll('[data-cancel]').forEach(b => b.addEventListener('click', async () => {
+                if (!confirm('Cancel this invoice? Its jobs return to unbilled.')) return;
+                try { banner((await request(API + '/invoices/' + b.dataset.cancel + '/cancel', { method: 'POST' })).message, 'success'); await refresh(); } catch (err) { banner(err.message); }
+            }));
+        }
+        function payForm(id) {
+            const inv = invoices.find(i => i._id === id);
+            const box = document.getElementById('pay-' + id);
+            if (box.innerHTML) { box.innerHTML = ''; return; }
+            box.innerHTML = `<form class="pay-form">
+                <label class="f">Amount <input type="number" name="amount" min="0.01" step="0.01" value="${r2(inv.balanceDue)}" required></label>
+                <label class="f">Method <select name="method">${opts(PAY_METHODS, 'check')}</select></label>
+                <label class="f">Check or reference no. <input type="text" name="ref"></label>
+                <button class="btn btn-sm" type="submit">Save Payment</button></form>`;
+            box.querySelector('form').addEventListener('submit', async e => {
+                e.preventDefault();
+                const f = e.target;
+                const body = { amount: parseFloat(f.amount.value), method: f.method.value };
+                if (f.method.value === 'check') body.checkNumber = f.ref.value.trim(); else body.referenceNumber = f.ref.value.trim();
+                try { await request('/api/invoices/' + id + '/payment', { method: 'POST', body: JSON.stringify(body) }); banner('Payment recorded on ' + inv.invoiceNumber, 'success'); await refresh(); } catch (err) { banner(err.message); }
+            });
+        }
+        function printInvoice(id) {
+            const i = invoices.find(x => x._id === id);
+            const to = i.to || {};
+            const lines = (i.items || []).map(it => `<tr><td>${esc(it.description)}</td><td class="n">${num(it.quantity, it.unit === 'acre' ? 2 : 3)} ${esc(it.unit)}</td><td class="n">${money(it.unitPrice)}</td><td class="n">${money(it.amount)}</td></tr>`).join('');
+            const pays = (i.payments || []).map(p => `<tr><td colspan="3">Payment ${dstr(p.date)} ${esc(PAY_METHODS[p.method] || p.method || '')} ${esc(p.checkNumber || p.referenceNumber || '')}</td><td class="n">-${money(p.amount)}</td></tr>`).join('');
+            const w = window.open('', '_blank');
+            if (!w) { banner('Allow pop-ups to print invoices'); return; }
+            w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(i.invoiceNumber)} - M77 AG</title>
+                <style>body{font-family:Inter,Arial,sans-serif;color:#222;max-width:8in;margin:0.5in auto;padding:0 16px;font-size:13px}h1{font-family:Oswald,Arial,sans-serif;color:#2d5016;margin:0}
+                table{width:100%;border-collapse:collapse;margin-top:16px}th{text-align:left;border-bottom:2px solid #2d5016;padding:6px}td{padding:6px;border-bottom:1px solid #eee;vertical-align:top}.n{text-align:right;white-space:nowrap}
+                .head{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}.tot td{font-weight:700;border-top:2px solid #2d5016}.muted{color:#777}@media print{body{margin:0}}</style></head><body>
+                <div class="head"><div><h1>M77 AG</h1><div class="muted">34549 Hwy 59, Haxtun, CO 80731</div></div>
+                <div><strong>Invoice ${esc(i.invoiceNumber)}</strong><br>Date ${dstr(i.issueDate)}<br>Due ${dstr(i.dueDate)}${i.status === 'cancelled' ? '<br><strong>CANCELLED</strong>' : ''}</div></div>
+                <p style="margin-top:20px"><strong>Bill to</strong><br>${esc(to.name)}${to.company && to.company !== to.name ? '<br>' + esc(to.company) : ''}${to.address ? '<br>' + esc(to.address) : ''}${to.phone ? '<br>' + esc(to.phone) : ''}${to.email ? '<br>' + esc(to.email) : ''}</p>
+                <table><thead><tr><th>Description</th><th class="n">Quantity</th><th class="n">Price</th><th class="n">Amount</th></tr></thead><tbody>${lines}</tbody>
+                <tbody><tr class="tot"><td colspan="3">Total</td><td class="n">${money(i.total)}</td></tr>${pays}<tr class="tot"><td colspan="3">Balance due</td><td class="n">${money(i.status === 'cancelled' ? 0 : i.balanceDue)}</td></tr></tbody></table>
+                ${i.notes ? `<p>${esc(i.notes)}</p>` : ''}<p class="muted" style="margin-top:24px">Thank you for your business.</p>
+                <script>window.onload=function(){window.print()}<\/script></body></html>`);
+            w.document.close();
+        }
+
+        // ---------- Rates ----------
+        async function loadRates() {
+            rates = (await request(API + '/rates')).data;
+            const rows = rates.filter(r => r.cropYear === year).map(r => `<tr><td>${r.cropYear}</td><td>${esc(SERVICES[r.service] || r.service)}</td><td>${esc(r.description || '')}</td><td class="num">${money(r.ratePerAcre)}</td>
+                <td><button class="btn btn-secondary btn-sm" data-rdel="${esc(r._id)}">Delete</button></td></tr>`).join('');
+            document.getElementById('rateTable').innerHTML = `<table><thead><tr><th>Year</th><th>Service</th><th>Description</th><th class="num">$/ac</th><th></th></tr></thead>
+                <tbody>${rows || `<tr><td colspan="5" class="muted">No rates for ${year}.</td></tr>`}</tbody></table>`;
+            document.querySelectorAll('[data-rdel]').forEach(b => b.addEventListener('click', async () => {
+                if (!confirm('Delete this rate?')) return;
+                try { banner((await request(API + '/rates/' + b.dataset.rdel, { method: 'DELETE' })).message, 'success'); await loadRates(); } catch (err) { banner(err.message); }
+            }));
+        }
+        document.getElementById('rateForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            try {
+                const r = await request(API + '/rates', { method: 'POST', body: JSON.stringify({ cropYear: parseInt(rYear.value, 10), service: rService.value, description: rDesc.value.trim(), ratePerAcre: parseFloat(rRate.value) }) });
+                banner(r.message, 'success'); rDesc.value = ''; rRate.value = '';
+                await loadRates(); defaultRate(); updateTotal();
+            } catch (err) { banner(err.message); }
+        });
+
+        async function refresh() {
+            try {
+                await loadCustomers();
+                await Promise.all([loadJobs(), loadInvoices(), loadRates()]);
+            } catch (err) { banner(err.message); }
+        }
+
+        (function init() {
+            try { const y = parseInt(localStorage.getItem('m77CropYear'), 10); if (YEARS.includes(y)) year = y; } catch (e) {}
+            const yOpts = YEARS.map(y => `<option value="${y}">${y}</option>`).join('');
+            [yearSelect, jYear, rYear].forEach(s => { s.innerHTML = yOpts; s.value = String(year); });
+            jService.innerHTML = opts(SERVICES, 'spraying'); rService.innerHTML = opts(SERVICES, 'spraying');
+            billDate.value = today();
+            yearSelect.addEventListener('change', () => {
+                year = parseInt(yearSelect.value, 10);
+                try { localStorage.setItem('m77CropYear', String(year)); } catch (e) {}
+                rYear.value = String(year);
+                if (!document.getElementById('jobId').value) jYear.value = String(year);
+                refresh();
+            });
+            customerFilter = '';
+            document.getElementById('customerFilter').addEventListener('change', e => { customerFilter = e.target.value; if (customerFilter && !document.getElementById('jobId').value) { jCustomer.value = customerFilter; fillFieldSelect(); } refresh(); });
+            refresh().then(resetJobForm);
+        })();
+    </script>
+</body>
+</html>
