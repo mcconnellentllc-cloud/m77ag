@@ -1348,6 +1348,7 @@
                 const parts = [];
                 if (o.acres != null) parts.push(line('Acres', fmtNum(o.acres, 1)));
                 if (o.variety) parts.push(line('Variety', escapeHtml(o.variety)));
+                if (o.operator || o.equipment) parts.push(line('Operator', escapeHtml([o.operator, o.equipment].filter(Boolean).join(' · '))));
                 if (o.seedLb != null) parts.push(line('Seed', fmtNum(o.seedLb, 0) + ' lb' + (o.seedLbPerAcre != null ? ' · ' + fmtNum(o.seedLbPerAcre, 1) + ' lb/ac' : '')));
                 if (o.products && o.products.length) parts.push(line('Products', o.products.map(p => escapeHtml(p.name)
                     + (p.rate != null ? ' ' + p.rate + ' ' + escapeHtml(p.rateUnit || '') : '')
@@ -1449,11 +1450,12 @@
                 if (!recs.length) return '';
                 return `<tr><td colspan="4" style="background:#f5f3f0; font-weight:700; color:#2d5016; padding:8px;">${label}</td></tr>` + recs.map(r => {
                     const target = r.addedTo ? String(r.addedTo.m77Field) : (r.suggested || '');
-                    const status = r.addedTo ? '<span style="color:#2d5016; font-weight:600;">On card</span>'
+                    const status = r.outdated ? '<span style="color:#8a6d00; font-weight:600;">Update available</span>'
+                        : r.addedTo ? '<span style="color:#2d5016; font-weight:600;">On card</span>'
                         : r.suggested ? '<span style="color:#2d5016;">Matched</span>'
                         : '<span style="color:#a02818;">' + (r.candidateCount > 1 ? 'Pick field (' + r.candidateCount + ' match)' : 'Pick field') + '</span>';
                     return `<tr>
-                        <td style="padding:6px;"><input type="checkbox" data-season-check="${escapeHtml(r.key)}" ${!r.addedTo && r.suggested ? 'checked' : ''} aria-label="Add ${escapeHtml(r.key)}"></td>
+                        <td style="padding:6px;"><input type="checkbox" data-season-check="${escapeHtml(r.key)}" ${(!r.addedTo && r.suggested) || r.outdated ? 'checked' : ''} aria-label="Add ${escapeHtml(r.key)}"></td>
                         <td style="padding:6px;"><strong>${escapeHtml(r.fieldHint)}</strong> · ${escapeHtml(r.title || '')}<br><span style="color:#888; font-size:12px;">${fmtRange(r.startDate, r.endDate)}${seasonSummary(r) ? ' · ' + escapeHtml(seasonSummary(r)) : ''}</span></td>
                         <td style="padding:6px;"><select data-season-field="${escapeHtml(r.key)}" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:220px;"><option value="">Choose field</option>${opts}</select></td>
                         <td style="padding:6px; font-size:12px;">${status}</td>
@@ -1461,11 +1463,12 @@
                 }).join('');
             }).join('');
             const pending = seasonData.records.filter(r => !r.addedTo).length;
+            const outdated = seasonData.records.filter(r => r.outdated).length;
             el.innerHTML = `
                 <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
                     <div>
                         <h2 style="font-family:'Oswald',sans-serif; color:#2d5016; font-size:20px; margin:0;">2026 Season Records</h2>
-                        <p style="margin:4px 0 0; color:#666; font-size:13px;">Harvest tickets, planting, drilling and the planned fall spray. Check the field for each record, then add the checked records to their cards. ${pending} not on a card yet.</p>
+                        <p style="margin:4px 0 0; color:#666; font-size:13px;">Harvest tickets, planting, drilling and the planned fall spray. Check the field for each record, then add the checked records to their cards. ${pending} not on a card yet.${outdated ? ' ' + outdated + ' on a card with newer data available.' : ''}</p>
                     </div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
                         <button class="btn btn-sm" id="btnSeasonApply">Add checked records</button>
