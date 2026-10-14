@@ -502,7 +502,7 @@
         let activeFarm = 'ALL';
         const CROP_YEARS = [2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020];
         let selectedYear = 2026;
-        try { const y = parseInt(localStorage.getItem('fieldManagerYear'), 10); if (CROP_YEARS.includes(y)) selectedYear = y; } catch (e) {}
+        try { const y = parseInt(localStorage.getItem('m77CropYear'), 10); if (CROP_YEARS.includes(y)) selectedYear = y; } catch (e) {}
         const cardYear = {};          // field id -> year chosen on that card (overrides the top selector)
         let insByCroppingField = {};  // CroppingField id -> [insurance units, all years]
 
@@ -1392,7 +1392,7 @@
         yearSel.innerHTML = CROP_YEARS.map(y => `<option value="${y}" ${y === selectedYear ? 'selected' : ''}>${y}</option>`).join('');
         yearSel.addEventListener('change', function() {
             selectedYear = parseInt(this.value, 10);
-            try { localStorage.setItem('fieldManagerYear', String(selectedYear)); } catch (e) {}
+            try { localStorage.setItem('m77CropYear', String(selectedYear)); } catch (e) {}
             // The top selector resets every card to the same year.
             Object.keys(cardYear).forEach(k => delete cardYear[k]);
             renderFields();
