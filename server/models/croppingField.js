@@ -128,9 +128,25 @@ const croppingFieldSchema = new mongoose.Schema({
   cropHistory: [cropHistorySchema],
 
   // --- Soil Information ---
+  // `type` is wrapped so Mongoose reads soil as a nested object; a bare
+  // `type: String` here made the whole soil path a string and dropped samples.
   soil: {
-    type: String,
+    type: { type: String },
     class: String,
+    // Dominant non-irrigated land capability class, area weighted (SSURGO).
+    capabilityClass: Number,
+    // Soil survey map units inside the field boundary, largest first.
+    mapUnits: [{
+      _id: false,
+      mukey: String,
+      musym: String,
+      name: String,
+      acres: Number,
+      percent: Number,
+      capabilityClass: Number
+    }],
+    surveySource: String,
+    surveyDate: Date,
     irrigated: { type: Boolean, default: false },
     drainageTile: { type: Boolean, default: false },
     samples: [soilSampleSchema]

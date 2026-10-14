@@ -27,7 +27,13 @@ exports.listEntries = async (req, res) => {
     if (req.query.cropYear) filter.cropYear = Number(req.query.cropYear);
     if (req.query.m77Field) filter.m77Field = req.query.m77Field;
     const entries = await FieldOperation.find(filter).sort({ startDate: 1, createdAt: 1 });
-    res.json({ success: true, data: entries });
+    // Field Manager cards are CroppingField records; M77Field keeps the link in legacyId.
+    const fields = await M77Field.find({ _id: { $in: [...new Set(entries.map(e => String(e.m77Field)))] } }).select('legacySource legacyId acres');
+    const legacy = {};
+    for (const f of fields) {
+      if (f.legacySource === 'CroppingField' && f.legacyId) legacy[String(f._id)] = String(f.legacyId);
+    }
+    res.json({ success: true, data: entries.map(e => ({ ...e.toJSON(), croppingFieldId: legacy[String(e.m77Field)] || null })) });
   } catch (err) {
     console.error('List field operations error:', err);
     res.status(500).json({ success: false, message: 'Failed to load field records' });
