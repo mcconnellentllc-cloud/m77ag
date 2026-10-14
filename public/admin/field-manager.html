@@ -51,6 +51,13 @@
         .fc-title { font-family: 'Oswald', sans-serif; font-size: 17px; color: #1a1a1a; }
         .fc-farm-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-top: 2px; }
         .fc-right { text-align: right; }
+        .fc-year { margin-top: 6px; padding: 3px 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; font-weight: 600; color: #2d5016; background: #fff; cursor: pointer; }
+        .fc-year.override { border-color: #d4a54a; background: #fbf3e2; }
+        .ins-unit { background: #f7f9fc; border: 1px solid #dde5ef; border-radius: 6px; padding: 12px 14px; margin-bottom: 12px; font-size: 13px; }
+        .ins-unit .row { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+        .ins-unit .row span:first-child { color: #888; }
+        .ins-unit .row span:last-child { text-align: right; }
+        tr.year-row td { background: #fbf3e2; }
         .fc-acres { font-family: 'Oswald', sans-serif; font-size: 18px; color: #2d5016; }
         .fc-crop { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 3px; }
 
@@ -237,15 +244,8 @@
         <div class="page-header">
             <h1 class="page-title">Field Manager</h1>
             <div class="page-controls">
-                <select id="yearSelect" style="padding:8px 14px;border:2px solid #e0e0e0;border-radius:5px;font-size:14px;font-weight:600;cursor:pointer;">
-                    <option value="2026" selected>2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
-                    <option value="2020">2020</option>
-                </select>
+                <label for="yearSelect" style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Crop Year</label>
+                <select id="yearSelect" aria-label="Crop year for all cards" style="padding:8px 14px;border:2px solid #e0e0e0;border-radius:5px;font-size:16px;font-weight:600;cursor:pointer;"></select>
             </div>
         </div>
 
@@ -500,7 +500,37 @@
         const API = window.location.origin;
         let allFields = [];
         let activeFarm = 'ALL';
+        const CROP_YEARS = [2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020];
         let selectedYear = 2026;
+        try { const y = parseInt(localStorage.getItem('fieldManagerYear'), 10); if (CROP_YEARS.includes(y)) selectedYear = y; } catch (e) {}
+        const cardYear = {};          // field id -> year chosen on that card (overrides the top selector)
+        let insByCroppingField = {};  // CroppingField id -> [insurance units, all years]
+
+        function yearOf(f) { return cardYear[f._id] || selectedYear; }
+        function yy(y) { return String(y).slice(-2); }
+        // Crop for a year: the cropYYYY slot, else the crop history entry.
+        function cropFor(f, y) {
+            if (f['crop' + y]) return f['crop' + y];
+            const h = (f.cropHistory || []).find(x => x.year === y);
+            return h && h.crop ? h.crop : '';
+        }
+        function getToken() { try { return localStorage.getItem('adminToken'); } catch (e) { return null; } }
+        async function loadInsurance() {
+            const t = getToken();
+            if (!t) return;
+            try {
+                const res = await fetch(`${API}/api/field-insurance`, { headers: { 'Authorization': 'Bearer ' + t } });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) return;
+                insByCroppingField = {};
+                for (const e of data.data || []) {
+                    if (!e.croppingFieldId) continue;
+                    (insByCroppingField[e.croppingFieldId] = insByCroppingField[e.croppingFieldId] || []).push(e);
+                }
+            } catch (e) {
+                console.warn('Crop insurance load failed:', e.message);
+            }
+        }
 
         function fmt(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n); }
         function fmt2(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n); }
@@ -516,7 +546,7 @@
         // === DATA LOADING ===
         async function loadFields() {
             try {
-                const res = await fetch(`${API}/api/cropping-fields`);
+                const [res] = await Promise.all([fetch(`${API}/api/cropping-fields`), loadInsurance()]);
                 const data = await res.json();
                 if (data.success) {
                     allFields = data.fields;
@@ -565,7 +595,8 @@
             fields.forEach(f => {
                 const ac = f.acres || 0;
                 totalAcres += ac;
-                if (!nonProd.includes(f.crop2026)) prodAcres += ac;
+                const c = cropFor(f, selectedYear);
+                if (c && !nonProd.includes(c)) prodAcres += ac;
                 totalCost += (f.totalCost || 0);
                 totalRev += (f.totalRevenue || 0);
             });
@@ -575,9 +606,10 @@
             banner.style.display = '';
             banner.innerHTML = `
                 <div class="banner-stat"><div class="bv">${activeFarm === 'ALL' ? 'M77 AG' : activeFarm}</div><div class="bl">${activeFarm === 'ALL' ? 'All Operations' : 'Farm'}</div></div>
+                <div class="banner-stat"><div class="bv">${selectedYear}</div><div class="bl">Crop Year</div></div>
                 <div class="banner-stat"><div class="bv">${fields.length}</div><div class="bl">Fields</div></div>
                 <div class="banner-stat"><div class="bv">${fmtAcres(totalAcres)}</div><div class="bl">Total Acres</div></div>
-                <div class="banner-stat"><div class="bv">${fmtAcres(prodAcres)}</div><div class="bl">Productive</div></div>
+                <div class="banner-stat"><div class="bv">${fmtAcres(prodAcres)}</div><div class="bl">Productive ${yy(selectedYear)}</div></div>
                 <div class="banner-stat"><div class="bv ${hasBudget ? '' : ''}">${hasBudget ? fmt(totalCost) : '--'}</div><div class="bl">Total Cost</div></div>
                 <div class="banner-stat"><div class="bv">${hasBudget ? fmt(totalRev) : '--'}</div><div class="bl">Total Revenue</div></div>
                 <div class="banner-stat"><div class="bv ${net >= 0 ? '' : 'neg'}">${hasBudget ? fmt(net) : '--'}</div><div class="bl">Net Income</div></div>
@@ -588,8 +620,14 @@
                 return;
             }
 
-            grid.innerHTML = fields.map(f => {
-                const crop = f.crop2026 || '--';
+            grid.innerHTML = fields.map(renderCard).join('');
+        }
+
+        function renderCard(f) {
+                const year = yearOf(f);
+                const cropRaw = cropFor(f, year);
+                const crop = cropRaw ? cropRaw + ' ' + yy(year) : 'No crop ' + yy(year);
+                const yearOptions = CROP_YEARS.map(y => `<option value="${y}" ${y === year ? 'selected' : ''}>${y}</option>`).join('');
                 const history = f.cropHistory || [];
                 const avgProfit = f.avgProfitPerAcre;
                 const avgYield = f.avgYield;
@@ -619,7 +657,8 @@
                         </div>
                         <div class="fc-right">
                             <div class="fc-acres">${fmtAcres(f.acres)} ac</div>
-                            <span class="fc-crop ${getCropClass(crop)}">${crop}</span>
+                            <span class="fc-crop ${getCropClass(cropRaw)}">${crop}</span>
+                            <div><select class="fc-year${cardYear[f._id] ? ' override' : ''}" aria-label="Crop year for ${f.field}" onclick="event.stopPropagation()" onchange="setCardYear('${f._id}', this.value)">${yearOptions}</select></div>
                         </div>
                     </div>
                     <div class="fc-stats">
@@ -642,7 +681,21 @@
                         ${renderDetailTabs(f)}
                     </div>
                 </div>`;
-            }).join('');
+        }
+
+        // Change one card's year without collapsing it or switching its tab.
+        function setCardYear(id, value) {
+            const y = parseInt(value, 10);
+            if (y === selectedYear) delete cardYear[id]; else cardYear[id] = y;
+            const f = allFields.find(x => x._id === id);
+            const old = document.getElementById(`card-${id}`);
+            if (!f || !old) return;
+            const wasOpen = document.getElementById(`detail-${id}`).classList.contains('open');
+            const activePanel = old.querySelector('.detail-panel.active');
+            const tab = activePanel ? activePanel.id.split('-')[1] : 'info';
+            old.outerHTML = renderCard(f);
+            if (wasOpen) document.getElementById(`detail-${id}`).classList.add('open');
+            switchTab(id, tab);
         }
 
         function renderDetailTabs(f) {
@@ -701,11 +754,12 @@
                 `;
             }
 
+            const year = yearOf(f);
             const rows = history.map(h => {
                 const tc = h.totalCost || 0;
                 const gr = h.grossRevenue || 0;
                 const ppa = h.profitPerAcre;
-                return `<tr>
+                return `<tr class="${h.year === year ? 'year-row' : ''}">
                     <td><strong>${h.year}</strong></td>
                     <td>${h.crop || '--'}</td>
                     <td>${h.variety || '--'}</td>
@@ -992,11 +1046,42 @@
         }
 
         function renderInsurancePanel(f) {
+            const year = yearOf(f);
+            const units = (insByCroppingField[f._id] || []).filter(e => e.cropYear === year);
+            const num = (n, d) => n === null || n === undefined ? '--' : Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+            const money = n => n === null || n === undefined ? '--' : fmt2(n);
+            const row = (l, v) => `<div class="row"><span>${l}</span><span>${v}</span></div>`;
+            const unitHtml = units.map(e => `
+                <div class="ins-unit">
+                    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+                        <strong>${e.crop} ${yy(e.cropYear)} &middot; Unit ${e.unitNumber}</strong>
+                        <span style="color:#888;">${[e.company, 'Policy ' + e.policyNumber, e.fsn ? 'FSN ' + e.fsn : ''].filter(Boolean).join(' &middot; ')}</span>
+                    </div>
+                    ${row('Plan', (e.plan || '--') + ' at ' + (e.coverageLevel ? e.coverageLevel + '%' : '--'))}
+                    ${row('Insured acres', num(e.insuredAcres, 2))}
+                    ${row('APH', num(e.aph, 0) + ' bu/ac')}
+                    ${row('Guarantee', num(e.guaranteeBuPerAcre, 1) + ' bu/ac &middot; ' + num(e.guaranteeBu, 2) + ' bu')}
+                    ${row('Prices (projected / harvest)', money(e.projectedPrice) + ' / ' + money(e.harvestPrice))}
+                    ${row('Production to count', num(e.productionToCountBu, 1) + ' bu' + (e.stage === 'UH' ? ' (appraised)' : ''))}
+                    ${row('Indemnity', e.totalPayable != null ? '<strong>' + money(e.totalPayable) + '</strong>' : 'Not settled')}
+                    ${row('Landlord share (' + Math.round((e.landlordShare || 0) * 1000) / 10 + '%)', money(e.landlordIndemnity))}
+                    ${e.claimNumber ? row('Claim', e.claimNumber + (e.checkNumber ? ' &middot; check ' + e.checkNumber : '')) : ''}
+                </div>`).join('');
+            const unitsBlock = units.length ? unitHtml
+                : `<div class="empty-state" style="padding:12px 0;">No insurance unit on file for ${year}. Units are attached on the <a href="/admin/fields.html" style="color:#2d5016;">Fields</a> page.</div>`;
+            return unitsBlock + renderManualInsurance(f);
+        }
+
+        // Manual entry from the details form. It has no year recorded.
+        function renderManualInsurance(f) {
             const ins = f.insurance || {};
+            const hasManual = ins.provider || ins.type || ins.level || ins.guaranteedYield;
             const hasIns = ins.provider || ins.type || ins.level;
             const v = (val) => val ? val : '<span class="empty">--</span>';
 
+            if (!hasManual) return `<div class="detail-actions"><button class="btn btn-outline btn-sm" onclick="openDetailsModal('${f._id}')">Add manual insurance entry</button></div>`;
             return `
+                <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin:4px 0 8px;">Manual entry (no crop year recorded)</div>
                 <div class="info-grid">
                     <div class="info-item"><div class="info-label">Provider</div><div class="info-value">${v(ins.provider)}</div></div>
                     <div class="info-item"><div class="info-label">Type</div><div class="info-value">${v(ins.type)}</div></div>
@@ -1303,9 +1388,14 @@
         });
 
         // Year selector
-        document.getElementById('yearSelect').addEventListener('change', function() {
-            selectedYear = parseInt(this.value);
-            // For now year selection is informational - data entry uses it as default
+        const yearSel = document.getElementById('yearSelect');
+        yearSel.innerHTML = CROP_YEARS.map(y => `<option value="${y}" ${y === selectedYear ? 'selected' : ''}>${y}</option>`).join('');
+        yearSel.addEventListener('change', function() {
+            selectedYear = parseInt(this.value, 10);
+            try { localStorage.setItem('fieldManagerYear', String(selectedYear)); } catch (e) {}
+            // The top selector resets every card to the same year.
+            Object.keys(cardYear).forEach(k => delete cardYear[k]);
+            renderFields();
         });
 
         // Init

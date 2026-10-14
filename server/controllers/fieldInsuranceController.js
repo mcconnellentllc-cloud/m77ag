@@ -39,7 +39,14 @@ exports.listEntries = async (req, res) => {
     if (req.query.crop) filter.crop = String(req.query.crop).toUpperCase();
     if (req.query.m77Field) filter.m77Field = req.query.m77Field;
     const entries = await FieldInsurance.find(filter).sort({ fieldName: 1, unitNumber: 1 });
-    res.json({ success: true, data: entries });
+    // Field Manager cards are CroppingField records; M77Field keeps the link in legacyId.
+    const fields = await M77Field.find({ _id: { $in: entries.map(e => e.m77Field) } }).select('legacySource legacyId');
+    const legacy = {};
+    for (const f of fields) {
+      if (f.legacySource === 'CroppingField' && f.legacyId) legacy[String(f._id)] = String(f.legacyId);
+    }
+    const data = entries.map(e => ({ ...e.toJSON(), croppingFieldId: legacy[String(e.m77Field)] || null }));
+    res.json({ success: true, data });
   } catch (err) {
     console.error('List field insurance error:', err);
     res.status(500).json({ success: false, message: 'Failed to load crop insurance' });
