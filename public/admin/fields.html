@@ -60,6 +60,9 @@
             padding: 40px;
         }
 
+        .crop-yr.override, select.card-year.override { background: #fbf3e2; border-color: #d4a54a; }
+        .crop-yr { border-radius: 10px; padding: 0 6px; border: 1px solid transparent; }
+        select.card-year { padding: 4px 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; font-weight: 600; color: #2d5016; background: #fff; }
         .page-head {
             display: flex;
             justify-content: space-between;
@@ -518,6 +521,8 @@
                 <p class="page-subtitle">M77 AG master field registry &middot; standalone of John Deere</p>
             </div>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <label for="yearSelect" style="font-size:12px; font-weight:600; color:#666; text-transform:uppercase; letter-spacing:0.5px;">Crop Year</label>
+                <select id="yearSelect" aria-label="Crop year for all cards" style="padding:8px 12px; border:2px solid #e0e0e0; border-radius:5px; font-size:16px; font-weight:600; cursor:pointer;"></select>
                 <div id="jdStatus" class="jd-status" title="John Deere connection">
                     <span class="jd-dot" id="jdDot"></span>
                     <span id="jdStatusLabel">JD: checking...</span>
@@ -803,17 +808,47 @@
         let lastClients = [];  // most recent /api/clients response (for tab order + meta)
         let lastFarms = [];    // most recent /api/m77-farms response (for landlord/type/share)
 
-        // Seed placed per field and the landlord's share of its cost.
-        // Season and harvest year match /admin/farming/seed-cost-share.html.
-        const SEED_SEASON = '2026 Fall Wheat';
-        const SEED_CROP_YEAR = 2027;
-        let seedByField = {};  // m77Field id -> [seed cost share entries]
+        // Crop year shown on the cards. The top selector sets every card; a card's
+        // own selector overrides it. Shared with Field Manager.
+        const CROP_YEARS = [2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020];
+        let selectedYear = 2026;
+        try { const y = parseInt(localStorage.getItem('m77CropYear'), 10); if (CROP_YEARS.includes(y)) selectedYear = y; } catch (e) {}
+        const cardYear = {};       // field id -> year chosen on that card
+        let croppingById = {};     // CroppingField id -> record (crop by year, crop history)
+        function yearOf(f) { return cardYear[f._id] || selectedYear; }
+        function yy(y) { return String(y).slice(-2); }
+        function cropFor(f, y) {
+            const c = f.legacySource === 'CroppingField' && f.legacyId ? croppingById[String(f.legacyId)] : null;
+            if (c && c['crop' + y]) return c['crop' + y];
+            if (y === 2026 && f.crop2026) return f.crop2026;
+            const h = c && (c.cropHistory || []).find(x => x.year === y);
+            return h && h.crop ? h.crop : '';
+        }
+        async function loadCropping() {
+            try {
+                const res = await fetch('/api/cropping-fields');
+                const data = await res.json().catch(() => ({}));
+                croppingById = {};
+                for (const c of (data.fields || [])) croppingById[String(c._id)] = c;
+            } catch (e) {
+                console.warn('Crop by year load failed:', e.message);
+            }
+        }
+
+        // Seed placed per field and the landlord's share of its cost, by crop
+        // (harvest) year. Season names match /admin/farming/seed-cost-share.html.
+        const SEED_SEASONS = { 2027: '2026 Fall Wheat' };
+        function seedSeason(y) { return SEED_SEASONS[y] || ('Crop Year ' + y); }
+        function seedEntryYear(e) {
+            if (e.cropYear) return e.cropYear;
+            const hit = Object.entries(SEED_SEASONS).find(([, s]) => s === e.season);
+            return hit ? Number(hit[0]) : null;
+        }
+        let seedByField = {};  // m77Field id -> [seed cost share entries, all years]
 
         // Crop insurance units per field, by crop year and crop.
-        const INS_CROP_YEAR = 2026;
-        const INS_CROP = 'WHEAT';
         const INS_CLAIM_ID = 'rcis-2026-wheat';
-        let insByField = {};   // m77Field id -> [insurance units]
+        let insByField = {};   // m77Field id -> [insurance units, all years]
         let insClaim = null;   // { policy, units } for INS_CLAIM_ID
 
         function fmtAcres(n) {
@@ -952,7 +987,7 @@
                         ${jdSourceBadge}
                         <span class="field-quick">
                             <span><strong>${fmtAcres(f.acres)}</strong> ac</span>
-                            <span>${escapeHtml(f.crop2026 || '—')}</span>
+                            <span class="crop-yr${cardYear[f._id] ? ' override' : ''}">${escapeHtml(cropFor(f, yearOf(f)) || 'No crop')} ${yy(yearOf(f))}</span>
                             <span>${escapeHtml(f.irrigation || '—')}</span>
                             <span>${escapeHtml(f.enterprise || '—')}</span>
                             ${statusBadge(f.status)}
@@ -966,7 +1001,8 @@
                         <div class="group"><div class="label">Owner</div><div class="value">${escapeHtml(ownerLabel(f))}</div></div>
                         <div class="group"><div class="label">Enterprise</div><div class="value">${escapeHtml(f.enterprise || '—')}</div></div>
                         <div class="group"><div class="label">Irrigation</div><div class="value">${escapeHtml(f.irrigation || '—')}</div></div>
-                        <div class="group"><div class="label">2026 Crop</div><div class="value">${escapeHtml(f.crop2026 || '—')}</div></div>
+                        <div class="group"><div class="label">Crop Year</div><div class="value"><select class="card-year${cardYear[f._id] ? ' override' : ''}" data-card-year="${f._id}" aria-label="Crop year for ${escapeHtml(f.name)}">${CROP_YEARS.map(y => `<option value="${y}" ${y === yearOf(f) ? 'selected' : ''}>${y}</option>`).join('')}</select></div></div>
+                        <div class="group"><div class="label">${yearOf(f)} Crop</div><div class="value">${escapeHtml(cropFor(f, yearOf(f)) || '—')}</div></div>
                         <div class="group"><div class="label">Rotation Group</div><div class="value">${escapeHtml(f.rotationGroup || '—')}</div></div>
                         <div class="group"><div class="label">Status</div><div class="value">${statusBadge(f.status)}</div></div>
                         <div class="group"><div class="label">Share Override</div><div class="value">${f.shareOverride !== null && f.shareOverride !== undefined ? (f.shareOverride * 100).toFixed(1) + '%' : 'inherit from farm'}</div></div>
@@ -1061,7 +1097,8 @@
         }
 
         function renderSeedCostShareSection(f) {
-            const entries = seedByField[f._id] || [];
+            const year = yearOf(f);
+            const entries = (seedByField[f._id] || []).filter(e => seedEntryYear(e) === year);
             const landlordTotal = entries.reduce((sum, e) => sum + (e.landlordAmount || 0), 0);
             const pending = entries.some(e => e.landlordShare > 0 && (!e.priced || e.estimated));
             let badgeText = '';
@@ -1102,7 +1139,7 @@
             }).join('');
 
             const table = entries.length ? blocks
-                : '<div style="margin-top:8px; font-size:12px; color:#888;">No seed recorded for this field this season.</div>';
+                : '<div style="margin-top:8px; font-size:12px; color:#888;">No seed recorded for this field for crop year ' + year + '.</div>';
 
             const fid = escapeHtml(f._id);
             const form = `
@@ -1119,7 +1156,7 @@
             return `
                 <details class="seed-section" style="grid-column: 1 / -1; background:#f3f8ef; border:1px solid #cfe0c3; border-radius:5px; padding:10px 14px; margin-top:6px;">
                     <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#2d5016; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                        Seed &amp; Landlord Cost Share &middot; ${escapeHtml(SEED_SEASON)} ${headerBadge}
+                        Seed &amp; Landlord Cost Share &middot; ${year} &middot; ${escapeHtml(seedSeason(year))} ${headerBadge}
                     </summary>
                     ${table}
                     ${form}
@@ -1145,9 +1182,11 @@
         }
 
         function renderInsuranceSection(f) {
-            const entries = insByField[f._id] || [];
+            const year = yearOf(f);
+            const entries = (insByField[f._id] || []).filter(e => e.cropYear === year);
             const fid = escapeHtml(f._id);
-            const cropLabel = INS_CROP + ' ' + String(INS_CROP_YEAR).slice(-2);
+            const crops = Array.from(new Set(entries.map(e => e.crop)));
+            const cropLabel = crops.length ? crops.map(c => c + ' ' + yy(year)).join(', ') : String(year);
             const paid = entries.reduce((sum, e) => sum + (e.totalPayable || 0), 0);
             const badge = entries.length
                 ? `<span style="background:#e8f5e9; color:#1e3d10; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">${paid > 0 ? 'Indemnity ' + fmtMoney(paid) : entries.length + ' unit' + (entries.length === 1 ? '' : 's')}</span>`
@@ -1183,7 +1222,7 @@
             }).join('');
 
             let attach = '';
-            const open = insClaim ? insClaim.units.filter(u => !u.attachedTo) : [];
+            const open = insClaim && insClaim.policy.cropYear === year ? insClaim.units.filter(u => !u.attachedTo) : [];
             if (open.length) {
                 const suggested = open.filter(u => unitMatchesField(u, f));
                 const sugg = suggested.map(u => `
@@ -1226,7 +1265,7 @@
         async function loadInsurance() {
             try {
                 const [list, claim] = await Promise.all([
-                    insRequest('?cropYear=' + INS_CROP_YEAR + '&crop=' + INS_CROP),
+                    insRequest(''),
                     insRequest('/claims/' + INS_CLAIM_ID)
                 ]);
                 insByField = {};
@@ -1280,7 +1319,7 @@
 
         async function loadSeedCostShares() {
             try {
-                const res = await fetch('/api/seed-cost-shares?season=' + encodeURIComponent(SEED_SEASON), { headers: authHeaders() });
+                const res = await fetch('/api/seed-cost-shares', { headers: authHeaders() });
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok || !data.success) throw new Error(data.message || 'Request failed (' + res.status + ')');
                 seedByField = {};
@@ -1339,8 +1378,8 @@
                     method: 'POST',
                     body: JSON.stringify({
                         m77Field: fieldId,
-                        season: SEED_SEASON,
-                        cropYear: SEED_CROP_YEAR,
+                        season: seedSeason(yearOf(lastFields.find(x => x._id === fieldId) || { _id: fieldId })),
+                        cropYear: yearOf(lastFields.find(x => x._id === fieldId) || { _id: fieldId }),
                         product,
                         vendor: val('seedVendor').value.trim(),
                         ticketNumber: val('seedTicket').value.trim(),
@@ -1486,7 +1525,8 @@
                 const [data] = await Promise.all([
                     api('/' + (params.toString() ? '?' + params.toString() : '')),
                     loadSeedCostShares(),
-                    loadInsurance()
+                    loadInsurance(),
+                    Object.keys(croppingById).length ? null : loadCropping()
                 ]);
                 lastFields = data.fields || [];
                 renderHierarchy(lastFields);
@@ -1640,6 +1680,36 @@
         }
 
         // Wire events
+        // Re-render one card for its own year, keeping it and its open sections open.
+        function setCardYear(id, value) {
+            const y = parseInt(value, 10);
+            if (y === selectedYear) delete cardYear[id]; else cardYear[id] = y;
+            const f = lastFields.find(x => x._id === id);
+            const old = hierarchyEl.querySelector(`details[data-field-id="${id}"]`);
+            if (!f || !old) return;
+            const seedOpen = !!old.querySelector('.seed-section[open]');
+            const insOpen = !!old.querySelector('.ins-section[open]');
+            const tmp = document.createElement('div');
+            tmp.innerHTML = renderFieldCard(f).trim();
+            const card = tmp.firstElementChild;
+            card.open = true;
+            old.replaceWith(card);
+            if (seedOpen) card.querySelector('.seed-section').open = true;
+            if (insOpen) card.querySelector('.ins-section').open = true;
+        }
+        hierarchyEl.addEventListener('change', (e) => {
+            const sel = e.target.closest('[data-card-year]');
+            if (sel) setCardYear(sel.getAttribute('data-card-year'), sel.value);
+        });
+        const yearSel = document.getElementById('yearSelect');
+        yearSel.innerHTML = CROP_YEARS.map(y => `<option value="${y}" ${y === selectedYear ? 'selected' : ''}>${y}</option>`).join('');
+        yearSel.addEventListener('change', () => {
+            selectedYear = parseInt(yearSel.value, 10);
+            try { localStorage.setItem('m77CropYear', String(selectedYear)); } catch (e) {}
+            Object.keys(cardYear).forEach(k => delete cardYear[k]);
+            refreshSeedSection();
+        });
+
         document.getElementById('btnNewField').addEventListener('click', () => openModal(null));
         document.getElementById('modalClose').addEventListener('click', closeModal);
         document.getElementById('modalCancel').addEventListener('click', closeModal);
