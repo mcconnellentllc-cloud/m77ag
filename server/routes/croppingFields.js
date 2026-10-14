@@ -286,6 +286,41 @@ router.post('/import/soil-samples', async (req, res) => {
 });
 
 // Get all fields (enriched with land payment data for KBFARMS)
+// =============================================
+// Fill blank field details from data on file (admin only)
+// =============================================
+const { authenticate, isAdmin } = require('../middleware/auth');
+const fieldBackfill = require('../services/fieldBackfill');
+
+router.get('/backfill/preview', authenticate, isAdmin, async (req, res) => {
+  try {
+    res.json({ success: true, data: await fieldBackfill.preview() });
+  } catch (error) {
+    console.error('Field backfill preview error:', error);
+    res.status(500).json({ success: false, message: 'Failed to build the preview' });
+  }
+});
+
+router.post('/backfill', authenticate, isAdmin, async (req, res) => {
+  try {
+    const results = await fieldBackfill.apply();
+    res.json({ success: true, data: results, message: `${results.length} field${results.length === 1 ? '' : 's'} updated` });
+  } catch (error) {
+    console.error('Field backfill error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fill field details: ' + error.message });
+  }
+});
+
+router.post('/:id/soil-survey', authenticate, isAdmin, async (req, res) => {
+  try {
+    const result = await fieldBackfill.soilSurvey(req.params.id);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    if (!error.status) console.error('Soil survey lookup error:', error);
+    res.status(error.status || 502).json({ success: false, message: error.message });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const { farm, crop } = req.query;
