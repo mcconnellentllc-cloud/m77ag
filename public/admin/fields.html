@@ -536,10 +536,13 @@
                 <a href="/admin/farming/wheat-2026.html" class="btn btn-secondary btn-sm">2026 Wheat Report</a>
                 <a href="/admin/farming/landlord-shares-2026-wheat.html" class="btn btn-secondary btn-sm">Landlord Shares</a>
                 <a href="/admin/farming/seed-cost-share.html" class="btn btn-secondary btn-sm">Seed Cost Share</a>
+                <button class="btn btn-secondary btn-sm" id="btnSeasonImport">2026 Season Records</button>
                 <a href="/admin/farming/crop-insurance-2026-wheat.html" class="btn btn-secondary btn-sm">Loss Notice</a>
                 <button class="btn" id="btnNewField">Add Field</button>
             </div>
         </div>
+
+        <section id="seasonImport" style="display:none; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1); padding:18px; margin-bottom:20px;"></section>
 
         <div class="bulk-bar" id="bulkBar" style="display:none;">
             <span id="bulkSelectedLabel">0 selected</span>
@@ -1012,6 +1015,7 @@
                         ${renderFsaSection(f)}
                         ${renderSeedCostShareSection(f)}
                         ${renderInsuranceSection(f)}
+                        ${renderRecordsSection(f)}
                         <div class="actions">
                             <button class="btn btn-secondary btn-sm" data-edit="${f._id}">Edit field</button>
                         </div>
@@ -1317,6 +1321,192 @@
             }
         }
 
+        // ---- Field records: passes, seeding, harvest (by crop year) ----
+        const SEASON_IMPORT_ID = 'season-2026';
+        let opsByField = {};   // m77Field id -> [field records, all years]
+        const OP_LABELS = { tillage: 'Tillage', spray: 'Spray', fertilizer: 'Fertilizer', seeding: 'Seeding', harvest: 'Harvest', other: 'Other' };
+
+        function fmtDay(d) {
+            return d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '';
+        }
+        function fmtRange(a, b) {
+            if (!a) return 'Date not on file';
+            if (!b || fmtDay(a) === fmtDay(b)) return fmtDay(a);
+            return fmtDay(a) + ' to ' + fmtDay(b);
+        }
+        function fmtNum(n, d) {
+            return n === null || n === undefined ? '—' : Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+        }
+
+        function renderRecordsSection(f) {
+            const year = yearOf(f);
+            const ops = (opsByField[f._id] || []).filter(o => o.cropYear === year)
+                .sort((a, b) => String(a.startDate || '').localeCompare(String(b.startDate || '')));
+            const line = (label, value) => `<div style="display:flex; justify-content:space-between; gap:12px;"><span style="color:#888;">${label}</span><span style="text-align:right;">${value}</span></div>`;
+            const blocks = ops.map(o => {
+                const parts = [];
+                if (o.acres != null) parts.push(line('Acres', fmtNum(o.acres, 1)));
+                if (o.variety) parts.push(line('Variety', escapeHtml(o.variety)));
+                if (o.seedLb != null) parts.push(line('Seed', fmtNum(o.seedLb, 0) + ' lb' + (o.seedLbPerAcre != null ? ' · ' + fmtNum(o.seedLbPerAcre, 1) + ' lb/ac' : '')));
+                if (o.products && o.products.length) parts.push(line('Products', o.products.map(p => escapeHtml(p.name)
+                    + (p.rate != null ? ' ' + p.rate + ' ' + escapeHtml(p.rateUnit || '') : '')
+                    + (p.total != null ? ' (' + fmtNum(p.total, 2) + ' ' + escapeHtml(p.totalUnit || '') + ')' : '')).join('<br>')));
+                if (o.carrierGalPerAcre != null) parts.push(line('Carrier', o.carrierGalPerAcre + ' gal/ac'));
+                if (o.netBu != null) {
+                    const perAc = f.acres ? ' · ' + fmtNum(o.netBu / f.acres, 1) + ' bu/ac on ' + fmtNum(f.acres, 1) + ' ac' : '';
+                    parts.push(line('Delivered', '<strong>' + fmtNum(o.netBu, 2) + ' bu</strong>' + perAc));
+                }
+                if (o.combineAcres != null) parts.push(line('Combine monitor', fmtNum(o.combineAcres, 1) + ' ac · ' + fmtNum(o.combineBu, 0) + ' bu'));
+                const tickets = (o.tickets || []).map(t => `
+                    <div style="border-top:1px dashed #e3e3e3; padding-top:4px; margin-top:4px;">
+                        <strong>${escapeHtml(t.ticketNo)}</strong> · ${fmtDay(t.date)} · ${escapeHtml(t.elevator || '')}<br>
+                        <span style="color:#888;">${escapeHtml(t.account || '')}</span><br>
+                        ${fmtNum(t.netBu, 2)} bu · MO ${t.moisture != null ? t.moisture : '—'} · TW ${t.testWeight != null ? t.testWeight : '—'} · Pro ${t.protein != null ? t.protein : '—'}${t.fieldSource ? ' · <span style="color:#888;">field ' + escapeHtml(t.fieldSource) + '</span>' : ''}
+                    </div>`).join('');
+                const status = o.status === 'planned'
+                    ? '<span style="background:#fbf3e2; color:#8a6d00; border:1px solid #d4a54a; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600;">Planned</span>'
+                    : '';
+                return `
+                    <div style="background:#fff; border:1px solid #e6e1d6; border-radius:5px; padding:10px 12px; margin-top:8px; font-size:12px; display:grid; gap:4px;">
+                        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
+                            <strong style="font-size:13px;">${OP_LABELS[o.type] || escapeHtml(o.type)}: ${escapeHtml(o.title || '')}</strong>
+                            <span>${status} <span style="color:#888;">${escapeHtml(o.crop)} ${yy(o.cropYear)}</span></span>
+                        </div>
+                        <div style="color:#666;">${fmtRange(o.startDate, o.endDate)}</div>
+                        ${parts.join('')}
+                        ${tickets}
+                        ${o.notes ? `<div style="color:#8a6d00;">${escapeHtml(o.notes)}</div>` : ''}
+                        ${o.source ? `<div style="color:#999; font-size:11px;">Source: ${escapeHtml(o.source)}</div>` : ''}
+                        <div><button class="btn btn-secondary btn-sm" data-op-remove="${o._id}" style="margin-top:6px;">Remove</button></div>
+                    </div>`;
+            }).join('');
+            const body = ops.length ? blocks
+                : `<div style="margin-top:8px; font-size:12px; color:#888;">No field records for crop year ${year}.</div>`;
+            const badge = ops.length ? `<span style="background:#f3efe6; color:#5c4a1f; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">${ops.length} record${ops.length === 1 ? '' : 's'}</span>` : '';
+            return `
+                <details class="ops-section" style="grid-column: 1 / -1; background:#faf8f3; border:1px solid #e6e1d6; border-radius:5px; padding:10px 14px; margin-top:6px;">
+                    <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#5c4a1f; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        Field Records &middot; ${year} ${badge}
+                    </summary>
+                    ${body}
+                </details>`;
+        }
+
+        async function opsRequest(path, opts) {
+            const res = await fetch('/api/field-operations' + path, { ...(opts || {}), headers: authHeaders() });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+
+        async function loadOperations() {
+            try {
+                const data = await opsRequest('');
+                opsByField = {};
+                for (const o of data.data || []) {
+                    const k = String(o.m77Field);
+                    (opsByField[k] = opsByField[k] || []).push(o);
+                }
+            } catch (e) {
+                console.warn('Field records load failed:', e.message);
+            }
+        }
+
+        async function removeOperation(id) {
+            if (!confirm('Remove this record from the field?')) return;
+            try {
+                await opsRequest('/' + id, { method: 'DELETE' });
+                showBanner('success', 'Record removed.');
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not remove the record: ' + e.message);
+            }
+        }
+
+        // Review panel: confirm which card each prepared 2026 record goes on.
+        let seasonData = null;
+        function seasonSummary(r) {
+            const bits = [];
+            if (r.variety) bits.push(r.variety);
+            if (r.acres != null) bits.push(fmtNum(r.acres, 1) + ' ac');
+            if (r.seedLb != null) bits.push(fmtNum(r.seedLb, 0) + ' lb');
+            if (r.netBu != null) bits.push(fmtNum(r.netBu, 2) + ' bu');
+            return bits.join(' · ');
+        }
+        function renderSeasonImport() {
+            const el = document.getElementById('seasonImport');
+            if (!seasonData) { el.innerHTML = '<p>Loading...</p>'; return; }
+            const opts = seasonData.fields.map(fl => `<option value="${escapeHtml(fl._id)}">${escapeHtml(fl.name)}${fl.farmName ? ' (' + escapeHtml(fl.farmName) + ')' : ''}</option>`).join('');
+            const groups = [
+                ['Wheat 2026 harvest', r => r.cropYear === 2026 && r.type === 'harvest'],
+                ['Wheat 2026 planting (fall 2025)', r => r.cropYear === 2026 && r.type === 'seeding'],
+                ['Wheat 2027 drilling (Oct 2026)', r => r.cropYear === 2027 && r.type === 'seeding'],
+                ['Fall chemfallow for corn 2027 (planned)', r => r.cropYear === 2027 && r.type === 'spray']
+            ];
+            const rows = groups.map(([label, test]) => {
+                const recs = seasonData.records.filter(test);
+                if (!recs.length) return '';
+                return `<tr><td colspan="4" style="background:#f5f3f0; font-weight:700; color:#2d5016; padding:8px;">${label}</td></tr>` + recs.map(r => {
+                    const target = r.addedTo ? String(r.addedTo.m77Field) : (r.suggested || '');
+                    const status = r.addedTo ? '<span style="color:#2d5016; font-weight:600;">On card</span>'
+                        : r.suggested ? '<span style="color:#2d5016;">Matched</span>'
+                        : '<span style="color:#a02818;">' + (r.candidateCount > 1 ? 'Pick field (' + r.candidateCount + ' match)' : 'Pick field') + '</span>';
+                    return `<tr>
+                        <td style="padding:6px;"><input type="checkbox" data-season-check="${escapeHtml(r.key)}" ${!r.addedTo && r.suggested ? 'checked' : ''} aria-label="Add ${escapeHtml(r.key)}"></td>
+                        <td style="padding:6px;"><strong>${escapeHtml(r.fieldHint)}</strong> · ${escapeHtml(r.title || '')}<br><span style="color:#888; font-size:12px;">${fmtRange(r.startDate, r.endDate)}${seasonSummary(r) ? ' · ' + escapeHtml(seasonSummary(r)) : ''}</span></td>
+                        <td style="padding:6px;"><select data-season-field="${escapeHtml(r.key)}" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:220px;"><option value="">Choose field</option>${opts}</select></td>
+                        <td style="padding:6px; font-size:12px;">${status}</td>
+                    </tr>`.replace(`<option value="${escapeHtml(target)}">`, target ? `<option value="${escapeHtml(target)}" selected>` : '<option value="__none__">');
+                }).join('');
+            }).join('');
+            const pending = seasonData.records.filter(r => !r.addedTo).length;
+            el.innerHTML = `
+                <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+                    <div>
+                        <h2 style="font-family:'Oswald',sans-serif; color:#2d5016; font-size:20px; margin:0;">2026 Season Records</h2>
+                        <p style="margin:4px 0 0; color:#666; font-size:13px;">Harvest tickets, planting, drilling and the planned fall spray. Check the field for each record, then add the checked records to their cards. ${pending} not on a card yet.</p>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-sm" id="btnSeasonApply">Add checked records</button>
+                        <button class="btn btn-secondary btn-sm" id="btnSeasonClose">Close</button>
+                    </div>
+                </div>
+                <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`;
+        }
+        async function openSeasonImport() {
+            const el = document.getElementById('seasonImport');
+            el.style.display = '';
+            seasonData = null;
+            renderSeasonImport();
+            try {
+                seasonData = (await opsRequest('/imports/' + SEASON_IMPORT_ID)).data;
+                renderSeasonImport();
+            } catch (e) {
+                el.innerHTML = '<p style="color:#a02818;">Could not load the records: ' + escapeHtml(e.message) + '</p>';
+            }
+        }
+        async function applySeasonImport() {
+            const assignments = [];
+            const missing = [];
+            document.querySelectorAll('[data-season-check]:checked').forEach(cb => {
+                const key = cb.getAttribute('data-season-check');
+                const sel = document.querySelector(`[data-season-field="${key}"]`);
+                if (sel && sel.value && sel.value !== '__none__') assignments.push({ key, m77Field: sel.value });
+                else missing.push(key);
+            });
+            if (missing.length) return showBanner('error', 'Choose a field for: ' + missing.join(', '));
+            if (!assignments.length) return showBanner('error', 'Check at least one record.');
+            try {
+                const data = await opsRequest('/imports/' + SEASON_IMPORT_ID, { method: 'POST', body: JSON.stringify({ assignments }) });
+                showBanner('success', data.message || 'Records added.');
+                seasonData = (await opsRequest('/imports/' + SEASON_IMPORT_ID)).data;
+                renderSeasonImport();
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not add the records: ' + e.message);
+            }
+        }
+
         async function loadSeedCostShares() {
             try {
                 const res = await fetch('/api/seed-cost-shares', { headers: authHeaders() });
@@ -1351,7 +1541,8 @@
             }).filter(Boolean));
             const seedWasOpen = sectionOpen('seed-section');
             const insWasOpen = sectionOpen('ins-section');
-            await Promise.all([loadSeedCostShares(), loadInsurance()]);
+            const opsWasOpen = sectionOpen('ops-section');
+            await Promise.all([loadSeedCostShares(), loadInsurance(), loadOperations()]);
             renderHierarchy(lastFields);
             for (const key of open) {
                 const card = hierarchyEl.querySelector(`details[data-field-id="${key.slice(2)}"]`);
@@ -1363,6 +1554,8 @@
                     if (seed && seedWasOpen.has(key)) seed.open = true;
                     const ins = card.querySelector('.ins-section');
                     if (ins && insWasOpen.has(key)) ins.open = true;
+                    const ops = card.querySelector('.ops-section');
+                    if (ops && opsWasOpen.has(key)) ops.open = true;
                 }
             }
         }
@@ -1526,6 +1719,7 @@
                     api('/' + (params.toString() ? '?' + params.toString() : '')),
                     loadSeedCostShares(),
                     loadInsurance(),
+                    loadOperations(),
                     Object.keys(croppingById).length ? null : loadCropping()
                 ]);
                 lastFields = data.fields || [];
@@ -1689,6 +1883,7 @@
             if (!f || !old) return;
             const seedOpen = !!old.querySelector('.seed-section[open]');
             const insOpen = !!old.querySelector('.ins-section[open]');
+            const opsOpen = !!old.querySelector('.ops-section[open]');
             const tmp = document.createElement('div');
             tmp.innerHTML = renderFieldCard(f).trim();
             const card = tmp.firstElementChild;
@@ -1696,6 +1891,7 @@
             old.replaceWith(card);
             if (seedOpen) card.querySelector('.seed-section').open = true;
             if (insOpen) card.querySelector('.ins-section').open = true;
+            if (opsOpen) card.querySelector('.ops-section').open = true;
         }
         hierarchyEl.addEventListener('change', (e) => {
             const sel = e.target.closest('[data-card-year]');
@@ -1708,6 +1904,12 @@
             try { localStorage.setItem('m77CropYear', String(selectedYear)); } catch (e) {}
             Object.keys(cardYear).forEach(k => delete cardYear[k]);
             refreshSeedSection();
+        });
+
+        document.getElementById('btnSeasonImport').addEventListener('click', openSeasonImport);
+        document.getElementById('seasonImport').addEventListener('click', (e) => {
+            if (e.target.id === 'btnSeasonApply') applySeasonImport();
+            if (e.target.id === 'btnSeasonClose') document.getElementById('seasonImport').style.display = 'none';
         });
 
         document.getElementById('btnNewField').addEventListener('click', () => openModal(null));
@@ -1723,6 +1925,8 @@
                 editFieldById(editBtn.getAttribute('data-edit'));
                 return;
             }
+            const opRemove = e.target.closest('[data-op-remove]');
+            if (opRemove) return removeOperation(opRemove.getAttribute('data-op-remove'));
             const insAttach = e.target.closest('[data-ins-attach]');
             if (insAttach) return attachInsuranceUnit(insAttach.getAttribute('data-ins-attach'), insAttach.getAttribute('data-unit'));
             const insAttachSel = e.target.closest('[data-ins-attach-select]');
