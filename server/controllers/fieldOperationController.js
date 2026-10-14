@@ -42,7 +42,7 @@ exports.getImport = async (req, res) => {
   try {
     const fields = await M77Field.find({}).select('name acres farm').populate('farm', 'name').sort({ name: 1 });
     const done = await FieldOperation.find({ sourceKey: { $in: imp.RECORDS.map(r => req.params.importId + ':' + r.key) } })
-      .select('sourceKey m77Field fieldName');
+      .select('sourceKey sourceRev m77Field fieldName');
     const doneByKey = {};
     for (const d of done) doneByKey[d.sourceKey] = d;
     const records = imp.RECORDS.map(r => {
@@ -51,6 +51,7 @@ exports.getImport = async (req, res) => {
       return {
         ...r,
         addedTo: d ? { m77Field: d.m77Field, fieldName: d.fieldName } : null,
+        outdated: !!d && (d.sourceRev || 1) < (r.rev || 1),
         suggested: candidates.length === 1 ? String(candidates[0]._id) : null,
         candidateCount: candidates.length
       };
@@ -90,11 +91,11 @@ exports.applyImport = async (req, res) => {
       const field = fieldById[String(a.m77Field)];
       if (!rec) { errors.push(a.key + ': record not found'); continue; }
       if (!field) { errors.push(a.key + ': field not found'); continue; }
-      const { key, fieldHint, ...data } = rec;
+      const { key, fieldHint, rev, ...data } = rec;
       const sourceKey = req.params.importId + ':' + key;
       await FieldOperation.findOneAndUpdate(
         { sourceKey },
-        { ...data, sourceKey, m77Field: field._id, fieldName: field.name, farmName: field.farm ? field.farm.name : '', createdBy: req.userId },
+        { ...data, sourceKey, sourceRev: rev || 1, m77Field: field._id, fieldName: field.name, farmName: field.farm ? field.farm.name : '', createdBy: req.userId },
         { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
       );
       added += 1;

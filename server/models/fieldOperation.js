@@ -58,6 +58,9 @@ const fieldOperationSchema = new mongoose.Schema({
   notes: { type: String, trim: true },
   // Set for records added from a prepared import, so re-running it updates instead of duplicating.
   sourceKey: { type: String, trim: true, default: undefined },
+  // Revision of the prepared record last written to this card. A higher
+  // rev in the data file means the card holds older data.
+  sourceRev: { type: Number, default: 1 },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, {
   timestamps: true,

@@ -75,11 +75,42 @@ const RECORDS = [
   { key: 'h26-61S', fieldHint: '61.S', cropYear: 2026, crop: 'WHEAT', type: 'harvest', title: 'Not harvested',
     source: '2026 wheat harvest records', notes: 'Not on the M77 AG RCIS claim. Confirm which policy covers it.' },
 
-  // ---- Wheat 2026 planting (fall 2025), dates from the insurance summary ----
-  ...[['13', '2025-10-02', 70.50], ['60', '2025-10-02', 76.36], ['41', '2025-09-29', 78.18], ['42.W', '2025-09-30', 79.00],
-      ['23.W', '2025-10-11', 69.70], ['55.N', '2025-09-22', 75.67]].map(([hint, date, acres]) => ({
-    key: 'p26-' + hint.replace('.', ''), fieldHint: hint, cropYear: 2026, crop: 'WHEAT', type: 'seeding', title: 'Wheat planted',
-    startDate: date, acres, source: '2026 Insurance Summary (Hofmeister, Oct 22, 2025)', notes: 'Planting date and insured acres. Variety and rate not on file.'
+  // ---- Wheat 2026 planting (fall 2025) ----
+  // John Deere Operations Center Field Report "2025 Seeding", printed Oct 14,
+  // 2026. Field names in Operations Center changed since fall 2025; the report
+  // names are mapped to current fields (confirmed by Kyle, Oct 14, 2026):
+  // 12.E->12.W, 13.W->13, 23.E->23.W, 30.W->30, 41.E->41, 42.E->42.W,
+  // 61.N->61.S. Report area and applied pounds disagree by about 2x on most
+  // passes, so acres are the insured or field acres and the report's own
+  // numbers are kept in the notes until the drill records are reconciled.
+  ...[
+    // hint, start, end, acres, variety, target lb/ac, operator, report passes, RCIS planting date and unit
+    ['13', '2025-10-02', '2025-10-02', 70.50, 'WB4347', 61, 'Kyle McConnell',
+      '13.W: 154.2 ac, 62 lb/ac applied, 4,745 lb', '2025-10-02 (unit 0002-0001, 70.50 ac)'],
+    ['12.W', '2025-10-02', '2025-10-02', undefined, 'WB4347', 60, 'Kyle McConnell',
+      '12.E: 4.9 ac, 60 lb/ac applied, 148 lb', null],
+    ['60', '2025-10-01', '2025-10-02', 76.36, 'WB4347', 60, 'Kyle McConnell',
+      '60.E: 168.7 ac, 60 lb/ac applied, 5,038 lb', '2025-10-02 (unit 0002-0003, 76.36 ac)'],
+    ['41', '2025-09-29', '2025-09-29', 78.18, 'KS Providence', 61, 'Kyle McConnell',
+      '41.E: 168.4 ac, 57 lb/ac applied, 4,769 lb', '2025-09-29 (unit 0004-0003, 78.18 ac)'],
+    ['42.W', '2025-09-30', '2025-10-31', 79.00, 'KS Providence, WB4347; fill-in AP Bigfoot, WB4595', 60, 'Kyle McConnell; fill-in Matt Allphin',
+      '42.E Sep 30: 76.6 ac, 57 lb/ac applied, 2,155 lb. 42.E Oct 31 fill-in: 10.3 ac, 69 lb/ac, 353 lb', '2025-09-30 (unit 0004-0004, 79.00 ac)'],
+    ['23.W', '2025-10-22', '2025-10-22', 69.70, 'AP Bigfoot', 70, 'Matt Allphin',
+      '23.E: 145.2 ac, 69 lb/ac applied, 5,008 lb', '2025-10-11 (unit 0005-0002, 69.70 ac, CC practice)'],
+    ['55.N', '2025-09-26', '2025-10-07', 75.67, 'KS Providence; fill-in AP Bigfoot', 62, 'Kyle McConnell',
+      '55.N Sep 26: 169.2 ac, 60 lb/ac applied, 5,049 lb. Oct 7 fill-in (8370R): 11.1 ac, 39 lb/ac, 436 lb', '2025-09-22 (unit 0005-0007, 75.67 ac)'],
+    ['30', '2025-10-23', '2025-10-24', undefined, 'AP Bigfoot, WB4595', 70, 'Matt Allphin',
+      '30.W: 171.7 ac, 63 lb/ac applied, 5,439 lb', null],
+    ['32.N', '2025-10-03', '2025-10-04', undefined, 'AP Bigfoot', 60, 'Kyle McConnell, Matt Allphin',
+      '32.N: 126.7 ac, 61 lb/ac applied, 5,206 lb (8320R and 8370R)', null],
+    ['61.S', '2025-10-03', '2025-10-24', undefined, 'AP Bigfoot; fill-in AP Bigfoot, WB4595', 30, 'Matt Allphin',
+      '61.N Oct 3: 39.2 ac, 62 lb/ac applied against a 30 lb/ac target, 1,197 lb, first variety blank. Oct 24 fill-in: 7.4 ac, 68 lb/ac, 253 lb', null]
+  ].map(([hint, start, end, acres, variety, target, operator, report, rcis]) => ({
+    key: 'p26-' + hint.replace('.', ''), rev: 2, fieldHint: hint, cropYear: 2026, crop: 'WHEAT', type: 'seeding', title: 'Wheat planted',
+    startDate: start, endDate: end, acres, variety, operator, equipment: '8320R',
+    source: 'John Deere Operations Center Field Report, 2025 Seeding' + (rcis ? '; 2026 Insurance Summary (Hofmeister, Oct 22, 2025)' : ''),
+    notes: 'Target ' + target + ' lb/ac. Report: ' + report + '. Report acres and pounds not reconciled.' +
+      (rcis ? ' RCIS planting date ' + rcis + '.' : '')
   })),
 
   // ---- Wheat 2027 drilling (Oct 2026) ----
