@@ -70,7 +70,8 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 // =============================================
 async function loadDashboard() {
     document.getElementById('userInfo').textContent = user.name || user.email;
-    await Promise.all([loadSummary(), loadFields(), loadPreferences()]);
+    initSeason();
+    await Promise.all([loadSummary(), loadFields(), loadPreferences(), loadSeason()]);
 }
 
 // =============================================
@@ -348,4 +349,47 @@ document.getElementById('paymentPrefForm').addEventListener('submit', async (e) 
 // =============================================
 // Init
 // =============================================
+// =============================================
+// Season Summary Tab
+// Same data and layout as the M77 management view, limited server-side to
+// the farms linked to this login.
+// =============================================
+const SEASON_YEARS = [2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020];
+let seasonYear = 2026;
+let seasonFarm = '';
+let seasonFarmsLoaded = false;
+
+function initSeason() {
+    window.LandlordSummaryView.injectStyles();
+    const ys = document.getElementById('seasonYear');
+    ys.innerHTML = SEASON_YEARS.map(y => `<option value="${y}"${y === seasonYear ? ' selected' : ''}>${y}</option>`).join('');
+    ys.addEventListener('change', () => { seasonYear = parseInt(ys.value, 10); loadSeason(); });
+    document.getElementById('seasonFarm').addEventListener('change', e => { seasonFarm = e.target.value; loadSeason(); });
+}
+
+async function loadSeason() {
+    const el = document.getElementById('seasonContainer');
+    el.className = 'loading';
+    el.textContent = 'Loading season summary...';
+    try {
+        const q = `?cropYear=${seasonYear}` + (seasonFarm ? `&farm=${encodeURIComponent(seasonFarm)}` : '');
+        const { data } = await apiCall('/api/landlord-summary' + q);
+        if (!seasonFarmsLoaded && !seasonFarm) {
+            const sel = document.getElementById('seasonFarm');
+            for (const f of data.farms) {
+                const o = document.createElement('option');
+                o.value = f.id;
+                o.textContent = `${f.landlordName} (${f.name})`;
+                sel.appendChild(o);
+            }
+            seasonFarmsLoaded = true;
+        }
+        el.className = '';
+        window.LandlordSummaryView.render(el, data, { overview: false });
+    } catch (err) {
+        el.className = '';
+        el.textContent = 'Could not load the season summary: ' + err.message;
+    }
+}
+
 window.addEventListener('DOMContentLoaded', loadDashboard);
