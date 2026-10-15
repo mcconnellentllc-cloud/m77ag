@@ -4,6 +4,8 @@
 //   - section / township / range parsed from the legal description
 //   - county from township and range (confirmed on the 2026 RCIS summary)
 //   - lease type and landlord from the farm (M77Farm)
+//   - legal, FSA farm / tract, acres, county, section / township / range,
+//     soil type and class from the field list in server/data/fieldDetails.js
 //   - soil survey map units and capability class from USDA SSURGO, using
 //     the field boundary on the linked M77Field
 const https = require('https');
@@ -11,6 +13,25 @@ const CroppingField = require('../models/croppingField');
 const M77Farm = require('../models/m77Farm');
 const M77Field = require('../models/m77Field');
 const SOIL_DATA = require('../data/soil-field-data.json');
+const FIELD_DETAILS = require('../data/fieldDetails');
+
+const normName = v => String(v || '').toUpperCase().replace(/\s+/g, ' ').trim();
+// Field list entry for a card: same name, else same farm and field number with half.
+function detailsFor(cf) {
+  const byName = FIELD_DETAILS.find(d => normName(d.field) === normName(cf.field));
+  if (byName) return byName;
+  const num = fieldNumber(cf.field);
+  if (!num) return null;
+  const same = FIELD_DETAILS.filter(d => d.farm === cf.farm && (() => {
+    const n2 = fieldNumber(d.field);
+    return n2 && n2.num === num.num && n2.suffix === num.suffix;
+  })());
+  return same.length === 1 ? same[0] : null;
+}
+// Lease comes from the farm records (the list marks every field owned, which
+// is wrong for landlord ground). Property tax is left off the cards for now.
+const DETAIL_PATHS = ['legal', 'fsaFarm', 'tract', 'acres', 'county', 'section', 'township', 'range', 'soil.type', 'soil.class'];
+const getPath = (o, p) => p.split('.').reduce((v, k) => (v && typeof v === 'object' ? v[k] : undefined), o);
 
 // Township-range blocks and their county, as printed on the M77 AG 2026
 // RCIS insurance summary (Hofmeister, Oct 22, 2025). Blocks not listed are
@@ -115,13 +136,24 @@ function plannedChanges(cf, farm, rawSoil) {
   const set = {};
   const notes = [];
 
-  const legal = parseLegal(cf.legal);
+  // Details from the field list fill blanks first.
+  const details = detailsFor(cf);
+  if (details) {
+    for (const p of DETAIL_PATHS) {
+      const want = getPath(details, p);
+      if (isBlank(want)) continue;
+      if (p.startsWith('soil.') && typeof rawSoil === 'string') continue; // repaired below
+      if (isBlank(getPath(cf, p))) set[p] = want;
+    }
+  }
+
+  const legal = parseLegal(set.legal || cf.legal);
   if (legal) {
-    for (const k of ['section', 'township', 'range']) if (isBlank(cf[k])) set[k] = legal[k];
+    for (const k of ['section', 'township', 'range']) if (isBlank(cf[k]) && isBlank(set[k])) set[k] = legal[k];
   } else if (cf.legal) {
     notes.push('Legal description "' + cf.legal + '" could not be read');
   }
-  if (isBlank(cf.county)) {
+  if (isBlank(cf.county) && isBlank(set.county)) {
     const county = COUNTY_BY_TR[trKey(set.township || cf.township, set.range || cf.range)];
     if (county) set.county = county;
     else if (set.township || cf.township) notes.push('County not on file for ' + trKey(set.township || cf.township, set.range || cf.range));
@@ -197,7 +229,8 @@ async function apply() {
     const update = {};
     if (typeof rs === 'string') {
       // Repair: a string here was meant as the soil type.
-      update.$set = { soil: { type: rs, samples: plan.samples } };
+      const d = detailsFor(cf);
+      update.$set = { soil: { type: rs || (d && d.soil && d.soil.type), ...(d && d.soil && d.soil.class ? { class: d.soil.class } : {}), samples: plan.samples } };
     } else {
       if (Object.keys(plan.set).length) update.$set = { ...plan.set };
       if (plan.samples.length) {
