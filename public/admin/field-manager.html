@@ -193,7 +193,10 @@
         .fert-head a { font-size: 11px; color: #2d5016; }
         .fert-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
         .fert-form label { display: flex; flex-direction: column; gap: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: #888; }
-        .fert-form input, .fert-form select { padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; background: #fff; }
+        .fert-form input, .fert-form select { padding: 6px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; font-family: inherit; background: #fff; color: #333; height: 34px; }
+        .fert-form input:focus, .fert-form select:focus { outline: none; border-color: #2d5016; box-shadow: 0 0 0 2px rgba(45,80,22,0.15); }
+        /* Phones: 16px so iOS does not zoom the page when a box is tapped */
+        @media (max-width: 768px) { .fert-form input, .fert-form select { font-size: 16px; height: 38px; } }
         .fert-form .hint { text-transform: none; letter-spacing: 0; color: #aaa; font-size: 10px; }
         .fert-out { margin-top: 12px; }
         .fert-table { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; border-radius: 6px; }
@@ -1300,7 +1303,7 @@
             }
 
             // Fertility recommendation for the next crop, from the Fertility Standards sheet
-            html += renderFertility(f, latest);
+            html += renderFertility(f, fertSample(f));
 
             // Latest sample nutrient status bars
             html += '<div class="soil-section"><div class="soil-section-title">Nutrient Status <span class="toggle">' + (latest.year ? latest.year + ' lab, for ' + planYear + ' crop' : 'Latest sample') + '</span></div>';
@@ -1354,6 +1357,18 @@
         const fertId = (id, k) => 'fert-' + k + '-' + id;
         const fertVal = (id, k) => { const el = document.getElementById(fertId(id, k)); return el ? el.value : ''; };
 
+        // Crop year picked in the fertility form, per field. Samples are pulled
+        // in the fall, so the crop year N+1 plan uses the year N lab sample.
+        const fertYearSel = {};
+        function fertSample(f) {
+            const samples = ((f.soil && f.soil.samples) || []).filter(s => s.year);
+            const want = fertYearSel[f._id];
+            return (want && samples.find(s => s.year + 1 === want)) || latestSample(f);
+        }
+        function setFertilityYear(id, value) {
+            fertYearSel[id] = parseInt(value, 10);
+            refreshSoilPanel(id);
+        }
         function latestSample(f) {
             const samples = ((f.soil && f.soil.samples) || []).filter(s => s.year);
             return samples.length ? [...samples].sort((a, b) => b.year - a.year)[0] : null;
@@ -1364,6 +1379,7 @@
             const head = '<div class="fert-head"><div class="soil-recs-title">Fertility Recommendation</div><a href="/admin/fertility-standards.html">Fertility Standards sheet</a></div>';
             if (!fertStandards) return '<div class="fert">' + head + '<div class="fert-note">Sign in as staff to load the Fertility Standards sheet.</div></div>';
             const cropYear = latest.year + 1;
+            const cropYears = Array.from(new Set(((f.soil && f.soil.samples) || []).filter(s => s.year).map(s => s.year + 1))).sort((a, b) => b - a);
             const saved = (f.fertilityPlans || []).find(p => p.cropYear === cropYear);
             const planned = labCropName(f['crop' + cropYear]);
             const crop = saved ? saved.crop : planned;
@@ -1377,21 +1393,23 @@
             const crops = Array.from(new Set(FERT_CROPS.concat(crop ? [crop] : [])));
             const on = `oninput="calcFertility('${id}')" onchange="calcFertility('${id}')"`;
             const form = '<div class="fert-form">' +
-                `<label>Crop year<input id="${fertId(id, 'year')}" type="number" value="${cropYear}" readonly><span class="hint">${latest.year} lab, fall sample</span></label>` +
+                `<label>Crop year<select id="${fertId(id, 'year')}" onchange="setFertilityYear('${id}', this.value)">${cropYears.map(y => `<option value="${y}" ${y === cropYear ? 'selected' : ''}>${y}</option>`).join('')}</select><span class="hint">${latest.year} lab, fall sample</span></label>` +
                 `<label>Crop<select id="${fertId(id, 'crop')}" ${on}><option value="">Choose</option>${crops.map(c => `<option value="${escapeText(c)}" ${c === crop ? 'selected' : ''}>${escapeText(c)}</option>`).join('')}</select><span class="hint">${planned ? 'Planned: ' + escapeText(planned) : 'No crop set for ' + cropYear}</span></label>` +
                 `<label>Water<select id="${fertId(id, 'water')}" onchange="saveIrrigation('${id}', this.value)"><option value="dryland" ${irrigated ? '' : 'selected'}>Dryland</option><option value="irrigated" ${irrigated ? 'selected' : ''}>Irrigated</option></select><span class="hint">Saved on the field</span></label>` +
                 `<label>Expected yield, bu/A<input id="${fertId(id, 'yield')}" type="number" min="0" step="1" inputmode="decimal" value="${escapeText(yieldDefault)}" ${on}><span class="hint">5-yr average + 5%</span></label>` +
                 `<label>Soil nitrate-N, ppm<input id="${fertId(id, 'no3')}" type="number" min="0" step="0.1" inputmode="decimal" value="${escapeText(no3)}" ${on}><span class="hint">Lab ${escapeText(latest.depth || 'surface')}: ${latest.NO3ppm ?? '--'}</span></label>` +
                 `<label>Organic matter, %<input id="${fertId(id, 'om')}" type="number" min="0" step="0.1" inputmode="decimal" value="${escapeText(om)}" ${on}><span class="hint">Lab: ${latest.organicMatter ?? '--'}</span></label>` +
                 `<label>Other N credits, lb/A<input id="${fertId(id, 'credits')}" type="number" min="0" step="1" inputmode="decimal" value="${escapeText(credits)}" ${on}><span class="hint">Manure, legume, water</span></label>` +
-                `<label class="fert-price">Sorghum price, $/bu<input id="${fertId(id, 'gp')}" type="number" min="0" step="0.01" inputmode="decimal" value="${escapeText(gp)}" ${on}></label>` +
-                `<label class="fert-price">N price, $/lb N<input id="${fertId(id, 'np')}" type="number" min="0" step="0.01" inputmode="decimal" value="${escapeText(np)}" ${on}></label>` +
+                `<label class="fert-price" ${crop === 'SORGHUM' ? '' : 'style="display:none"'}>Sorghum price, $/bu<input id="${fertId(id, 'gp')}" type="number" min="0" step="0.01" inputmode="decimal" value="${escapeText(gp)}" ${on}></label>` +
+                `<label class="fert-price" ${crop === 'SORGHUM' ? '' : 'style="display:none"'}>N price, $/lb N<input id="${fertId(id, 'np')}" type="number" min="0" step="0.01" inputmode="decimal" value="${escapeText(np)}" ${on}></label>` +
                 '</div>';
+            // The result reads the form, so it is computed once the form is in the page.
+            setTimeout(() => calcFertility(id), 0);
             const plans = (f.fertilityPlans || []).slice().sort((a, b) => b.cropYear - a.cropYear);
             const plansHtml = plans.length ? '<div class="fert-plans"><div class="soil-recs-title">Saved Plans</div>' + plans.map(p =>
                 `<div class="fert-plan"><span><strong>${p.cropYear} ${escapeText(p.crop)}</strong> ${p.irrigated ? 'irrigated' : 'dryland'}, ${p.inputs.expectedYield || '--'} bu | N ${p.result.n.rate ?? '--'} | P2O5 band ${p.result.p ? p.result.p.band ?? '--' : '--'} | K2O ${p.result.k ? p.result.k.rate ?? '--' : '--'} | Zn band ${p.result.zn ? p.result.zn.band ?? '--' : '--'} lb/A <span style="color:#999">(${p.sampleYear} lab, saved ${new Date(p.savedAt).toLocaleDateString()}${p.savedBy ? ' by ' + escapeText(p.savedBy) : ''})</span></span>` +
                 `<button class="btn btn-outline btn-sm" onclick="deleteFertilityPlan('${id}', '${p._id}')">Remove</button></div>`).join('') + '</div>' : '';
-            return '<div class="fert">' + head + form + `<div class="fert-out" id="${fertId(id, 'out')}">${fertilityResultHtml(f, latest)}</div>` +
+            return '<div class="fert">' + head + form + `<div class="fert-out" id="${fertId(id, 'out')}"></div>` +
                 `<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="saveFertilityPlan('${id}')">${saved ? 'Update' : 'Save'} ${cropYear} Plan</button></div>` + plansHtml + '</div>';
         }
 
@@ -1409,11 +1427,6 @@
         }
 
         function fertilityResultHtml(f, latest) {
-            if (!document.getElementById(fertId(f._id, 'crop'))) {
-                // First render: the form is not in the page yet, so compute after it is.
-                setTimeout(() => calcFertility(f._id), 0);
-                return '';
-            }
             const rec = FertilityGuidelines.recommend(fertStandards, fertilityInputs(f, latest));
             document.querySelectorAll(`#card-${f._id} .fert-price`).forEach(el => { el.style.display = rec.crop === 'SORGHUM' ? '' : 'none'; });
             const warn = rec.warnings.map(w => '<div class="fert-warn">' + escapeText(w) + '</div>').join('');
@@ -1439,7 +1452,7 @@
             const f = allFields.find(x => x._id === id);
             const out = document.getElementById(fertId(id, 'out'));
             if (!f || !out) return;
-            out.innerHTML = fertilityResultHtml(f, latestSample(f));
+            out.innerHTML = fertilityResultHtml(f, fertSample(f));
         }
 
         function refreshSoilPanel(id) {
@@ -1464,7 +1477,7 @@
 
         async function saveFertilityPlan(id) {
             const f = allFields.find(x => x._id === id);
-            const latest = latestSample(f);
+            const latest = fertSample(f);
             const inp = fertilityInputs(f, latest);
             const body = { cropYear: latest.year + 1, sampleYear: latest.year, crop: inp.crop, expectedYield: inp.expectedYield, no3ppm: inp.no3ppm, om: inp.om, otherCredits: inp.otherCredits, grainPrice: inp.crop === 'SORGHUM' ? inp.grainPrice : '', nPrice: inp.crop === 'SORGHUM' ? inp.nPrice : '' };
             try {
