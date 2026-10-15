@@ -1509,9 +1509,10 @@
                 ['Wheat 2027 drilling (Oct 2026)', r => !isOps(r) && r.cropYear === 2027 && r.type === 'seeding'],
                 ['Fall chemfallow for corn 2027', r => !isOps(r) && r.cropYear === 2027 && r.type === 'spray'],
                 ['Planting (Ops Center Seeding 2026; 2025 milo)', r => isOps(r) && r.type === 'seeding'],
-                ['Spray passes (Ops Center Application 2026)', r => isOps(r) && r.type === 'spray']
+                ['Spray passes (Ops Center Application 2026)', r => isOps(r) && r.type === 'spray'],
+                ['Tillage (Ops Center Tillage 2026; implement to pick)', r => isOps(r) && r.type === 'tillage']
             ];
-            function isOps(r) { return /^(app26|sd26)-/.test(String(r.key)); }
+            function isOps(r) { return /^(app26|sd26|till26)-/.test(String(r.key)); }
             const rows = groups.map(([label, test]) => {
                 const recs = seasonData.records.filter(test);
                 if (!recs.length) return '';

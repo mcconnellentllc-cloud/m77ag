@@ -1,0 +1,981 @@
+[
+ {
+  "kind": "Primary Tillage",
+  "field": "12.E - LA BAM W/4 - East 80",
+  "opsField": "12.E",
+  "farm": "LAFARMS",
+  "start": "2026-09-02",
+  "end": "2026-09-05",
+  "area": 171.1,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "76.7 gal",
+  "hours": "7 hr 51 min",
+  "equipment": [
+   "8320R 113101",
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "12.E - LA BAM W/4 - East 80",
+  "opsField": "12.E",
+  "farm": "LAFARMS",
+  "start": "2026-06-20",
+  "end": "2026-06-22",
+  "area": 89.6,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "33.8 gal",
+  "hours": "4 hr 52 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "12.E - LA BAM W/4 - East 80",
+  "opsField": "12.E",
+  "farm": "LAFARMS",
+  "start": "2026-07-28",
+  "end": "2026-07-28",
+  "area": 91.4,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "38 gal",
+  "hours": "3 hr 53 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "12.E - LA BAM W/4 - East 80",
+  "opsField": "12.E",
+  "farm": "LAFARMS",
+  "start": "2026-04-09",
+  "end": "2026-04-15",
+  "area": 86.0,
+  "depth": "4 in",
+  "operator": "Kyle McConnell, Matt Allphin",
+  "fuel": "38.3 gal",
+  "hours": "4 hr 35 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "13.W - LA BAM E/4 - West 80",
+  "opsField": "13.W",
+  "farm": "LAFARMS",
+  "start": "2026-09-02",
+  "end": "2026-09-05",
+  "area": 3.1,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0.7 gal",
+  "hours": "7 min",
+  "equipment": [
+   "8320R 113101",
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "13.W - LA BAM E/4 - West 80",
+  "opsField": "13.W",
+  "farm": "LAFARMS",
+  "start": "2026-06-20",
+  "end": "2026-06-22",
+  "area": 30.6,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "2.8 gal",
+  "hours": "18 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "13.W - LA BAM E/4 - West 80",
+  "opsField": "13.W",
+  "farm": "LAFARMS",
+  "start": "2026-07-28",
+  "end": "2026-07-28",
+  "area": 1.0,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0.3 gal",
+  "hours": "2 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Shank",
+  "field": "14.S - LA BAM S/4 - S 80",
+  "opsField": "14.S",
+  "farm": "LAFARMS",
+  "start": "2026-09-11",
+  "end": "2026-09-11",
+  "area": 72.0,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "23.6 gal",
+  "hours": "3 hr 28 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "14.S - LA BAM S/4 - S 80",
+  "opsField": "14.S",
+  "farm": "LAFARMS",
+  "start": "2026-07-16",
+  "end": "2026-07-20",
+  "area": 75.7,
+  "depth": "4 in",
+  "operator": "T-Bird",
+  "fuel": "28.5 gal",
+  "hours": "3 hr 24 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "14.S - LA BAM S/4 - S 80",
+  "opsField": "14.S",
+  "farm": "LAFARMS",
+  "start": "2026-08-28",
+  "end": "2026-08-31",
+  "area": 118.2,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "48.9 gal",
+  "hours": "5 hr 23 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "20 - KB NORTH",
+  "opsField": "20",
+  "farm": "KB FARMS",
+  "start": "2026-07-28",
+  "end": "2026-07-28",
+  "area": 9.3,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "3.8 gal",
+  "hours": "56 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "20 - KB NORTH",
+  "opsField": "20",
+  "farm": "KB FARMS",
+  "start": "2026-07-07",
+  "end": "2026-07-09",
+  "area": 57.2,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "24.6 gal",
+  "hours": "3 hr 42 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "20 - KB NORTH",
+  "opsField": "20",
+  "farm": "KB FARMS",
+  "start": "2026-08-24",
+  "end": "2026-08-24",
+  "area": 82.9,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "34.9 gal",
+  "hours": "3 hr 29 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "21 - KB SMALL",
+  "opsField": "21",
+  "farm": "KB FARMS",
+  "start": "2026-08-20",
+  "end": "2026-08-21",
+  "area": 55.6,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "25.4 gal",
+  "hours": "2 hr 14 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "22 - KB TOP HILL",
+  "opsField": "22",
+  "farm": "KB FARMS",
+  "start": "2026-08-18",
+  "end": "2026-08-25",
+  "area": 118.7,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "62.8 gal",
+  "hours": "6 hr 24 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "22 - KB TOP HILL",
+  "opsField": "22",
+  "farm": "KB FARMS",
+  "start": "2026-09-02",
+  "end": "2026-09-04",
+  "area": 120.7,
+  "depth": "4 in",
+  "operator": "Kyle McConnell, Matt Allphin",
+  "fuel": "46.7 gal",
+  "hours": "5 hr 38 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "22 - KB TOP HILL",
+  "opsField": "22",
+  "farm": "KB FARMS",
+  "start": "2026-07-09",
+  "end": "2026-07-13",
+  "area": 121.7,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "57.2 gal",
+  "hours": "7 hr 50 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Shank",
+  "field": "23.E - KB SOUTHWEST",
+  "opsField": "23.E",
+  "farm": "KB FARMS",
+  "start": "2026-09-11",
+  "end": "2026-09-11",
+  "area": 69.3,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "28.3 gal",
+  "hours": "3 hr 12 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "23.E - KB SOUTHWEST",
+  "opsField": "23.E",
+  "farm": "KB FARMS",
+  "start": "2026-07-13",
+  "end": "2026-07-13",
+  "area": 79.6,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "39.8 gal",
+  "hours": "3 hr 52 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "23.E - KB SOUTHWEST",
+  "opsField": "23.E",
+  "farm": "KB FARMS",
+  "start": "2026-09-02",
+  "end": "2026-09-04",
+  "area": 76.5,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "37.7 gal",
+  "hours": "3 hr 18 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "23.E - KB SOUTHWEST",
+  "opsField": "23.E",
+  "farm": "KB FARMS",
+  "start": "2026-06-16",
+  "end": "2026-06-20",
+  "area": 76.7,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "29.4 gal",
+  "hours": "3 hr 54 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "23.E - KB SOUTHWEST",
+  "opsField": "23.E",
+  "farm": "KB FARMS",
+  "start": "2026-04-08",
+  "end": "2026-04-08",
+  "area": 76.7,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "36.9 gal",
+  "hours": "4 hr 22 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "24.E - KB Section SE/4 - East",
+  "opsField": "24.E",
+  "farm": "KB FARMS",
+  "start": "2026-06-19",
+  "end": "2026-06-19",
+  "area": 0.1,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0 gal",
+  "hours": "0 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "25 - KB MADSEN",
+  "opsField": "25",
+  "farm": "KB FARMS",
+  "start": "2026-08-20",
+  "end": "2026-08-20",
+  "area": 0.9,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0.2 gal",
+  "hours": "3 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "28 - Michael SW 1/4",
+  "opsField": "28",
+  "farm": "KB FARMS",
+  "start": "2026-06-24",
+  "end": "2026-06-24",
+  "area": 1.0,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0.1 gal",
+  "hours": "0 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "29 - SE Michael",
+  "opsField": "29",
+  "farm": "KB FARMS",
+  "start": "2026-06-24",
+  "end": "2026-06-24",
+  "area": 26.0,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "13.6 gal",
+  "hours": "1 hr 7 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "31.E - Peterson Pole Rd - East",
+  "opsField": "31.E",
+  "farm": "PETERSON",
+  "start": "2026-08-31",
+  "end": "2026-09-04",
+  "area": 171.3,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "66 gal",
+  "hours": "8 hr 5 min",
+  "equipment": [
+   "8320R 113101",
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "31.E - Peterson Pole Rd - East",
+  "opsField": "31.E",
+  "farm": "PETERSON",
+  "start": "2026-04-15",
+  "end": "2026-04-15",
+  "area": 53.3,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "22.1 gal",
+  "hours": "2 hr 50 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "31.E - Peterson Pole Rd - East",
+  "opsField": "31.E",
+  "farm": "PETERSON",
+  "start": "2026-07-24",
+  "end": "2026-07-28",
+  "area": 74.1,
+  "depth": "4 in",
+  "operator": "Kyle McConnell, Matt Allphin",
+  "fuel": "26.9 gal",
+  "hours": "3 hr 12 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "31.E - Peterson Pole Rd - East",
+  "opsField": "31.E",
+  "farm": "PETERSON",
+  "start": "2026-06-20",
+  "end": "2026-06-20",
+  "area": 62.3,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "20.9 gal",
+  "hours": "2 hr 46 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "32.N - PT Highland W - North 80",
+  "opsField": "32.N",
+  "farm": "PETERSON",
+  "start": "2026-08-25",
+  "end": "2026-09-02",
+  "area": 0.3,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "0.1 gal",
+  "hours": "0 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "33.S - PT Orpha's - South 80",
+  "opsField": "33.S",
+  "farm": "PETERSON",
+  "start": "2026-07-02",
+  "end": "2026-07-03",
+  "area": 71.4,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "34.7 gal",
+  "hours": "3 hr 39 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "33.S - PT Orpha's - South 80",
+  "opsField": "33.S",
+  "farm": "PETERSON",
+  "start": "2026-07-27",
+  "end": "2026-08-03",
+  "area": 99.2,
+  "depth": "3 in",
+  "operator": "Matt Allphin",
+  "fuel": "43 gal",
+  "hours": "5 hr 22 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "33.S - PT Orpha's - South 80",
+  "opsField": "33.S",
+  "farm": "PETERSON",
+  "start": "2026-04-01",
+  "end": "2026-04-07",
+  "area": 89.3,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "41.8 gal",
+  "hours": "4 hr 35 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "33.S - PT Orpha's - South 80",
+  "opsField": "33.S",
+  "farm": "PETERSON",
+  "start": "2026-07-14",
+  "end": "2026-07-16",
+  "area": 89.3,
+  "depth": "4 in",
+  "operator": "T-Bird",
+  "fuel": "42.6 gal",
+  "hours": "4 hr 14 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "42.E - E/2 N/4 - East 80",
+  "opsField": "42.E",
+  "farm": "HD Farms",
+  "start": "2026-07-27",
+  "end": "2026-07-27",
+  "area": 0.0,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "0 gal",
+  "hours": "0 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "42.E - E/2 N/4 - East 80",
+  "opsField": "42.E",
+  "farm": "HD Farms",
+  "start": "2026-05-26",
+  "end": "2026-05-26",
+  "area": 0.0,
+  "depth": "0 in",
+  "operator": "Matt Allphin",
+  "fuel": "",
+  "hours": "---",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "42.E - E/2 N/4 - East 80",
+  "opsField": "42.E",
+  "farm": "HD Farms",
+  "start": "2026-10-01",
+  "end": "2026-10-01",
+  "area": 0.0,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0 gal",
+  "hours": "0 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Shank",
+  "field": "42.E - E/2 N/4 - East 80",
+  "opsField": "42.E",
+  "farm": "HD Farms",
+  "start": "2026-09-12",
+  "end": "2026-09-12",
+  "area": 21.7,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "9.9 gal",
+  "hours": "59 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "42.E - E/2 N/4 - East 80",
+  "opsField": "42.E",
+  "farm": "HD Farms",
+  "start": "2026-05-15",
+  "end": "2026-05-24",
+  "area": 6.5,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "3.4 gal",
+  "hours": "21 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "46.P - HOME PASTURE",
+  "opsField": "46.P",
+  "farm": "HD Farms",
+  "start": "2026-10-01",
+  "end": "2026-10-01",
+  "area": 0.1,
+  "depth": "4 in",
+  "operator": "Kyle McConnell",
+  "fuel": "0 gal",
+  "hours": "0 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "61.N - A1 Highland E - North 80",
+  "opsField": "61.N",
+  "farm": "A1 FARMS",
+  "start": "2026-08-10",
+  "end": "2026-08-10",
+  "area": 4.0,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "1.8 gal",
+  "hours": "11 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "61.N - A1 Highland E - North 80",
+  "opsField": "61.N",
+  "farm": "A1 FARMS",
+  "start": "2026-06-16",
+  "end": "2026-06-16",
+  "area": 88.2,
+  "depth": "0 in",
+  "operator": "Kyle McConnell, Matt Allphin",
+  "fuel": "33.7 gal",
+  "hours": "4 hr 14 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "61.N - A1 Highland E - North 80",
+  "opsField": "61.N",
+  "farm": "A1 FARMS",
+  "start": "2026-07-14",
+  "end": "2026-07-14",
+  "area": 88.4,
+  "depth": "4 in",
+  "operator": "T-Bird",
+  "fuel": "43.5 gal",
+  "hours": "4 hr 10 min",
+  "equipment": [
+   "8320R 113101"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "61.N - A1 Highland E - North 80",
+  "opsField": "61.N",
+  "farm": "A1 FARMS",
+  "start": "2026-08-25",
+  "end": "2026-09-02",
+  "area": 162.2,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "75.3 gal",
+  "hours": "7 hr 58 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "61.N - A1 Highland E - North 80",
+  "opsField": "61.N",
+  "farm": "A1 FARMS",
+  "start": "2026-04-07",
+  "end": "2026-04-08",
+  "area": 87.9,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "40.7 gal",
+  "hours": "4 hr 41 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "61.S - A1 Highland E - South 80",
+  "opsField": "61.S",
+  "farm": "A1 FARMS",
+  "start": "2026-08-28",
+  "end": "2026-09-02",
+  "area": 0.5,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "0.1 gal",
+  "hours": "1 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "72 - Lueking S Big Circle",
+  "opsField": "72",
+  "farm": "Lueking",
+  "start": "2026-04-23",
+  "end": "2026-04-23",
+  "area": 1.4,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "0.5 gal",
+  "hours": "4 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "73 - Home Circle - Sec 19",
+  "opsField": "73",
+  "farm": "Lueking",
+  "start": "2026-04-16",
+  "end": "2026-04-23",
+  "area": 140.7,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "45.4 gal",
+  "hours": "7 hr 16 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "73 - Home Circle - Sec 19",
+  "opsField": "73",
+  "farm": "Lueking",
+  "start": "2026-03-29",
+  "end": "2026-03-30",
+  "area": 110.3,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "61.9 gal",
+  "hours": "5 hr 31 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "73.C.SW - SW Corner Small Circle",
+  "opsField": "73.C.SW",
+  "farm": "Lueking",
+  "start": "2026-04-24",
+  "end": "2026-04-24",
+  "area": 10.5,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "4.5 gal",
+  "hours": "40 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "73.C.SW - SW Corner Small Circle",
+  "opsField": "73.C.SW",
+  "farm": "Lueking",
+  "start": "2026-05-14",
+  "end": "2026-05-14",
+  "area": 4.5,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "1.7 gal",
+  "hours": "14 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "76.E - Lueking SE House",
+  "opsField": "76.E",
+  "farm": "Lueking",
+  "start": "2026-05-13",
+  "end": "2026-05-14",
+  "area": 53.5,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "20.1 gal",
+  "hours": "2 hr 57 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "76.E - Lueking SE House",
+  "opsField": "76.E",
+  "farm": "Lueking",
+  "start": "2026-04-23",
+  "end": "2026-04-23",
+  "area": 67.7,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "27.7 gal",
+  "hours": "3 hr 4 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "77 - Big Circle - Sec 30",
+  "opsField": "77",
+  "farm": "Lueking",
+  "start": "2026-03-30",
+  "end": "2026-03-31",
+  "area": 223.7,
+  "depth": "0 in",
+  "operator": "Kyle McConnell",
+  "fuel": "118.5 gal",
+  "hours": "11 hr 13 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "77 - Big Circle - Sec 30",
+  "opsField": "77",
+  "farm": "Lueking",
+  "start": "2026-05-13",
+  "end": "2026-05-13",
+  "area": 2.2,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "0.9 gal",
+  "hours": "6 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "77 - Big Circle - Sec 30",
+  "opsField": "77",
+  "farm": "Lueking",
+  "start": "2026-04-23",
+  "end": "2026-04-23",
+  "area": 3.8,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "1.5 gal",
+  "hours": "12 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "78 - Lueking Bull Pasture",
+  "opsField": "78",
+  "farm": "Lueking",
+  "start": "2026-04-23",
+  "end": "2026-04-23",
+  "area": 27.6,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "11.5 gal",
+  "hours": "1 hr 18 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "78 - Lueking Bull Pasture",
+  "opsField": "78",
+  "farm": "Lueking",
+  "start": "2026-05-13",
+  "end": "2026-05-13",
+  "area": 24.3,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "8.9 gal",
+  "hours": "1 hr 19 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "79.S - Lueking By Steves",
+  "opsField": "79.S",
+  "farm": "Lueking",
+  "start": "2026-05-14",
+  "end": "2026-05-14",
+  "area": 92.1,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "35.2 gal",
+  "hours": "4 hr 58 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ },
+ {
+  "kind": "Primary Tillage",
+  "field": "79.S - Lueking By Steves",
+  "opsField": "79.S",
+  "farm": "Lueking",
+  "start": "2026-04-24",
+  "end": "2026-04-24",
+  "area": 100.4,
+  "depth": "4 in",
+  "operator": "Matt Allphin",
+  "fuel": "43.5 gal",
+  "hours": "4 hr 32 min",
+  "equipment": [
+   "8370R 920111"
+  ]
+ }
+]
