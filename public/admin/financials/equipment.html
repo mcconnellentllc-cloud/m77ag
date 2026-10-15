@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Financials - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #1a1a1a; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px 40px 48px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; }
+        .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 24px; }
+        .tile { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; }
+        .tile.highlight { background: #2d5016; color: #fff; }
+        .tile-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+        .tile.highlight .tile-label, .tile.highlight .tile-sub { color: rgba(255,255,255,0.8); }
+        .tile-value { font-family: 'Oswald', sans-serif; font-size: 30px; margin-top: 6px; }
+        .tile-sub { font-size: 13px; color: #888; margin-top: 4px; }
+        .red { color: #b3261e; } .green { color: #2d5016; } .gold { color: #b8862e; }
+        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 24px; margin-top: 24px; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 20px; color: #2d5016; margin-bottom: 12px; }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; background: #f5f3f0; color: #2d5016; font-family: 'Oswald', sans-serif; font-weight: 500; padding: 10px 12px; white-space: nowrap; }
+        td { padding: 9px 12px; border-bottom: 1px solid #eee; }
+        td.num, th.num { text-align: right; white-space: nowrap; }
+        tfoot td { font-weight: 700; border-top: 2px solid #ddd; }
+        .muted { color: #888; font-size: 13px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #2d5016; color: #fff; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: 600; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px 40px; }
+            .page-title { font-size: 26px; }
+            .card { padding: 18px 16px; }
+            .tile-value { font-size: 26px; }
+        }
+        @media print { .admin-header, .btn { display: none; } body { background: #fff; } .tile, .card { box-shadow: none; border: 1px solid #ddd; } }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/financials">Financials</a>
+            <a href="/admin/equipment-manager.html">Equipment Manager</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Equipment Financials</h1>
+        <p class="page-subtitle">Totals for active equipment from Equipment Manager. Sold units are not counted.</p>
+
+        <div class="tiles">
+            <div class="tile highlight"><div class="tile-label">Total Equipment Value</div><div class="tile-value" id="tValue">--</div><div class="tile-sub" id="tCount"></div></div>
+            <div class="tile"><div class="tile-label">Total Debt</div><div class="tile-value red" id="tDebt">--</div><div class="tile-sub" id="tLoans"></div></div>
+            <div class="tile"><div class="tile-label">Net Equity</div><div class="tile-value green" id="tEquity">--</div></div>
+            <div class="tile"><div class="tile-label">Upcoming Payments (30 days)</div><div class="tile-value gold" id="tUpcoming">--</div><div class="tile-sub" id="tUpcomingCount"></div></div>
+            <div class="tile"><div class="tile-label">Listed For Sale</div><div class="tile-value green" id="tSale">--</div><div class="tile-sub" id="tSaleValue"></div></div>
+            <div class="tile"><div class="tile-label">Parts Ordered</div><div class="tile-value" id="tParts">--</div><div class="tile-sub" id="tPartsSub"></div></div>
+        </div>
+
+        <section class="card">
+            <h2>Upcoming loan payments</h2>
+            <div class="table-wrap" id="payments"><div class="muted">Loading...</div></div>
+        </section>
+
+        <section class="card">
+            <h2>By category</h2>
+            <div class="table-wrap" id="categories"><div class="muted">Loading...</div></div>
+        </section>
+
+        <section class="card">
+            <h2>Loans</h2>
+            <div class="table-wrap" id="loans"><div class="muted">Loading...</div></div>
+        </section>
+
+        <section class="card">
+            <h2>Parts orders by unit</h2>
+            <div class="table-wrap" id="parts"><div class="muted">Loading...</div></div>
+        </section>
+
+        <p style="margin-top:24px;"><a class="btn" href="/admin/equipment-manager.html">Open Equipment Manager</a></p>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '/admin/login';
+        const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const money = n => '$' + Math.round(n || 0).toLocaleString('en-US');
+        const money2 = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const day = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        const set = (id, v) => { document.getElementById(id).textContent = v; };
+
+        async function load() {
+            try {
+                const [inv, sum] = await Promise.all([
+                    fetch('/api/equipment/inventory').then(r => r.json()),
+                    fetch('/api/equipment/inventory/summary').then(r => r.json())
+                ]);
+                const active = (inv.equipment || []).filter(e => e.saleStatus !== 'sold');
+                const value = active.reduce((s, e) => s + (e.currentValue || 0), 0);
+                const owed = active.reduce((s, e) => s + (e.amountOwed || 0), 0);
+                const loans = active.filter(e => e.hasLoan && (e.amountOwed || 0) > 0);
+                set('tValue', money(value)); set('tCount', active.length + ' items');
+                set('tDebt', money(owed)); set('tLoans', loans.length + ' loans');
+                set('tEquity', money(value - owed));
+                const upcoming = ((sum.summary || {}).upcomingPayments || []).filter(p => active.some(e => String(e._id) === String(p.equipmentId)));
+                set('tUpcoming', money(upcoming.reduce((s, p) => s + (p.paymentAmount || 0), 0))); set('tUpcomingCount', upcoming.length + ' payments');
+                const forSale = active.filter(e => e.forSale && e.saleStatus === 'available');
+                set('tSale', forSale.length); set('tSaleValue', money(forSale.reduce((s, e) => s + (e.askingPrice || e.currentValue || 0), 0)) + ' asking');
+
+                document.getElementById('payments').innerHTML = upcoming.length ? `<table><thead><tr><th>Due</th><th>Unit</th><th>Lender</th><th class="num">Payment</th></tr></thead><tbody>
+                    ${upcoming.map(p => `<tr><td>${esc(day(p.dueDate))}</td><td>${esc(p.title)}</td><td>${esc(p.lender || '')}</td><td class="num">${money2(p.paymentAmount)}</td></tr>`).join('')}</tbody></table>`
+                    : '<div class="muted">No loan payments due in the next 30 days.</div>';
+
+                const cats = {};
+                active.forEach(e => {
+                    const c = e.category || 'Other';
+                    cats[c] = cats[c] || { count: 0, value: 0, owed: 0 };
+                    cats[c].count++; cats[c].value += e.currentValue || 0; cats[c].owed += e.amountOwed || 0;
+                });
+                const rows = Object.entries(cats).sort((a, b) => b[1].value - a[1].value);
+                document.getElementById('categories').innerHTML = `<table><thead><tr><th>Category</th><th class="num">Units</th><th class="num">Value</th><th class="num">Owed</th><th class="num">Equity</th></tr></thead><tbody>
+                    ${rows.map(([c, d]) => `<tr><td>${esc(c)}</td><td class="num">${d.count}</td><td class="num">${money(d.value)}</td><td class="num">${d.owed ? money(d.owed) : '-'}</td><td class="num">${money(d.value - d.owed)}</td></tr>`).join('')}</tbody>
+                    <tfoot><tr><td>Total</td><td class="num">${active.length}</td><td class="num">${money(value)}</td><td class="num">${money(owed)}</td><td class="num">${money(value - owed)}</td></tr></tfoot></table>`;
+
+                document.getElementById('loans').innerHTML = loans.length ? `<table><thead><tr><th>Unit</th><th>Lender</th><th class="num">Owed</th><th class="num">Payment</th><th>Next due</th></tr></thead><tbody>
+                    ${loans.sort((a, b) => (b.amountOwed || 0) - (a.amountOwed || 0)).map(e => `<tr><td>${esc(e.title)}</td><td>${esc(e.lender || '')}</td><td class="num">${money(e.amountOwed)}</td><td class="num">${e.paymentAmount ? money2(e.paymentAmount) + ' ' + esc(e.paymentFrequency || '') : '-'}</td><td>${esc(day(e.nextPaymentDate))}</td></tr>`).join('')}</tbody></table>`
+                    : '<div class="muted">No equipment loans.</div>';
+
+                try {
+                    const res = await fetch('/api/equipment-parts/orders/summary', { headers: { 'Authorization': 'Bearer ' + token } });
+                    const body = await res.json();
+                    const data = (body.data || []).map(r => ({ ...r, unit: (inv.equipment || []).find(e => String(e._id) === String(r.equipment)) }));
+                    const total = data.reduce((s, r) => s + r.total, 0);
+                    set('tParts', money2(total)); set('tPartsSub', data.reduce((s, r) => s + r.orders, 0) + ' orders');
+                    document.getElementById('parts').innerHTML = data.length ? `<table><thead><tr><th>Unit</th><th class="num">Orders</th><th class="num">Total</th></tr></thead><tbody>
+                        ${data.sort((a, b) => b.total - a.total).map(r => `<tr><td>${esc(r.unit ? r.unit.title : 'Unit removed')}</td><td class="num">${r.orders}</td><td class="num">${money2(r.total)}</td></tr>`).join('')}</tbody>
+                        <tfoot><tr><td>Total</td><td></td><td class="num">${money2(total)}</td></tr></tfoot></table>
+                        <p class="muted" style="margin-top:8px;">From Common Parts orders, cancelled orders excluded.</p>`
+                        : '<div class="muted">No parts orders yet.</div>';
+                } catch (e) {
+                    document.getElementById('parts').innerHTML = '<div class="muted">Parts orders could not be loaded.</div>';
+                }
+            } catch (e) {
+                document.getElementById('categories').innerHTML = '<div class="muted">Could not load equipment: ' + esc(e.message) + '</div>';
+            }
+        }
+        load();
+    </script>
+</body>
+</html>

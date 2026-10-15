@@ -967,44 +967,6 @@
             </div>
         </div>
 
-        <!-- Financial Summary -->
-        <div class="summary-grid">
-            <div class="summary-card highlight">
-                <div class="summary-label">Total Equipment Value</div>
-                <div class="summary-value" id="totalValue">$0</div>
-                <div class="summary-subtext" id="equipmentCount">0 items</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Total Debt</div>
-                <div class="summary-value red" id="totalDebt">$0</div>
-                <div class="summary-subtext" id="loanCount">0 loans</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Net Equity</div>
-                <div class="summary-value green" id="netEquity">$0</div>
-            </div>
-            <div class="summary-card warning">
-                <div class="summary-label">Upcoming Payments (30 days)</div>
-                <div class="summary-value gold" id="upcomingPayments">$0</div>
-                <div class="summary-subtext" id="paymentCount">0 payments</div>
-            </div>
-            <div class="summary-card" style="border-left: 4px solid #4caf50;">
-                <div class="summary-label">Listed For Sale</div>
-                <div class="summary-value" style="color: #4caf50;" id="forSaleCount">0</div>
-                <div class="summary-subtext" id="forSaleValue">$0 asking</div>
-            </div>
-        </div>
-
-        <!-- Upcoming Payments Panel -->
-        <div class="payments-panel" id="paymentsPanel" style="display: none;">
-            <div class="payments-header">
-                <h3 class="payments-title">Upcoming Loan Payments</h3>
-            </div>
-            <div id="paymentsList">
-                <!-- Payments loaded here -->
-            </div>
-        </div>
-
         <!-- Category Tabs -->
         <div class="category-tabs" id="categoryTabs">
             <button class="category-tab active" data-category="all">
@@ -1012,10 +974,6 @@
             </button>
         </div>
 
-        <!-- Category Summary -->
-        <div class="category-summary" id="categorySummary">
-            <!-- Category cards loaded here -->
-        </div>
 
         <!-- Equipment Table -->
         <div class="table-container">
@@ -1286,7 +1244,9 @@
             }
         }
 
+        // Totals are kept on Financials > Equipment, not on this page.
         function updateSummaryDisplay() {
+            if (!document.getElementById('totalValue')) return;
             // Calculate totals from active (non-sold) equipment only
             const activeEquipment = allEquipment.filter(e => e.saleStatus !== 'sold');
 
@@ -1401,6 +1361,7 @@
 
         function renderCategorySummary() {
             const container = document.getElementById('categorySummary');
+            if (!container) return;
             const values = getCategoryValues();
 
             let html = '';
