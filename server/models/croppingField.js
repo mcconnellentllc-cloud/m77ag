@@ -94,6 +94,22 @@ const soilSampleSchema = new mongoose.Schema({
   notes: String
 }, { _id: true });
 
+// A fertility recommendation saved for a crop year, computed on the server
+// from the Fertility Standards sheet and the soil sample named here.
+const fertilityPlanSchema = new mongoose.Schema({
+  cropYear: { type: Number, required: true },
+  crop: { type: String, required: true },
+  irrigated: Boolean,
+  standardKey: String,
+  standardTitle: String,
+  source: String,
+  sampleYear: Number,
+  inputs: mongoose.Schema.Types.Mixed,
+  result: mongoose.Schema.Types.Mixed,
+  savedBy: String,
+  savedAt: { type: Date, default: Date.now }
+}, { _id: true });
+
 // === Main CroppingField Schema ===
 const croppingFieldSchema = new mongoose.Schema({
   // --- Identity ---
@@ -101,7 +117,7 @@ const croppingFieldSchema = new mongoose.Schema({
   farm: {
     type: String,
     required: true,
-    enum: ['LAFARMS', 'KBFARMS', 'PETERSON', 'HDFARMS', 'MEFARMS', 'A1FARMS']
+    enum: ['LAFARMS', 'KBFARMS', 'PETERSON', 'HDFARMS', 'MEFARMS', 'A1FARMS', 'LUEKING']
   },
   field: { type: String, required: true },
 
@@ -152,6 +168,8 @@ const croppingFieldSchema = new mongoose.Schema({
     drainageTile: { type: Boolean, default: false },
     samples: [soilSampleSchema]
   },
+
+  fertilityPlans: [fertilityPlanSchema],
 
   // --- Lease / Ownership ---
   lease: {

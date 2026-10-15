@@ -186,6 +186,32 @@
         .soil-val .sv-num { font-family: 'Oswald', sans-serif; font-size: 15px; color: #2d5016; }
         .soil-val .sv-lbl { font-size: 9px; color: #999; text-transform: uppercase; }
 
+        /* Fertility recommendation */
+        .fert { background: #f8f6f2; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+        .fert-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+        .fert-head .soil-recs-title { margin: 0; }
+        .fert-head a { font-size: 11px; color: #2d5016; }
+        .fert-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+        .fert-form label { display: flex; flex-direction: column; gap: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: #888; }
+        .fert-form input, .fert-form select { padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; background: #fff; }
+        .fert-form .hint { text-transform: none; letter-spacing: 0; color: #aaa; font-size: 10px; }
+        .fert-out { margin-top: 12px; }
+        .fert-table { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; border-radius: 6px; }
+        .fert-table th { text-align: left; padding: 7px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; border-bottom: 1px solid #eee; }
+        .fert-table td { padding: 7px 8px; border-bottom: 1px solid #f3f3f3; vertical-align: top; }
+        .fert-table td.rate { font-family: 'Oswald', sans-serif; font-size: 16px; color: #2d5016; white-space: nowrap; }
+        .fert-table td.prod { font-size: 11px; color: #666; }
+        .fert-basis { font-size: 11px; color: #666; margin: 8px 0 0; padding-left: 16px; }
+        .fert-warn { font-size: 12px; color: #935116; background: rgba(230,126,34,0.08); border-left: 3px solid #e67e22; border-radius: 4px; padding: 6px 10px; margin-top: 6px; }
+        .fert-note { font-size: 11px; color: #777; margin-top: 4px; }
+        .fert-source { font-size: 11px; color: #888; margin-top: 8px; }
+        .fert-plans { margin-top: 12px; }
+        @media (max-width: 600px) {
+            .fert-table td.rate { white-space: normal; font-size: 14px; }
+            .fert-table td, .fert-table th { padding: 6px 5px; }
+        }
+        .fert-plan { background: #fff; border-radius: 6px; padding: 8px 10px; margin-top: 6px; font-size: 12px; display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+
         /* Soil nutrient trends: every sample, one row per nutrient */
         .trend-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .trend-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -597,6 +623,7 @@
     </div>
 
     <script src="/js/field-record-tools.js"></script>
+    <script src="/js/fertility-guidelines.js"></script>
     <script>
         const API = window.location.origin;
         let allFields = [];
@@ -632,6 +659,22 @@
                 }
             } catch (e) {
                 console.warn('Crop insurance load failed:', e.message);
+            }
+        }
+
+        // Fertility Standards sheet: the parameters every field's recommendation uses.
+        let fertStandards = null, fertPrices = {};
+        async function loadFertilityStandards() {
+            const t = getToken();
+            if (!t) return;
+            try {
+                const res = await fetch(`${API}/api/fertility-standards`, { headers: { 'Authorization': 'Bearer ' + t } });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) return;
+                fertStandards = data.data.standards;
+                fertPrices = data.data.prices || {};
+            } catch (e) {
+                console.warn('Fertility standards load failed:', e.message);
             }
         }
 
@@ -704,7 +747,7 @@
         // === DATA LOADING ===
         async function loadFields() {
             try {
-                const [res] = await Promise.all([fetch(`${API}/api/cropping-fields`), loadInsurance(), loadHarvest(), recordTools.loadRates()]);
+                const [res] = await Promise.all([fetch(`${API}/api/cropping-fields`), loadInsurance(), loadHarvest(), recordTools.loadRates(), loadFertilityStandards()]);
                 const data = await res.json();
                 if (data.success) {
                     allFields = data.fields;
@@ -1165,38 +1208,6 @@
             return concerns;
         }
 
-        function generateRecommendations(s, crop) {
-            const recs = [];
-            if (!s) return recs;
-            if (s.ph != null && s.ph < 5.5) {
-                recs.push('Apply ag lime at 2-3 tons/acre to raise pH from ' + s.ph + ' to 6.5+.');
-            } else if (s.ph != null && s.ph < 6.0 && crop === 'CORN') {
-                recs.push('Consider lime application to improve pH from ' + s.ph + ' for corn.');
-            }
-            if (s.NO3lbs != null && s.NO3lbs < 15 && (crop === 'CORN' || crop === 'SORGHUM')) {
-                const goal = 80;
-                const factor = crop === 'CORN' ? 1.2 : 1.0;
-                const deficit = (goal * factor) - s.NO3lbs;
-                if (deficit > 0) recs.push('Supplement with ' + Math.round(deficit) + ' lb/A nitrogen for ' + goal + ' bu/A ' + crop.toLowerCase() + ' goal.');
-            }
-            if (s.olsenP != null && s.olsenP < 12) {
-                recs.push('Apply 30-40 lb/A P2O5 to build Olsen P from ' + s.olsenP + ' ppm.');
-            }
-            if (s.potassium != null && s.potassium < 200) {
-                recs.push('Apply potash - K at ' + s.potassium + ' ppm is deficient.');
-            }
-            if (s.sulfur != null && s.sulfur < 5 && (crop === 'CORN' || crop === 'WHEAT')) {
-                recs.push('Consider sulfur application - currently ' + s.sulfur + ' ppm.');
-            }
-            if (s.zinc != null && s.zinc < 0.5 && crop === 'CORN') {
-                recs.push('Zinc at ' + s.zinc + ' ppm - consider zinc sulfate for corn.');
-            }
-            if (recs.length === 0) {
-                recs.push('Soil levels adequate for planned crop. Continue monitoring.');
-            }
-            return recs;
-        }
-
         function renderNutrientBar(key, value) {
             const t = SOIL_THRESHOLDS[key];
             if (!t || value == null) return '';
@@ -1263,7 +1274,6 @@
             const latest = sorted[0];
             // Samples are pulled in the fall: the year N lab is for the N+1 crop.
             const planYear = latest.year ? latest.year + 1 : null;
-            const crop = (planYear && f['crop' + planYear]) || latest.crop || '';
 
             let html = '';
 
@@ -1287,13 +1297,8 @@
                 html += '</div>';
             }
 
-            // Recommendations
-            const recs = generateRecommendations(latest, crop);
-            if (recs.length > 0 && !(recs.length === 1 && recs[0].includes('adequate'))) {
-                html += '<div class="soil-recs"><div class="soil-recs-title">' + (planYear ? planYear + ' Crop Recommendations' : 'Recommendations') + (crop ? ' (' + escapeText(crop) + ')' : '') + '</div>';
-                recs.forEach(r => { html += '<div class="soil-rec-item">' + r + '</div>'; });
-                html += '</div>';
-            }
+            // Fertility recommendation for the next crop, from the Fertility Standards sheet
+            html += renderFertility(f, latest);
 
             // Latest sample nutrient status bars
             html += '<div class="soil-section"><div class="soil-section-title">Nutrient Status <span class="toggle">' + (latest.year ? latest.year + ' lab, for ' + planYear + ' crop' : 'Latest sample') + '</span></div>';
@@ -1336,6 +1341,155 @@
 
             html += '<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal(\'' + f._id + '\')">Add Soil Sample</button> <a href="/admin/soil-samples" class="btn btn-outline btn-sm" style="text-decoration:none;">Full Soil Analysis</a></div>';
             return html;
+        }
+
+        // === FERTILITY RECOMMENDATION ===
+        // Rates come from the Fertility Standards sheet applied to this
+        // field's latest soil sample. Saving recomputes on the server.
+        const FERT_CROPS = ['CORN', 'WHEAT', 'SORGHUM', 'PEARL MILLET', 'PROSO MILLET', 'OATS'];
+        const LAB_CROP_NAMES = { MILO: 'SORGHUM', MILLET: 'PEARL MILLET', SUDAN: 'SORGHUM SUDAN', OAT: 'OATS' };
+        const labCropName = c => { const u = String(c || '').trim().toUpperCase(); return LAB_CROP_NAMES[u] || u; };
+        const fertId = (id, k) => 'fert-' + k + '-' + id;
+        const fertVal = (id, k) => { const el = document.getElementById(fertId(id, k)); return el ? el.value : ''; };
+
+        function latestSample(f) {
+            const samples = ((f.soil && f.soil.samples) || []).filter(s => s.year);
+            return samples.length ? [...samples].sort((a, b) => b.year - a.year)[0] : null;
+        }
+
+        function renderFertility(f, latest) {
+            const id = f._id;
+            const head = '<div class="fert-head"><div class="soil-recs-title">Fertility Recommendation</div><a href="/admin/fertility-standards.html">Fertility Standards sheet</a></div>';
+            if (!fertStandards) return '<div class="fert">' + head + '<div class="fert-note">Sign in as staff to load the Fertility Standards sheet.</div></div>';
+            const cropYear = latest.year + 1;
+            const saved = (f.fertilityPlans || []).find(p => p.cropYear === cropYear);
+            const planned = labCropName(f['crop' + cropYear]);
+            const crop = saved ? saved.crop : planned;
+            const yieldDefault = saved ? saved.inputs.expectedYield : (labCropName(latest.crop) === crop && latest.yieldGoal ? latest.yieldGoal : '');
+            const no3 = saved ? saved.inputs.no3ppm : (latest.NO3ppm ?? latest.nitrogen ?? '');
+            const om = saved ? saved.inputs.om : (latest.organicMatter ?? '');
+            const credits = saved ? (saved.inputs.otherCredits || '') : '';
+            const gp = saved && saved.inputs.grainPrice != null ? saved.inputs.grainPrice : (fertPrices.sorghumPrice ?? '');
+            const np = saved && saved.inputs.nPrice != null ? saved.inputs.nPrice : (fertPrices.nPrice ?? '');
+            const irrigated = !!(f.soil && f.soil.irrigated);
+            const crops = Array.from(new Set(FERT_CROPS.concat(crop ? [crop] : [])));
+            const on = `oninput="calcFertility('${id}')" onchange="calcFertility('${id}')"`;
+            const form = '<div class="fert-form">' +
+                `<label>Crop year<input id="${fertId(id, 'year')}" type="number" value="${cropYear}" readonly><span class="hint">${latest.year} lab, fall sample</span></label>` +
+                `<label>Crop<select id="${fertId(id, 'crop')}" ${on}><option value="">Choose</option>${crops.map(c => `<option value="${escapeText(c)}" ${c === crop ? 'selected' : ''}>${escapeText(c)}</option>`).join('')}</select><span class="hint">${planned ? 'Planned: ' + escapeText(planned) : 'No crop set for ' + cropYear}</span></label>` +
+                `<label>Water<select id="${fertId(id, 'water')}" onchange="saveIrrigation('${id}', this.value)"><option value="dryland" ${irrigated ? '' : 'selected'}>Dryland</option><option value="irrigated" ${irrigated ? 'selected' : ''}>Irrigated</option></select><span class="hint">Saved on the field</span></label>` +
+                `<label>Expected yield, bu/A<input id="${fertId(id, 'yield')}" type="number" min="0" step="1" inputmode="decimal" value="${escapeText(yieldDefault)}" ${on}><span class="hint">5-yr average + 5%</span></label>` +
+                `<label>Soil nitrate-N, ppm<input id="${fertId(id, 'no3')}" type="number" min="0" step="0.1" inputmode="decimal" value="${escapeText(no3)}" ${on}><span class="hint">Lab ${escapeText(latest.depth || 'surface')}: ${latest.NO3ppm ?? '--'}</span></label>` +
+                `<label>Organic matter, %<input id="${fertId(id, 'om')}" type="number" min="0" step="0.1" inputmode="decimal" value="${escapeText(om)}" ${on}><span class="hint">Lab: ${latest.organicMatter ?? '--'}</span></label>` +
+                `<label>Other N credits, lb/A<input id="${fertId(id, 'credits')}" type="number" min="0" step="1" inputmode="decimal" value="${escapeText(credits)}" ${on}><span class="hint">Manure, legume, water</span></label>` +
+                `<label class="fert-price">Sorghum price, $/bu<input id="${fertId(id, 'gp')}" type="number" min="0" step="0.01" inputmode="decimal" value="${escapeText(gp)}" ${on}></label>` +
+                `<label class="fert-price">N price, $/lb N<input id="${fertId(id, 'np')}" type="number" min="0" step="0.01" inputmode="decimal" value="${escapeText(np)}" ${on}></label>` +
+                '</div>';
+            const plans = (f.fertilityPlans || []).slice().sort((a, b) => b.cropYear - a.cropYear);
+            const plansHtml = plans.length ? '<div class="fert-plans"><div class="soil-recs-title">Saved Plans</div>' + plans.map(p =>
+                `<div class="fert-plan"><span><strong>${p.cropYear} ${escapeText(p.crop)}</strong> ${p.irrigated ? 'irrigated' : 'dryland'}, ${p.inputs.expectedYield || '--'} bu | N ${p.result.n.rate ?? '--'} | P2O5 band ${p.result.p ? p.result.p.band ?? '--' : '--'} | K2O ${p.result.k ? p.result.k.rate ?? '--' : '--'} | Zn band ${p.result.zn ? p.result.zn.band ?? '--' : '--'} lb/A <span style="color:#999">(${p.sampleYear} lab, saved ${new Date(p.savedAt).toLocaleDateString()}${p.savedBy ? ' by ' + escapeText(p.savedBy) : ''})</span></span>` +
+                `<button class="btn btn-outline btn-sm" onclick="deleteFertilityPlan('${id}', '${p._id}')">Remove</button></div>`).join('') + '</div>' : '';
+            return '<div class="fert">' + head + form + `<div class="fert-out" id="${fertId(id, 'out')}">${fertilityResultHtml(f, latest)}</div>` +
+                `<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="saveFertilityPlan('${id}')">${saved ? 'Update' : 'Save'} ${cropYear} Plan</button></div>` + plansHtml + '</div>';
+        }
+
+        function fertilityInputs(f, latest) {
+            const id = f._id;
+            const no3 = fertVal(id, 'no3');
+            return {
+                crop: fertVal(id, 'crop'), irrigated: !!(f.soil && f.soil.irrigated),
+                expectedYield: fertVal(id, 'yield'), no3ppm: no3,
+                no3Depth: String(latest.NO3ppm ?? '') === String(no3) ? (latest.depth || 'surface') : 'entered by hand',
+                om: fertVal(id, 'om'), olsenP: latest.olsenP ?? latest.phosphorus ?? null, k: latest.potassium ?? null,
+                zn: latest.zinc ?? null, ph: latest.ph ?? null, bufferPH: latest.bufferPH ?? null, excessLime: latest.excessLime || '',
+                otherCredits: fertVal(id, 'credits'), grainPrice: fertVal(id, 'gp'), nPrice: fertVal(id, 'np')
+            };
+        }
+
+        function fertilityResultHtml(f, latest) {
+            if (!document.getElementById(fertId(f._id, 'crop'))) {
+                // First render: the form is not in the page yet, so compute after it is.
+                setTimeout(() => calcFertility(f._id), 0);
+                return '';
+            }
+            const rec = FertilityGuidelines.recommend(fertStandards, fertilityInputs(f, latest));
+            document.querySelectorAll(`#card-${f._id} .fert-price`).forEach(el => { el.style.display = rec.crop === 'SORGHUM' ? '' : 'none'; });
+            const warn = rec.warnings.map(w => '<div class="fert-warn">' + escapeText(w) + '</div>').join('');
+            if (!rec.supported) return warn + rec.notes.map(n => '<div class="fert-note">' + escapeText(n) + '</div>').join('');
+            const prod = FertilityGuidelines.products(rec);
+            const lb = v => v === null || v === undefined ? '--' : v + ' lb/A';
+            const st = (v, unit) => v === null || v === undefined ? 'not tested' : v + ' ' + unit;
+            const rows = [
+                ['Nitrogen (N)', st(fertilityInputs(f, latest).no3ppm || null, 'ppm NO3-N'), '', lb(rec.n.rate), (prod.n || []).join('<br>')],
+                rec.p ? ['Phosphate (P2O5), band', st(rec.p.soilTest, 'ppm Olsen P'), rec.p.level, lb(rec.p.band), (prod.pBand || []).join('<br>')] : null,
+                rec.p ? ['Phosphate (P2O5), broadcast', '', '', lb(rec.p.broadcast), (prod.pBroadcast || []).join('<br>') + (rec.p.note ? '<div class="fert-note">' + escapeText(rec.p.note) + '</div>' : '')] : null,
+                rec.k ? ['Potash (K2O)', st(rec.k.soilTest, 'ppm K'), rec.k.level, lb(rec.k.rate) + (rec.k.row ? '<div class="fert-note">or ' + rec.k.row + ' lb/A in the row</div>' : ''), (prod.k || []).join('<br>')] : null,
+                rec.zn ? ['Zinc (Zn)', st(rec.zn.soilTest, 'ppm DTPA Zn'), rec.zn.level, rec.zn.band === null ? '--' : rec.zn.band + ' band / ' + rec.zn.broadcast + ' bdcst', (prod.zn || []).join('<br>') + (rec.zn.note ? '<div class="fert-note">' + escapeText(rec.zn.note) + '</div>' : '')] : null
+            ].filter(Boolean);
+            return '<div style="overflow-x:auto;"><table class="fert-table"><thead><tr><th>Nutrient</th><th>Soil test</th><th>Level</th><th>Rate</th><th>Product equivalent</th></tr></thead><tbody>' +
+                rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${escapeText(r[2])}</td><td class="rate">${r[3]}</td><td class="prod">${r[4]}</td></tr>`).join('') + '</tbody></table></div>' +
+                (rec.n.basis.length ? '<ul class="fert-basis">' + rec.n.basis.map(b => '<li>' + escapeText(b) + '</li>').join('') + '</ul>' : '') +
+                warn + rec.notes.map(n => '<div class="fert-note">' + escapeText(n) + '</div>').join('') +
+                `<div class="fert-source">Standard: ${escapeText(rec.title)}. Source: ${rec.sourceUrl ? `<a href="${escapeText(rec.sourceUrl)}" target="_blank" rel="noopener">${escapeText(rec.source)}</a>` : escapeText(rec.source)}</div>`;
+        }
+
+        function calcFertility(id) {
+            const f = allFields.find(x => x._id === id);
+            const out = document.getElementById(fertId(id, 'out'));
+            if (!f || !out) return;
+            out.innerHTML = fertilityResultHtml(f, latestSample(f));
+        }
+
+        function refreshSoilPanel(id) {
+            const f = allFields.find(x => x._id === id);
+            const panel = document.getElementById('panel-soil-' + id);
+            if (f && panel) panel.innerHTML = renderSoilPanel(f);
+        }
+
+        async function saveIrrigation(id, value) {
+            const f = allFields.find(x => x._id === id);
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ 'soil.irrigated': value === 'irrigated' }) });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.error || 'Save failed (' + res.status + ')');
+                f.soil = data.field.soil;
+                calcFertility(id);
+                showAlert('success', f.field + ' set to ' + value, { noScroll: true });
+            } catch (e) {
+                showAlert('error', 'Could not save water setting: ' + e.message, { noScroll: true });
+            }
+        }
+
+        async function saveFertilityPlan(id) {
+            const f = allFields.find(x => x._id === id);
+            const latest = latestSample(f);
+            const inp = fertilityInputs(f, latest);
+            const body = { cropYear: latest.year + 1, sampleYear: latest.year, crop: inp.crop, expectedYield: inp.expectedYield, no3ppm: inp.no3ppm, om: inp.om, otherCredits: inp.otherCredits, grainPrice: inp.crop === 'SORGHUM' ? inp.grainPrice : '', nPrice: inp.crop === 'SORGHUM' ? inp.nPrice : '' };
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${id}/fertility-plans`, { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.message || 'Save failed (' + res.status + ')');
+                f.fertilityPlans = data.data;
+                refreshSoilPanel(id);
+                showAlert('success', data.message + ' on ' + f.field, { noScroll: true });
+            } catch (e) {
+                showAlert('error', 'Could not save the plan: ' + e.message, { noScroll: true });
+            }
+        }
+
+        async function deleteFertilityPlan(id, planId) {
+            const f = allFields.find(x => x._id === id);
+            if (!confirm('Remove this fertility plan from ' + f.field + '?')) return;
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${id}/fertility-plans/${planId}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + getToken() } });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.message || 'Remove failed (' + res.status + ')');
+                f.fertilityPlans = data.data;
+                refreshSoilPanel(id);
+                showAlert('success', 'Fertility plan removed', { noScroll: true });
+            } catch (e) {
+                showAlert('error', 'Could not remove the plan: ' + e.message, { noScroll: true });
+            }
         }
 
         // Every soil test value on file, grouped, one column per lab year.
