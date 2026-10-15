@@ -56,6 +56,13 @@ mongoose.connect(MONGODB_URI)
     createDefaultFarmer();
     // Create default farm and super admin for land management
     createDefaultFarm();
+    // Apply recorded equipment corrections and service records once each
+    try {
+      const { applyEquipmentRecordUpdates } = require('./services/equipmentRecordUpdates');
+      (await applyEquipmentRecordUpdates()).forEach(r => console.log('Equipment update:', r));
+    } catch (e) {
+      console.error('Equipment record updates failed:', e.message);
+    }
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);

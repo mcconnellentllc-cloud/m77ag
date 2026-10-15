@@ -33,6 +33,8 @@ const equipmentSchema = new mongoose.Schema({
   towVehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment', default: null },
   // Open repairs, shown on the card until cleared. Internal only.
   repairsNeeded: { type: String, trim: true },
+  // Keys of recorded corrections already applied to this record (see services/equipmentRecordUpdates).
+  appliedUpdates: { type: [String], default: [] },
   videos: [String],
 
   // Specifications (flexible key-value)
