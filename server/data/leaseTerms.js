@@ -20,7 +20,14 @@ module.exports = {
   // Later landlord answers, each applied once to cards and registry fields
   // that still have no landlord.
   followUps: [
-    { key: 'lease-landlord-dicks-2026-10-15', farm: 'MEFARMS', match: /DICKS/i, landlord: 'MEFARMS' }
+    { key: 'lease-landlord-dicks-2026-10-15', farm: 'MEFARMS', match: /DICKS/i, landlord: 'MEFARMS' },
+    // Farm landlords from the farm setup (server/scripts/seed-and-migrate-hierarchy.js),
+    // for cards left blank where the live farm record had no landlord name.
+    { key: 'lease-landlord-a1farms-2026-10-15', farm: 'A1FARMS', match: /./, landlord: 'Adele McConnell' },
+    { key: 'lease-landlord-lafarms-2026-10-15', farm: 'LAFARMS', match: /./, landlord: 'Larry & Adele' },
+    { key: 'lease-landlord-hdfarms-2026-10-15', farm: 'HDFARMS', match: /./, landlord: 'Dorothy McConnell' },
+    { key: 'lease-landlord-peterson-2026-10-15', farm: 'PETERSON', match: /./, landlord: 'Lynn Peterson' },
+    { key: 'lease-landlord-kbfarms-2026-10-15', farm: 'KBFARMS', match: /./, landlord: 'Kyle & Brandi McConnell' }
   ],
   // Cash rent per acre from the 2025 M77AG Master Workbook (Overview > Rental
   // Agreements). Set once on the matching cards; the note records 2025 billing.
