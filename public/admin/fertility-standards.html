@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertility Standards - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 28px 40px 48px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 6px; max-width: 760px; line-height: 1.6; }
+        .card { background: #fff; padding: 22px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px; }
+        .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 21px; color: #2d5016; letter-spacing: 0.5px; }
+        .source { font-size: 12px; color: #777; margin-top: 4px; line-height: 1.5; }
+        .source a { color: #2d5016; }
+        .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+        .badge-edited { background: #fbf3e2; color: #8a6d00; }
+        .badge-published { background: #e8efe1; color: #2d5016; }
+        h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: #888; margin: 18px 0 8px; }
+        .params { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+        .params label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #555; }
+        input, select, textarea { padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; font-family: inherit; width: 100%; background: #fff; }
+        input:focus, textarea:focus { outline: none; border-color: #2d5016; }
+        .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+        th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; padding: 6px; border-bottom: 1px solid #eee; white-space: nowrap; }
+        td { padding: 4px 6px; border-bottom: 1px solid #f5f5f5; }
+        td input { padding: 6px 8px; min-width: 72px; }
+        td input.level { min-width: 100px; }
+        .formula { font-size: 13px; background: #f8f6f2; border-radius: 6px; padding: 10px 12px; color: #444; line-height: 1.6; }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+        .btn { padding: 12px 24px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .btn:hover { background: #3d6b1f; }
+        .btn-secondary { background: #fff; color: #2d5016; box-shadow: inset 0 0 0 2px #2d5016; }
+        .btn-secondary:hover { background: #f5f3f0; }
+        .btn-small { padding: 8px 14px; font-size: 13px; }
+        .alert { display: none; padding: 12px 16px; border-radius: 6px; margin-top: 16px; font-size: 14px; }
+        .alert.show { display: block; }
+        .alert-success { background: #e8efe1; color: #2d5016; }
+        .alert-error { background: #fbe9e7; color: #b3261e; }
+        .muted { color: #888; font-size: 12px; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px 40px; }
+            .page-title { font-size: 28px; }
+            .card { padding: 16px; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/field-planner">Field Planner</a>
+            <a href="/admin/field-records">Field Records</a>
+            <a href="/admin/soil-samples">Soil Analysis</a>
+            <a href="/admin/farm-projections">Projections</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+    <div id="cropsNav"></div>
+
+    <div class="container">
+        <h1 class="page-title">Fertility Standards</h1>
+        <p class="page-subtitle">The parameters every field's fertility recommendation is built from. Each standard is loaded with the published university guideline for that crop and water regime. Change a number here and every field card uses it. Reset puts a standard back to the published values.</p>
+        <div id="alertSuccess" class="alert alert-success"></div>
+        <div id="alertError" class="alert alert-error"></div>
+
+        <div class="card">
+            <h2>Market Inputs</h2>
+            <p class="source">Used by equations that scale the rate by grain price to N price (grain sorghum, UNL G1669). Each plan can override them.</p>
+            <div class="params" style="margin-top:12px;">
+                <label>Sorghum price, $/bu<input id="sorghumPrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+                <label>N price, $/lb N<input id="nPrice" type="number" min="0" step="0.01" inputmode="decimal"></label>
+            </div>
+            <p class="muted" id="pricesUpdated" style="margin-top:6px;"></p>
+            <div class="actions"><button class="btn btn-small" onclick="savePrices()">Save Prices</button></div>
+        </div>
+
+        <div id="standards"><div class="card muted">Loading standards...</div></div>
+    </div>
+
+    <script src="/js/crops-nav.js"></script>
+    <script>
+        const API = window.location.origin;
+        let work = {}, defaults = {};
+
+        function getToken() { try { return localStorage.getItem('adminToken'); } catch (e) { return null; } }
+        async function api(url, opts) {
+            const res = await fetch(url, { ...(opts || {}), headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } });
+            if (res.status === 401) { window.location.href = '/admin/login'; throw new Error('Signed out'); }
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.success) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function showAlert(type, msg) {
+            const ok = document.getElementById('alertSuccess'), err = document.getElementById('alertError');
+            ok.classList.remove('show'); err.classList.remove('show');
+            const el = type === 'success' ? ok : err;
+            el.textContent = msg; el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 6000);
+        }
+
+        // Path helpers: "p.rows.0.band" reads and writes into the working copy.
+        function setPath(obj, path, value) {
+            const keys = path.split('.');
+            let o = obj;
+            for (let i = 0; i < keys.length - 1; i++) o = o[keys[i]];
+            o[keys[keys.length - 1]] = value;
+        }
+        function onEdit(el) {
+            const key = el.getAttribute('data-key'), path = el.getAttribute('data-path'), kind = el.getAttribute('data-kind');
+            let v = el.value;
+            if (kind === 'num') v = v === '' ? null : Number(v);
+            if (kind === 'max') v = v === '' ? null : Number(v);
+            if (kind === 'lines') v = v.split('\n').map(x => x.trim()).filter(Boolean);
+            setPath(work[key], path, v);
+        }
+        const inp = (key, path, value, kind, cls) =>
+            `<input class="${cls || ''}" ${kind === 'text' ? 'type="text"' : 'type="number" step="any" min="0" inputmode="decimal"'} data-key="${key}" data-path="${path}" data-kind="${kind}" value="${esc(value)}" oninput="onEdit(this)" ${kind === 'max' ? 'placeholder="open"' : ''}>`;
+
+        const N_LABELS = {
+            base: 'Base N, lb', perBu: 'N per bu of expected yield, lb', perPpm: 'Credit per ppm soil nitrate, lb', omPerBuPct: 'Organic matter credit, lb per bu per %',
+            basisYield: 'Table basis yield, bu/A', perTenBu: 'Adjustment per 10 bu, lb', max: 'Maximum N rate, lb/A', ppmMultiplier: 'Nitrate ppm multiplier',
+            omPer: 'Organic matter credit, lb per %', omCap: 'Organic matter cap, %', priceFactor: 'Price ratio factor', defaultPpm: 'Nitrate when not tested, ppm',
+            onlyWithPKRate: 'Rate applied only with P or K, lb'
+        };
+        const N_FORMULA = {
+            'csu-corn': 'N rate = Base + (N per bu x expected yield) - (credit per ppm x soil nitrate) - (OM credit x expected yield x OM %) - other credits',
+            'table': 'N rate = table rate for soil nitrate and organic matter, adjusted per 10 bu from the basis yield, capped at the maximum, less other credits',
+            'ppm-table': 'N rate = table rate for soil nitrate, less other credits',
+            'unl-sorghum': 'N rate = [Base + (N per bu x expected yield) - (OM credit x OM %, capped) - (credit per ppm x soil nitrate) - other credits] x (grain $/bu / N $/lb x price factor)'
+        };
+
+        function rowsTable(key, path, rows, cols) {
+            const head = '<tr><th>Soil test up to, ppm</th>' + cols.map(c => '<th>' + c.label + '</th>').join('') + '</tr>';
+            const body = rows.map((r, i) => '<tr><td>' + inp(key, path + '.' + i + '.maxPpm', r.maxPpm === null ? '' : r.maxPpm, 'max') + '</td>' +
+                cols.map(c => '<td>' + (c.sub !== undefined
+                    ? inp(key, path + '.' + i + '.' + c.field + '.' + c.sub, r[c.field][c.sub], 'num')
+                    : r[c.field] === undefined ? '' : inp(key, path + '.' + i + '.' + c.field, r[c.field], c.field === 'level' ? 'text' : 'num', c.field === 'level' ? 'level' : '')) + '</td>').join('') + '</tr>').join('');
+            return '<div class="tbl-wrap"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+        }
+
+        function renderStandard(s) {
+            const key = s.key, n = s.n || {};
+            let html = `<div class="card" id="std-${key}"><div class="card-head"><div><h2>${esc(s.title)}<span class="badge ${s.userEdited ? 'badge-edited' : 'badge-published'}">${s.userEdited ? 'Edited' : 'Published values'}</span></h2>` +
+                `<div class="source">Source: ${s.sourceUrl ? `<a href="${esc(s.sourceUrl)}" target="_blank" rel="noopener">${esc(s.source)}</a>` : esc(s.source)}</div>` +
+                `<div class="source">Crop ${esc(s.crop)} | ${esc(s.water === 'any' ? 'dryland and irrigated' : s.water)}${s.updatedBy ? ' | last saved by ' + esc(s.updatedBy) : ''}</div></div></div>`;
+            html += '<h3>Nitrogen</h3><div class="formula">' + esc(N_FORMULA[n.method] || '') + '</div>';
+            const numKeys = Object.keys(N_LABELS).filter(k => n[k] !== undefined);
+            html += '<div class="params" style="margin-top:10px;">' + numKeys.map(k => `<label>${N_LABELS[k]}${inp(key, 'n.' + k, n[k] === null ? '' : n[k], 'num')}</label>`).join('') +
+                `<label>Nitrate sample read as${inp(key, 'n.nitrateDepth', n.nitrateDepth || '', 'text')}</label></div>`;
+            if (n.method === 'table') html += '<div style="margin-top:10px;">' + rowsTable(key, 'n.rows', n.rows, [{ label: 'OM 0-1.0%, lb N', field: 'rates', sub: 0 }, { label: 'OM 1.1-2.0%', field: 'rates', sub: 1 }, { label: 'OM over 2.0%', field: 'rates', sub: 2 }]) + '</div>';
+            if (n.method === 'ppm-table') html += '<div style="margin-top:10px;">' + rowsTable(key, 'n.rows', n.rows, [{ label: 'Level', field: 'level' }, { label: 'lb N/A', field: 'rate' }]) + '</div>';
+            if (s.p && s.p.rows) html += '<h3>Phosphate, Olsen P</h3>' + rowsTable(key, 'p.rows', s.p.rows, [{ label: 'Level', field: 'level' }, { label: 'Band, lb P2O5', field: 'band' }, { label: 'Broadcast, lb P2O5', field: 'broadcast' }]);
+            if (s.k && s.k.rows) html += '<h3>Potash, ammonium acetate K</h3>' + rowsTable(key, 'k.rows', s.k.rows, [{ label: 'Level', field: 'level' }, { label: 'lb K2O', field: 'rate' }].concat(s.k.rows.some(r => r.row !== undefined) ? [{ label: 'Row, lb K2O', field: 'row' }] : []));
+            if (s.zn && s.zn.rows) {
+                html += '<h3>Zinc, DTPA' + (s.zn.rowsNonCalcareous ? ', calcareous soil' : '') + '</h3>' + rowsTable(key, 'zn.rows', s.zn.rows, [{ label: 'Level', field: 'level' }, { label: 'Band, lb Zn', field: 'band' }, { label: 'Broadcast, lb Zn', field: 'broadcast' }]);
+                if (s.zn.rowsNonCalcareous) html += '<h3>Zinc, DTPA, non-calcareous soil</h3>' + rowsTable(key, 'zn.rowsNonCalcareous', s.zn.rowsNonCalcareous, [{ label: 'Level', field: 'level' }, { label: 'Band, lb Zn', field: 'band' }, { label: 'Broadcast, lb Zn', field: 'broadcast' }]);
+            } else if (s.zn && s.zn.none) html += '<h3>Zinc</h3><div class="formula">' + esc(s.zn.note) + '</div>';
+            if (s.ironPh !== undefined && s.ironPh !== null) html += `<h3>Iron</h3><div class="params"><label>Flag iron above pH${inp(key, 'ironPh', s.ironPh, 'num')}</label></div>`;
+            html += `<h3>Notes shown with every recommendation (one per line)</h3><textarea rows="${Math.max(3, (s.notes || []).length + 1)}" data-key="${key}" data-path="notes" data-kind="lines" oninput="onEdit(this)">${esc((s.notes || []).join('\n'))}</textarea>`;
+            html += `<div class="actions"><button class="btn btn-small" onclick="saveStandard('${key}')">Save ${esc(s.title)}</button>` +
+                (defaults[key] ? `<button class="btn btn-secondary btn-small" onclick="resetStandard('${key}')">Reset to Published</button>` : '') + '</div></div>';
+            return html;
+        }
+
+        async function load() {
+            if (!getToken()) { window.location.href = '/admin/login'; return; }
+            try {
+                const data = await api(`${API}/api/fertility-standards`);
+                defaults = data.defaults || {};
+                work = {};
+                data.data.standards.forEach(s => { work[s.key] = JSON.parse(JSON.stringify(s)); });
+                document.getElementById('standards').innerHTML = data.data.standards.map(renderStandard).join('');
+                const pr = data.data.prices || {};
+                document.getElementById('sorghumPrice').value = pr.sorghumPrice ?? '';
+                document.getElementById('nPrice').value = pr.nPrice ?? '';
+                document.getElementById('pricesUpdated').textContent = pr.updatedAt ? 'Last saved ' + new Date(pr.updatedAt).toLocaleDateString() : 'Not set';
+            } catch (e) {
+                document.getElementById('standards').innerHTML = '<div class="card">Could not load the standards: ' + esc(e.message) + '</div>';
+            }
+        }
+
+        async function saveStandard(key) {
+            const s = work[key];
+            try {
+                const data = await api(`${API}/api/fertility-standards/${encodeURIComponent(key)}`, { method: 'PUT', body: JSON.stringify({ n: s.n, p: s.p, k: s.k, zn: s.zn, ironPh: s.ironPh, notes: s.notes }) });
+                work[key] = JSON.parse(JSON.stringify(data.data));
+                document.getElementById('std-' + key).outerHTML = renderStandard(data.data);
+                showAlert('success', data.message + ': ' + data.data.title);
+            } catch (e) { showAlert('error', 'Not saved: ' + e.message); }
+        }
+
+        async function resetStandard(key) {
+            if (!confirm('Put ' + work[key].title + ' back to the published values? Your edits to it are replaced.')) return;
+            try {
+                const data = await api(`${API}/api/fertility-standards/${encodeURIComponent(key)}/reset`, { method: 'POST' });
+                work[key] = JSON.parse(JSON.stringify(data.data));
+                document.getElementById('std-' + key).outerHTML = renderStandard(data.data);
+                showAlert('success', data.message + ': ' + data.data.title);
+            } catch (e) { showAlert('error', 'Not reset: ' + e.message); }
+        }
+
+        async function savePrices() {
+            try {
+                const data = await api(`${API}/api/fertility-standards/prices`, { method: 'PUT', body: JSON.stringify({ sorghumPrice: document.getElementById('sorghumPrice').value, nPrice: document.getElementById('nPrice').value }) });
+                document.getElementById('pricesUpdated').textContent = 'Last saved ' + new Date(data.data.updatedAt).toLocaleDateString();
+                showAlert('success', data.message);
+            } catch (e) { showAlert('error', 'Not saved: ' + e.message); }
+        }
+
+        load();
+    </script>
+</body>
+</html>

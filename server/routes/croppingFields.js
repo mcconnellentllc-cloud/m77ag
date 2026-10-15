@@ -769,6 +769,81 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// === FERTILITY PLANS ===
+// The plan is recomputed here from the Fertility Standards sheet and the soil
+// sample on file, so a saved plan always matches the published parameters.
+// Nitrate and organic matter may be overridden (a deeper nitrate sample),
+// the soil tests for P, K, Zn and pH always come from the sample.
+const { isStaff } = require('../middleware/auth');
+const fertility = require('../../public/js/fertility-guidelines');
+const fertilityStandards = require('../controllers/fertilityStandardController');
+
+const optNum = v => (v === null || v === undefined || v === '' ? null : Number(v));
+
+router.post('/:id/fertility-plans', authenticate, isStaff, async (req, res) => {
+  try {
+    const b = req.body || {};
+    const cropYear = parseInt(b.cropYear, 10);
+    const crop = String(b.crop || '').trim().toUpperCase();
+    if (!(cropYear >= 2000 && cropYear <= 2100)) return res.status(400).json({ success: false, message: 'Crop year is required' });
+    if (!crop) return res.status(400).json({ success: false, message: 'Crop is required' });
+    for (const k of ['expectedYield', 'no3ppm', 'om', 'otherCredits', 'grainPrice', 'nPrice']) {
+      const v = optNum(b[k]);
+      if (v !== null && !(isFinite(v) && v >= 0)) return res.status(400).json({ success: false, message: k + ' must be a number 0 or more' });
+    }
+    const field = await CroppingField.findById(req.params.id).lean();
+    if (!field) return res.status(404).json({ success: false, message: 'Field not found' });
+    const samples = (field.soil && field.soil.samples) || [];
+    const sample = samples.find(s => s.year === parseInt(b.sampleYear, 10));
+    if (!sample) return res.status(400).json({ success: false, message: 'Soil sample for that year not found on this field' });
+
+    const { standards } = await fertilityStandards.loadAll();
+    const irrigated = !!(field.soil && field.soil.irrigated);
+    const inputs = {
+      crop, irrigated,
+      expectedYield: optNum(b.expectedYield),
+      no3ppm: optNum(b.no3ppm) !== null ? optNum(b.no3ppm) : (sample.NO3ppm ?? sample.nitrogen ?? null),
+      no3Depth: optNum(b.no3ppm) !== null && optNum(b.no3ppm) !== (sample.NO3ppm ?? sample.nitrogen) ? 'entered by hand' : (sample.depth || 'surface'),
+      om: optNum(b.om) !== null ? optNum(b.om) : (sample.organicMatter ?? null),
+      olsenP: sample.olsenP ?? sample.phosphorus ?? null,
+      k: sample.potassium ?? null,
+      zn: sample.zinc ?? null,
+      ph: sample.ph ?? null,
+      bufferPH: sample.bufferPH ?? null,
+      excessLime: sample.excessLime || '',
+      otherCredits: optNum(b.otherCredits) || 0,
+      grainPrice: optNum(b.grainPrice),
+      nPrice: optNum(b.nPrice)
+    };
+    const result = fertility.recommend(standards, inputs);
+    if (!result.supported) return res.status(400).json({ success: false, message: result.warnings.join(' ') || 'No standard for this crop' });
+
+    const plan = {
+      cropYear, crop, irrigated, standardKey: result.standardKey, standardTitle: result.title, source: result.source,
+      sampleYear: sample.year, inputs, result, savedBy: req.user && (req.user.name || req.user.email), savedAt: new Date()
+    };
+    // One plan per crop year: a new save replaces the old one.
+    await CroppingField.updateOne({ _id: field._id }, { $pull: { fertilityPlans: { cropYear } } });
+    await CroppingField.updateOne({ _id: field._id }, { $push: { fertilityPlans: plan } });
+    const saved = await CroppingField.findById(field._id).select('fertilityPlans').lean();
+    res.json({ success: true, data: saved.fertilityPlans, message: 'Fertility plan saved for ' + cropYear });
+  } catch (error) {
+    console.error('Error saving fertility plan:', error);
+    res.status(500).json({ success: false, message: 'Failed to save fertility plan' });
+  }
+});
+
+router.delete('/:id/fertility-plans/:planId', authenticate, isStaff, async (req, res) => {
+  try {
+    const r = await CroppingField.updateOne({ _id: req.params.id }, { $pull: { fertilityPlans: { _id: req.params.planId } } });
+    if (!r.matchedCount) return res.status(404).json({ success: false, message: 'Field not found' });
+    const saved = await CroppingField.findById(req.params.id).select('fertilityPlans').lean();
+    res.json({ success: true, data: saved.fertilityPlans, message: 'Fertility plan removed' });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
 // === FIELD DETAILS (soil, lease, insurance, taxes, location) ===
 router.put('/:id/details', async (req, res) => {
   try {

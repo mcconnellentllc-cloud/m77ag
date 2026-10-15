@@ -70,6 +70,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Field record updates failed:', e.message);
     }
+    // Lueking (Allphin Farms) field cards
+    try {
+      const { addLuekingFields } = require('./services/luekingFields');
+      (await addLuekingFields()).forEach(r => console.log('Lueking fields:', r));
+    } catch (e) {
+      console.error('Lueking fields failed:', e.message);
+    }
     // Lease terms by farm (crop share 65/35, cash lease), applied once
     try {
       const { applyLeaseTerms } = require('./services/leaseTerms');
@@ -84,6 +91,13 @@ mongoose.connect(MONGODB_URI)
       if (filled.length) console.log(`Field details filled on ${filled.length} fields`);
     } catch (e) {
       console.error('Field detail fill failed:', e.message);
+    }
+    // Irrigation: 73 and 77 irrigated, all else dryland (applied once)
+    try {
+      const { applyIrrigation } = require('./services/luekingFields');
+      (await applyIrrigation()).forEach(r => console.log('Irrigation:', r));
+    } catch (e) {
+      console.error('Irrigation update failed:', e.message);
     }
   })
   .catch(err => {
@@ -125,6 +139,7 @@ const seedOrderRoutes = require('./routes/seedOrder');
 const imageUploadRoutes = require('./routes/imageUpload');
 const employeeRoutes = require('./routes/employees');
 const croppingFieldRoutes = require('./routes/croppingFields');
+const fertilityStandardRoutes = require('./routes/fertilityStandards');
 const cropExpenseRoutes = require('./routes/cropExpenses');
 const stripeRoutes = require('./routes/stripe');
 const stripeController = require('./controllers/stripeController');
@@ -184,6 +199,7 @@ app.use('/api/seed-orders', seedOrderRoutes);
 app.use('/api/upload', imageUploadRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/cropping-fields', croppingFieldRoutes);
+app.use('/api/fertility-standards', fertilityStandardRoutes);
 app.use('/api/crop-expenses', cropExpenseRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/mail-center', mailCenterRoutes);
