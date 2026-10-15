@@ -34,5 +34,9 @@ module.exports = {
         { workbook: '55 KIRBY HOUSEB', match: /^55 KIRBY HOUSEB\b/i, acres: 4.18, rate: 50.00, paid: 209.00 },
         { workbook: '56 KIRBY SOUTH', match: /^56\.[EW] KIRBY SOUTH\b/i, acres: 157.70, rate: 50.00, paid: 7885.00 }
       ] }
+,
+    // 599 Pauls is idle ground with no rent (Kyle, Oct 15, 2026).
+    { key: 'mefarms-599-idle-2026', farm: 'MEFARMS', year: 2025, source: 'Kyle, Oct 15, 2026',
+      lines: [{ workbook: '599 PAULS', match: /^599 PAULS\b/i, acres: 6.39, rate: 0, paid: 0, note: 'Idle ground, no rent.' }] }
   ]
 };
