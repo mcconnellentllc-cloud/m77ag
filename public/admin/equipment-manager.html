@@ -873,6 +873,32 @@
                 flex-wrap: wrap;
             }
         }
+        /* Equipment detail view: opened by clicking a list row or a card */
+        .equipment-table tbody tr[data-id], .equipment-card[data-id] { cursor: pointer; }
+        .equipment-table tbody tr[data-id]:hover .equipment-title { color: #2d5016; text-decoration: underline; }
+        .modal.detail-modal { max-width: 820px; }
+        .detail-subtitle { font-size: 13px; color: #666; margin-top: 2px; }
+        .detail-gallery-main { position: relative; background: #f5f3f0; border-radius: 8px; overflow: hidden; }
+        .detail-gallery-main img { display: block; width: 100%; max-height: 460px; object-fit: contain; background: #f5f3f0; }
+        .detail-gallery-count { position: absolute; right: 10px; bottom: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; padding: 3px 10px; border-radius: 999px; }
+        .detail-gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+        .detail-gallery-nav.prev { left: 10px; }
+        .detail-gallery-nav.next { right: 10px; }
+        .detail-thumbs { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 4px; -webkit-overflow-scrolling: touch; }
+        .detail-thumbs button { flex: 0 0 auto; padding: 0; border: 2px solid transparent; border-radius: 5px; background: none; cursor: pointer; }
+        .detail-thumbs button.active { border-color: #d4a54a; }
+        .detail-thumbs img { display: block; width: 72px; height: 54px; object-fit: cover; border-radius: 3px; }
+        .detail-no-photo { padding: 40px 20px; text-align: center; color: #999; background: #f5f3f0; border-radius: 8px; }
+        .detail-section { margin-top: 20px; }
+        .detail-section h3 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.5px; color: #2d5016; text-transform: uppercase; margin-bottom: 8px; }
+        .detail-text { font-size: 14px; line-height: 1.6; color: #333; white-space: pre-wrap; }
+        .detail-modal .modal-footer { flex-wrap: wrap; }
+        .detail-modal .modal-footer button { flex: 0 1 auto; }
+        @media (max-width: 600px) {
+            .modal.detail-modal { width: 100%; max-height: 100vh; height: 100%; border-radius: 0; }
+            .detail-gallery-main img { max-height: 300px; }
+            .detail-modal .modal-footer button { flex: 1 1 45%; }
+        }
     </style>
 </head>
 <body>
@@ -1106,6 +1132,20 @@
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveEquipment()">Save Changes</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal" onclick="if (event.target === this) closeDetail()">
+        <div class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title" id="detailTitle"></h2>
+                    <div class="detail-subtitle" id="detailSubtitle"></div>
+                </div>
+                <button class="modal-close" onclick="closeDetail()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body" id="detailBody"></div>
+            <div class="modal-footer" id="detailFooter"></div>
         </div>
     </div>
 
@@ -1906,6 +1946,130 @@
             }
             return '';
         }
+
+        // Detail view: click a list row or a card to open everything on the unit.
+        let detailPhotos = [];
+        let detailIndex = 0;
+        function escHtml(v) {
+            return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function detailRow(label, value) {
+            if (value === undefined || value === null || value === '') return '';
+            return `<div class="equipment-detail-row"><span class="equipment-detail-label">${escHtml(label)}</span><span class="equipment-detail-value">${escHtml(value)}</span></div>`;
+        }
+        function showDetailPhoto(i) {
+            if (!detailPhotos.length) return;
+            detailIndex = (i + detailPhotos.length) % detailPhotos.length;
+            const src = detailPhotos[detailIndex];
+            document.getElementById('detailPhotoLink').href = src;
+            document.getElementById('detailPhoto').src = src;
+            document.getElementById('detailPhotoCount').textContent = `${detailIndex + 1} of ${detailPhotos.length}`;
+            document.querySelectorAll('#detailThumbs button').forEach((b, n) => b.classList.toggle('active', n === detailIndex));
+            const active = document.querySelector('#detailThumbs button.active');
+            if (active) active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+        function openDetail(id) {
+            const item = allEquipment.find(e => e._id === id);
+            if (!item) return;
+            const value = item.currentValue || 0;
+            const owed = item.amountOwed || 0;
+            const equity = value - owed;
+            const marketVal = item.marketValue || 0;
+            const isArchived = item.saleStatus === 'sold';
+            const isForSale = item.forSale && item.saleStatus === 'available';
+            detailPhotos = photosOf(item);
+            detailIndex = 0;
+
+            document.getElementById('detailTitle').textContent = item.title || '';
+            document.getElementById('detailSubtitle').textContent =
+                [item.subtitle, item.category, isForSale ? 'For sale' : '', isArchived ? 'Sold' : ''].filter(Boolean).join(' | ');
+
+            const gallery = detailPhotos.length ? `
+                <div class="detail-gallery-main">
+                    <a id="detailPhotoLink" href="${escHtml(detailPhotos[0])}" target="_blank" rel="noopener"><img id="detailPhoto" src="${escHtml(detailPhotos[0])}" alt="${escHtml(item.title)}"></a>
+                    ${detailPhotos.length > 1 ? `<button class="detail-gallery-nav prev" onclick="showDetailPhoto(detailIndex - 1)" aria-label="Previous photo">&lsaquo;</button>
+                    <button class="detail-gallery-nav next" onclick="showDetailPhoto(detailIndex + 1)" aria-label="Next photo">&rsaquo;</button>` : ''}
+                    <span class="detail-gallery-count" id="detailPhotoCount">1 of ${detailPhotos.length}</span>
+                </div>
+                ${detailPhotos.length > 1 ? `<div class="detail-thumbs" id="detailThumbs">${detailPhotos.map((src, n) =>
+                    `<button class="${n === 0 ? 'active' : ''}" onclick="showDetailPhoto(${n})" aria-label="Photo ${n + 1}"><img src="${escHtml(src)}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}`
+                : '<div class="detail-no-photo">No photos yet</div>';
+
+            const stats = `
+                <div class="equipment-card-stats">
+                    <div class="equipment-stat"><div class="equipment-stat-label">Current Value</div><div class="equipment-stat-value positive">${formatCurrency(value)}</div></div>
+                    <div class="equipment-stat"><div class="equipment-stat-label">Equity</div><div class="equipment-stat-value ${equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(equity)}</div></div>
+                    ${marketVal > 0 ? `<div class="equipment-stat"><div class="equipment-stat-label">Market Value</div><div class="equipment-stat-value gold">${formatCurrency(marketVal)}</div></div>` : ''}
+                    ${owed > 0 ? `<div class="equipment-stat"><div class="equipment-stat-label">Amount Owed</div><div class="equipment-stat-value negative">${formatCurrency(owed)}</div></div>` : ''}
+                    ${isForSale && item.askingPrice ? `<div class="equipment-stat"><div class="equipment-stat-label">Asking Price</div><div class="equipment-stat-value gold">${formatCurrency(item.askingPrice)}</div></div>` : ''}
+                </div>`;
+
+            const usage = item.currentHours ? item.currentHours.toLocaleString() + ' hrs'
+                : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '';
+            const specs = item.specs && typeof item.specs === 'object' ? Object.entries(item.specs) : [];
+            const details = [
+                detailRow('Year', item.year),
+                detailRow('Make', item.make),
+                detailRow('Model', item.model),
+                detailRow('Serial/VIN', item.serialNumber || item.vin),
+                detailRow('License plate', licenseOf(item)),
+                towLine(item),
+                detailRow('Hours/Miles', usage),
+                detailRow('Location', item.location),
+                detailRow('Owner', item.ownerEntity),
+                detailRow('Purchase date', item.purchaseDate ? formatDate(item.purchaseDate) : ''),
+                detailRow('Purchase price', item.purchasePrice ? formatCurrency(item.purchasePrice) : ''),
+                detailRow('Market source', item.marketValueSource),
+                ...specs.map(([k, v]) => detailRow(k, v)),
+                isArchived ? detailRow('Sold', [item.soldDate ? formatDate(item.soldDate) : '', item.soldPrice ? formatCurrency(item.soldPrice) : '', item.soldTo].filter(Boolean).join(' | ')) : ''
+            ].join('');
+
+            const loan = item.hasLoan && owed > 0 ? `
+                <div class="equipment-card-loan">
+                    <div class="equipment-loan-header">Loan Information</div>
+                    <div class="equipment-loan-lender">${escHtml(item.lender || 'Unknown Lender')}</div>
+                    <div class="equipment-loan-details">
+                        <strong>${formatCurrency(owed)}</strong> owed
+                        ${item.paymentAmount ? ` | ${formatCurrency(item.paymentAmount)}/${escHtml(item.paymentFrequency || 'monthly')}` : ''}
+                        ${item.nextPaymentDate ? ` | Due: ${formatDate(item.nextPaymentDate)}` : ''}
+                    </div>
+                </div>` : '';
+
+            document.getElementById('detailBody').innerHTML = `
+                ${gallery}
+                <div class="detail-section">${stats}</div>
+                <div class="detail-section"><h3>Details</h3><div class="equipment-card-details">${details}</div></div>
+                ${loan ? `<div class="detail-section">${loan}</div>` : ''}
+                ${item.description ? `<div class="detail-section"><h3>Description</h3><div class="detail-text">${escHtml(item.description)}</div></div>` : ''}
+                ${item.notes ? `<div class="detail-section"><h3>Notes</h3><div class="detail-text">${escHtml(item.notes)}</div></div>` : ''}
+                ${getEquipmentGuideLink(item) ? `<div class="detail-section">${getEquipmentGuideLink(item)}</div>` : ''}`;
+
+            document.getElementById('detailFooter').innerHTML = `
+                <button class="btn btn-secondary" onclick="closeDetail()">Close</button>
+                ${!isArchived ? `<button class="for-sale-toggle ${isForSale ? 'for-sale' : 'private'}" onclick="closeDetail(); toggleForSale('${item._id}', ${!isForSale})">${isForSale ? 'Listed' : 'List For Sale'}</button>` : ''}
+                ${isArchived
+                    ? `<button class="card-restore-btn" onclick="closeDetail(); restoreEquipment('${item._id}')">Restore</button>`
+                    : `<button class="card-sold-btn" onclick="closeDetail(); markAsSold('${item._id}')">Mark Sold</button>`}
+                <button class="btn btn-primary" onclick="closeDetail(); editEquipment('${item._id}')">Edit</button>`;
+
+            document.getElementById('detailModal').classList.add('active');
+            document.querySelector('#detailModal .modal').scrollTop = 0;
+        }
+        function closeDetail() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+        // Row or card click opens the detail; buttons, selects and links keep their own action.
+        document.getElementById('tableContent').addEventListener('click', e => {
+            if (e.target.closest('button, select, a, input, textarea, label')) return;
+            const el = e.target.closest('tr[data-id], .equipment-card[data-id]');
+            if (el) openDetail(el.getAttribute('data-id'));
+        });
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('detailModal').classList.contains('active')) return;
+            if (e.key === 'Escape') closeDetail();
+            else if (e.key === 'ArrowLeft') showDetailPhoto(detailIndex - 1);
+            else if (e.key === 'ArrowRight') showDetailPhoto(detailIndex + 1);
+        });
 
         function editEquipment(id) {
             const item = allEquipment.find(e => e._id === id);
