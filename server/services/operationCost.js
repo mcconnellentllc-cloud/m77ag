@@ -4,7 +4,8 @@ const rateList = require('../data/fieldOperationRates2026');
 
 const RATE_BY_KEY = Object.fromEntries(rateList.RATES.map(r => [r.key, r]));
 const SMALL_GRAINS = ['WHEAT', 'BARLEY', 'TRITICALE', 'OATS', 'RYE'];
-const ROW_CROPS = ['CORN', 'SORGHUM', 'MILO', 'SUNFLOWER', 'SUNFLOWERS'];
+// Sudangrass is planted with the planter (Kyle, Oct 15, 2026).
+const ROW_CROPS = ['CORN', 'SORGHUM', 'MILO', 'SUNFLOWER', 'SUNFLOWERS', 'SORGHUM SUDAN', 'SUDANGRASS'];
 
 // Default rate for a pass, or null when the pass type needs the implement to
 // pick a rate (tillage, other).
