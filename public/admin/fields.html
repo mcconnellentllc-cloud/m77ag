@@ -540,11 +540,13 @@
                 <a href="/admin/farming/seed-cost-share.html" class="btn btn-secondary btn-sm">Seed Cost Share</a>
                 <button class="btn btn-secondary btn-sm" id="btnSeasonImport">2026 Season Records</button>
                 <button class="btn btn-secondary btn-sm" id="btnCostRecords" title="Cost field passes from the rate list">Cost Field Records</button>
+                <button class="btn btn-secondary btn-sm" id="btnGaps" title="Find fields missing a pass the rest of that crop got">Check Gaps</button>
                 <a href="/admin/farming/crop-insurance-2026-wheat.html" class="btn btn-secondary btn-sm">Loss Notice</a>
                 <button class="btn" id="btnNewField">Add Field</button>
             </div>
         </div>
 
+        <section id="gapPanel" style="display:none; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1); padding:18px; margin-bottom:20px;"></section>
         <section id="seasonImport" style="display:none; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1); padding:18px; margin-bottom:20px;"></section>
 
         <div class="bulk-bar" id="bulkBar" style="display:none;">
@@ -1374,7 +1376,7 @@
                     </div>`).join('');
                 const status = o.status === 'planned'
                     ? '<span style="background:#fbf3e2; color:#8a6d00; border:1px solid #d4a54a; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600;">Planned</span>'
-                    : '';
+                    : o.assumed ? '<span style="background:#fbf3e2; color:#8a6d00; border:1px solid #d4a54a; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600;">Assumed, not recorded</span>' : '';
                 return `
                     <div style="background:#fff; border:1px solid #e6e1d6; border-radius:5px; padding:10px 12px; margin-top:8px; font-size:12px; display:grid; gap:4px;">
                         <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
@@ -1503,10 +1505,13 @@
             const opts = seasonData.fields.map(fl => `<option value="${escapeHtml(fl._id)}">${escapeHtml(fl.name)}${fl.farmName ? ' (' + escapeHtml(fl.farmName) + ')' : ''}</option>`).join('');
             const groups = [
                 ['Wheat 2026 harvest', r => r.cropYear === 2026 && r.type === 'harvest'],
-                ['Wheat 2026 planting (fall 2025)', r => r.cropYear === 2026 && r.type === 'seeding'],
-                ['Wheat 2027 drilling (Oct 2026)', r => r.cropYear === 2027 && r.type === 'seeding'],
-                ['Fall chemfallow for corn 2027 (planned)', r => r.cropYear === 2027 && r.type === 'spray']
+                ['Wheat 2026 planting (fall 2025)', r => !isOps(r) && r.cropYear === 2026 && r.type === 'seeding'],
+                ['Wheat 2027 drilling (Oct 2026)', r => !isOps(r) && r.cropYear === 2027 && r.type === 'seeding'],
+                ['Fall chemfallow for corn 2027', r => !isOps(r) && r.cropYear === 2027 && r.type === 'spray'],
+                ['Planting with starter (Ops Center Application 2026)', r => isOps(r) && r.type === 'seeding'],
+                ['Spray passes (Ops Center Application 2026)', r => isOps(r) && r.type === 'spray']
             ];
+            function isOps(r) { return String(r.key).startsWith('app26-'); }
             const rows = groups.map(([label, test]) => {
                 const recs = seasonData.records.filter(test);
                 if (!recs.length) return '';
@@ -1517,10 +1522,10 @@
                         : r.suggested ? '<span style="color:#2d5016;">Matched</span>'
                         : '<span style="color:#a02818;">' + (r.candidateCount > 1 ? 'Pick field (' + r.candidateCount + ' match)' : 'Pick field') + '</span>';
                     return `<tr>
-                        <td style="padding:6px;"><input type="checkbox" data-season-check="${escapeHtml(r.key)}" ${(!r.addedTo && r.suggested) || r.outdated ? 'checked' : ''} aria-label="Add ${escapeHtml(r.key)}"></td>
+                        <td style="padding:6px;"><input type="checkbox" data-season-check="${escapeHtml(r.key)}" ${(!r.addedTo && r.suggested && !r.review) || r.outdated ? 'checked' : ''} aria-label="Add ${escapeHtml(r.key)}"></td>
                         <td style="padding:6px;"><strong>${escapeHtml(r.fieldHint)}</strong> · ${escapeHtml(r.title || '')}<br><span style="color:#888; font-size:12px;">${fmtRange(r.startDate, r.endDate)}${seasonSummary(r) ? ' · ' + escapeHtml(seasonSummary(r)) : ''}</span></td>
                         <td style="padding:6px;"><select data-season-field="${escapeHtml(r.key)}" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:220px;"><option value="">Choose field</option>${opts}</select></td>
-                        <td style="padding:6px; font-size:12px;">${status}</td>
+                        <td style="padding:6px; font-size:12px;">${status}${r.review && !r.addedTo ? `<div style="color:#8a6d00; margin-top:2px;">${escapeHtml(r.review)}</div>` : ''}${r.cropFromCard ? '<div style="color:#888; margin-top:2px;">Crop from the card</div>' : ''}</td>
                     </tr>`.replace(`<option value="${escapeHtml(target)}">`, target ? `<option value="${escapeHtml(target)}" selected>` : '<option value="__none__">');
                 }).join('');
             }).join('');
@@ -1539,6 +1544,62 @@
                 </div>
                 <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`;
         }
+        // Consistency check: passes most fields of a crop got that others did not.
+        let gapData = [];
+        async function openGaps() {
+            const el = document.getElementById('gapPanel');
+            el.style.display = '';
+            el.innerHTML = '<p>Checking ' + selectedYear + ' field records...</p>';
+            try {
+                gapData = (await opsRequest('/gaps?cropYear=' + selectedYear)).data;
+                renderGaps();
+            } catch (e) {
+                el.innerHTML = '<p style="color:#a02818;">Could not check: ' + escapeHtml(e.message) + '</p>';
+            }
+        }
+        function renderGaps() {
+            const el = document.getElementById('gapPanel');
+            const blocks = gapData.map((g, i) => `
+                <div style="border:1px solid #eee; border-radius:6px; padding:12px; margin-top:10px;">
+                    <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                        <strong>${escapeHtml(g.crop)} ${yy(g.cropYear)} · ${OP_LABELS[g.pass.type] || escapeHtml(g.pass.type)}: ${escapeHtml(g.pass.title || '')}</strong>
+                        <span style="color:#666; font-size:13px;">On ${g.pass.count} of ${g.fieldCount} ${escapeHtml(g.crop.toLowerCase())} fields${g.pass.startDate ? ' · ' + fmtDay(g.pass.startDate) : ''}</span>
+                    </div>
+                    ${g.pass.products && g.pass.products.length ? `<div style="color:#888; font-size:12px; margin-top:2px;">${g.pass.products.map(p => escapeHtml(p.name)).join(', ')}</div>` : ''}
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+                        ${g.missing.map(f => `<label style="display:flex; gap:6px; align-items:center; background:#fbf3e2; border-radius:5px; padding:6px 10px; font-size:13px;">
+                            <input type="checkbox" data-gap="${i}" value="${escapeHtml(f.id)}" checked> ${escapeHtml(f.name)} <span style="color:#888;">${fmtNum(f.acres, 1)} ac${f.plannedId ? ' · planned on card' : ''}</span></label>`).join('')}
+                    </div>
+                    <button class="btn btn-sm" style="margin-top:8px;" data-gap-fill="${i}">Add as assumed (not recorded)</button>
+                </div>`).join('');
+            el.innerHTML = `
+                <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
+                    <div>
+                        <h2 style="font-family:'Oswald',sans-serif; color:#2d5016; font-size:20px; margin:0;">Gaps · ${selectedYear}</h2>
+                        <p style="margin:4px 0 0; color:#666; font-size:13px;">Passes that more than half the fields of a crop got, and the fields of that crop without them. Uncheck any field that truly was not done. Assumed passes copy the date, products and rate from a recorded field and use the card's acres.</p>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="btnGapsClose">Close</button>
+                </div>
+                ${blocks || '<p style="margin-top:10px; color:#2d5016;">No gaps: every pass is on all fields of its crop, or on half or fewer (not treated as a standard pass).</p>'}`;
+            document.getElementById('btnGapsClose').addEventListener('click', () => { el.style.display = 'none'; });
+            el.querySelectorAll('[data-gap-fill]').forEach(b => b.addEventListener('click', () => fillGap(Number(b.getAttribute('data-gap-fill')), b)));
+        }
+        async function fillGap(i, btn) {
+            const g = gapData[i];
+            const ids = [...document.querySelectorAll(`[data-gap="${i}"]:checked`)].map(c => c.value);
+            if (!ids.length) return;
+            btn.disabled = true;
+            try {
+                const r = await opsRequest('/gaps/fill', { method: 'POST', body: JSON.stringify({ exampleId: g.pass.exampleId, m77Fields: ids }) });
+                showBanner('success', r.message + ' for ' + g.crop + ' ' + yy(g.cropYear) + ': ' + (g.pass.title || g.pass.type) + '.');
+                await refreshSeedSection();
+                await openGaps();
+            } catch (e) {
+                showBanner('error', 'Could not add the passes: ' + e.message);
+                btn.disabled = false;
+            }
+        }
+
         async function openSeasonImport() {
             const el = document.getElementById('seasonImport');
             el.style.display = '';
@@ -1976,6 +2037,7 @@
 
         document.getElementById('btnSeasonImport').addEventListener('click', openSeasonImport);
         document.getElementById('btnCostRecords').addEventListener('click', costAllRecords);
+        document.getElementById('btnGaps').addEventListener('click', openGaps);
         hierarchyEl.addEventListener('change', (e) => {
             const sel = e.target.closest('[data-op-rate]');
             if (sel) setOperationRate(sel.getAttribute('data-op-rate'), sel.value);

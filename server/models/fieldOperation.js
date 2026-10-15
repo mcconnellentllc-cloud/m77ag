@@ -69,6 +69,11 @@ const fieldOperationSchema = new mongoose.Schema({
     appliedAt: { type: Date }
   },
 
+  // True for a pass added because most fields of the same crop had it and
+  // this one did not show it in the records (likely done, not recorded).
+  assumed: { type: Boolean, default: false },
+  assumedFrom: { type: mongoose.Schema.Types.ObjectId, ref: 'FieldOperation', default: null },
+
   source: { type: String, trim: true },
   notes: { type: String, trim: true },
   // Set for records added from a prepared import, so re-running it updates instead of duplicating.

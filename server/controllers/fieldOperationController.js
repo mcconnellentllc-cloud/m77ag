@@ -21,6 +21,25 @@ function matches(hint, name) {
   return !h.suffix || h.suffix === f.suffix;
 }
 
+// Crop on a card for a year: the linked CroppingField's cropYYYY, else the
+// M77Field 2026 crop. Upper case, milo read as sorghum.
+const CroppingField = require('../models/croppingField');
+async function cardCrops(fields) {
+  const legacyIds = fields.filter(f => f.legacySource === 'CroppingField' && f.legacyId).map(f => f.legacyId);
+  const cfs = legacyIds.length ? await CroppingField.find({ _id: { $in: legacyIds } })
+    .select('crop2025 crop2026 crop2027 crop2028 crop2029 crop2030').lean() : [];
+  const byId = {};
+  for (const c of cfs) byId[String(c._id)] = c;
+  return (field, year) => {
+    const c = field.legacyId ? byId[String(field.legacyId)] : null;
+    let crop = (c && c['crop' + year]) || (year === 2026 ? field.crop2026 : '') || '';
+    crop = String(crop).toUpperCase().trim();
+    if (crop.startsWith('MILO') || crop.startsWith('SORGHUM')) return 'SORGHUM';
+    return crop;
+  };
+}
+const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'cropFromCard', 'acresFromField', 'review'];
+
 // GET /api/field-operations?cropYear=&m77Field=
 exports.listEntries = async (req, res) => {
   try {
@@ -47,14 +66,22 @@ exports.getImport = async (req, res) => {
   const imp = IMPORTS[req.params.importId];
   if (!imp) return res.status(404).json({ success: false, message: 'Import not found' });
   try {
-    const fields = await M77Field.find({}).select('name acres farm').populate('farm', 'name').sort({ name: 1 });
+    const fields = await M77Field.find({}).select('name acres farm crop2026 legacySource legacyId').populate('farm', 'name').sort({ name: 1 });
+    const cropOn = await cardCrops(fields);
     const done = await FieldOperation.find({ sourceKey: { $in: imp.RECORDS.map(r => req.params.importId + ':' + r.key) } })
       .select('sourceKey sourceRev m77Field fieldName');
     const doneByKey = {};
     for (const d of done) doneByKey[d.sourceKey] = d;
     const records = imp.RECORDS.map(r => {
       const d = doneByKey[req.params.importId + ':' + r.key];
-      const candidates = fields.filter(f => matches(r.fieldHint, f.name));
+      let candidates = fields.filter(f => matches(r.fieldHint, f.name));
+      // Operations Center names are not reliable for the half, so match by
+      // field number and then by the crop on the card.
+      if (r.matchBy === 'crop' && candidates.length > 1) {
+        const year = r.matchCropYear || r.cropYear;
+        const crop = r.matchCrop || r.crop;
+        if (crop) candidates = candidates.filter(f => cropOn(f, year) === crop);
+      }
       return {
         ...r,
         addedTo: d ? { m77Field: d.m77Field, fieldName: d.fieldName } : null,
@@ -63,6 +90,16 @@ exports.getImport = async (req, res) => {
         candidateCount: candidates.length
       };
     });
+    // Two records of the same kind landing on one card are likely the same
+    // pass logged twice (wrong half picked in the cab); flag all but the first.
+    const seen = {};
+    for (const r of records) {
+      const target = r.addedTo ? String(r.addedTo.m77Field) : r.suggested;
+      if (!target || !r.key.startsWith('app26')) continue;
+      const k = [target, r.type, r.cropYear, r.title].join('|');
+      if (seen[k]) r.review = r.review || ('Same card and pass as ' + seen[k] + '; likely logged twice.');
+      else seen[k] = r.fieldHint + ' ' + r.startDate;
+    }
     res.json({
       success: true,
       data: {
@@ -88,6 +125,7 @@ exports.applyImport = async (req, res) => {
     for (const r of imp.RECORDS) byKey[r.key] = r;
     const fieldIds = Array.from(new Set(assignments.map(a => a.m77Field).filter(Boolean)));
     const fields = await M77Field.find({ _id: { $in: fieldIds } }).populate('farm', 'name');
+    const cropOn = await cardCrops(fields);
     const fieldById = {};
     for (const f of fields) fieldById[String(f._id)] = f;
 
@@ -98,7 +136,14 @@ exports.applyImport = async (req, res) => {
       const field = fieldById[String(a.m77Field)];
       if (!rec) { errors.push(a.key + ': record not found'); continue; }
       if (!field) { errors.push(a.key + ': field not found'); continue; }
-      const { key, fieldHint, rev, ...data } = rec;
+      const data = { ...rec };
+      for (const k of IMPORT_ONLY_KEYS) delete data[k];
+      const { key, rev } = rec;
+      if (rec.cropFromCard) {
+        data.crop = cropOn(field, rec.cropYear);
+        if (!data.crop) { errors.push(`${key}: set the ${rec.cropYear} crop on ${field.name} first`); continue; }
+      }
+      if (rec.acresFromField) data.acres = field.acres || null;
       const sourceKey = req.params.importId + ':' + key;
       await FieldOperation.findOneAndUpdate(
         { sourceKey },
@@ -179,6 +224,117 @@ exports.setCost = async (req, res) => {
     res.json({ success: true, data: op, message: `Costed at ${cost.rateLabel}: $${cost.amount.toFixed(2)}` });
   } catch (err) {
     console.error('Set field operation cost error:', err);
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// ---------- Consistency check ----------
+// Operations try to stay even across all acres of a crop. For each crop on
+// the cards in a crop year, a completed pass that more than half of those
+// fields have is expected on the rest; the fields without it are listed.
+function passSignature(op) {
+  return op.type + '|' + String(op.title || '').trim().toLowerCase();
+}
+
+// GET /api/field-operations/gaps?cropYear=2027
+exports.listGaps = async (req, res) => {
+  try {
+    const cropYear = parseInt(req.query.cropYear, 10);
+    if (!cropYear) return res.status(400).json({ success: false, message: 'cropYear is required' });
+    const fields = await M77Field.find({}).select('name acres farm crop2026 legacySource legacyId').populate('farm', 'name type').lean();
+    const active = fields.filter(f => !(f.farm && f.farm.type === 'custom'));
+    const cropOn = await cardCrops(active);
+    const ops = await FieldOperation.find({ cropYear, m77Field: { $in: active.map(f => f._id) } }).lean();
+
+    const groups = {};
+    for (const f of active) {
+      const crop = cropOn(f, cropYear);
+      if (!crop || ['FALLOW', 'PASTURE', 'WASTE', 'BUILDING SITE', 'CRP'].includes(crop)) continue;
+      (groups[crop] = groups[crop] || []).push(f);
+    }
+    const out = [];
+    for (const [crop, gFields] of Object.entries(groups)) {
+      if (gFields.length < 3) continue;
+      const ids = new Set(gFields.map(f => String(f._id)));
+      const bySig = {};
+      for (const op of ops) {
+        if (!ids.has(String(op.m77Field)) || op.status !== 'completed') continue;
+        if (op.type === 'harvest') continue;
+        const sig = passSignature(op);
+        (bySig[sig] = bySig[sig] || []).push(op);
+      }
+      for (const list of Object.values(bySig)) {
+        const have = new Set(list.map(o => String(o.m77Field)));
+        if (have.size * 2 <= gFields.length || have.size === gFields.length) continue;
+        const example = list.find(o => !o.assumed) || list[0];
+        out.push({
+          cropYear, crop,
+          fieldCount: gFields.length,
+          pass: { type: example.type, title: example.title, count: have.size, exampleId: example._id, products: example.products, startDate: example.startDate },
+          missing: gFields.filter(f => !have.has(String(f._id))).map(f => {
+            const planned = ops.find(o => String(o.m77Field) === String(f._id) && o.status === 'planned' && passSignature(o) === passSignature(example));
+            return { id: f._id, name: f.name, acres: f.acres, farm: f.farm ? f.farm.name : '', plannedId: planned ? planned._id : null };
+          })
+            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+        });
+      }
+    }
+    out.sort((a, b) => a.crop.localeCompare(b.crop) || b.pass.count - a.pass.count);
+    res.json({ success: true, data: out });
+  } catch (err) {
+    console.error('Field record gap check error:', err);
+    res.status(500).json({ success: false, message: 'Failed to check for gaps' });
+  }
+};
+
+// POST /api/field-operations/gaps/fill  Body: { exampleId, m77Fields: [] }
+// Adds the pass to each field as assumed (done, not recorded), copying the
+// example's products and rate; acres are the field's acres.
+exports.fillGaps = async (req, res) => {
+  try {
+    const example = await FieldOperation.findById(req.body && req.body.exampleId);
+    if (!example) return res.status(404).json({ success: false, message: 'Example pass not found' });
+    const ids = Array.isArray(req.body.m77Fields) ? req.body.m77Fields : [];
+    if (!ids.length) return res.status(400).json({ success: false, message: 'Pick at least one field' });
+    const fields = await M77Field.find({ _id: { $in: ids } }).populate('farm', 'name');
+    let added = 0;
+    for (const field of fields) {
+      const dup = await FieldOperation.findOne({ m77Field: field._id, cropYear: example.cropYear, type: example.type, title: example.title });
+      if (dup && dup.status !== 'planned') continue;
+      if (dup) {
+        // Planned on this card but not recorded as done: mark it done, assumed.
+        dup.status = 'completed';
+        dup.assumed = true;
+        dup.assumedFrom = example._id;
+        if (!dup.startDate) { dup.startDate = example.startDate; dup.endDate = example.endDate; }
+        dup.notes = [dup.notes, 'Marked done by the consistency check: the other ' + example.crop + ' fields had this pass; it was not in the records.'].filter(Boolean).join(' ');
+        const k = (example.cost && example.cost.rateKey) || operationCost.defaultRateKey(dup);
+        if (k) { const c = operationCost.costFor(dup, k, example.cost && example.cost.setBy === 'manual' ? 'manual' : 'default'); if (!c.error) dup.cost = c; }
+        await dup.save();
+        added += 1;
+        continue;
+      }
+      const op = new FieldOperation({
+        m77Field: field._id, fieldName: field.name, farmName: field.farm ? field.farm.name : '',
+        cropYear: example.cropYear, crop: example.crop, type: example.type, status: 'completed',
+        title: example.title, startDate: example.startDate, endDate: example.endDate,
+        acres: field.acres || null, products: example.products, carrierGalPerAcre: example.carrierGalPerAcre,
+        assumed: true, assumedFrom: example._id,
+        source: 'Assumed: same pass as the other ' + example.crop + ' ' + String(example.cropYear).slice(-2) + ' fields; not in the records',
+        notes: 'Added by the consistency check. Date and products copied from ' + example.fieldName + '.',
+        createdBy: req.userId
+      });
+      const key = (example.cost && example.cost.rateKey) || operationCost.defaultRateKey(op);
+      if (key) {
+        const cost = operationCost.costFor(op, key, example.cost && example.cost.setBy === 'manual' ? 'manual' : 'default');
+        if (!cost.error) op.cost = cost;
+      }
+      await op.save();
+      added += 1;
+    }
+    res.json({ success: true, data: { added }, message: `${added} assumed pass${added === 1 ? '' : 'es'} added` });
+  } catch (err) {
+    console.error('Fill field record gaps error:', err);
     res.status(400).json({ success: false, message: err.message });
   }
 };
