@@ -145,13 +145,37 @@ const equipmentData = [
     saleStatus: 'not-for-sale'
   },
   {
-    title: 'Cadillac Escalade',
-    subtitle: 'SUV',
-    category: 'Other',
+    title: '2017 Cadillac Escalade ESV',
+    subtitle: 'ESV Luxury 4WD - 6.2L V8',
+    category: 'Personal Vehicles',
+    year: 2017,
     make: 'Cadillac',
-    model: 'Escalade',
-    currentMiles: 104000,
-    notes: 'Owner: Personal, Insured: Yes',
+    model: 'Escalade ESV',
+    vin: '1GYS4HKJ3HR132303',
+    currentMiles: 114933,
+    maintenanceRecords: [
+      {
+        date: new Date('2026-09-23T19:37:00Z'),
+        type: 'oil_change',
+        description: 'Pre-trip service: engine oil and filter, engine air filter, cabin air filter',
+        milesAtService: 114933,
+        parts: [
+          { name: 'Engine oil filter', partNumber: 'ACDelco PF63E (GM 19330000)', quantity: 1 },
+          { name: 'Engine air filter', partNumber: 'ACDelco A3218C (GM 23349854)', quantity: 1 },
+          { name: 'Cabin air filter', partNumber: 'ACDelco CF188 (GM 23281440)', quantity: 1 },
+          { name: 'Engine oil, SAE 0W-20 dexos1 full synthetic', partNumber: '0W-20', quantity: 8 }
+        ],
+        performedBy: 'self',
+        vendor: "O'Reilly Auto Parts (parts)",
+        notes: 'No fuel filter serviced - not a serviceable part on this vehicle. ' +
+               'Next engine air filter 135,000 mi or Sept 2030. Next cabin air filter 135,000 mi or Sept 2028. ' +
+               'Reset oil life system.'
+      }
+    ],
+    notes: 'Owner: Personal, Insured: Yes. Engine 6.2L V8 (L86), 4WD, built Arlington TX. ' +
+           'Oil filter ACDelco PF63E (GM 19330000), air filter ACDelco A3218C (GM 23349854), ' +
+           'cabin filter ACDelco CF188 (GM 23281440). No serviceable fuel filter - integral to in-tank pump module. ' +
+           'Oil: 8.0 qt SAE 0W-20 dexos1. See /admin/equipment/escalade-guide.html',
     forSale: false,
     saleStatus: 'not-for-sale'
   },
@@ -373,7 +397,10 @@ const equipmentData = [
     purchasePrice: 15000,
     currentValue: 3500,
     serialNumber: '1P9AB19339S276116',
-    notes: 'Unit #154, Owner: M77 AG, Insured: Yes',
+    notes: 'Unit #154, Owner: M77 AG, Insured: Yes. Avery Weigh-Tronix 640 scale head, hydraulic auger drive, ' +
+           '3000 RPM maximum. Engine: Briggs Vanguard 16 HP V-twin 479cc (series 305447), 1 in. shaft, 1/4 in. key. ' +
+           'Replacement: Harbor Freight Predator 459cc item 58383. Wagon manual line 800-291-5487. ' +
+           'See /admin/equipment/weigh-wagon-guide.html',
     forSale: false,
     saleStatus: 'not-for-sale'
   },
