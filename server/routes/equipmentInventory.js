@@ -88,6 +88,8 @@ router.get('/public', async (req, res) => {
       delete obj.askingPrice; // Internal asking price
       delete obj.floorPrice;  // Floor price is private
       delete obj.notes;       // Internal notes
+      delete obj.licensePlate; // Plate stays private if the unit is listed
+      delete obj.towVehicle;
       delete obj.maintenanceRecords; // Service history is private
       return obj;
     });

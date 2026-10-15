@@ -24,6 +24,13 @@ const equipmentSchema = new mongoose.Schema({
 
   // Images & Media
   images: [String],
+
+  // Road registration. Private: never sent on the public for-sale listing,
+  // and plates are blurred in any photo stored for the card.
+  licensePlate: { type: String, trim: true },
+
+  // For a trailer, the truck that usually pulls it.
+  towVehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment', default: null },
   videos: [String],
 
   // Specifications (flexible key-value)
