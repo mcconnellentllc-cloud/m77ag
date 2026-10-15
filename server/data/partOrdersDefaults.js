@@ -11,6 +11,11 @@ module.exports = {
     {
       seedKey: 'amazon', name: 'Amazon', website: 'https://www.amazon.com',
       notes: 'Business account delivering to McConnell Enterprises LLC, Haxtun.'
+    },
+    {
+      seedKey: 'novus-sterling', name: 'NOVUS Glass - Sterling',
+      website: 'https://www.novusglass.com/en-us/shop/sterling/', phone: '970-520-2525',
+      notes: 'Glass shop for all M77 vehicles and equipment: trucks, semi tractors, trailers, tractors, combines, pickups. 932 Hamilton St, Sterling, CO 80751. Mon-Fri 8:30 AM-5:00 PM, closed weekends. Mobile service in Logan, Morgan, Phillips, Sedgwick, Washington and Yuma counties. Quote requested Oct 2026 for both Unit #3 windshield panes, installed.'
     }
   ],
   orders: [
