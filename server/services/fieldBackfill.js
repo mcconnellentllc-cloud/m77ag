@@ -6,6 +6,9 @@
 //   - lease type and landlord from the farm (M77Farm)
 //   - legal, FSA farm / tract, acres, county, section / township / range,
 //     soil type and class from the field list in server/data/fieldDetails.js
+//   - the 2025 crop from the 2024 soil lab sample (samples are pulled in
+//     the fall, so the year N lab record names the N+1 crop)
+//   - values missing on lab samples already on the card
 //   - soil survey map units and capability class from USDA SSURGO, using
 //     the field boundary on the linked M77Field
 const https = require('https');
@@ -45,8 +48,9 @@ const COUNTY_BY_TR = {
 const SDA_URL = 'https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest';
 const SQ_M_PER_ACRE = 4046.8564224;
 
+// Spreadsheet placeholders such as #N/A count as blank.
 function isBlank(v) {
-  return v === undefined || v === null || String(v).trim() === '';
+  return v === undefined || v === null || /^(#N\/A|N\/A|#REF!|#VALUE!|-+)?$/i.test(String(v).trim());
 }
 
 // "61.N HIGHLAND E" -> { num: '61', suffix: 'N' }; "61-N" and "28 NE" too.
@@ -79,7 +83,7 @@ function historyToSample(h, rec) {
     ph: n(h.pH), nitrogen: n(h.NO3_ppm), phosphorus: n(h.Olsen_P), potassium: n(h.Potassium_ppm),
     sulfur: n(h.Sulfur_ppm), zinc: n(h.Zinc_ppm), iron: n(h.Iron_ppm), organicMatter: n(h.OM_pct), cec: n(h.CEC),
     bufferPH: n(h.Buffer_pH), NO3ppm: n(h.NO3_ppm), NO3lbs: n(h.NO3_lbs_A), NO3Total: n(h.NO3_lbs_A),
-    olsenP: n(h.Olsen_P), bray1P: n(h.Bray1_P), brayP2: n(h.Bray2_P), calcium: n(h.Calcium_ppm),
+    olsenP: n(h.Olsen_P), bray1P: n(h.Bray1_P), brayP2: n(h.Bray2_P), K2Olbs: n(h.K2O_lbs), calcium: n(h.Calcium_ppm),
     magnesium: n(h.Magnesium_ppm), sodium: n(h.Sodium_ppm), manganese: n(h.Manganese_ppm),
     copper: n(h.Copper_ppm), boron: n(h.Boron_ppm),
     baseSat: n(h.Base_Sat_pct), hSat: n(h.H_Sat_pct), caSat: n(h.Ca_Sat_pct), mgSat: n(h.Mg_Sat_pct),
@@ -115,6 +119,13 @@ function soilSamplesFor(fieldName) {
     if (hasValues && !byYear.has(2026)) byYear.set(2026, currentToSample(rec));
   }
   return [...byYear.values()].sort((a, b) => a.year - b.year);
+}
+
+// Lab crop names in the Field Planner's spelling.
+const LAB_CROP = { MILO: 'SORGHUM', MILLET: 'PEARL MILLET', SUDAN: 'SORGHUM SUDAN', OAT: 'OATS' };
+function labCrop(c) {
+  const u = String(c || '').trim().toUpperCase();
+  return LAB_CROP[u] || u;
 }
 
 // "SE4 35-7-47" -> { section: '35', township: '7N', range: '47W' }
@@ -174,12 +185,36 @@ function plannedChanges(cf, farm, rawSoil) {
     }
   }
 
-  // Soil lab samples for years the field does not have yet.
-  const haveYears = new Set(((rawSoil && typeof rawSoil === 'object' && rawSoil.samples) || []).map(s => s.year));
-  const samples = soilSamplesFor(cf.field).filter(s => !haveYears.has(s.year));
-  if (!soilRecordsFor(cf.field).length) notes.push('No soil lab records for this field number');
+  // Soil lab samples for years the field does not have yet. Lab samples
+  // already on the card get any values they are missing.
+  const have = (rawSoil && typeof rawSoil === 'object' && Array.isArray(rawSoil.samples)) ? rawSoil.samples : [];
+  const haveYears = new Set(have.map(s => s.year));
+  const lab = soilSamplesFor(cf.field);
+  const samples = lab.filter(s => !haveYears.has(s.year));
+  let valuesFilled = 0;
+  const merged = have.map(s => {
+    if (!/^Soil lab /.test(s.notes || '')) return s; // hand-entered samples are left alone
+    const src = lab.find(l => l.year === s.year);
+    if (!src) return s;
+    const out = { ...s };
+    for (const [k, v] of Object.entries(src)) {
+      if (k === 'agronomistAlerts' || k === 'notes') continue;
+      if (!isBlank(v) && isBlank(s[k])) { out[k] = v; valuesFilled++; }
+    }
+    return out;
+  });
+  if (!lab.length) notes.push('No soil lab records for this field number');
 
-  return { set, samples, notes };
+  // 2025 crop from the 2024 lab sample, when every matching record agrees.
+  if (isBlank(cf.crop2025)) {
+    const crops = [...new Set(soilRecordsFor(cf.field)
+      .map(r => (r.history || []).find(h => h.year === 2024))
+      .filter(h => h && !isBlank(h.crop)).map(h => labCrop(h.crop)))];
+    if (crops.length === 1) set.crop2025 = crops[0];
+    else if (crops.length > 1) notes.push('2024 lab samples disagree on the 2025 crop: ' + crops.join(', '));
+  }
+
+  return { set, samples, merged, valuesFilled, notes };
 }
 
 async function loadContext() {
@@ -214,6 +249,7 @@ async function preview() {
       farm: cf.farm,
       set: plan.set,
       soilSampleYears: plan.samples.map(s => s.year),
+      soilValuesFilled: plan.valuesFilled,
       hasBoundary: !!boundaryByCf[String(cf._id)],
       hasSoilSurvey: !!(rs && typeof rs === 'object' && rs.mapUnits && rs.mapUnits.length),
       notes: plan.notes
@@ -235,7 +271,10 @@ async function apply() {
       update.$set = { soil: { type: rs || (d && d.soil && d.soil.type), ...(d && d.soil && d.soil.class ? { class: d.soil.class } : {}), samples: plan.samples } };
     } else {
       if (Object.keys(plan.set).length) update.$set = { ...plan.set };
-      if (plan.samples.length) {
+      if (plan.valuesFilled) {
+        // Existing samples with their missing values filled, then any new years.
+        update.$set = { ...(update.$set || {}), 'soil.samples': plan.merged.concat(plan.samples) };
+      } else if (plan.samples.length) {
         if (rs && typeof rs === 'object' && Array.isArray(rs.samples)) update.$push = { 'soil.samples': { $each: plan.samples } };
         else update.$set = { ...(update.$set || {}), 'soil.samples': plan.samples };
       }
@@ -244,7 +283,7 @@ async function apply() {
     if (!update.$set && !update.$push) continue;
     // Validate the new samples through the model before the raw update.
     await CroppingField.updateOne({ _id: cf._id }, update, { runValidators: true });
-    results.push({ id: cf._id, field: cf.field, filled: Object.keys(plan.set), soilSamplesAdded: plan.samples.map(s => s.year) });
+    results.push({ id: cf._id, field: cf.field, filled: Object.keys(plan.set), soilSamplesAdded: plan.samples.map(s => s.year), soilValuesFilled: plan.valuesFilled });
   }
   return results;
 }

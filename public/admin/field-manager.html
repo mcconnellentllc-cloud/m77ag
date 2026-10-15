@@ -186,6 +186,27 @@
         .soil-val .sv-num { font-family: 'Oswald', sans-serif; font-size: 15px; color: #2d5016; }
         .soil-val .sv-lbl { font-size: 9px; color: #999; text-transform: uppercase; }
 
+        /* Soil nutrient trends: every sample, one row per nutrient */
+        .trend-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .trend-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .trend-table th { padding: 6px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; background: #fafafa; border-bottom: 1px solid #eee; text-align: right; white-space: nowrap; }
+        .trend-table th:first-child, .trend-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 1; }
+        .trend-table th:first-child { background: #fafafa; }
+        .trend-table th .for-crop { display: block; font-size: 9px; color: #aaa; text-transform: none; letter-spacing: 0; }
+        .trend-table td { padding: 6px 8px; border-bottom: 1px solid #f5f5f5; text-align: right; white-space: nowrap; }
+        .trend-table td.nut { font-weight: 600; color: #333; }
+        .trend-table td.nut span { display: block; font-size: 9px; font-weight: 400; color: #999; }
+        .trend-table tr.group td { background: #f5f3f0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #2d5016; font-weight: 600; text-align: left; }
+        .trend-table td.status-low { color: #e67e22; }
+        .trend-table td.status-critical { color: #c0392b; font-weight: 600; }
+        .trend-table td.status-high { color: #2980b9; }
+        .trend-table td.status-ideal { color: #27ae60; }
+        .trend-table td.trend { font-size: 11px; color: #666; }
+        .trend-table td.trend.up { color: #27ae60; }
+        .trend-table td.trend.down { color: #c0392b; }
+        .trend-table svg { vertical-align: middle; }
+        .trend-note { font-size: 11px; color: #888; margin-top: 6px; line-height: 1.5; }
+
         /* Soil status indicators */
         .soil-val .sv-num.status-low { color: #e67e22; }
         .soil-val .sv-num.status-critical { color: #c0392b; }
@@ -949,7 +970,7 @@
         // Crop by year, the same fields the Field Planner sets. Years before
         // 2025 live in crop history.
         const EDIT_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
-        const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE', 'PEARL MILLET', 'SORGHUM SUDAN', 'WASTE', 'BUILDING SITE'];
+        const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE', 'PEARL MILLET', 'SORGHUM SUDAN', 'OATS', 'WASTE', 'BUILDING SITE'];
         function renderCropEditor(f) {
             const sels = EDIT_YEARS.map(y => {
                 const cur = f['crop' + y] || '';
@@ -977,7 +998,7 @@
                 for (const k of Object.keys(body)) f[k] = data.field[k];
                 renderFields();
                 const detail = document.getElementById('detail-' + id);
-                if (detail) detail.classList.add('open');
+                if (detail) { detail.classList.add('open'); switchTab(id, 'history'); }
                 showAlert('success', 'Crops saved for ' + f.field, { noScroll: true });
             } catch (e) {
                 showAlert('error', 'Could not save crops: ' + e.message, { noScroll: true });
@@ -988,7 +1009,7 @@
             const lease = f.lease || {};
             const taxes = f.taxes || {};
             const v = (val) => val ? val : '<span class="empty">--</span>';
-            return renderCropEditor(f) + `
+            return `
                 <div class="info-grid">
                     <div class="info-item"><div class="info-label">Legal Description</div><div class="info-value">${v(f.legal)}</div></div>
                     <div class="info-item"><div class="info-label">FSA Farm / Tract</div><div class="info-value">${v(f.fsaFarm)} / ${v(f.tract)}</div></div>
@@ -1015,7 +1036,7 @@
                     <thead><tr><th>Year</th><th>Crop</th><th class="right">Bushels</th><th class="right">Yield bu/ac</th><th>Source</th></tr></thead>
                     <tbody>${ticketRows.map(r => `<tr><td><strong>${r.year}</strong></td><td>${r.crop}</td><td class="right">${r.bu.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td><td class="right">${r.yield.toFixed(1)}</td><td>Scale tickets over ${fmtAcres(f.acres)} ac</td></tr>`).join('')}</tbody>
                 </table></div>` : '';
-            return ticketHtml + renderHistoryTable(f);
+            return renderCropEditor(f) + ticketHtml + renderHistoryTable(f);
         }
 
         function renderHistoryTable(f) {
@@ -1240,7 +1261,9 @@
             // Sort samples by year descending
             const sorted = [...samples].sort((a,b) => (b.year||0) - (a.year||0));
             const latest = sorted[0];
-            const crop = f.crop2026 || '';
+            // Samples are pulled in the fall: the year N lab is for the N+1 crop.
+            const planYear = latest.year ? latest.year + 1 : null;
+            const crop = (planYear && f['crop' + planYear]) || latest.crop || '';
 
             let html = '';
 
@@ -1267,13 +1290,13 @@
             // Recommendations
             const recs = generateRecommendations(latest, crop);
             if (recs.length > 0 && !(recs.length === 1 && recs[0].includes('adequate'))) {
-                html += '<div class="soil-recs"><div class="soil-recs-title">2026 Recommendations</div>';
+                html += '<div class="soil-recs"><div class="soil-recs-title">' + (planYear ? planYear + ' Crop Recommendations' : 'Recommendations') + (crop ? ' (' + escapeText(crop) + ')' : '') + '</div>';
                 recs.forEach(r => { html += '<div class="soil-rec-item">' + r + '</div>'; });
                 html += '</div>';
             }
 
             // Latest sample nutrient status bars
-            html += '<div class="soil-section"><div class="soil-section-title">Nutrient Status <span class="toggle">' + (latest.year || '') + ' Sample</span></div>';
+            html += '<div class="soil-section"><div class="soil-section-title">Nutrient Status <span class="toggle">' + (latest.year ? latest.year + ' lab, for ' + planYear + ' crop' : 'Latest sample') + '</span></div>';
             html += renderNutrientBar('ph', latest.ph);
             html += renderNutrientBar('organicMatter', latest.organicMatter);
             html += renderNutrientBar('NO3lbs', latest.NO3lbs);
@@ -1290,48 +1313,103 @@
             // Base saturation
             html += '<div class="soil-section">' + renderBaseSatBar(latest) + '</div>';
 
-            // History cards (all samples)
+            // Every sample, every nutrient, with the trend across years
+            html += renderSoilTrends(samples);
+
+            // Sample details: depth, date, notes, agronomist alerts
             html += '<div class="soil-section"><div class="soil-section-title">Sample History <span class="toggle">' + sorted.length + ' records</span></div>';
             sorted.forEach(s => {
-                const dateStr = s.date ? new Date(s.date).toLocaleDateString() : (s.year ? s.year : 'No date');
-                const cropStr = s.crop ? ' | ' + s.crop : '';
+                const dateStr = s.date ? new Date(s.date).toLocaleDateString() : '';
+                const head = (s.year ? s.year + ' lab' : 'Sample') + (s.year ? ' | for ' + (s.year + 1) + ' crop' : '') + (s.crop ? ': ' + escapeText(s.crop) : '');
                 html += '<div class="soil-card">' +
                     '<div class="soil-card-header">' +
-                    '<span class="soil-card-date">' + dateStr + cropStr + '</span>' +
-                    '<span class="soil-card-depth">' + (s.depth || '') + (s.yieldGoal ? ' | Goal: ' + s.yieldGoal + ' bu' : '') + '</span>' +
-                    '</div>' +
-                    '<div class="soil-grid">';
-
-                // Color-coded nutrient values
-                const vals = [
-                    ['ph', s.ph, 'pH'],
-                    ['organicMatter', s.organicMatter, 'O.M.%'],
-                    ['NO3lbs', s.NO3lbs, 'NO3 lb/A'],
-                    ['olsenP', s.olsenP, 'Olsen P'],
-                    ['potassium', s.potassium, 'K ppm'],
-                    ['sulfur', s.sulfur, 'S ppm'],
-                    ['calcium', s.calcium, 'Ca ppm'],
-                    ['magnesium', s.magnesium, 'Mg ppm'],
-                    ['zinc', s.zinc, 'Zn ppm'],
-                    ['boron', s.boron, 'B ppm'],
-                    ['cec', s.cec, 'CEC']
-                ];
-
-                vals.forEach(([key, val, label]) => {
-                    if (val != null) {
-                        const st = getSoilStatus(key, val);
-                        html += '<div class="soil-val"><div class="sv-num' + (st ? ' status-' + st : '') + '">' + val + '</div><div class="sv-lbl">' + label + '</div></div>';
-                    }
+                    '<span class="soil-card-date">' + head + '</span>' +
+                    '<span class="soil-card-depth">' + escapeText([dateStr, s.depth, s.yieldGoal ? 'Goal: ' + s.yieldGoal + ' bu' : ''].filter(Boolean).join(' | ')) + '</span>' +
+                    '</div>';
+                (s.agronomistAlerts || []).forEach(a => {
+                    html += '<div style="font-size:12px;color:#935116;margin-top:4px;"><strong>' + escapeText(a.type || 'Note') + ':</strong> ' + escapeText(a.message) + '</div>';
                 });
-
-                html += '</div>';
-                if (s.notes) html += '<div style="font-size:12px;color:#888;margin-top:8px;">' + s.notes + '</div>';
+                if (s.notes) html += '<div style="font-size:12px;color:#888;margin-top:4px;">' + escapeText(s.notes) + '</div>';
                 html += '</div>';
             });
             html += '</div>';
 
             html += '<div class="detail-actions"><button class="btn btn-primary btn-sm" onclick="openSoilModal(\'' + f._id + '\')">Add Soil Sample</button> <a href="/admin/soil-samples" class="btn btn-outline btn-sm" style="text-decoration:none;">Full Soil Analysis</a></div>';
             return html;
+        }
+
+        // Every soil test value on file, grouped, one column per lab year.
+        const SOIL_TREND_ROWS = [
+            ['Crop and goal', [['crop', 'Crop', ''], ['yieldGoal', 'Yield goal', 'bu/A']]],
+            ['Soil condition', [['ph', 'pH', ''], ['bufferPH', 'Buffer pH', ''], ['organicMatter', 'Organic matter', '%'], ['cec', 'CEC', 'meq/100g'], ['solubleSalts', 'Soluble salts', 'mmhos/cm'], ['salts', 'Salts', ''], ['excessLime', 'Excess lime', '']]],
+            ['Nitrogen', [['NO3ppm', 'Nitrate-N', 'ppm'], ['NO3lbs', 'Nitrate-N', 'lb/A'], ['NO3Total', 'Total N', 'lb/A'], ['nitrogen', 'Nitrogen', '']]],
+            ['Phosphorus', [['olsenP', 'Olsen P', 'ppm'], ['bray1P', 'Bray-1 P', 'ppm'], ['brayP2', 'Bray-2 P', 'ppm'], ['phosphorus', 'Phosphorus', '']]],
+            ['Potassium and secondary', [['potassium', 'Potassium', 'ppm'], ['K2Olbs', 'K2O', 'lb/A'], ['sulfur', 'Sulfur', 'ppm'], ['calcium', 'Calcium', 'ppm'], ['magnesium', 'Magnesium', 'ppm'], ['sodium', 'Sodium', 'ppm']]],
+            ['Micronutrients', [['zinc', 'Zinc', 'ppm'], ['iron', 'Iron', 'ppm'], ['manganese', 'Manganese', 'ppm'], ['copper', 'Copper', 'ppm'], ['boron', 'Boron', 'ppm']]],
+            ['Base saturation', [['baseSat', 'Base sat', '%'], ['hSat', 'H sat', '%'], ['caSat', 'Ca sat', '%'], ['mgSat', 'Mg sat', '%'], ['kSat', 'K sat', '%'], ['naSat', 'Na sat', '%']]]
+        ];
+        // Legacy columns duplicate the panel values; shown only when the panel value is missing.
+        const SOIL_LEGACY_OF = { nitrogen: 'NO3ppm', phosphorus: 'olsenP', salts: 'solubleSalts' };
+        const SOIL_TEXT_KEYS = new Set(['crop', 'excessLime']);
+
+        function soilSparkline(points) {
+            if (points.length < 2) return '';
+            const w = 64, h = 18, xs = points.map(p => p[0]), ys = points.map(p => p[1]);
+            const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+            const px = x => x1 === x0 ? w / 2 : 2 + (x - x0) / (x1 - x0) * (w - 4);
+            const py = y => y1 === y0 ? h / 2 : h - 2 - (y - y0) / (y1 - y0) * (h - 4);
+            const d = points.map((p, i) => (i ? 'L' : 'M') + px(p[0]).toFixed(1) + ' ' + py(p[1]).toFixed(1)).join(' ');
+            return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" aria-hidden="true"><path d="' + d + '" fill="none" stroke="#2d5016" stroke-width="1.5"/>' +
+                points.map(p => '<circle cx="' + px(p[0]).toFixed(1) + '" cy="' + py(p[1]).toFixed(1) + '" r="1.8" fill="#d4a54a"/>').join('') + '</svg>';
+        }
+
+        // Direction from a least-squares slope over the years on file. A total
+        // change under 5% of the average reads as steady.
+        function soilTrend(points) {
+            if (points.length < 2) return { cls: '', text: points.length ? 'One sample' : '' };
+            const n = points.length, mx = points.reduce((s, p) => s + p[0], 0) / n, my = points.reduce((s, p) => s + p[1], 0) / n;
+            let num = 0, den = 0;
+            points.forEach(p => { num += (p[0] - mx) * (p[1] - my); den += (p[0] - mx) * (p[0] - mx); });
+            const slope = den ? num / den : 0;
+            const span = points[n - 1][0] - points[0][0];
+            const change = points[n - 1][1] - points[0][1];
+            const sig = Math.abs(slope * span) >= Math.abs(my) * 0.05 && slope !== 0;
+            const fmtChange = (change > 0 ? '+' : '') + (Math.round(change * 100) / 100);
+            if (!sig) return { cls: '', text: 'Steady (' + fmtChange + ')' };
+            return slope > 0 ? { cls: 'up', text: 'Rising (' + fmtChange + ')' } : { cls: 'down', text: 'Falling (' + fmtChange + ')' };
+        }
+
+        function renderSoilTrends(samples) {
+            const byYear = new Map();
+            [...samples].sort((a, b) => (a.year || 0) - (b.year || 0)).forEach(s => { if (s.year && !byYear.has(s.year)) byYear.set(s.year, s); });
+            const years = [...byYear.keys()];
+            if (!years.length) return '';
+            const has = k => years.some(y => byYear.get(y)[k] != null && byYear.get(y)[k] !== '');
+            let body = '';
+            SOIL_TREND_ROWS.forEach(([group, rows]) => {
+                const shown = rows.filter(([k]) => has(k) && !(SOIL_LEGACY_OF[k] && has(SOIL_LEGACY_OF[k])));
+                if (!shown.length) return;
+                body += '<tr class="group"><td colspan="' + (years.length + 3) + '">' + group + '</td></tr>';
+                shown.forEach(([k, label, unit]) => {
+                    const text = SOIL_TEXT_KEYS.has(k);
+                    const points = text ? [] : years.filter(y => typeof byYear.get(y)[k] === 'number').map(y => [y, byYear.get(y)[k]]);
+                    const cells = years.map(y => {
+                        const v = byYear.get(y)[k];
+                        if (v == null || v === '') return '<td><span class="empty">--</span></td>';
+                        const st = text ? '' : getSoilStatus(k, v);
+                        const shown = typeof v === 'number' ? Math.round(v * 100) / 100 : v;
+                        return '<td class="' + (st && st !== 'na' ? 'status-' + st : '') + '">' + escapeText(shown) + '</td>';
+                    }).join('');
+                    const tr = text ? { cls: '', text: '' } : soilTrend(points);
+                    body += '<tr><td class="nut">' + label + (unit ? '<span>' + unit + '</span>' : '') + '</td>' + cells +
+                        '<td>' + (text ? '' : soilSparkline(points)) + '</td><td class="trend ' + tr.cls + '">' + tr.text + '</td></tr>';
+                });
+            });
+            const head = '<tr><th>Nutrient</th>' + years.map(y => '<th>' + y + ' lab<span class="for-crop">for ' + (y + 1) + ' crop</span></th>').join('') + '<th>Trend</th><th>Change</th></tr>';
+            return '<div class="soil-section"><div class="soil-section-title">Nutrient Trends <span class="toggle">' + years.length + ' lab years</span></div>' +
+                '<div class="trend-wrap"><table class="trend-table"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' +
+                '<div class="trend-note">Samples are pulled in the fall; each lab year is for the following crop. Change is first to latest sample. ' +
+                'Colors: green in range, orange low, red critically low, blue high.</div></div>';
         }
 
         function renderInsurancePanel(f) {
