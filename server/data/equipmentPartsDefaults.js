@@ -75,6 +75,13 @@ module.exports = [
     notes: 'Check DOT date codes; sidewall weathering seen on the tire photographed.'
   },
   {
+    category: 'Tires and wheels', seedKey: 'u106-hub-cap', name: 'Oil hub cap',
+    spec: 'Oil-bath trailer hub cap with clear window. Existing: Stemco cap, Meritor window ring. Match the bolt count and bolt circle.',
+    fits: 'Unit #106', qtyNeeded: 2,
+    amazonUrl: amazon('Stemco trailer oil hub cap window'),
+    notes: 'Windows are clouded; oil level cannot be checked. Refill to the fill line with the axle oil in use after installing.'
+  },
+  {
     category: 'Suspension', seedKey: 'u106-air-spring', name: 'Air spring',
     spec: 'ContiTech, molded number partly read: ...910-17... Read the full number before ordering.',
     fits: 'Unit #106 (Neway Anchorlok)', qtyNeeded: 0,
