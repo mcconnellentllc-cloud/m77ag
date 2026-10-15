@@ -1,0 +1,1301 @@
+[
+ {
+  "opsField": "10.N",
+  "opsName": "10.N - LA OURS",
+  "farm": "LAFARMS",
+  "start": "2026-05-30",
+  "end": "2026-06-06",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 122.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "12.E",
+  "opsName": "12.E - LA BAM W/4 - East 80",
+  "farm": "LAFARMS",
+  "start": "2026-06-08",
+  "end": "2026-06-08",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 80.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "12.E",
+  "opsName": "12.E - LA BAM W/4 - East 80",
+  "farm": "LAFARMS",
+  "start": "2026-07-28",
+  "end": "2026-07-28",
+  "plan": "WSBD126",
+  "crop": "Unknown",
+  "area": 0.1,
+  "products": [
+   {
+    "name": "Defy LV-6",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Hydrovant-fA",
+    "rate": 1.15,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Longbow EC",
+    "rate": 0.48,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Tigris Dicamba DMA",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Xsate",
+    "rate": 30.79,
+    "rateUnit": "floz/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "13.E",
+  "opsName": "13.E - LA BAM E/4 - East 80",
+  "farm": "LAFARMS",
+  "start": "2026-07-28",
+  "end": "2026-07-28",
+  "plan": "WSBD126",
+  "crop": "Unknown",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "Defy LV-6",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Hydrovant-fA",
+    "rate": 1.15,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Longbow EC",
+    "rate": 0.48,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Tigris Dicamba DMA",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Xsate",
+    "rate": 30.79,
+    "rateUnit": "floz/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "13.W",
+  "opsName": "13.W - LA BAM E/4 - West 80",
+  "farm": "LAFARMS",
+  "start": "2026-05-29",
+  "end": "2026-05-29",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 75.6,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "13.W",
+  "opsName": "13.W - LA BAM E/4 - West 80",
+  "farm": "LAFARMS",
+  "start": "2026-07-28",
+  "end": "2026-07-28",
+  "plan": "WSBD126",
+  "crop": "Unknown",
+  "area": 80.3,
+  "products": [
+   {
+    "name": "Defy LV-6",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Hydrovant-fA",
+    "rate": 1.15,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Longbow EC",
+    "rate": 0.48,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Tigris Dicamba DMA",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Xsate",
+    "rate": 30.79,
+    "rateUnit": "floz/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "14.S",
+  "opsName": "14.S - LA BAM S/4 - S 80",
+  "farm": "LAFARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-08",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 84.4,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "14.S",
+  "opsName": "14.S - LA BAM S/4 - S 80",
+  "farm": "LAFARMS",
+  "start": "2026-10-12",
+  "end": "2026-10-12",
+  "plan": "27wheatBD",
+  "crop": "Wheat (Hard Red Winter)",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "16",
+  "opsName": "16 - LA ROSCOE BIG",
+  "farm": "LAFARMS",
+  "start": "2026-05-19",
+  "end": "2026-05-19",
+  "plan": "2026-UpShiftC",
+  "crop": "Zn - Unspecified Crop",
+  "area": 47.7,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 2.0,
+    "rateUnit": "lb/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "16",
+  "opsName": "16 - LA ROSCOE BIG",
+  "farm": "LAFARMS",
+  "start": "2026-05-19",
+  "end": "2026-05-23",
+  "plan": "---",
+  "crop": "Unspecified Crop",
+  "area": 142.0,
+  "products": []
+ },
+ {
+  "opsField": "17",
+  "opsName": "17 - LA MULVIHILL",
+  "farm": "LAFARMS",
+  "start": "2026-05-23",
+  "end": "2026-05-23",
+  "plan": "---",
+  "crop": "Unspecified Crop",
+  "area": 157.0,
+  "products": []
+ },
+ {
+  "opsField": "23.E",
+  "opsName": "23.E - KB SOUTHWEST",
+  "farm": "KB FARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-07",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 3.2,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "23.W",
+  "opsName": "23.W - KB Southwest",
+  "farm": "KB FARMS",
+  "start": "2026-10-14",
+  "end": "2026-10-14",
+  "plan": "Corn27 26Fall Atrazine",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "24.E",
+  "opsName": "24.E - KB Section SE/4 - East",
+  "farm": "KB FARMS",
+  "start": "2026-06-02",
+  "end": "2026-06-07",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 99.2,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "27",
+  "opsName": "27 - NW Michael",
+  "farm": "KB FARMS",
+  "start": "2026-05-23",
+  "end": "2026-05-23",
+  "plan": "---",
+  "crop": "Unspecified Crop",
+  "area": 0.0,
+  "products": []
+ },
+ {
+  "opsField": "27",
+  "opsName": "27 - NW Michael",
+  "farm": "KB FARMS",
+  "start": "2026-06-09",
+  "end": "2026-06-09",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 56.7,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "27-N House",
+  "opsName": "27-N House",
+  "farm": "KB FARMS",
+  "start": "2026-05-24",
+  "end": "2026-05-25",
+  "plan": "UpShiftC",
+  "crop": "Unspecified Crop",
+  "area": 89.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "28",
+  "opsName": "28 - Michael SW 1/4",
+  "farm": "KB FARMS",
+  "start": "2026-06-09",
+  "end": "2026-06-09",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 121.9,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "29",
+  "opsName": "29 - SE Michael",
+  "farm": "KB FARMS",
+  "start": "2026-06-09",
+  "end": "2026-06-09",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 3.3,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "29",
+  "opsName": "29 - SE Michael",
+  "farm": "KB FARMS",
+  "start": "2026-06-24",
+  "end": "2026-06-24",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 41.5,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "30.W",
+  "opsName": "30.W - Pole Rd 1/4",
+  "farm": "PETERSON",
+  "start": "2026-05-29",
+  "end": "2026-05-29",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 73.7,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "30.W",
+  "opsName": "30.W - Pole Rd 1/4",
+  "farm": "PETERSON",
+  "start": "2026-06-12",
+  "end": "2026-06-12",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 2.4,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "30.W",
+  "opsName": "30.W - Pole Rd 1/4",
+  "farm": "PETERSON",
+  "start": "2026-07-24",
+  "end": "2026-07-26",
+  "plan": "WSBD126",
+  "crop": "Unknown",
+  "area": 82.4,
+  "products": [
+   {
+    "name": "Defy LV-6",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Hydrovant-fA",
+    "rate": 1.15,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Longbow EC",
+    "rate": 0.48,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Tigris Dicamba DMA",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Xsate",
+    "rate": 30.79,
+    "rateUnit": "floz/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "30.W",
+  "opsName": "30.W - Pole Rd 1/4",
+  "farm": "PETERSON",
+  "start": "2026-10-13",
+  "end": "2026-10-14",
+  "plan": "Corn27 26Fall Atrazine",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "31.E",
+  "opsName": "31.E - Peterson Pole Rd - East",
+  "farm": "PETERSON",
+  "start": "2026-06-12",
+  "end": "2026-06-16",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 39.4,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "31.E",
+  "opsName": "31.E - Peterson Pole Rd - East",
+  "farm": "PETERSON",
+  "start": "2026-10-04",
+  "end": "2026-10-04",
+  "plan": "27wheatBD",
+  "crop": "Wheat (Hard Red Winter)",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "32.N",
+  "opsName": "32.N - PT Highland W - North 80",
+  "farm": "PETERSON",
+  "start": "2026-06-07",
+  "end": "2026-06-07",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 55.7,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "32.N",
+  "opsName": "32.N - PT Highland W - North 80",
+  "farm": "PETERSON",
+  "start": "2026-10-14",
+  "end": "2026-10-14",
+  "plan": "Hydrovant\u00ae-fA",
+  "crop": "Unspecified Crop",
+  "area": 79.4,
+  "products": [
+   {
+    "name": "Hydrovant\u00ae-fA",
+    "rate": 10.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "33.N",
+  "opsName": "33.N - PT Orpha's - North 80",
+  "farm": "PETERSON",
+  "start": "2026-10-06",
+  "end": "2026-10-06",
+  "plan": "27wheatBD",
+  "crop": "Wheat",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "33.S",
+  "opsName": "33.S - PT Orpha's - South 80",
+  "farm": "PETERSON",
+  "start": "2026-05-31",
+  "end": "2026-06-02",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 78.9,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.02,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "33.S",
+  "opsName": "33.S - PT Orpha's - South 80",
+  "farm": "PETERSON",
+  "start": "2026-10-06",
+  "end": "2026-10-06",
+  "plan": "27wheatBD",
+  "crop": "Wheat",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "41.E",
+  "opsName": "41.E - HD E/4 - East 80",
+  "farm": "HD Farms",
+  "start": "2026-05-27",
+  "end": "2026-05-28",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 64.3,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 4.63,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "41.E",
+  "opsName": "41.E - HD E/4 - East 80",
+  "farm": "HD Farms",
+  "start": "2026-10-13",
+  "end": "2026-10-13",
+  "plan": "Hydrovant\u00ae-fA",
+  "crop": "Unspecified Crop",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "Hydrovant\u00ae-fA",
+    "rate": 10.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "41.W",
+  "opsName": "41.W - HD E/4",
+  "farm": "HD Farms",
+  "start": "2026-09-03",
+  "end": "2026-09-03",
+  "plan": "WSBDParapex",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "41.W",
+  "opsName": "41.W - HD E/4",
+  "farm": "HD Farms",
+  "start": "2026-10-13",
+  "end": "2026-10-13",
+  "plan": "Hydrovant\u00ae-fA",
+  "crop": "Unspecified Crop",
+  "area": 82.9,
+  "products": [
+   {
+    "name": "Hydrovant\u00ae-fA",
+    "rate": 10.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "42.E",
+  "opsName": "42.E - E/2 N/4 - East 80",
+  "farm": "HD Farms",
+  "start": "2026-09-03",
+  "end": "2026-09-03",
+  "plan": "WSBDParapex",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "42.W",
+  "opsName": "42.W - E/2 N/4 West 80",
+  "farm": "HD Farms",
+  "start": "2026-09-03",
+  "end": "2026-09-03",
+  "plan": "WSBDParapex",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "42.W",
+  "opsName": "42.W - E/2 N/4 West 80",
+  "farm": "HD Farms",
+  "start": "2026-10-14",
+  "end": "2026-10-14",
+  "plan": "Hydrovant\u00ae-fA",
+  "crop": "Unspecified Crop",
+  "area": 80.9,
+  "products": [
+   {
+    "name": "Hydrovant\u00ae-fA",
+    "rate": 10.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "44.E",
+  "opsName": "44.E - HD S Town",
+  "farm": "HD Farms",
+  "start": "2026-10-06",
+  "end": "2026-10-06",
+  "plan": "27wheatBD",
+  "crop": "Wheat (Hard Red Winter)",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "44.W",
+  "opsName": "44.W - HD S TOWN",
+  "farm": "HD Farms",
+  "start": "2025-06-05",
+  "end": "2025-06-05",
+  "plan": "2025 Corn Starter",
+  "crop": "Unspecified Crop",
+  "area": 78.2,
+  "products": [
+   {
+    "name": "2025 Corn Starter",
+    "rate": 8.44,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "44.W",
+  "opsName": "44.W - HD S TOWN",
+  "farm": "HD Farms",
+  "start": "2026-06-11",
+  "end": "2026-06-17",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 158.6,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "44.W",
+  "opsName": "44.W - HD S TOWN",
+  "farm": "HD Farms",
+  "start": "2026-10-06",
+  "end": "2026-10-06",
+  "plan": "27wheatBD",
+  "crop": "Wheat (Hard Red Winter)",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "45",
+  "opsName": "45 - HD W TOWN",
+  "farm": "HD Farms",
+  "start": "2025-06-04",
+  "end": "2025-06-04",
+  "plan": "2025 Corn Starter",
+  "crop": "Unspecified Crop",
+  "area": 94.4,
+  "products": [
+   {
+    "name": "2025 Corn Starter",
+    "rate": 11.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "45",
+  "opsName": "45 - HD W TOWN",
+  "farm": "HD Farms",
+  "start": "2026-05-12",
+  "end": "2026-05-12",
+  "plan": "2026-UpShiftC",
+  "crop": "Zn - Unspecified Crop",
+  "area": 99.7,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 2.0,
+    "rateUnit": "lb/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "46",
+  "opsName": "46 - HD HOME W",
+  "farm": "HD Farms",
+  "start": "2025-06-04",
+  "end": "2025-06-04",
+  "plan": "2025 Corn Starter",
+  "crop": "Unspecified Crop",
+  "area": 63.8,
+  "products": [
+   {
+    "name": "2025 Corn Starter",
+    "rate": 10.59,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "46",
+  "opsName": "46 - HD HOME W",
+  "farm": "HD Farms",
+  "start": "2026-05-04",
+  "end": "2026-05-11",
+  "plan": "2026 Starter +1 Application",
+  "crop": "Unspecified Crop",
+  "area": 60.5,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 1.7,
+    "rateUnit": "lb/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "46.P",
+  "opsName": "46.P - HOME PASTURE",
+  "farm": "HD Farms",
+  "start": "2026-06-16",
+  "end": "2026-06-16",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "UpShiftC"
+   }
+  ]
+ },
+ {
+  "opsField": "46.P",
+  "opsName": "46.P - HOME PASTURE",
+  "farm": "HD Farms",
+  "start": "2026-08-19",
+  "end": "2026-08-19",
+  "plan": "---",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "47",
+  "opsName": "47 - HD HOME E",
+  "farm": "HD Farms",
+  "start": "2026-05-11",
+  "end": "2026-05-11",
+  "plan": "2026-UpShiftC",
+  "crop": "Zn - Unspecified Crop",
+  "area": 96.2,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 2.0,
+    "rateUnit": "lb/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "47",
+  "opsName": "47 - HD HOME E",
+  "farm": "HD Farms",
+  "start": "2026-06-16",
+  "end": "2026-06-16",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "UpShiftC"
+   }
+  ]
+ },
+ {
+  "opsField": "53",
+  "opsName": "53 - ME DICKS",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-05-24",
+  "end": "2026-05-24",
+  "plan": "---",
+  "crop": "Unspecified Crop",
+  "area": 36.6,
+  "products": []
+ },
+ {
+  "opsField": "53",
+  "opsName": "53 - ME DICKS",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-05-24",
+  "end": "2026-05-24",
+  "plan": "UpShiftC",
+  "crop": "Unspecified Crop",
+  "area": 32.8,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "54.N",
+  "opsName": "54.N - Paul's North",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-09-04",
+  "end": "2026-09-04",
+  "plan": "WSBDParapex",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "54.N",
+  "opsName": "54.N - Paul's North",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-10-06",
+  "end": "2026-10-06",
+  "plan": "27wheatBD",
+  "crop": "Wheat",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "54.S",
+  "opsName": "54.S - Paul's South",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-09-04",
+  "end": "2026-09-04",
+  "plan": "WSBDParapex",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "54.S",
+  "opsName": "54.S - Paul's South",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-10-06",
+  "end": "2026-10-06",
+  "plan": "27wheatBD",
+  "crop": "Wheat",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "54.S",
+  "opsName": "54.S - Paul's South",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-10-14",
+  "end": "2026-10-14",
+  "plan": "Corn27 26Fall Atrazine",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "55.N",
+  "opsName": "55.N - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2025-06-04",
+  "end": "2025-06-04",
+  "plan": "2025 Corn Starter",
+  "crop": "Unspecified Crop",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "2025 Corn Starter",
+    "rate": 11.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "55.N",
+  "opsName": "55.N - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-06-11",
+  "end": "2026-06-11",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "55.N",
+  "opsName": "55.N - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-09-03",
+  "end": "2026-09-03",
+  "plan": "WSBDParapex",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "55.N",
+  "opsName": "55.N - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-10-13",
+  "end": "2026-10-13",
+  "plan": "Corn27 26Fall Atrazine",
+  "crop": "Corn",
+  "area": null,
+  "products": []
+ },
+ {
+  "opsField": "55.S",
+  "opsName": "55.S - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-06-11",
+  "end": "2026-06-11",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 64.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "56.W",
+  "opsName": "56.W - KIRBY SOUTH - West 80",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-05-30",
+  "end": "2026-06-12",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 157.5,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "60.E",
+  "opsName": "60.E - A1DAILEY RD",
+  "farm": "A1 FARMS",
+  "start": "2026-05-30",
+  "end": "2026-05-30",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 78.6,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "60.W",
+  "opsName": "60.W - A1 Dailey Rd",
+  "farm": "A1 FARMS",
+  "start": "2026-07-29",
+  "end": "2026-07-29",
+  "plan": "WSBD126",
+  "crop": "Unknown",
+  "area": 82.4,
+  "products": [
+   {
+    "name": "Defy LV-6",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Hydrovant-fA",
+    "rate": 1.15,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Longbow EC",
+    "rate": 0.48,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Tigris Dicamba DMA",
+    "rate": 7.7,
+    "rateUnit": "floz/ac"
+   },
+   {
+    "name": "Xsate",
+    "rate": 30.79,
+    "rateUnit": "floz/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "61.N",
+  "opsName": "61.N - A1 Highland E - North 80",
+  "farm": "A1 FARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-07",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "61.N",
+  "opsName": "61.N - A1 Highland E - North 80",
+  "farm": "A1 FARMS",
+  "start": "2026-10-14",
+  "end": "2026-10-14",
+  "plan": "Hydrovant\u00ae-fA",
+  "crop": "Unspecified Crop",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "Hydrovant\u00ae-fA",
+    "rate": 10.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "71",
+  "opsName": "71 - Lueking Sec 19 NW",
+  "farm": "Lueking",
+  "start": "2026-06-03",
+  "end": "2026-06-03",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 100.3,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "72",
+  "opsName": "72 - Lueking S Big Circle",
+  "farm": "Lueking",
+  "start": "2026-05-14",
+  "end": "2026-05-14",
+  "plan": "2026-UpShiftC",
+  "crop": "Zn - Unspecified Crop",
+  "area": 0.0,
+  "products": [
+   {
+    "name": "UpShiftC"
+   }
+  ]
+ },
+ {
+  "opsField": "72",
+  "opsName": "72 - Lueking S Big Circle",
+  "farm": "Lueking",
+  "start": "2026-06-17",
+  "end": "2026-06-17",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 68.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "73",
+  "opsName": "73 - Home Circle - Sec 19",
+  "farm": "Lueking",
+  "start": "2026-05-13",
+  "end": "2026-05-15",
+  "plan": "2026-UpShiftC",
+  "crop": "Zn - Unspecified Crop",
+  "area": 129.5,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 2.0,
+    "rateUnit": "lb/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "73",
+  "opsName": "73 - Home Circle - Sec 19",
+  "farm": "Lueking",
+  "start": "2026-06-05",
+  "end": "2026-06-05",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 0.1,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "73.C.SE",
+  "opsName": "73.C.SE - Southeast Corner Small Circle",
+  "farm": "Lueking",
+  "start": "2026-06-05",
+  "end": "2026-06-05",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 5.4,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "73.C.SW",
+  "opsName": "73.C.SW - SW Corner Small Circle",
+  "farm": "Lueking",
+  "start": "2026-06-17",
+  "end": "2026-06-17",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 8.2,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "75.E",
+  "opsName": "75.E - Lueking NE Home-",
+  "farm": "Lueking",
+  "start": "2026-06-03",
+  "end": "2026-06-05",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 110.4,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "76.E",
+  "opsName": "76.E - Lueking SE House",
+  "farm": "Lueking",
+  "start": "2026-06-04",
+  "end": "2026-06-04",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 50.0,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "77",
+  "opsName": "77 - Big Circle - Sec 30",
+  "farm": "Lueking",
+  "start": "2026-05-14",
+  "end": "2026-05-15",
+  "plan": "2026-UpShiftC",
+  "crop": "Zn - Unspecified Crop",
+  "area": 218.9,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 2.4,
+    "rateUnit": "lb/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "77.C.NW",
+  "opsName": "77.C.NW - NW Corner Big Circle",
+  "farm": "Lueking",
+  "start": "2026-06-05",
+  "end": "2026-06-05",
+  "plan": "UpShiftC",
+  "crop": "Corn",
+  "area": 14.4,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ },
+ {
+  "opsField": "79.S",
+  "opsName": "79.S - Lueking By Steves",
+  "farm": "Lueking",
+  "start": "2026-06-17",
+  "end": "2026-06-17",
+  "plan": "UpShiftC",
+  "crop": "Sorghum (Milo)",
+  "area": 107.8,
+  "products": [
+   {
+    "name": "UpShiftC",
+    "rate": 5.0,
+    "rateUnit": "gal/ac"
+   }
+  ]
+ }
+]

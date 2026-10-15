@@ -13,9 +13,29 @@ const ATRAZINE_RATES = [
 
 function round(n, d) { const f = Math.pow(10, d); return Math.round(n * f) / f; }
 
+// Fall atrazine passes that appear in the Operations Center Application 2026
+// report (Corn27 26Fall Atrazine or the Hydrovant-fA pass of the same mix).
+// A field listed there counts as sprayed (Kyle, Oct 15, 2026); the logged
+// coverage is not used.
+const ATRAZINE_DONE = {
+  'cf27-23W': '2026-10-14', 'cf27-30W': '2026-10-13', 'cf27-54S': '2026-10-14', 'cf27-55N': '2026-10-13',
+  'cf27-32N': '2026-10-14', 'cf27-41': '2026-10-13', 'cf27-42W': '2026-10-14', 'cf27-61S': '2026-10-14'
+};
+
 function atrazinePass(key, fieldHint, acres) {
+  const done = ATRAZINE_DONE[key];
+  if (done) {
+    return {
+      key, rev: 2, fieldHint, matchBy: 'crop', cropYear: 2027, crop: 'CORN', type: 'spray', status: 'completed',
+      title: 'Fall chemfallow: atrazine, flumioxazin, Xsate', startDate: done, endDate: done, acres,
+      carrierGalPerAcre: 10,
+      products: ATRAZINE_RATES.map(p => ({ name: p.name, rate: p.rate, rateUnit: p.rateUnit, total: round(p.perAc * acres, 2), totalUnit: p.totalUnit })),
+      source: 'Operations Center work plan Corn27 26Fall Atrazine; listed in the Application 2026 report',
+      notes: 'Completed per the Application 2026 report. Planned rates shown; sprayer coverage logging is not reliable.'
+    };
+  }
   return {
-    key, fieldHint, cropYear: 2027, crop: 'CORN', type: 'spray', status: 'planned',
+    key, fieldHint, matchBy: 'crop', cropYear: 2027, crop: 'CORN', type: 'spray', status: 'planned',
     title: 'Fall chemfallow: atrazine, flumioxazin, Xsate', startDate: '2026-10-13', acres,
     carrierGalPerAcre: 10,
     products: ATRAZINE_RATES.map(p => ({ name: p.name, rate: p.rate, rateUnit: p.rateUnit, total: round(p.perAc * acres, 2), totalUnit: p.totalUnit })),
@@ -170,5 +190,106 @@ const RECORDS = [
   atrazinePass('cf27-northkeith', "North Keith's", 117.13),
   atrazinePass('cf27-shouse', 'S House', 153.10)
 ];
+
+// ---- Operations Center Application 2026 report ----
+// Field names in Operations Center are not reliable (often the wrong half or
+// the whole quarter), so each pass carries the field number and is matched to
+// the half by crop: starter at planting to the half planted to that crop, the
+// July wheat-stubble burndown to the wheat 26 half, the October wheat
+// burndown to the wheat 27 half. A field listed counts as done; acres are the
+// card's acres because logged coverage is not reliable. Entries that logged
+// under 1 acre are left unchecked for review.
+const OPS_APP = require('./opsCenterApplication2026.json');
+const FALL_ATRAZINE_PLANS = ['Corn27 26Fall Atrazine', 'Hydrovant®-fA'];
+
+// "42.E" -> "42" (the half is not trusted); "46.P", "73.C.SE" stay whole
+// because they are separate fields, not halves.
+function opsNumber(name) {
+  const m = String(name).trim().match(/^(\d+)(?:[.\- ]?([NSEW]))?(?:\b|\s|$)/i);
+  if (m && String(name).trim().replace(/[.\- ]?[NSEW]?(\s.*)?$/i, '') === m[1]) return m[1];
+  return String(name).trim();
+}
+function cropOf(label) {
+  const c = String(label || '').toUpperCase();
+  if (c.startsWith('CORN')) return 'CORN';
+  if (c.startsWith('SORGHUM')) return 'SORGHUM';
+  if (c.startsWith('WHEAT')) return 'WHEAT';
+  return null;
+}
+function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+function smallArea(e) { return e.area !== null && e.area < 1; }
+function reportLine(e) {
+  return 'Report: ' + e.opsName + ', ' + (e.plan || 'no work plan') + ' - ' + (e.crop || 'no crop') + ', ' +
+    (e.area === null ? 'coverage not logged' : e.area + ' ac logged') + '.';
+}
+
+const OPS_RECORDS = [];
+
+// Planting with starter: one pass per field number, crop and year.
+const plantGroups = new Map();
+for (const e of OPS_APP) {
+  const isStarter = /upshift|starter|^---$/i.test(e.plan) && !/^---$/.test(e.plan) || (/^---$/.test(e.plan) && /unspecified/i.test(e.crop) && e.start < '2026-07-01');
+  if (!isStarter) continue;
+  const year = Number(e.start.slice(0, 4));
+  const crop = cropOf(e.crop) || (/corn starter/i.test(e.plan) ? 'CORN' : null);
+  const k = opsNumber(e.opsField) + '|' + year + '|' + (crop || '?');
+  if (!plantGroups.has(k)) plantGroups.set(k, { num: opsNumber(e.opsField), year, crop, entries: [] });
+  plantGroups.get(k).entries.push(e);
+}
+// A group that only logged under 1 acre, on a field that has a real pass that
+// year, is coverage noise from driving through; drop it.
+for (const [k, g] of plantGroups) {
+  if (g.entries.some(e => !smallArea(e))) continue;
+  const other = [...plantGroups.values()].some(x => x !== g && x.num === g.num && x.year === g.year && x.entries.some(e => !smallArea(e)));
+  if (other) plantGroups.delete(k);
+}
+// A starter entry with no crop joins the field's one named crop that year.
+for (const [k, g] of plantGroups) {
+  if (g.crop) continue;
+  const named = [...plantGroups.values()].filter(x => x.num === g.num && x.year === g.year && x.crop);
+  if (named.length === 1) { named[0].entries.push(...g.entries); plantGroups.delete(k); }
+}
+for (const g of plantGroups.values()) {
+  const entries = g.entries.sort((a, b) => a.start.localeCompare(b.start));
+  const real = entries.filter(e => !smallArea(e));
+  const products = [];
+  for (const e of entries) for (const p of e.products) if (!products.some(x => x.name === p.name)) products.push(p);
+  OPS_RECORDS.push({
+    key: 'app26-plant-' + g.num + '-' + g.year + '-' + slug(g.crop || 'crop'),
+    fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, cropFromCard: !g.crop, acresFromField: true,
+    type: 'seeding', status: 'completed',
+    title: 'Planted with starter',
+    startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,
+    products,
+    review: real.length ? null : 'Under 1 acre logged; check that this field was planted.',
+    source: 'Operations Center Application 2026 report (starter applied at planting)',
+    notes: entries.map(reportLine).join(' ')
+  });
+}
+
+// Spray passes.
+for (const e of OPS_APP) {
+  if (FALL_ATRAZINE_PLANS.includes(e.plan)) continue; // on the fall atrazine records above
+  let spec = null;
+  if (e.plan === 'WSBD126') spec = { title: 'Wheat stubble burndown', cropYear: 2027, matchCrop: { year: 2026, crop: 'WHEAT' } };
+  else if (e.plan === 'WSBDParapex') spec = { title: 'Burndown (Parapex)', cropYear: 2027, matchCrop: null };
+  else if (e.plan === '27wheatBD') spec = { title: 'Wheat 27 burndown', cropYear: 2027, crop: 'WHEAT', matchCrop: { year: 2027, crop: 'WHEAT' } };
+  else if (e.plan === '---' && e.start >= '2026-07-01') spec = { title: 'Spray, work plan not recorded', cropYear: 2027, matchCrop: null, review: 'No work plan or product recorded; check this pass.' };
+  if (!spec) continue;
+  OPS_RECORDS.push({
+    key: 'app26-spray-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.plan),
+    fieldHint: opsNumber(e.opsField), matchBy: spec.matchCrop ? 'crop' : 'name', opsName: e.opsField,
+    matchCropYear: spec.matchCrop ? spec.matchCrop.year : undefined, matchCrop: spec.matchCrop ? spec.matchCrop.crop : undefined,
+    cropYear: spec.cropYear, crop: spec.crop || null, cropFromCard: !spec.crop, acresFromField: true,
+    type: 'spray', status: 'completed', title: spec.title,
+    startDate: e.start, endDate: e.end || e.start,
+    products: e.products,
+    review: spec.review || (smallArea(e) ? 'Under 1 acre logged; likely overlap from the other half.' : null),
+    source: 'Operations Center Application 2026 report, work plan ' + e.plan + ' (target rates)',
+    notes: reportLine(e) + ' Fallow work after the wheat 26 harvest is charged to the 2027 crop.'
+  });
+}
+
+RECORDS.push(...OPS_RECORDS);
 
 module.exports = { RECORDS };
