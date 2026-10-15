@@ -1,6 +1,7 @@
 const FieldOperation = require('../models/fieldOperation');
 const M77Field = require('../models/m77Field');
 const season2026 = require('../data/season2026Records');
+const operationCost = require('../services/operationCost');
 
 const IMPORTS = {
   'season-2026': season2026
@@ -127,5 +128,57 @@ exports.deleteEntry = async (req, res) => {
   } catch (err) {
     console.error('Delete field operation error:', err);
     res.status(500).json({ success: false, message: 'Failed to remove the record' });
+  }
+};
+
+// POST /api/field-operations/costs/apply  Body: { recost: false }
+// Costs every completed pass that has no cost yet, using the default rate
+// for its type and crop. Hand-picked rates are never changed. recost: true
+// also refreshes default-rate costs (for example after acres were corrected).
+exports.applyCosts = async (req, res) => {
+  try {
+    const recost = req.body && req.body.recost === true;
+    const ops = await FieldOperation.find({ status: 'completed' });
+    let costed = 0;
+    const skipped = [];
+    for (const op of ops) {
+      const has = op.cost && op.cost.rateKey;
+      if (has && (op.cost.setBy === 'manual' || !recost)) continue;
+      // Nothing was harvested (appraised or abandoned): no combine pass to cost.
+      if (op.type === 'harvest' && !(op.combineAcres > 0) && !(op.acres > 0) && !(op.netBu > 0)) continue;
+      const key = operationCost.defaultRateKey(op);
+      if (!key) { skipped.push({ id: op._id, field: op.fieldName, title: op.title, reason: 'Pick a rate (' + op.type + ' needs the implement)' }); continue; }
+      const cost = operationCost.costFor(op, key, 'default');
+      if (cost.error) { skipped.push({ id: op._id, field: op.fieldName, title: op.title, reason: cost.error }); continue; }
+      op.cost = cost;
+      await op.save();
+      costed += 1;
+    }
+    res.json({ success: true, data: { costed, skipped }, message: `${costed} pass${costed === 1 ? '' : 'es'} costed` + (skipped.length ? `; ${skipped.length} need a rate or acres` : '') });
+  } catch (err) {
+    console.error('Apply field operation costs error:', err);
+    res.status(500).json({ success: false, message: 'Failed to apply costs' });
+  }
+};
+
+// PUT /api/field-operations/:id/cost  Body: { rateKey } (null clears the cost)
+exports.setCost = async (req, res) => {
+  try {
+    const op = await FieldOperation.findById(req.params.id);
+    if (!op) return res.status(404).json({ success: false, message: 'Record not found' });
+    const key = req.body ? req.body.rateKey : undefined;
+    if (key === null || key === '') {
+      op.cost = undefined;
+      await op.save();
+      return res.json({ success: true, data: op, message: 'Cost removed' });
+    }
+    const cost = operationCost.costFor(op, String(key), 'manual');
+    if (cost.error) return res.status(400).json({ success: false, message: cost.error });
+    op.cost = cost;
+    await op.save();
+    res.json({ success: true, data: op, message: `Costed at ${cost.rateLabel}: $${cost.amount.toFixed(2)}` });
+  } catch (err) {
+    console.error('Set field operation cost error:', err);
+    res.status(400).json({ success: false, message: err.message });
   }
 };

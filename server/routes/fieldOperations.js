@@ -9,6 +9,8 @@ router.use(authenticate, isStaff);
 router.get('/', controller.listEntries);
 router.get('/imports/:importId', controller.getImport);
 router.post('/imports/:importId', controller.applyImport);
+router.post('/costs/apply', controller.applyCosts);
+router.put('/:id/cost', controller.setCost);
 router.delete('/:id', controller.deleteEntry);
 
 module.exports = router;
