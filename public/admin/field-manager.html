@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Field Manager | M77 AG Admin</title>
+    <title>Field Records | M77 AG Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,6 +24,12 @@
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         .page-title { font-family: 'Oswald', sans-serif; font-size: 32px; color: #1a1a1a; }
         .page-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .record-links { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: -6px 0 18px; }
+        .record-links a.btn { text-decoration: none; }
+        .record-links-sep { width: 1px; height: 24px; background: #ddd; margin: 0 4px; }
+        .tool-panel { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 18px; margin-bottom: 20px; }
+        .rec-summary { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #555; }
+        .rec-summary strong { color: #2d5016; }
 
         /* Farm Tabs */
         .farm-tabs { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; }
@@ -265,7 +271,7 @@
         <nav class="admin-nav">
             <a href="/admin/dashboard">Dashboard</a>
             <a href="/admin/field-planner">Field Planner</a>
-            <a href="/admin/field-manager" class="active">Field Manager</a>
+            <a href="/admin/field-records" class="active">Field Records</a>
             <a href="/admin/soil-samples">Soil Analysis</a>
             <a href="/admin/farm-projections">Projections</a>
             <a href="/admin/financials">Financials</a>
@@ -278,7 +284,7 @@
         <div id="alertError" class="alert alert-error"></div>
 
         <div class="page-header">
-            <h1 class="page-title">Field Manager</h1>
+            <h1 class="page-title">Field Records</h1>
             <div class="page-controls">
                 <label for="yearSelect" style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Crop Year</label>
                 <select id="yearSelect" aria-label="Crop year for all cards" style="padding:8px 14px;border:2px solid #e0e0e0;border-radius:5px;font-size:16px;font-weight:600;cursor:pointer;"></select>
@@ -289,6 +295,22 @@
                 <button class="btn btn-outline btn-sm" id="btnBackfill" onclick="openBackfill()">Fill Missing Data</button>
             </div>
         </div>
+
+        <!-- Summary links and record tools -->
+        <div class="record-links">
+            <a href="/admin/farming/wheat-2026.html" class="btn btn-outline btn-sm">2026 Wheat Report</a>
+            <a href="/admin/farming/landlord-summary.html" class="btn btn-outline btn-sm">Landlord Summary</a>
+            <a href="/admin/farming/landlord-shares-2026-wheat.html" class="btn btn-outline btn-sm">Landlord Shares</a>
+            <a href="/admin/farming/seed-cost-share.html" class="btn btn-outline btn-sm">Seed Cost Share</a>
+            <a href="/admin/farming/custom-work.html" class="btn btn-outline btn-sm">Custom Work</a>
+            <a href="/admin/farming/crop-insurance-2026-wheat.html" class="btn btn-outline btn-sm">Loss Notice</a>
+            <span class="record-links-sep" aria-hidden="true"></span>
+            <button class="btn btn-outline btn-sm" id="btnSeasonImport">2026 Season Records</button>
+            <button class="btn btn-outline btn-sm" id="btnCostRecords" title="Cost field passes from the rate list">Cost Field Records</button>
+            <button class="btn btn-outline btn-sm" id="btnGaps" title="Find fields missing a pass the rest of that crop got">Check Gaps</button>
+        </div>
+        <section id="gapPanel" class="tool-panel" style="display:none;"></section>
+        <section id="seasonImport" class="tool-panel" style="display:none;"></section>
 
         <!-- Farm Tabs -->
         <div class="farm-tabs" id="farmTabs"></div>
@@ -553,6 +575,7 @@
         </div>
     </div>
 
+    <script src="/js/field-record-tools.js"></script>
     <script>
         const API = window.location.origin;
         let allFields = [];
@@ -563,6 +586,7 @@
         const cardYear = {};          // field id -> year chosen on that card (overrides the top selector)
         let insByCroppingField = {};  // CroppingField id -> [insurance units, all years]
         let harvestByCroppingField = {}; // CroppingField id -> [completed harvest records with bushels]
+        let opsByCroppingField = {};     // CroppingField id -> [all field records]
 
         function yearOf(f) { return cardYear[f._id] || selectedYear; }
         function yy(y) { return String(y).slice(-2); }
@@ -598,7 +622,9 @@
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok || !data.success) return;
                 harvestByCroppingField = {};
+                opsByCroppingField = {};
                 for (const o of data.data || []) {
+                    if (o.croppingFieldId) (opsByCroppingField[o.croppingFieldId] = opsByCroppingField[o.croppingFieldId] || []).push(o);
                     if (!o.croppingFieldId || o.type !== 'harvest' || o.status !== 'completed' || !(o.netBu > 0)) continue;
                     (harvestByCroppingField[o.croppingFieldId] = harvestByCroppingField[o.croppingFieldId] || []).push(o);
                 }
@@ -657,7 +683,7 @@
         // === DATA LOADING ===
         async function loadFields() {
             try {
-                const [res] = await Promise.all([fetch(`${API}/api/cropping-fields`), loadInsurance(), loadHarvest()]);
+                const [res] = await Promise.all([fetch(`${API}/api/cropping-fields`), loadInsurance(), loadHarvest(), recordTools.loadRates()]);
                 const data = await res.json();
                 if (data.success) {
                     allFields = data.fields;
@@ -857,6 +883,41 @@
             switchTab(id, tab);
         }
 
+        // === RECORDS TAB: passes for the card's year with machine cost ===
+        function opsForYear(f) {
+            const y = yearOf(f);
+            return (opsByCroppingField[f._id] || []).filter(o => o.cropYear === y)
+                .sort((a, b) => String(a.startDate || '').localeCompare(String(b.startDate || '')));
+        }
+        function recordCount(f) {
+            const n = opsForYear(f).length;
+            return n ? ' (' + n + ')' : '';
+        }
+        function renderRecordsPanel(f) {
+            const y = yearOf(f);
+            const ops = opsForYear(f);
+            if (!ops.length) return `<div class="empty-state">No field records for crop year ${y}. Add them with 2026 Season Records at the top of the page.</div>`;
+            const sum = recordTools.costSummary(ops, f.acres);
+            return `<div class="rec-summary">
+                    <span>${ops.length} record${ops.length === 1 ? '' : 's'} for ${y}</span>
+                    <span>Machine cost <strong>${recordTools.money2(sum.total)}</strong>${sum.perAcre !== null ? ' · <strong>' + recordTools.money2(sum.perAcre) + '/ac</strong>' : ''}</span>
+                    ${sum.uncosted ? `<span style="color:#a02818;">${sum.uncosted} not costed</span>` : ''}
+                </div>` + ops.map(o => recordTools.recordBlock(o, f.acres)).join('');
+        }
+        async function refreshRecords() {
+            const open = [...document.querySelectorAll('.fc-detail.open')].map(d => {
+                const id = d.id.replace('detail-', '');
+                const act = d.querySelector('.detail-panel.active');
+                return { id, tab: act ? act.id.split('-')[1] : 'info' };
+            });
+            await loadHarvest();
+            renderFields();
+            for (const o of open) {
+                const d = document.getElementById('detail-' + o.id);
+                if (d) { d.classList.add('open'); switchTab(o.id, o.tab); }
+            }
+        }
+
         function renderDetailTabs(f) {
             const id = f._id;
             return `
@@ -865,6 +926,10 @@
                     <div class="detail-tab" onclick="switchTab('${id}', 'history')">Crop History</div>
                     <div class="detail-tab" onclick="switchTab('${id}', 'soil')">Soil</div>
                     <div class="detail-tab" onclick="switchTab('${id}', 'insurance')">Insurance</div>
+                    <div class="detail-tab" onclick="switchTab('${id}', 'records')">Records${recordCount(f)}</div>
+                </div>
+                <div class="detail-panel" id="panel-records-${id}">
+                    ${renderRecordsPanel(f)}
                 </div>
                 <div class="detail-panel active" id="panel-info-${id}">
                     ${renderInfoPanel(f)}
@@ -1332,7 +1397,8 @@
             const card = document.getElementById(`card-${fieldId}`);
             card.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
             card.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('active'));
-            card.querySelector(`.detail-tab:nth-child(${tabName === 'info' ? 1 : tabName === 'history' ? 2 : tabName === 'soil' ? 3 : 4})`).classList.add('active');
+            const TAB_ORDER = ['info', 'history', 'soil', 'insurance', 'records'];
+            card.querySelector(`.detail-tab:nth-child(${TAB_ORDER.indexOf(tabName) + 1 || 1})`).classList.add('active');
             document.getElementById(`panel-${tabName}-${fieldId}`).classList.add('active');
         }
 
@@ -1673,6 +1739,19 @@
             if (!toast) window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => { el.style.display = 'none'; }, 4000);
         }
+
+        // Shared field record tools: season records panel, gap check, costing.
+        const recordTools = FieldRecordTools.create({
+            seasonEl: document.getElementById('seasonImport'),
+            gapEl: document.getElementById('gapPanel'),
+            getYear: () => selectedYear,
+            notify: (kind, msg) => showAlert(kind === 'success' ? 'success' : 'error', msg),
+            onChange: () => refreshRecords()
+        });
+        recordTools.bindRateSelects(document.getElementById('fieldsGrid'));
+        document.getElementById('btnSeasonImport').addEventListener('click', () => recordTools.openSeason());
+        document.getElementById('btnCostRecords').addEventListener('click', (e) => recordTools.costAll(e.currentTarget));
+        document.getElementById('btnGaps').addEventListener('click', () => recordTools.openGaps());
 
         // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(overlay => {

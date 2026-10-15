@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fields | M77 AG Admin</title>
+    <title>Field Setup | M77 AG Admin</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -511,13 +511,14 @@
             <a href="/admin/financials">Financials</a>
         </nav>
     </header>
+    <div id="cropsNav"></div>
 
     <main class="container">
         <div class="alert" id="topBanner" style="margin-bottom: 20px;"></div>
 
         <div class="page-head">
             <div>
-                <h1 class="page-title">Fields</h1>
+                <h1 class="page-title">Field Setup</h1>
                 <p class="page-subtitle">M77 AG master field registry &middot; standalone of John Deere</p>
             </div>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
@@ -776,6 +777,7 @@
         </div>
     </div>
 
+    <script src="/js/field-record-tools.js"></script>
     <script>
         const API = '/api/m77-fields';
 
@@ -817,7 +819,7 @@
         let lastFarms = [];    // most recent /api/m77-farms response (for landlord/type/share)
 
         // Crop year shown on the cards. The top selector sets every card; a card's
-        // own selector overrides it. Shared with Field Manager.
+        // own selector overrides it. Shared with Field Records.
         const CROP_YEARS = [2027, 2026, 2025, 2024, 2023, 2022, 2021, 2020];
         let selectedYear = 2026;
         try { const y = parseInt(localStorage.getItem('m77CropYear'), 10); if (CROP_YEARS.includes(y)) selectedYear = y; } catch (e) {}
@@ -1332,7 +1334,6 @@
         }
 
         // ---- Field records: passes, seeding, harvest (by crop year) ----
-        const SEASON_IMPORT_ID = 'season-2026';
         let opsByField = {};   // m77Field id -> [field records, all years]
         const OP_LABELS = { tillage: 'Tillage', spray: 'Spray', fertilizer: 'Fertilizer', seeding: 'Seeding', harvest: 'Harvest', other: 'Other' };
 
@@ -1386,7 +1387,7 @@
                         <div style="color:#666;">${fmtRange(o.startDate, o.endDate)}</div>
                         ${parts.join('')}
                         ${tickets}
-                        ${costLine(o)}
+                        ${recordTools.costLine(o)}
                         ${o.notes ? `<div style="color:#8a6d00;">${escapeHtml(o.notes)}</div>` : ''}
                         ${o.source ? `<div style="color:#999; font-size:11px;">Source: ${escapeHtml(o.source)}</div>` : ''}
                         <div><button class="btn btn-secondary btn-sm" data-op-remove="${o._id}" style="margin-top:6px;">Remove</button></div>
@@ -1398,7 +1399,7 @@
             const costed = ops.filter(o => o.cost && o.cost.rateKey);
             const totalCost = costed.reduce((sum, o) => sum + (o.cost.amount || 0), 0);
             const uncosted = ops.filter(o => o.status === 'completed' && !(o.cost && o.cost.rateKey)).length;
-            const costBadge = costed.length ? `<span style="background:#e8efe1; color:#2d5016; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">Machine cost ${money2(totalCost)}${f.acres ? ' · ' + money2(totalCost / f.acres) + '/ac' : ''}${uncosted ? ' · ' + uncosted + ' not costed' : ''}</span>` : '';
+            const costBadge = costed.length ? `<span style="background:#e8efe1; color:#2d5016; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">Machine cost ${recordTools.money2(totalCost)}${f.acres ? ' · ' + recordTools.money2(totalCost / f.acres) + '/ac' : ''}${uncosted ? ' · ' + uncosted + ' not costed' : ''}</span>` : '';
             return `
                 <details class="ops-section" style="grid-column: 1 / -1; background:#faf8f3; border:1px solid #e6e1d6; border-radius:5px; padding:10px 14px; margin-top:6px;">
                     <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#5c4a1f; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -1415,58 +1416,18 @@
             return data;
         }
 
-        // Field operation rate list (85% of the ISU/CSU midpoint average).
-        let opRates = [];
-        async function loadOpRates() {
-            if (opRates.length) return;
-            try {
-                const res = await fetch('/api/field-operation-rates', { headers: authHeaders() });
-                const data = await res.json().catch(() => ({}));
-                if (res.ok && data.success) opRates = data.data.RATES || [];
-            } catch (e) {
-                console.warn('Rate list load failed:', e.message);
-            }
-        }
-        function money2(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-        function costLine(o) {
-            const c = o.cost && o.cost.rateKey ? o.cost : null;
-            const opts = '<option value="">No cost</option>' + opRates.map(r =>
-                `<option value="${escapeHtml(r.key)}" ${c && c.rateKey === r.key ? 'selected' : ''}>${escapeHtml(r.label)} (${money2(r.rate)}/${escapeHtml(r.unit)})</option>`).join('');
-            const text = c
-                ? `<strong>${money2(c.amount)}</strong> <span style="color:#888;">${fmtNum(c.units, c.unit === 'bushel' ? 2 : 1)} ${escapeHtml(c.unit)}${c.units === 1 ? '' : 's'} × ${money2(c.rate)} · ${escapeHtml(c.rateLabel)}${c.setBy === 'manual' ? ' · set by hand' : ''}</span>`
-                : (o.status === 'planned' ? '<span style="color:#888;">Planned; costed once completed</span>' : '<span style="color:#a02818;">Not costed</span>');
-            return `<div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;"><span style="color:#888;">Machine cost</span><span style="text-align:right;">${text}</span></div>` +
-                (o.status === 'completed' && opRates.length ? `<select data-op-rate="${o._id}" aria-label="Rate for this pass" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:100%;">${opts}</select>` : '');
-        }
-        async function setOperationRate(id, rateKey) {
-            try {
-                const r = await opsRequest('/' + id + '/cost', { method: 'PUT', body: JSON.stringify({ rateKey: rateKey || null }) });
-                showBanner('success', r.message);
-                await refreshSeedSection();
-            } catch (e) {
-                showBanner('error', 'Could not set the rate: ' + e.message);
-                await refreshSeedSection();
-            }
-        }
-        async function costAllRecords() {
-            const btn = document.getElementById('btnCostRecords');
-            btn.disabled = true;
-            try {
-                const r = await opsRequest('/costs/apply', { method: 'POST', body: JSON.stringify({}) });
-                const skipped = r.data.skipped || [];
-                showBanner(skipped.length ? 'error' : 'success', r.message + (skipped.length ? '. Needs a rate or acres: ' +
-                    skipped.slice(0, 12).map(x => (x.field || '') + ' ' + (x.title || '') + ' (' + x.reason + ')').join('; ') + (skipped.length > 12 ? '; and ' + (skipped.length - 12) + ' more' : '') : ''));
-                await refreshSeedSection();
-            } catch (e) {
-                showBanner('error', 'Could not cost the records: ' + e.message);
-            } finally {
-                btn.disabled = false;
-            }
-        }
+        // Shared field record tools: season records panel, gap check, costing.
+        const recordTools = FieldRecordTools.create({
+            seasonEl: document.getElementById('seasonImport'),
+            gapEl: document.getElementById('gapPanel'),
+            getYear: () => selectedYear,
+            notify: (kind, msg) => showBanner(kind, msg),
+            onChange: () => refreshSeedSection()
+        });
 
         async function loadOperations() {
             try {
-                await loadOpRates();
+                await recordTools.loadRates();
                 const data = await opsRequest('');
                 opsByField = {};
                 for (const o of data.data || []) {
@@ -1486,161 +1447,6 @@
                 await refreshSeedSection();
             } catch (e) {
                 showBanner('error', 'Could not remove the record: ' + e.message);
-            }
-        }
-
-        // Review panel: confirm which card each prepared 2026 record goes on.
-        let seasonData = null;
-        function seasonSummary(r) {
-            const bits = [];
-            if (r.variety) bits.push(r.variety);
-            if (r.acres != null) bits.push(fmtNum(r.acres, 1) + ' ac');
-            if (r.seedLb != null) bits.push(fmtNum(r.seedLb, 0) + ' lb');
-            if (r.netBu != null) bits.push(fmtNum(r.netBu, 2) + ' bu');
-            return bits.join(' · ');
-        }
-        function renderSeasonImport() {
-            const el = document.getElementById('seasonImport');
-            if (!seasonData) { el.innerHTML = '<p>Loading...</p>'; return; }
-            const opts = seasonData.fields.map(fl => `<option value="${escapeHtml(fl._id)}">${escapeHtml(fl.name)}${fl.farmName ? ' (' + escapeHtml(fl.farmName) + ')' : ''}</option>`).join('');
-            const groups = [
-                ['Wheat 2026 harvest', r => r.cropYear === 2026 && r.type === 'harvest'],
-                ['Wheat 2026 planting (fall 2025)', r => !isOps(r) && r.cropYear === 2026 && r.type === 'seeding'],
-                ['Wheat 2027 drilling (Oct 2026)', r => !isOps(r) && r.cropYear === 2027 && r.type === 'seeding'],
-                ['Fall chemfallow for corn 2027', r => !isOps(r) && r.cropYear === 2027 && r.type === 'spray'],
-                ['Planting (Ops Center Seeding 2026; 2025 milo)', r => isOps(r) && r.type === 'seeding'],
-                ['Spray passes (Ops Center Application 2026)', r => isOps(r) && r.type === 'spray'],
-                ['Tillage (Ops Center Tillage 2026; implement to pick)', r => isOps(r) && r.type === 'tillage']
-            ];
-            function isOps(r) { return /^(app26|sd26|till26)-/.test(String(r.key)); }
-            const rows = groups.map(([label, test]) => {
-                const recs = seasonData.records.filter(test);
-                if (!recs.length) return '';
-                return `<tr><td colspan="4" style="background:#f5f3f0; font-weight:700; color:#2d5016; padding:8px;">${label}</td></tr>` + recs.map(r => {
-                    const target = r.addedTo ? String(r.addedTo.m77Field) : (r.suggested || '');
-                    const status = r.outdated ? '<span style="color:#8a6d00; font-weight:600;">Update available</span>'
-                        : r.addedTo ? '<span style="color:#2d5016; font-weight:600;">On card</span>'
-                        : r.suggested ? '<span style="color:#2d5016;">Matched</span>'
-                        : '<span style="color:#a02818;">' + (r.candidateCount > 1 ? 'Pick field (' + r.candidateCount + ' match)' : 'Pick field') + '</span>';
-                    return `<tr>
-                        <td style="padding:6px;"><input type="checkbox" data-season-check="${escapeHtml(r.key)}" ${(!r.addedTo && r.suggested && !r.review) || r.outdated ? 'checked' : ''} aria-label="Add ${escapeHtml(r.key)}"></td>
-                        <td style="padding:6px;"><strong>${escapeHtml(r.fieldHint)}</strong> · ${escapeHtml(r.title || '')}<br><span style="color:#888; font-size:12px;">${fmtRange(r.startDate, r.endDate)}${seasonSummary(r) ? ' · ' + escapeHtml(seasonSummary(r)) : ''}</span></td>
-                        <td style="padding:6px;"><select data-season-field="${escapeHtml(r.key)}" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:220px;"><option value="">Choose field</option>${opts}</select></td>
-                        <td style="padding:6px; font-size:12px;">${status}${r.review && !r.addedTo ? `<div style="color:#8a6d00; margin-top:2px;">${escapeHtml(r.review)}</div>` : ''}${r.cropFromCard ? '<div style="color:#888; margin-top:2px;">Crop from the card</div>' : ''}${r.cropFromRotation ? '<div style="color:#888; margin-top:2px;">Charged to the next harvested crop (card, else wheat → corn → milo → fallow → wheat)</div>' : ''}</td>
-                    </tr>`.replace(`<option value="${escapeHtml(target)}">`, target ? `<option value="${escapeHtml(target)}" selected>` : '<option value="__none__">');
-                }).join('');
-            }).join('');
-            const pending = seasonData.records.filter(r => !r.addedTo).length;
-            const retired = seasonData.retired || [];
-            const retiredHtml = retired.length ? `
-                <div style="background:#fbf3e2; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:13px;">
-                    <strong>Replaced by newer data: remove from the cards</strong>
-                    <div style="color:#666; margin:2px 0 6px;">These records came from an earlier version of this list (for example planting inferred from starter, now replaced by the seeding report).</div>
-                    ${retired.map(r => `<label style="display:flex; gap:8px; align-items:center; padding:3px 0;"><input type="checkbox" data-season-retire="${escapeHtml(r.id)}" checked> ${escapeHtml(r.fieldName || '')} · ${escapeHtml(r.title || '')} · ${escapeHtml(r.crop || '')} ${yy(r.cropYear)}</label>`).join('')}
-                </div>` : '';
-            const outdated = seasonData.records.filter(r => r.outdated).length;
-            el.innerHTML = `
-                <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
-                    <div>
-                        <h2 style="font-family:'Oswald',sans-serif; color:#2d5016; font-size:20px; margin:0;">2026 Season Records</h2>
-                        <p style="margin:4px 0 0; color:#666; font-size:13px;">Harvest tickets, planting, drilling and the planned fall spray. Check the field for each record, then add the checked records to their cards. ${pending} not on a card yet.${outdated ? ' ' + outdated + ' on a card with newer data available.' : ''}</p>
-                    </div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="btn btn-sm" id="btnSeasonApply">Add checked records</button>
-                        <button class="btn btn-secondary btn-sm" id="btnSeasonClose">Close</button>
-                    </div>
-                </div>
-                ${retiredHtml}
-                <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`;
-        }
-        // Consistency check: passes most fields of a crop got that others did not.
-        let gapData = [];
-        async function openGaps() {
-            const el = document.getElementById('gapPanel');
-            el.style.display = '';
-            el.innerHTML = '<p>Checking ' + selectedYear + ' field records...</p>';
-            try {
-                gapData = (await opsRequest('/gaps?cropYear=' + selectedYear)).data;
-                renderGaps();
-            } catch (e) {
-                el.innerHTML = '<p style="color:#a02818;">Could not check: ' + escapeHtml(e.message) + '</p>';
-            }
-        }
-        function renderGaps() {
-            const el = document.getElementById('gapPanel');
-            const blocks = gapData.map((g, i) => `
-                <div style="border:1px solid #eee; border-radius:6px; padding:12px; margin-top:10px;">
-                    <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-                        <strong>${escapeHtml(g.crop)} ${yy(g.cropYear)} · ${OP_LABELS[g.pass.type] || escapeHtml(g.pass.type)}: ${escapeHtml(g.pass.title || '')}</strong>
-                        <span style="color:#666; font-size:13px;">On ${g.pass.count} of ${g.fieldCount} ${escapeHtml(g.crop.toLowerCase())} fields${g.pass.startDate ? ' · ' + fmtDay(g.pass.startDate) : ''}</span>
-                    </div>
-                    ${g.pass.products && g.pass.products.length ? `<div style="color:#888; font-size:12px; margin-top:2px;">${g.pass.products.map(p => escapeHtml(p.name)).join(', ')}</div>` : ''}
-                    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
-                        ${g.missing.map(f => `<label style="display:flex; gap:6px; align-items:center; background:#fbf3e2; border-radius:5px; padding:6px 10px; font-size:13px;">
-                            <input type="checkbox" data-gap="${i}" value="${escapeHtml(f.id)}" checked> ${escapeHtml(f.name)} <span style="color:#888;">${fmtNum(f.acres, 1)} ac${f.plannedId ? ' · planned on card' : ''}</span></label>`).join('')}
-                    </div>
-                    <button class="btn btn-sm" style="margin-top:8px;" data-gap-fill="${i}">Add as assumed (not recorded)</button>
-                </div>`).join('');
-            el.innerHTML = `
-                <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
-                    <div>
-                        <h2 style="font-family:'Oswald',sans-serif; color:#2d5016; font-size:20px; margin:0;">Gaps · ${selectedYear}</h2>
-                        <p style="margin:4px 0 0; color:#666; font-size:13px;">Passes that more than half the fields of a crop got, and the fields of that crop without them. Uncheck any field that truly was not done. Assumed passes copy the date, products and rate from a recorded field and use the card's acres.</p>
-                    </div>
-                    <button class="btn btn-secondary btn-sm" id="btnGapsClose">Close</button>
-                </div>
-                ${blocks || '<p style="margin-top:10px; color:#2d5016;">No gaps: every pass is on all fields of its crop, or on half or fewer (not treated as a standard pass).</p>'}`;
-            document.getElementById('btnGapsClose').addEventListener('click', () => { el.style.display = 'none'; });
-            el.querySelectorAll('[data-gap-fill]').forEach(b => b.addEventListener('click', () => fillGap(Number(b.getAttribute('data-gap-fill')), b)));
-        }
-        async function fillGap(i, btn) {
-            const g = gapData[i];
-            const ids = [...document.querySelectorAll(`[data-gap="${i}"]:checked`)].map(c => c.value);
-            if (!ids.length) return;
-            btn.disabled = true;
-            try {
-                const r = await opsRequest('/gaps/fill', { method: 'POST', body: JSON.stringify({ exampleId: g.pass.exampleId, m77Fields: ids }) });
-                showBanner('success', r.message + ' for ' + g.crop + ' ' + yy(g.cropYear) + ': ' + (g.pass.title || g.pass.type) + '.');
-                await refreshSeedSection();
-                await openGaps();
-            } catch (e) {
-                showBanner('error', 'Could not add the passes: ' + e.message);
-                btn.disabled = false;
-            }
-        }
-
-        async function openSeasonImport() {
-            const el = document.getElementById('seasonImport');
-            el.style.display = '';
-            seasonData = null;
-            renderSeasonImport();
-            try {
-                seasonData = (await opsRequest('/imports/' + SEASON_IMPORT_ID)).data;
-                renderSeasonImport();
-            } catch (e) {
-                el.innerHTML = '<p style="color:#a02818;">Could not load the records: ' + escapeHtml(e.message) + '</p>';
-            }
-        }
-        async function applySeasonImport() {
-            const assignments = [];
-            const missing = [];
-            document.querySelectorAll('[data-season-check]:checked').forEach(cb => {
-                const key = cb.getAttribute('data-season-check');
-                const sel = document.querySelector(`[data-season-field="${key}"]`);
-                if (sel && sel.value && sel.value !== '__none__') assignments.push({ key, m77Field: sel.value });
-                else missing.push(key);
-            });
-            const retire = [...document.querySelectorAll('[data-season-retire]:checked')].map(cb => cb.getAttribute('data-season-retire'));
-            if (missing.length) return showBanner('error', 'Choose a field for: ' + missing.join(', '));
-            if (!assignments.length && !retire.length) return showBanner('error', 'Check at least one record.');
-            try {
-                const data = await opsRequest('/imports/' + SEASON_IMPORT_ID, { method: 'POST', body: JSON.stringify({ assignments, retire }) });
-                showBanner('success', data.message || 'Records added.');
-                seasonData = (await opsRequest('/imports/' + SEASON_IMPORT_ID)).data;
-                renderSeasonImport();
-                await refreshSeedSection();
-            } catch (e) {
-                showBanner('error', 'Could not add the records: ' + e.message);
             }
         }
 
@@ -2045,17 +1851,10 @@
             refreshSeedSection();
         });
 
-        document.getElementById('btnSeasonImport').addEventListener('click', openSeasonImport);
-        document.getElementById('btnCostRecords').addEventListener('click', costAllRecords);
-        document.getElementById('btnGaps').addEventListener('click', openGaps);
-        hierarchyEl.addEventListener('change', (e) => {
-            const sel = e.target.closest('[data-op-rate]');
-            if (sel) setOperationRate(sel.getAttribute('data-op-rate'), sel.value);
-        });
-        document.getElementById('seasonImport').addEventListener('click', (e) => {
-            if (e.target.id === 'btnSeasonApply') applySeasonImport();
-            if (e.target.id === 'btnSeasonClose') document.getElementById('seasonImport').style.display = 'none';
-        });
+        document.getElementById('btnSeasonImport').addEventListener('click', () => recordTools.openSeason());
+        document.getElementById('btnCostRecords').addEventListener('click', (e) => recordTools.costAll(e.currentTarget));
+        document.getElementById('btnGaps').addEventListener('click', () => recordTools.openGaps());
+        recordTools.bindRateSelects(hierarchyEl);
 
         document.getElementById('btnNewField').addEventListener('click', () => openModal(null));
         document.getElementById('modalClose').addEventListener('click', closeModal);
@@ -2353,5 +2152,6 @@
             await refreshJdStatus();
         })();
     </script>
+    <script src="/js/crops-nav.js"></script>
 </body>
 </html>

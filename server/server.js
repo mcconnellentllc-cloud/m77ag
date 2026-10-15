@@ -329,7 +329,10 @@ app.get('/admin/farm-operations', (req, res) => {
   res.redirect(301, '/admin/field-planner');
 });
 
-// Field manager
+// Field records (formerly Field Manager); both addresses serve it.
+app.get('/admin/field-records', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
+});
 app.get('/admin/field-manager', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));
 });
