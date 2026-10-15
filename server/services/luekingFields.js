@@ -18,7 +18,7 @@ async function addLuekingFields() {
         excludeFromFinancials: true,
         financialNote: DATA.financialNote,
         soil: { irrigated: !!d.irrigated, samples: [] },
-        notes: 'Acres are 2026 seeded acres from Operations Center until FSA acres are on file.' + (d.note ? ' ' + d.note : '')
+        notes: (d.acresNote || 'Acres are 2026 seeded acres from Operations Center until FSA acres are on file.') + (d.note ? ' ' + d.note : '')
       };
       if (d.crop2026) doc.crop2026 = d.crop2026;
       // Raw insert: the card holds only what is known; later edits validate as usual.
@@ -28,14 +28,16 @@ async function addLuekingFields() {
     }
     const linked = await M77Field.findOne({ legacySource: 'CroppingField', legacyId: cf._id }).select('_id').lean();
     if (!linked) {
-      const reg = await M77Field.find({ name: new RegExp('^' + esc(d.opsName.trim()) + '$', 'i'), $or: [{ legacyId: null }, { legacyId: { $exists: false } }] }).select('_id irrigation').lean();
+      const nameMatch = d.opsMatch || new RegExp('^' + esc(d.opsName.trim()) + '$', 'i');
+      const reg = await M77Field.find({ name: nameMatch, $or: [{ legacyId: null }, { legacyId: { $exists: false } }] }).select('_id name').lean();
       if (reg.length === 1) {
         await M77Field.updateOne({ _id: reg[0]._id }, { $set: { legacySource: 'CroppingField', legacyId: cf._id, enterprise: 'Lueking' } });
-        out.push('linked ' + d.field + ' to registry field ' + d.opsName);
+        out.push('linked ' + d.field + ' to registry field ' + reg[0].name);
       }
     }
   }
   out.push(...(await applyCorrection()));
+  out.push(...(await applySplit75()));
   return out;
 }
 
@@ -53,6 +55,24 @@ async function applyCorrection() {
   const reg = await M77Field.updateMany({ legacySource: 'CroppingField', legacyId: { $in: ids }, enterprise: { $ne: 'Lueking' } }, { $set: { enterprise: 'Lueking' } });
   const line = `${DATA.correctionKey}: ${flag.modifiedCount} cards marked no M77 financial tie, crop-share lease removed from ${lease.modifiedCount}, 73.C.SW sorghum sudan ${crop.modifiedCount ? 'set' : 'already set'}, ${reg.modifiedCount} registry fields moved to the Lueking enterprise`;
   await AppliedUpdate.create({ key: DATA.correctionKey, summary: [line] });
+  return [line];
+}
+
+// One time: the first 75.E card covered all of field 75 (112.5 ac, no
+// crop). It becomes the east half, corn; 75.W is its own card.
+async function applySplit75() {
+  if (await AppliedUpdate.exists({ key: DATA.split75Key })) return [];
+  const e = DATA.fields.find(d => /^75\.E/.test(d.field));
+  const set = {};
+  const cf = await CroppingField.findOne({ farm: DATA.farm, field: /^75\.E\b/i }).lean();
+  if (cf) {
+    if (cf.acres === 112.5) set.acres = e.acres;
+    if (!cf.crop2026) set.crop2026 = e.crop2026;
+    if (/2026 split/.test(cf.notes || '')) set.notes = e.acresNote;
+    if (Object.keys(set).length) await CroppingField.updateOne({ _id: cf._id }, { $set: set });
+  }
+  const line = `${DATA.split75Key}: 75.E ${cf ? 'updated ' + (Object.keys(set).join(', ') || 'nothing') : 'not found'}`;
+  await AppliedUpdate.create({ key: DATA.split75Key, summary: [line] });
   return [line];
 }
 
