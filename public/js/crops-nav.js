@@ -1,11 +1,12 @@
-// Crops & Grain section tabs. Field Manager, Field Planner, Projections and
-// Seed Orders share these tabs. To add a page to the section, add one line
+// Crops & Grain section tabs, shared by Field Records, Field Planner, Field
+// Setup, Projections, Rates and Seed Orders. To add a page to the section, add one line
 // to PAGES.
 (function () {
   'use strict';
   const PAGES = [
-    { label: 'Field Manager', href: '/admin/field-manager', match: ['/admin/field-manager'] },
+    { label: 'Field Records', href: '/admin/field-records', match: ['/admin/field-records', '/admin/field-manager'] },
     { label: 'Field Planner', href: '/admin/field-planner', match: ['/admin/field-planner', '/admin/farm-operations'] },
+    { label: 'Field Setup', href: '/admin/fields.html', match: ['/admin/fields'] },
     { label: 'Projections', href: '/admin/farm-projections', match: ['/admin/farm-projections'] },
     { label: 'Rates', href: '/admin/field-rates', match: ['/admin/field-rates'] },
     { label: 'Seed Orders', href: '/admin/farming/seed-orders', match: ['/admin/farming/seed-orders'] }

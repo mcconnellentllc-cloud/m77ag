@@ -992,10 +992,12 @@
         // Crops & Grain cards. Add a card here as the operation grows; `links`
         // puts sub-pages on the card, `metricId` is filled in by the loaders.
         const CROPS_CARDS = [
-            { title: 'Field Manager', href: '/admin/field-manager', bar: '#d4a54a',
-              desc: 'Every field: crop by year, soil tests and survey, insurance, yields, lease and P/L per acre.',
+            { title: 'Field Records', href: '/admin/field-records', bar: '#d4a54a',
+              desc: 'Every field: crop by year, passes and machine cost, soil tests and survey, insurance, yields, lease and P/L per acre.',
               links: [
                   { label: 'Field Planner', href: '/admin/field-planner' },
+                  { label: 'Field Setup', href: '/admin/fields.html' },
+                  { label: 'Rates', href: '/admin/field-rates' },
                   { label: 'Projections', href: '/admin/farm-projections' },
                   { label: 'Seed Orders', href: '/admin/farming/seed-orders' }
               ],

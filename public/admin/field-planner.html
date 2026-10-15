@@ -991,7 +991,7 @@
     <div class="container">
         <div class="page-header">
             <h1 class="page-title">Field Planner</h1>
-            <p style="color:#666;font-size:14px;margin-top:4px;">Set the crop on each field by year. Field Manager reads the same crops.</p>
+            <p style="color:#666;font-size:14px;margin-top:4px;">Set the crop on each field by year. Field Records reads the same crops.</p>
         </div>
 
         <!-- Summary Cards -->
@@ -1781,7 +1781,7 @@
         const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE',
             'PEARL MILLET', 'SORGHUM SUDAN', 'WASTE', 'BUILDING SITE'];
 
-        // Crop years that can be planned. Field Manager reads the same crop fields.
+        // Crop years that can be planned. Field Records reads the same crop fields.
         const PLAN_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
         function cropOptions(current, year) {
             const choices = Array.from(new Set(CROP_CHOICES.concat(current ? [current] : [])));
