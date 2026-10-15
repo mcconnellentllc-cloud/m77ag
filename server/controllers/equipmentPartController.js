@@ -13,11 +13,25 @@ function pick(body) {
   return out;
 }
 
-// The list starts with the defaults the first time it is opened.
+// Add starting-list parts not yet in the collection. A part saved before seed
+// keys existed is matched by name and given its key, so it is not duplicated.
+async function addMissingDefaults() {
+  const existing = await EquipmentPart.find({}, { seedKey: 1, name: 1 }).lean();
+  const keys = new Set(existing.map(p => p.seedKey).filter(Boolean));
+  for (const d of DEFAULTS) {
+    if (keys.has(d.seedKey)) continue;
+    const legacy = existing.find(p => !p.seedKey && p.name === d.name);
+    if (legacy) await EquipmentPart.updateOne({ _id: legacy._id }, { seedKey: d.seedKey });
+    else {
+      try { await EquipmentPart.create(d); } catch (e) { if (e.code !== 11000) throw e; } // another request added it
+    }
+  }
+}
+
 exports.list = async (req, res) => {
   try {
-    if (await EquipmentPart.estimatedDocumentCount() === 0) await EquipmentPart.insertMany(DEFAULTS);
-    const parts = await EquipmentPart.find().sort({ category: 1, name: 1 }).lean();
+    await addMissingDefaults();
+    const parts = await EquipmentPart.find({ deleted: { $ne: true } }).sort({ category: 1, name: 1 }).lean();
     res.json({ success: true, data: parts });
   } catch (error) {
     console.error('Error listing parts:', error);
@@ -48,8 +62,11 @@ exports.update = async (req, res) => {
 
 exports.remove = async (req, res) => {
   try {
-    const part = await EquipmentPart.findByIdAndDelete(req.params.id);
+    const part = await EquipmentPart.findById(req.params.id);
     if (!part) return res.status(404).json({ success: false, message: 'Part not found' });
+    // Starting-list parts are hidden rather than removed so they stay deleted.
+    if (part.seedKey) await EquipmentPart.updateOne({ _id: part._id }, { deleted: true });
+    else await part.deleteOne();
     res.json({ success: true, message: 'Part deleted' });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
