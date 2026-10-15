@@ -92,6 +92,13 @@
         .bf-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
         .bf-row .bf-n { color: #8a6d00; font-size: 12px; }
         .bf-progress { font-size: 13px; color: #2d5016; margin-top: 10px; }
+        .crop-edit { background: #f8f8f6; border-radius: 6px; padding: 12px 14px; margin-bottom: 14px; }
+        .crop-edit-head { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 8px; }
+        .crop-edit-head span { text-transform: none; letter-spacing: 0; color: #bbb; margin-left: 6px; }
+        .crop-edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+        .crop-edit-item { display: grid; gap: 3px; font-size: 11px; color: #666; font-weight: 600; }
+        .crop-edit-item select { padding: 7px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; background: white; }
+        .crop-edit-item select.current { border-color: #2d5016; }
         .view-toggle { display: inline-flex; border: 2px solid #e0e0e0; border-radius: 5px; overflow: hidden; }
         .view-toggle button { background: white; border: none; padding: 8px 14px; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; font-family: inherit; }
         .view-toggle button.active { background: #2d5016; color: white; }
@@ -237,6 +244,7 @@
         .form-section { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
 
         .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; display: none; }
+        .alert.toast { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 480px; margin: 0 auto; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .alert-success { background: rgba(45,80,22,0.1); color: #2d5016; }
         .alert-error { background: rgba(192,57,43,0.1); color: #c0392b; }
 
@@ -256,13 +264,14 @@
         <a href="/admin/dashboard" class="admin-logo">M77 AG</a>
         <nav class="admin-nav">
             <a href="/admin/dashboard">Dashboard</a>
-            <a href="/admin/farm-operations">Farm Ops</a>
+            <a href="/admin/field-planner">Field Planner</a>
             <a href="/admin/field-manager" class="active">Field Manager</a>
             <a href="/admin/soil-samples">Soil Analysis</a>
             <a href="/admin/farm-projections">Projections</a>
             <a href="/admin/financials">Financials</a>
         </nav>
     </header>
+    <div id="cropsNav"></div>
 
     <div class="container">
         <div id="alertSuccess" class="alert alert-success"></div>
@@ -872,11 +881,49 @@
             `;
         }
 
+        // Crop by year, the same fields the Field Planner sets. Years before
+        // 2025 live in crop history.
+        const EDIT_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
+        const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE', 'PEARL MILLET', 'SORGHUM SUDAN', 'WASTE', 'BUILDING SITE'];
+        function renderCropEditor(f) {
+            const sels = EDIT_YEARS.map(y => {
+                const cur = f['crop' + y] || '';
+                const choices = Array.from(new Set(CROP_CHOICES.concat(cur ? [cur] : [])));
+                return `<label class="crop-edit-item">${y}<select data-crop-year="${y}" data-field="${f._id}" ${y === yearOf(f) ? 'class="current"' : ''}>
+                    <option value="">Not set</option>${choices.map(c => `<option value="${escapeText(c)}" ${c === cur ? 'selected' : ''}>${escapeText(c)} ${yy(y)}</option>`).join('')}</select></label>`;
+            }).join('');
+            return `<div class="crop-edit"><div class="crop-edit-head">Crop by Year <span>Same crops as the Field Planner</span></div>
+                <div class="crop-edit-grid">${sels}</div>
+                <div class="detail-actions" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveCrops('${f._id}')">Save Crops</button></div></div>`;
+        }
+        async function saveCrops(id) {
+            const f = allFields.find(x => x._id === id);
+            const body = {};
+            document.querySelectorAll(`[data-crop-year][data-field="${id}"]`).forEach(sel => {
+                const k = 'crop' + sel.getAttribute('data-crop-year');
+                const val = sel.value || null;
+                if ((f[k] || null) !== val) body[k] = val;
+            });
+            if (!Object.keys(body).length) { showAlert('success', 'No crop changes to save'); return; }
+            try {
+                const res = await fetch(`${API}/api/cropping-fields/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.error || 'Save failed (' + res.status + ')');
+                for (const k of Object.keys(body)) f[k] = data.field[k];
+                renderFields();
+                const detail = document.getElementById('detail-' + id);
+                if (detail) detail.classList.add('open');
+                showAlert('success', 'Crops saved for ' + f.field, { noScroll: true });
+            } catch (e) {
+                showAlert('error', 'Could not save crops: ' + e.message, { noScroll: true });
+            }
+        }
+
         function renderInfoPanel(f) {
             const lease = f.lease || {};
             const taxes = f.taxes || {};
             const v = (val) => val ? val : '<span class="empty">--</span>';
-            return `
+            return renderCropEditor(f) + `
                 <div class="info-grid">
                     <div class="info-item"><div class="info-label">Legal Description</div><div class="info-value">${v(f.legal)}</div></div>
                     <div class="info-item"><div class="info-label">FSA Farm / Tract</div><div class="info-value">${v(f.fsaFarm)} / ${v(f.tract)}</div></div>
@@ -1615,13 +1662,15 @@
         }
 
         // Alert
-        function showAlert(type, message) {
+        function showAlert(type, message, opts) {
             const el = document.getElementById(type === 'success' ? 'alertSuccess' : 'alertError');
             const other = document.getElementById(type === 'success' ? 'alertError' : 'alertSuccess');
             other.style.display = 'none';
             el.textContent = message;
             el.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const toast = !!(opts && opts.noScroll);
+            el.classList.toggle('toast', toast);
+            if (!toast) window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => { el.style.display = 'none'; }, 4000);
         }
 
@@ -1644,5 +1693,6 @@
         // Init
         loadFields();
     </script>
+    <script src="/js/crops-nav.js"></script>
 </body>
 </html>

@@ -314,6 +314,14 @@ app.get('/admin/farm-projections', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farm-projections.html'));
 });
 
+// Field planner (formerly Farm Operations); the old address redirects.
+app.get('/admin/field-planner', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/field-planner.html'));
+});
+app.get('/admin/farm-operations', (req, res) => {
+  res.redirect(301, '/admin/field-planner');
+});
+
 // Field manager
 app.get('/admin/field-manager', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/field-manager.html'));

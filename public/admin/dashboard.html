@@ -401,6 +401,11 @@
             padding-top: 12px;
             border-top: 1px solid #f0f0f0;
         }
+        .nav-card.group { display: flex; flex-direction: column; }
+        .nav-card.group .card-main { text-decoration: none; color: inherit; display: block; }
+        .card-sublinks { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 20px 18px; }
+        .card-sublinks a { font-size: 12px; font-weight: 600; color: #2d5016; background: #f5f3f0; border-radius: 5px; padding: 6px 10px; text-decoration: none; transition: all 0.3s ease; }
+        .card-sublinks a:hover { background: #2d5016; color: #fff; }
         .card-meta-value {
             font-weight: 600;
             color: #2d5016;
@@ -703,65 +708,9 @@
             <div class="feature-btn">Open Equipment</div>
         </a>
 
-        <!-- CROPS & GRAIN SECTION -->
+        <!-- CROPS & GRAIN SECTION: cards come from CROPS_CARDS in the script below -->
         <div class="section-header">Crops & Grain</div>
-        <div class="card-grid">
-            <a href="/admin/farming/inventory.html" class="nav-card">
-                <div class="card-icon-bar gold"></div>
-                <div class="card-content">
-                    <h3 class="card-title">Grain Inventory</h3>
-                    <p class="card-desc">Track grain in bins, elevator storage, contracts, and sales. Monitor storage by location.</p>
-                    <div class="card-meta">
-                        <span>Bushels Stored</span>
-                        <span class="card-meta-value" id="grainBushels">--</span>
-                    </div>
-                </div>
-            </a>
-            <a href="/admin/farming/seed-orders.html" class="nav-card">
-                <div class="card-icon-bar green"></div>
-                <div class="card-content">
-                    <h3 class="card-title">Seed Orders</h3>
-                    <p class="card-desc">Manage seed purchases, varieties, and planting allocations for upcoming seasons.</p>
-                    <div class="card-meta">
-                        <span>2026 Season</span>
-                        <span class="card-meta-value">Pioneer Hybrids</span>
-                    </div>
-                </div>
-            </a>
-            <a href="/admin/farm-operations.html" class="nav-card">
-                <div class="card-icon-bar"></div>
-                <div class="card-content">
-                    <h3 class="card-title">Farm Operations</h3>
-                    <p class="card-desc">All fields by farm with List/Cards view. Crop rotations, acres, and field details.</p>
-                    <div class="card-meta">
-                        <span>Fields</span>
-                        <span class="card-meta-value">73 Active</span>
-                    </div>
-                </div>
-            </a>
-            <a href="/admin/field-manager" class="nav-card">
-                <div class="card-icon-bar" style="background: #d4a54a;"></div>
-                <div class="card-content">
-                    <h3 class="card-title">Field Manager</h3>
-                    <p class="card-desc">Complete field profiles. Crop history, soil samples, insurance, taxes, lease details, and P/L per acre.</p>
-                    <div class="card-meta">
-                        <span>Data Hub</span>
-                        <span class="card-meta-value">All Fields</span>
-                    </div>
-                </div>
-            </a>
-            <a href="/admin/farm-projections" class="nav-card">
-                <div class="card-icon-bar" style="background: #2d5016;"></div>
-                <div class="card-content">
-                    <h3 class="card-title">2026 Projections</h3>
-                    <p class="card-desc">Projected costs, revenue, and net income per field. Rolls up to farm and overall M77 AG view.</p>
-                    <div class="card-meta">
-                        <span>Budget Planning</span>
-                        <span class="card-meta-value">2026 Season</span>
-                    </div>
-                </div>
-            </a>
-        </div>
+        <div class="card-grid" id="cropsCards"></div>
 
         <!-- LIVESTOCK SECTION -->
         <div class="section-header">Livestock</div>
@@ -1040,6 +989,61 @@
     </div>
 
     <script>
+        // Crops & Grain cards. Add a card here as the operation grows; `links`
+        // puts sub-pages on the card, `metricId` is filled in by the loaders.
+        const CROPS_CARDS = [
+            { title: 'Field Manager', href: '/admin/field-manager', bar: '#d4a54a',
+              desc: 'Every field: crop by year, soil tests and survey, insurance, yields, lease and P/L per acre.',
+              links: [
+                  { label: 'Field Planner', href: '/admin/field-planner' },
+                  { label: 'Projections', href: '/admin/farm-projections' },
+                  { label: 'Seed Orders', href: '/admin/farming/seed-orders' }
+              ],
+              metricLabel: 'Fields', metricId: 'cropFieldCount' },
+            { title: 'Grain Inventory', href: '/admin/farming/inventory.html', bar: '#d4af37',
+              desc: 'Grain in bins and elevator storage, contracts and sales by location.',
+              metricLabel: 'Bushels Stored', metricId: 'grainBushels' },
+            { title: 'Hay Inventory', href: '/admin/financials/feed.html', bar: '#2d5016',
+              desc: 'Hay bales on hand by location, with purchases and feeding.',
+              metricLabel: 'Bales on Hand', metricId: 'hayBales' }
+        ];
+        function escHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function renderCropsCards() {
+            const host = document.getElementById('cropsCards');
+            if (!host) return;
+            host.innerHTML = CROPS_CARDS.map(c => {
+                const body = `<div class="card-icon-bar" style="background:${escHtml(c.bar)};"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">${escHtml(c.title)}</h3>
+                        <p class="card-desc">${escHtml(c.desc)}</p>
+                        <div class="card-meta"><span>${escHtml(c.metricLabel || '')}</span><span class="card-meta-value" ${c.metricId ? `id="${escHtml(c.metricId)}"` : ''}>--</span></div>
+                    </div>`;
+                if (!c.links || !c.links.length) return `<a href="${escHtml(c.href)}" class="nav-card">${body}</a>`;
+                return `<div class="nav-card group"><a href="${escHtml(c.href)}" class="card-main">${body}</a>
+                    <div class="card-sublinks">${c.links.map(l => `<a href="${escHtml(l.href)}">${escHtml(l.label)}</a>`).join('')}</div></div>`;
+            }).join('');
+        }
+        renderCropsCards();
+
+        async function loadCropsStats(token) {
+            try {
+                const res = await fetch('/api/cropping-fields/summary/farms');
+                const data = await res.json();
+                if (data.success && Array.isArray(data.farms)) {
+                    const n = data.farms.reduce((s, f) => s + (f.fieldCount || f.fields || 0), 0);
+                    if (n) document.getElementById('cropFieldCount').textContent = n.toLocaleString();
+                }
+            } catch (e) { console.error('Error loading field count:', e); }
+            try {
+                const res = await fetch('/api/cattle/feed/inventory', { headers: { 'Authorization': 'Bearer ' + token } });
+                const data = await res.json();
+                if (data.success) {
+                    const bales = (data.data || []).filter(f => f.type === 'hay').reduce((s, f) => s + (f.quantity || 0), 0);
+                    document.getElementById('hayBales').textContent = bales.toLocaleString();
+                }
+            } catch (e) { console.error('Error loading hay inventory:', e); }
+        }
+
         function formatCurrency(amount) {
             if (amount >= 1000000) {
                 return '$' + (amount / 1000000).toFixed(1) + 'M';
@@ -1068,6 +1072,7 @@
 
                 // Load grain inventory
                 loadGrainStats();
+                loadCropsStats(token);
 
                 // Load cattle count
                 loadCattleStats(token);
