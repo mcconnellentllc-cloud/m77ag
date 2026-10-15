@@ -63,6 +63,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Equipment record updates failed:', e.message);
     }
+    // Apply recorded field name corrections
+    try {
+      const { applyFieldRecordUpdates } = require('./services/fieldRecordUpdates');
+      (await applyFieldRecordUpdates()).forEach(r => console.log('Field update:', r));
+    } catch (e) {
+      console.error('Field record updates failed:', e.message);
+    }
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
