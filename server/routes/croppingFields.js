@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
+// Internal: staff only.
+router.use(require('../middleware/auth').staffOnly);
 const CroppingField = require('../models/croppingField');
 const CapitalInvestment = require('../models/capitalInvestment');
 

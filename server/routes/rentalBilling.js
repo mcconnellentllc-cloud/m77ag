@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { adminOnly } = require('../middleware/auth');
 const {
   generateMonthlyInvoice,
   autoGenerateInvoices,
@@ -11,18 +12,18 @@ const {
 } = require('../controllers/rentalBillingController');
 
 // Invoice generation routes (admin only in production)
-router.post('/billing/invoices/generate', generateMonthlyInvoice);
-router.post('/billing/invoices/auto-generate', autoGenerateInvoices);
+router.post('/billing/invoices/generate', adminOnly, generateMonthlyInvoice);
+router.post('/billing/invoices/auto-generate', adminOnly, autoGenerateInvoices);
 
 // Payment recording (admin only)
-router.post('/billing/invoices/:invoiceId/payment', recordPayment);
+router.post('/billing/invoices/:invoiceId/payment', adminOnly, recordPayment);
 
 // Invoice retrieval
-router.get('/billing/invoices', getAllInvoices);
-router.get('/billing/invoices/:id', getInvoiceById);
+router.get('/billing/invoices', adminOnly, getAllInvoices);
+router.get('/billing/invoices/:id', adminOnly, getInvoiceById);
 
 // Automated tasks (should be called by cron jobs)
-router.post('/billing/apply-late-fees', applyLateFees);
-router.post('/billing/send-reminders', sendPaymentReminders);
+router.post('/billing/apply-late-fees', adminOnly, applyLateFees);
+router.post('/billing/send-reminders', adminOnly, sendPaymentReminders);
 
 module.exports = router;

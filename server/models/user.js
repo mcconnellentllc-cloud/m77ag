@@ -243,11 +243,17 @@ async function createDefaultAdmin() {
     const adminExists = await User.findOne({ role: 'admin' });
 
     if (!adminExists) {
+      // Only from a password set in the server environment; never a default.
+      const initial = process.env.ADMIN_INITIAL_PASSWORD;
+      if (!initial || initial.length < 12) {
+        console.error('No admin user exists. Set ADMIN_INITIAL_PASSWORD (12+ characters) or run scripts/createAdmin.js.');
+        return;
+      }
       const defaultAdmin = new User({
         name: 'M77 AG Admin',
         email: 'office@m77ag.com',
         phone: '970-571-1015',
-        password: 'M77admin2025!', // Change this after first login!
+        password: initial,
         role: 'admin',
         emailVerified: true,
         isActive: true
@@ -255,48 +261,16 @@ async function createDefaultAdmin() {
 
       await defaultAdmin.save();
       console.log('Default admin user created: office@m77ag.com');
-      console.log('WARNING: Default password is M77admin2025! - Change this immediately!');
+
     }
   } catch (error) {
     console.error('Error creating default admin:', error.message);
   }
 }
 
-// Create default farmer user if none exists
-async function createDefaultFarmer() {
-  try {
-    const farmerExists = await User.findOne({ email: 'matt@togoag.com' });
-
-    if (!farmerExists) {
-      const defaultFarmer = new User({
-        name: 'Matt',
-        email: 'matt@togoag.com',
-        phone: '000-000-0000',
-        password: 'm77ag1',
-        role: 'farmer',
-        isActive: true,
-        emailVerified: true,
-        employeePermissions: {
-          canAddCattleRecords: true,
-          canEditCattleRecords: true,
-          canDeleteCattleRecords: false,
-          canAddEquipmentLogs: true,
-          canEditEquipmentLogs: true,
-          canAddTransactions: false,
-          canEditTransactions: false,
-          canViewFinancials: true,
-          canViewReports: true,
-          accessAreas: ['cattle', 'crops', 'equipment']
-        }
-      });
-
-      await defaultFarmer.save();
-      console.log('Default farmer user created: matt@togoag.com');
-    }
-  } catch (error) {
-    console.error('Error creating default farmer:', error.message);
-  }
-}
+// The farmer account (Matt) is created by an admin, never automatically with
+// a fixed password. Kept as a no-op so existing callers do not break.
+async function createDefaultFarmer() {}
 
 module.exports = User;
 module.exports.createDefaultAdmin = createDefaultAdmin;

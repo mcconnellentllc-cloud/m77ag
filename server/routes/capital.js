@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
+// Internal: admin only.
+router.use(require('../middleware/auth').adminOnly);
 const CapitalInvestment = require('../models/capitalInvestment');
 
 /**

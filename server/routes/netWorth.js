@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
+// Internal: admin only.
+router.use(require('../middleware/auth').adminOnly);
 const Equipment = require('../models/equipment');
 const RealEstate = require('../models/realEstate');
 const Entity = require('../models/entity');

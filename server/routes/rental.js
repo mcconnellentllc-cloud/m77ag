@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { adminOnly } = require('../middleware/auth');
 const {
   createRentalApplication,
   getAllRentalApplications,
@@ -11,10 +12,10 @@ const {
 // Public route - submit rental application
 router.post('/rental-applications', createRentalApplication);
 
-// Admin routes (would need authentication middleware in production)
-router.get('/rental-applications', getAllRentalApplications);
-router.get('/rental-applications/:id', getRentalApplicationById);
-router.put('/rental-applications/:id/status', updateRentalApplicationStatus);
-router.post('/rental-applications/:id/send-contract', sendRentalContract);
+// Admin routes
+router.get('/rental-applications', adminOnly, getAllRentalApplications);
+router.get('/rental-applications/:id', adminOnly, getRentalApplicationById);
+router.put('/rental-applications/:id/status', adminOnly, updateRentalApplicationStatus);
+router.post('/rental-applications/:id/send-contract', adminOnly, sendRentalContract);
 
 module.exports = router;

@@ -19,6 +19,12 @@ app.use(cookieParser());
 // Connect to MongoDB
 const mongoose = require('mongoose');
 const { createDefaultAdmin, createDefaultFarmer } = require('./models/user');
+
+// Tokens are signed with JWT_SECRET; the code's fallback value is public, so
+// production must set its own.
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32)) {
+  console.error('SECURITY: JWT_SECRET is missing or shorter than 32 characters. Set a long random value in the Render environment.');
+}
 const { createDefaultFarm } = require('./controllers/landManagementAuthController');
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/m77ag';
 
