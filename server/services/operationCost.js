@@ -10,6 +10,7 @@ const ROW_CROPS = ['CORN', 'SORGHUM', 'MILO', 'SUNFLOWER', 'SUNFLOWERS', 'SORGHU
 // Default rate for a pass, or null when the pass type needs the implement to
 // pick a rate (tillage, other).
 function defaultRateKey(op) {
+  if (op.suggestedRateKey && RATE_BY_KEY[op.suggestedRateKey]) return op.suggestedRateKey;
   const crop = String(op.crop || '').toUpperCase();
   switch (op.type) {
     case 'seeding':
