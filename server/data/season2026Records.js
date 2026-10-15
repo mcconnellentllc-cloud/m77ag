@@ -314,8 +314,19 @@ for (const e of OPS_APP) {
 
 // ---- Tillage: Operations Center Field Report Tillage 2026 ----
 // Every listed pass counts as done; acres are the card's acres. The report
-// names the tractor but not the implement, so the machine rate is picked on
-// the card (or set once Kyle names the implement per tractor and period).
+// names the tractor but not the implement. How the 2026 work was done, per
+// Kyle (Oct 15, 2026); this is a record of this season, not a rule for other
+// years: the 8320R pulled the disc all season; the 8370R pulled the disc
+// through early summer and the field finisher from mid-July on; "Shank"
+// passes were the field finisher. Passes logging both tractors were 99-100%
+// 8320R on the equipment map, so they are disc passes.
+function tillageImplement(e) {
+  const t8320 = e.equipment.some(x => x.startsWith('8320R'));
+  if (e.kind === 'Shank') return { key: 'field-finisher', label: 'field finisher' };
+  if (t8320) return { key: 'disk-tandem', label: 'disc' };
+  if (e.start >= '2026-07-01') return { key: 'field-finisher', label: 'field finisher' };
+  return { key: 'disk-tandem', label: 'disc' };
+}
 // Tillage is charged to the upcoming crop (Kyle, Oct 15, 2026): passes before
 // June go to the 2026 crop, later passes to the next harvested crop.
 // Card match, by what was on each half at the time: spring passes go to the
@@ -333,21 +344,22 @@ for (const e of OPS_TILL) {
   const matchCrops = spring ? [['CORN', 'SORGHUM', 'SORGHUM SUDAN'], ['FALLOW']]
     : earlySummer ? [['FALLOW']] : [['FALLOW', 'WHEAT']];
   const halves = split && e.area > 120 ? [1, 2] : [0];
+  const impl = tillageImplement(e);
   for (const h of halves) {
     OPS_RECORDS.push({
-      key: 'till26-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.equipment.join('-')) + (h ? '-half' + h : ''),
+      key: 'till26-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.equipment.join('-')) + (h ? '-half' + h : ''), rev: 2,
       fieldHint: num, opsName: e.opsField,
       matchBy: 'crops', matchCrops, matchCropYear: 2026, pickIndex: h ? h - 1 : undefined,
       area: e.area,
       cropYear: spring ? 2026 : 2027, crop: null, cropFromRotation: true, acresFromField: true,
       type: 'tillage', status: 'completed',
-      title: e.kind === 'Shank' ? 'Shank' : 'Primary tillage',
+      title: impl.label === 'disc' ? 'Disc' : 'Field finisher', suggestedRateKey: impl.key,
       startDate: e.start, endDate: e.end || e.start,
       operator: e.operator, equipment: e.equipment.join(', '),
       review: null,
       source: 'Operations Center Field Report Tillage 2026',
       notes: 'Report: ' + e.field + ', ' + e.area + ' ac logged, target depth ' + e.depth + ', ' + e.hours + ', ' + e.fuel + ' fuel.' +
-        (h ? ' Whole-quarter pass; this record is for half ' + h + '.' : '') + ' Implement not in the report.'
+        (h ? ' Whole-quarter pass; this record is for half ' + h + '.' : '') + ' Implement (' + impl.label + ') from Kyle by tractor and date.'
     });
   }
 }

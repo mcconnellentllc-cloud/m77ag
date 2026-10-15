@@ -25,6 +25,7 @@ const ITEMS = [
   ['chisel', 'Chisel plow, dryland', 'tillage', 'acre', [10.00, 28.00, 'Chisel plowing'], [12.00, 18.00, 'Plow - Chisel (dryland)']],
   ['sweep', 'Sweep plow / undercutter', 'tillage', 'acre', [7.60, 32.00, 'Field cultivating'], [10.00, 20.00, 'Plow - Sweep'], 'ISU has no sweep plow line; field cultivating is the closest match.'],
   ['field-cultivate', 'Field cultivate', 'tillage', 'acre', [7.60, 32.00, 'Field cultivating'], [20.00, 24.00, 'Cultivating - Field']],
+  ['field-finisher', 'Field finisher', 'tillage', 'acre', [10.00, 33.00, 'Soil finishing'], [20.00, 24.00, 'Cultivating - Field'], 'CSU has no soil finishing line; field cultivating is the closest match.'],
   ['vertical-tillage', 'Vertical tillage', 'tillage', 'acre', [12.00, 30.00, 'Vertical tillage'], [10.00, 35.00, 'Vertical Tillage']],
   ['strip-till', 'Strip till, tillage only', 'tillage', 'acre', [15.00, 30.00, 'Strip tillage without fertilizer'], [15.00, 30.00, 'Strip Till (tillage only)']],
   ['moldboard', 'Moldboard plow', 'tillage', 'acre', [14.00, 24.00, 'Moldboard plowing'], [35.00, 60.00, 'Plow - Moldboard']],

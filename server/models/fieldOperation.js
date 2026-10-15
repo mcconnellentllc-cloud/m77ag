@@ -54,6 +54,10 @@ const fieldOperationSchema = new mongoose.Schema({
   combineBu: { type: Number, default: null },
   tickets: { type: [ticketSchema], default: [] },
 
+  // Rate the import knows for this pass (tillage implement by tractor and
+  // date); used as the default when the pass is costed.
+  suggestedRateKey: { type: String, trim: true },
+
   // Machine cost for this pass from the field operation rate list:
   // units (usually acres) x rate. Kept as a snapshot so a later rate list
   // does not silently change past costs.
