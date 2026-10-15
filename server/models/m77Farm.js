@@ -46,12 +46,13 @@ const m77FarmSchema = new mongoose.Schema({
   // Operating type:
   //   'owned'      — M77 owns the land outright (e.g. MEFARMS); share=0.
   //   'crop-share' — M77 farms it for a landlord on a crop-share lease.
+  //   'cash-rent'  — M77 pays the landlord rent and keeps the whole crop; share=0.
   //   'custom'     — M77 does custom field operations for an outside
   //                  operator; not in the M77 rotation, no share split.
   type: {
     type: String,
     required: true,
-    enum: ['owned', 'crop-share', 'custom'],
+    enum: ['owned', 'crop-share', 'cash-rent', 'custom'],
     default: 'crop-share'
   },
 
