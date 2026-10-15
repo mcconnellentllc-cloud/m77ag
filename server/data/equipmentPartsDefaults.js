@@ -130,11 +130,12 @@ module.exports = [
     notes: 'Existing blade has lost its rubber.'
   },
   {
-    category: 'Other', seedKey: 'u3-windshield', name: 'Windshield',
-    spec: 'International 9300, two-piece windshield. Confirm one or both panes.',
-    fits: 'Unit #3', qtyNeeded: 1,
-    amazonUrl: amazon('International 9300 windshield'),
-    notes: 'Local glass shop supplies and installs; update the quantity if both panes are replaced.'
+    category: 'Other', seedKey: 'u3-windshield', seedRev: 2, name: 'Windshield',
+    spec: 'International 9300 flat two-piece windshield glass. Candidate: new glass, International OEM 3535579C2, listed for the 9300 by LKQ Evans Heavy Truck Parts, Athens GA, (855) 557-8782, $192.82. Side and year range not stated on the listing.',
+    partNumber: '3535579C2 (confirm by VIN)', fits: 'Unit #3', qtyNeeded: 1,
+    amazonUrl: amazon('International 9300 9370 9400 flat windshield glass left right'),
+    otherUrl: 'https://www.heavytruckparts.net/item/International/9300/Glass-Windshield/254076/24/828196?oemnum=3535579C2',
+    notes: 'Call with VIN 2HSFBASR3TC064091 to confirm 3535579C2 fits a 1996 9300 and which pane it is. Used panes: Vander Haags, Spencer IA, (877) 238-5030, $364 each. Freight and installation by a glass shop are extra; get the shop quote first.'
   },
   {
     category: 'Tires and wheels', seedKey: 'u3-wheel-caps', name: 'Wheel caps (hub and axle covers)',
