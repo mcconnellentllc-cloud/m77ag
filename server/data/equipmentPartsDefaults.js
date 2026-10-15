@@ -171,5 +171,17 @@ module.exports = [
     partNumber: 'NAPA 7792', fits: 'Unit #3 (Cat 3406E)', qtyNeeded: 0,
     amazonUrl: amazon('NAPA 7792 oil filter'),
     otherUrl: 'https://www.napaonline.com/en/search?text=7792'
+  },
+  {
+    category: 'Filters', seedKey: 'ram1500-oil', name: 'Oil filter', spec: 'WIX 57899XP (XP synthetic media); O\'Reilly lookup: 57060 does not fit',
+    partNumber: 'WIX 57899XP', fits: '2011 Dodge Ram 1500 5.7L HEMI (VIN 1D7RV1CT9BS668428)', qtyNeeded: 0,
+    amazonUrl: amazon('WIX 57899XP oil filter'),
+    otherUrl: 'https://www.oreillyauto.com/search?q=57899XP'
+  },
+  {
+    category: 'Filters', seedKey: 'ram1500-air', name: 'Engine air filter', spec: 'WIX 42725, panel',
+    partNumber: 'WIX 42725', fits: '2011 Dodge Ram 1500 5.7L HEMI (VIN 1D7RV1CT9BS668428)', qtyNeeded: 0,
+    amazonUrl: amazon('WIX 42725 air filter'),
+    otherUrl: 'https://www.oreillyauto.com/search?q=42725'
   }
 ];
