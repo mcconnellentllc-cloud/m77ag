@@ -19,7 +19,10 @@ const equipmentPartSchema = new mongoose.Schema({
   // Set on parts from the starting list, so later additions to that list are
   // added once and a deleted starting part is not added back.
   seedKey: { type: String, trim: true, index: { unique: true, sparse: true } },
-  deleted: { type: Boolean, default: false }
+  deleted: { type: Boolean, default: false },
+  seedRev: { type: Number, default: 1 },
+  // Set once the part is edited on the site; starting-list updates then leave it alone.
+  userEdited: { type: Boolean, default: false }
 }, {
   timestamps: true,
   collection: 'equipmentParts'

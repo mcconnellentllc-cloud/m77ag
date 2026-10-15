@@ -15,11 +15,19 @@ function pick(body) {
 
 // Add starting-list parts not yet in the collection. A part saved before seed
 // keys existed is matched by name and given its key, so it is not duplicated.
+// A newer seedRev refreshes a saved copy that has not been edited on the site.
 async function addMissingDefaults() {
-  const existing = await EquipmentPart.find({}, { seedKey: 1, name: 1 }).lean();
-  const keys = new Set(existing.map(p => p.seedKey).filter(Boolean));
+  const existing = await EquipmentPart.find({}, { seedKey: 1, name: 1, seedRev: 1, userEdited: 1 }).lean();
+  const byKey = new Map(existing.filter(p => p.seedKey).map(p => [p.seedKey, p]));
   for (const d of DEFAULTS) {
-    if (keys.has(d.seedKey)) continue;
+    const saved = byKey.get(d.seedKey);
+    if (saved) {
+      const rev = d.seedRev || 1;
+      if (!saved.userEdited && (saved.seedRev || 1) < rev) {
+        await EquipmentPart.updateOne({ _id: saved._id, userEdited: { $ne: true } }, { ...d, seedRev: rev });
+      }
+      continue;
+    }
     const legacy = existing.find(p => !p.seedKey && p.name === d.name);
     if (legacy) await EquipmentPart.updateOne({ _id: legacy._id }, { seedKey: d.seedKey });
     else {
@@ -52,7 +60,7 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const part = await EquipmentPart.findByIdAndUpdate(req.params.id, pick(req.body || {}), { new: true, runValidators: true });
+    const part = await EquipmentPart.findByIdAndUpdate(req.params.id, { ...pick(req.body || {}), userEdited: true }, { new: true, runValidators: true });
     if (!part) return res.status(404).json({ success: false, message: 'Part not found' });
     res.json({ success: true, data: part, message: 'Part saved' });
   } catch (error) {
