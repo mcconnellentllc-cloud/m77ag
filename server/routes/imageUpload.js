@@ -5,6 +5,9 @@
 
 const express = require('express');
 const router = express.Router();
+
+// Internal: staff only.
+router.use(require('../middleware/auth').staffOnly);
 const { uploadEquipment, uploadGeneral, deleteImage, getPublicIdFromUrl } = require('../config/cloudinary');
 const Equipment = require('../models/equipment');
 

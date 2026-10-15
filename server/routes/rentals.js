@@ -1,6 +1,10 @@
 const express = require('express');
 const crypto = require('crypto');
 const router = express.Router();
+
+// Rental management screens: admin only. Listings, the tenant portal (its own
+// tenant login), lease signing links, showings, applications and chat stay public.
+router.use('/admin', require('../middleware/auth').adminOnly);
 const RentalProperty = require('../models/rentalProperty');
 const Tenant = require('../models/tenant');
 const Lease = require('../models/lease');

@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
+// Internal: staff only, except the public for-sale listing.
+router.use(require('../middleware/auth').guard(['admin', 'employee'], [{ method: 'GET', path: /^\/public\/?$/ }]));
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

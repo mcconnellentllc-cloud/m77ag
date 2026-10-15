@@ -237,11 +237,16 @@ exports.createDefaultFarm = async () => {
     const superAdmin = await LandManagementUser.findOne({ role: 'super-admin' });
 
     if (!superAdmin) {
+      // Only from a password set in the server environment; never a default.
+      if (!process.env.FARM_ADMIN_PASSWORD || process.env.FARM_ADMIN_PASSWORD.length < 12) {
+        console.error('No land management super admin exists. Set FARM_ADMIN_PASSWORD (12+ characters) to create one.');
+        return;
+      }
       // Create super admin
       const admin = await LandManagementUser.create({
         username: 'mcconnell',
         email: process.env.FARM_ADMIN_EMAIL || 'admin@m77ag.com',
-        password: process.env.FARM_ADMIN_PASSWORD || 'M77Farm2024!',
+        password: process.env.FARM_ADMIN_PASSWORD,
         firstName: 'Admin',
         lastName: 'M77AG',
         role: 'super-admin',

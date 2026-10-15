@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { staffOnly } = require('../middleware/auth');
 const EquipmentOffer = require('../models/equipmentOffer');
 const { sendEquipmentPurchaseConfirmation } = require('../utils/emailservice');
 
@@ -61,7 +62,7 @@ router.post('/offers', async (req, res) => {
 });
 
 // Add negotiation message to offer
-router.post('/offers/:offerId/negotiate', async (req, res) => {
+router.post('/offers/:offerId/negotiate', staffOnly, async (req, res) => {
   try {
     const { type, message, amount } = req.body;
     const offer = await EquipmentOffer.findById(req.params.offerId);
@@ -137,7 +138,7 @@ router.post('/offers/:offerId/accept', async (req, res) => {
 });
 
 // Get all offers (admin)
-router.get('/offers', async (req, res) => {
+router.get('/offers', staffOnly, async (req, res) => {
   try {
     const { status, equipmentId } = req.query;
     const filter = {};
@@ -161,7 +162,7 @@ router.get('/offers', async (req, res) => {
 });
 
 // Get single offer
-router.get('/offers/:offerId', async (req, res) => {
+router.get('/offers/:offerId', staffOnly, async (req, res) => {
   try {
     const offer = await EquipmentOffer.findById(req.params.offerId);
 
@@ -177,7 +178,7 @@ router.get('/offers/:offerId', async (req, res) => {
 });
 
 // Update offer status (admin)
-router.patch('/offers/:offerId', async (req, res) => {
+router.patch('/offers/:offerId', staffOnly, async (req, res) => {
   try {
     const { status, notes } = req.body;
     const offer = await EquipmentOffer.findById(req.params.offerId);
@@ -205,7 +206,7 @@ router.patch('/offers/:offerId', async (req, res) => {
 });
 
 // Delete offer (admin)
-router.delete('/offers/:offerId', async (req, res) => {
+router.delete('/offers/:offerId', staffOnly, async (req, res) => {
   try {
     const result = await EquipmentOffer.findByIdAndDelete(req.params.offerId);
 
@@ -221,7 +222,7 @@ router.delete('/offers/:offerId', async (req, res) => {
 });
 
 // Get equipment stats
-router.get('/stats', async (req, res) => {
+router.get('/stats', staffOnly, async (req, res) => {
   try {
     const [
       totalOffers,

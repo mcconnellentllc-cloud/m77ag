@@ -194,7 +194,7 @@
                 if (data.success) {
                     localStorage.setItem('adminToken', data.token);
                     localStorage.setItem('adminUser', JSON.stringify(data.user));
-                    window.location.href = '/admin/dashboard';
+                    window.location.href = afterLogin();
                 } else {
                     errorDiv.textContent = data.message || 'Login failed. Please check your credentials.';
                     errorDiv.style.display = 'block';
@@ -206,6 +206,12 @@
             }
         });
         
+        // Back to the page that sent the user here; only pages inside /admin.
+        function afterLogin() {
+            const next = new URLSearchParams(location.search).get('next') || '';
+            return /^\/admin\/[A-Za-z0-9/_.?=&%-]*$/.test(next) && !/^\/admin\/login/.test(next) ? next : '/admin/dashboard';
+        }
+
         const token = localStorage.getItem('adminToken');
         if (token) {
             fetch('/api/auth/verify', {
@@ -216,7 +222,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = '/admin/dashboard';
+                    window.location.href = afterLogin();
                 }
             })
             .catch(error => {

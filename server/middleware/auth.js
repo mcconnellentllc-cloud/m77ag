@@ -228,3 +228,19 @@ exports.hasAreaAccess = (area) => {
     });
   };
 };
+
+// Guards internal routes: the request needs a signed-in user whose role is in
+// `roles`. `publicRoutes` lists endpoints the public website uses, as
+// { method, path } with path a RegExp tested against req.path.
+exports.guard = (roles, publicRoutes = []) => (req, res, next) => {
+  if (publicRoutes.some(r => r.method === req.method && r.path.test(req.path))) return next();
+  exports.authenticate(req, res, () => {
+    if (!roles.includes(req.userRole)) {
+      return res.status(403).json({ success: false, message: 'You do not have access to this area.' });
+    }
+    next();
+  });
+};
+exports.staffOnly = exports.guard(['admin', 'employee']);
+exports.adminOnly = exports.guard(['admin']);
+
