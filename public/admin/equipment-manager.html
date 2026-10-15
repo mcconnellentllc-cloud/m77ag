@@ -682,6 +682,8 @@
             padding: 20px;
         }
         .equipment-card-image {
+            position: relative;
+            overflow: hidden;
             width: 100%;
             height: 180px;
             object-fit: cover;
@@ -692,6 +694,8 @@
             color: #999;
             font-size: 14px;
         }
+        .equipment-card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .equipment-photo-count { position: absolute; right: 8px; bottom: 8px; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
         .equipment-card-image img {
             width: 100%;
             height: 100%;
@@ -1009,6 +1013,14 @@
                             <option value="Yard Equipment">Yard Equipment</option>
                             <option value="Other">Other</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>License plate (private)</label>
+                        <input type="text" id="editLicense" autocomplete="off">
+                    </div>
+                    <div class="form-group" id="towVehicleGroup">
+                        <label>Pulled by (truck)</label>
+                        <select id="editTowVehicle"><option value="">Not set</option></select>
                     </div>
                     <div class="form-group">
                         <label>Serial Number</label>
@@ -1406,6 +1418,12 @@
 
         const EQUIPMENT_GUIDES = [
             {
+                match: (item) => (item.serialNumber || item.vin) === '1TDH45022YB098230',
+                url: '/admin/equipment/timpte-106.html',
+                label: 'Unit #106 Spec Sheet and Photos',
+                sublabel: 'Data plate, tires, Neway air ride, hopper gates, pre-trip check'
+            },
+            {
                 match: (item) => {
                     const title = (item.title || '').toLowerCase();
                     const model = (item.model || '').toLowerCase();
@@ -1571,8 +1589,9 @@
 
                 // Build image section
                 let imageHtml = '';
-                if (item.images && item.images.length > 0) {
-                    imageHtml = `<div class="equipment-card-image"><img src="${item.images[0]}" alt="${item.title}" loading="lazy"></div>`;
+                const photos = photosOf(item);
+                if (photos.length > 0) {
+                    imageHtml = `<div class="equipment-card-image"><img src="${photos[0]}" alt="${item.title}" loading="lazy">${photos.length > 1 ? `<span class="equipment-photo-count">${photos.length} photos</span>` : ''}</div>`;
                 } else {
                     imageHtml = `<div class="equipment-card-image">No Image</div>`;
                 }
@@ -1616,6 +1635,8 @@
                                     <span class="equipment-detail-label">Serial/VIN</span>
                                     <span class="equipment-detail-value">${item.serialNumber || item.vin || '-'}</span>
                                 </div>
+                                ${licenseOf(item) ? `<div class="equipment-detail-row"><span class="equipment-detail-label">License plate</span><span class="equipment-detail-value">${licenseOf(item)}</span></div>` : ''}
+                                ${towLine(item)}
                                 <div class="equipment-detail-row">
                                     <span class="equipment-detail-label">Hours/Miles</span>
                                     <span class="equipment-detail-value">${hoursOrMiles}</span>
@@ -1847,6 +1868,45 @@
             }
         }
 
+        // License plate: the field, else the "License: X" written in the notes.
+        function licenseOf(item) {
+            if (item.licensePlate) return item.licensePlate;
+            const m = String(item.notes || '').match(/License:\s*([A-Z0-9-]+)/i);
+            return m ? m[1].toUpperCase() : '';
+        }
+        // Trucks that can pull a trailer.
+        function fillTowVehicleSelect(item) {
+            const sel = document.getElementById('editTowVehicle');
+            const trucks = allEquipment.filter(e => e.category === 'Trucks' && (!item || e._id !== item._id))
+                .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            const current = item && item.towVehicle ? String(item.towVehicle._id || item.towVehicle) : '';
+            sel.innerHTML = '<option value="">Not set</option>' + trucks.map(t =>
+                `<option value="${t._id}" ${String(t._id) === current ? 'selected' : ''}>${t.title}${t.subtitle ? ' (' + t.subtitle + ')' : ''}</option>`).join('');
+            const show = () => { document.getElementById('towVehicleGroup').style.display = document.getElementById('editCategory').value === 'Trailers' ? '' : 'none'; };
+            document.getElementById('editCategory').onchange = show;
+            show();
+        }
+        // Photos kept in the site for units whose card has no uploaded images,
+        // keyed by serial/VIN. License plates are blurred in these files.
+        const EQUIPMENT_PHOTOS = {
+            '1TDH45022YB098230': ['01', '02', '03', '09', '04', '05', '06', '07', '08', '10', '11', '12', '13', '14'].map(n => `/images/equipment/timpte-106/${n}.jpg`)
+        };
+        function photosOf(item) {
+            if (item.images && item.images.length) return item.images;
+            return EQUIPMENT_PHOTOS[item.serialNumber || item.vin] || [];
+        }
+        function towLine(item) {
+            if (item.category === 'Trailers' && item.towVehicle) {
+                const t = allEquipment.find(e => String(e._id) === String(item.towVehicle._id || item.towVehicle));
+                return t ? `<div class="equipment-detail-row"><span class="equipment-detail-label">Pulled by</span><span class="equipment-detail-value">${t.title}</span></div>` : '';
+            }
+            if (item.category === 'Trucks') {
+                const pulls = allEquipment.filter(e => e.category === 'Trailers' && e.towVehicle && String(e.towVehicle._id || e.towVehicle) === String(item._id));
+                return pulls.length ? `<div class="equipment-detail-row"><span class="equipment-detail-label">Pulls</span><span class="equipment-detail-value">${pulls.map(p => p.title).join(', ')}</span></div>` : '';
+            }
+            return '';
+        }
+
         function editEquipment(id) {
             const item = allEquipment.find(e => e._id === id);
             if (!item) return;
@@ -1854,6 +1914,8 @@
             document.getElementById('editId').value = id;
             document.getElementById('editTitle').value = item.title || '';
             document.getElementById('editCategory').value = item.category || 'Other';
+            document.getElementById('editLicense').value = licenseOf(item);
+            fillTowVehicleSelect(item);
             document.getElementById('editSerial').value = item.serialNumber || '';
             document.getElementById('editValue').value = item.currentValue || '';
             document.getElementById('editHours').value = item.currentHours || item.currentMiles || '';
@@ -1885,6 +1947,8 @@
             document.getElementById('editId').value = '';
             document.getElementById('editTitle').value = '';
             document.getElementById('editCategory').value = 'Other';
+            document.getElementById('editLicense').value = '';
+            fillTowVehicleSelect(null);
             document.getElementById('editSerial').value = '';
             document.getElementById('editValue').value = '';
             document.getElementById('editHours').value = '';
@@ -1920,6 +1984,8 @@
             const data = {
                 title: document.getElementById('editTitle').value,
                 category: document.getElementById('editCategory').value,
+                licensePlate: document.getElementById('editLicense').value.trim().toUpperCase(),
+                towVehicle: document.getElementById('editCategory').value === 'Trailers' ? (document.getElementById('editTowVehicle').value || null) : null,
                 serialNumber: document.getElementById('editSerial').value,
                 currentValue: parseFloat(document.getElementById('editValue').value) || 0,
                 currentHours: parseFloat(document.getElementById('editHours').value) || 0,
