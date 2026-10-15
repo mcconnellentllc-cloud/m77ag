@@ -20,6 +20,21 @@ async function applyLeaseTerms() {
     await AppliedUpdate.create({ key: u.key, summary: [line] });
     out.push(line);
   }
+  for (const r of TERMS.rents || []) {
+    if (await AppliedUpdate.exists({ key: r.key })) continue;
+    const lines = [];
+    for (const l of r.lines) {
+      const rent = Math.round(l.acres * l.rate * 100) / 100;
+      const owed = Math.round((rent - l.paid) * 100) / 100;
+      const note = `${r.year} cash rent (${r.source}): workbook line "${l.workbook}", ${l.acres} ac at $${l.rate.toFixed(2)}/ac = $${rent.toFixed(2)}, ` +
+        `paid $${l.paid.toFixed(2)}${owed > 0 ? `, owed $${owed.toFixed(2)}` : ', paid in full'}.`;
+      const res = await CroppingField.updateMany({ farm: r.farm, field: l.match },
+        { $set: { 'lease.type': 'cash-rent', 'lease.rentPerAcre': l.rate, 'lease.terms': note } });
+      lines.push(`${l.workbook}: $${l.rate}/ac on ${res.modifiedCount} cards`);
+    }
+    await AppliedUpdate.create({ key: r.key, summary: lines });
+    out.push(`${r.key}: ` + lines.join('; '));
+  }
   return out;
 }
 

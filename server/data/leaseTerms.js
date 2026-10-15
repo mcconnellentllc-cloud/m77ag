@@ -21,5 +21,18 @@ module.exports = {
   // that still have no landlord.
   followUps: [
     { key: 'lease-landlord-dicks-2026-10-15', farm: 'MEFARMS', match: /DICKS/i, landlord: 'MEFARMS' }
+  ],
+  // Cash rent per acre from the 2025 M77AG Master Workbook (Overview > Rental
+  // Agreements). Set once on the matching cards; the note records 2025 billing.
+  rents: [
+    { key: 'mefarms-rent-2025', farm: 'MEFARMS', year: 2025, source: '2025 M77AG Master Workbook',
+      lines: [
+        { workbook: '53 DICKS N', match: /^53 DICKS N\b/i, acres: 25.67, rate: 35.57, paid: 913.08 },
+        { workbook: '53 DICKS S', match: /^53 DICKS S\b/i, acres: 49.63, rate: 35.57, paid: 1765.34 },
+        { workbook: '54 PAULS', match: /^54\.[NS] PAULS\b/i, acres: 149.60, rate: 43.01, paid: 6434.30 },
+        { workbook: '55 KIRBY HOUSE', match: /^55\.[NS] KIRBY HOUSE\b/i, acres: 147.16, rate: 50.00, paid: 7358.00 },
+        { workbook: '55 KIRBY HOUSEB', match: /^55 KIRBY HOUSEB\b/i, acres: 4.18, rate: 50.00, paid: 209.00 },
+        { workbook: '56 KIRBY SOUTH', match: /^56\.[EW] KIRBY SOUTH\b/i, acres: 157.70, rate: 50.00, paid: 7885.00 }
+      ] }
   ]
 };
