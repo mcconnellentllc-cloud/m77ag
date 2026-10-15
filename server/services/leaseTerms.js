@@ -8,7 +8,22 @@ const TERMS = require('../data/leaseTerms');
 // Field Records cards. Uses direct updates so a legacy validation problem
 // elsewhere on a record cannot block it.
 async function applyLeaseTerms() {
-  if (await AppliedUpdate.exists({ key: TERMS.key })) return [];
+  const out = [];
+  if (!(await AppliedUpdate.exists({ key: TERMS.key }))) out.push(...(await applyFarmTerms()));
+  for (const u of TERMS.followUps || []) {
+    if (await AppliedUpdate.exists({ key: u.key })) continue;
+    const blank = { $in: [null, ''] };
+    const cards = await CroppingField.updateMany({ farm: u.farm, field: u.match, 'lease.landlord': blank }, { $set: { 'lease.landlord': u.landlord } });
+    const farm = await M77Farm.findOne({ name: u.farm }).select('_id').lean();
+    const regs = farm ? await M77Field.updateMany({ farm: farm._id, name: u.match, landlordName: blank }, { $set: { landlordName: u.landlord } }) : { modifiedCount: 0 };
+    const line = `${u.key}: landlord ${u.landlord} on ${cards.modifiedCount} cards, ${regs.modifiedCount} registry fields`;
+    await AppliedUpdate.create({ key: u.key, summary: [line] });
+    out.push(line);
+  }
+  return out;
+}
+
+async function applyFarmTerms() {
   const summary = [];
   for (const f of TERMS.farms) {
     const farm = await M77Farm.findOne({ name: f.name }).lean();

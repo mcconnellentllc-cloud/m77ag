@@ -14,7 +14,12 @@ module.exports = {
       name: 'MEFARMS', type: 'cash-rent', landlordShare: 0,
       farmLandlordFrom: ['M77 AG'], farmLandlord: 'Lisa Atkins / Paul Barkey',
       // FSA lease holders on file (2026 CCC-902). Dicks fields: landlord not on file.
-      fieldLandlords: [{ match: /KIRBY/i, landlord: 'Lisa Atkins' }, { match: /PAULS/i, landlord: 'Paul Barkey' }]
+      fieldLandlords: [{ match: /KIRBY/i, landlord: 'Lisa Atkins' }, { match: /PAULS/i, landlord: 'Paul Barkey' }, { match: /DICKS/i, landlord: 'MEFARMS' }]
     }
+  ],
+  // Later landlord answers, each applied once to cards and registry fields
+  // that still have no landlord.
+  followUps: [
+    { key: 'lease-landlord-dicks-2026-10-15', farm: 'MEFARMS', match: /DICKS/i, landlord: 'MEFARMS' }
   ]
 };
