@@ -7,18 +7,18 @@ const amazon = q => 'https://www.amazon.com/s?k=' + encodeURIComponent(q);
 
 module.exports = [
   {
-    category: 'Lighting', seedKey: 'u106-marker-red', seedRev: 2, name: 'Red marker / clearance lamp',
-    spec: 'Rectangular, 2-screw surface mount, red, DOT SAE P2. Plugs into a 2-prong quick connect in the panel.',
-    fits: 'Unit #106', qtyNeeded: 5,
-    amazonUrl: amazon('red rectangular clearance marker light 2 screw 2 prong plug trailer LED'),
+    category: 'Lighting', seedKey: 'u106-marker-red', seedRev: 3, name: 'Red marker / clearance lamp',
+    spec: 'Peterson Mfg. Co. LED (PM logo), rectangular, 2-screw surface mount, red, DOT SAE P2 97. Same housing as the amber lamp (back: 155 01 / 2968 01). Plugs into a 2-prong quick connect in the panel.',
+    partNumber: 'Peterson (back: 155 01 / 2968 01)', fits: 'Unit #106', qtyNeeded: 5,
+    amazonUrl: amazon('Peterson red LED clearance marker light 2 pin plug rectangular'),
     notes: '5 needed. One rear lens is cracked and broken out along the bottom edge. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
   },
   {
-    category: 'Lighting', seedKey: 'u106-marker-amber', seedRev: 2, name: 'Amber side marker / clearance lamp',
-    spec: 'Rectangular, 2-screw surface mount, amber, DOT SAE P2. Plugs into a 2-prong quick connect in the panel.',
-    fits: 'Unit #106', qtyNeeded: 4,
-    amazonUrl: amazon('amber rectangular clearance marker light 2 screw 2 prong plug trailer LED'),
-    notes: '4 needed. Maker not readable on the lens; match size and screw spacing to the old lamp. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
+    category: 'Lighting', seedKey: 'u106-marker-amber', seedRev: 3, name: 'Amber side marker / clearance lamp',
+    spec: 'Peterson Mfg. Co. LED, rectangular, 2-screw surface mount, amber, DOT SAE P2. Back of housing: 155 01 and 2968 01 either side of a molded arrow, DOT P2 98. Plugs into a 2-prong quick connect in the panel.',
+    partNumber: 'Peterson (back: 155 01 / 2968 01)', fits: 'Unit #106', qtyNeeded: 4,
+    amazonUrl: amazon('Peterson amber LED clearance marker light 2 pin plug rectangular'),
+    notes: '4 needed. Give the Peterson dealer the numbers on the back of the old lamp, or take it in. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
   },
   {
     category: 'Lighting', seedKey: 'u106-stt-4in', name: '4 in round stop / turn / tail lamp',
