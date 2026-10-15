@@ -38,7 +38,25 @@ async function cardCrops(fields) {
     return crop;
   };
 }
-const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'cropFromCard', 'acresFromField', 'review'];
+const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'cropFromCard', 'cropFromRotation', 'acresFromField', 'review'];
+// An expense is charged to the crop that pays it back: the next harvested
+// crop on the field after the pass (Kyle, Oct 15, 2026). The card's crops
+// decide; when the next year is not set yet, the rotation does:
+// wheat -> corn, fallow -> wheat.
+const ROTATION_NEXT = { WHEAT: 'CORN', FALLOW: 'WHEAT' };
+const NOT_HARVESTED = ['FALLOW', 'PASTURE', 'WASTE', 'BUILDING SITE', 'CRP', ''];
+function payingCrop(cropOn, field, firstYear) {
+  for (let y = firstYear; y <= firstYear + 2; y++) {
+    const c = cropOn(field, y);
+    if (c && !NOT_HARVESTED.includes(c)) return { crop: c, cropYear: y };
+    if (!c) {
+      const prev = cropOn(field, y - 1);
+      if (ROTATION_NEXT[prev]) return { crop: ROTATION_NEXT[prev], cropYear: y };
+      return null;
+    }
+  }
+  return null;
+}
 
 // GET /api/field-operations?cropYear=&m77Field=
 exports.listEntries = async (req, res) => {
@@ -139,6 +157,12 @@ exports.applyImport = async (req, res) => {
       const data = { ...rec };
       for (const k of IMPORT_ONLY_KEYS) delete data[k];
       const { key, rev } = rec;
+      if (rec.cropFromRotation) {
+        const pays = payingCrop(cropOn, field, rec.cropYear);
+        if (!pays) { errors.push(`${key}: set the ${rec.cropYear} crop on ${field.name}; no crop to charge this pass to`); continue; }
+        data.crop = pays.crop;
+        data.cropYear = pays.cropYear;
+      }
       if (rec.cropFromCard) {
         data.crop = cropOn(field, rec.cropYear);
         if (!data.crop) { errors.push(`${key}: set the ${rec.cropYear} crop on ${field.name} first`); continue; }
