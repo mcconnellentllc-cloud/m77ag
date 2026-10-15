@@ -514,7 +514,25 @@
             font-size: 14px;
             color: #856404;
         }
-    </style>
+            /* Phone and tablet layout */
+        @media (max-width: 900px) {
+            .quick-stats { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+            .enterprise-grid { grid-template-columns: 1fr; }
+            .actions-grid { grid-template-columns: 1fr 1fr; }
+            .report-links { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 700px) {
+            .header { flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
+            .header-left { flex-wrap: wrap; gap: 12px; }
+            .nav-links { flex-wrap: wrap; gap: 12px; }
+            .header-right { flex-wrap: wrap; gap: 10px; }
+            .container { padding-left: 16px; padding-right: 16px; }
+            .page-header { flex-wrap: wrap; gap: 12px; }
+            .quick-stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .actions-grid, .report-links { grid-template-columns: 1fr; }
+            .quick-actions, .reports-section { padding: 18px 16px; }
+        }
+</style>
 </head>
 <body>
     <div class="header">
@@ -585,6 +603,35 @@
                 <div class="stat-label">Working Capital</div>
                 <div class="stat-value" id="workingCapital">$0</div>
                 <div class="stat-change" id="capitalChange">available</div>
+            </div>
+        </div>
+
+        <!-- Operation snapshot (moved from the admin dashboard) -->
+        <div class="quick-stats">
+            <div class="quick-stat-card">
+                <div class="stat-label">Equipment</div>
+                <div class="stat-value" id="snapEquipCount">--</div>
+                <div class="stat-change">units</div>
+            </div>
+            <div class="quick-stat-card assets">
+                <div class="stat-label">Equipment Value</div>
+                <div class="stat-value" id="snapEquipValue">--</div>
+                <div class="stat-change"><a href="/admin/financials/equipment" style="color:inherit;">equipment detail</a></div>
+            </div>
+            <div class="quick-stat-card profit">
+                <div class="stat-label">Equipment Net Equity</div>
+                <div class="stat-value" id="snapEquipEquity">--</div>
+                <div class="stat-change">value less equipment debt</div>
+            </div>
+            <div class="quick-stat-card">
+                <div class="stat-label">Acres</div>
+                <div class="stat-value" id="snapAcres">2,710</div>
+                <div class="stat-change">farmed</div>
+            </div>
+            <div class="quick-stat-card">
+                <div class="stat-label">Bushels Stored</div>
+                <div class="stat-value" id="snapBushels">--</div>
+                <div class="stat-change">grain inventory</div>
             </div>
         </div>
 
@@ -1029,7 +1076,27 @@
             setDateDisplay();
             loadUserInfo();
             loadFinancialSummary();
+            loadSnapshot();
         });
+
+        async function loadSnapshot() {
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+            try {
+                const r = await fetch('/api/equipment/inventory');
+                const d = await r.json();
+                const active = (d.equipment || []).filter(e => e.saleStatus !== 'sold');
+                const value = active.reduce((s, e) => s + (e.currentValue || 0), 0);
+                const owed = active.reduce((s, e) => s + (e.amountOwed || 0), 0);
+                set('snapEquipCount', active.length.toLocaleString());
+                set('snapEquipValue', '$' + Math.round(value).toLocaleString());
+                set('snapEquipEquity', '$' + Math.round(value - owed).toLocaleString());
+            } catch (e) { console.warn('Equipment snapshot failed:', e.message); }
+            try {
+                const r = await fetch('/api/grain-inventory');
+                const d = await r.json();
+                if (d.success && d.bins) set('snapBushels', d.bins.reduce((s, b) => s + (b.currentBushels || 0), 0).toLocaleString());
+            } catch (e) { console.warn('Grain snapshot failed:', e.message); }
+        }
     </script>
 </body>
 </html>

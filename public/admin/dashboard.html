@@ -674,30 +674,6 @@
             <p class="page-subtitle">Your central hub for M77 AG operations</p>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="stats-bar">
-            <div class="stat-box">
-                <div class="stat-value" id="equipmentCount">--</div>
-                <div class="stat-label">Equipment</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="equipmentValue">--</div>
-                <div class="stat-label">Equipment Value</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="totalAcres">2,710</div>
-                <div class="stat-label">Acres</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="grainInventory">--</div>
-                <div class="stat-label">Bushels Stored</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="netEquity">--</div>
-                <div class="stat-label">Net Equity</div>
-            </div>
-        </div>
-
         <!-- EQUIPMENT SECTION -->
         <div class="section-header">Equipment</div>
         <a href="/admin/equipment-manager.html" class="feature-card">
@@ -758,10 +734,6 @@
                 <div class="card-content">
                     <h3 class="card-title">Capital & Land</h3>
                     <p class="card-desc">Real estate, vehicles, buildings, and major assets. Track values, loans, and equity.</p>
-                    <div class="card-meta">
-                        <span>Total Assets</span>
-                        <span class="card-meta-value" id="capitalValue">--</span>
-                    </div>
                 </div>
             </a>
             <a href="/admin/net-worth.html" class="nav-card">
@@ -769,10 +741,6 @@
                 <div class="card-content">
                     <h3 class="card-title">Net Worth Statement</h3>
                     <p class="card-desc">Complete financial snapshot - assets, liabilities, and equity calculations for reporting.</p>
-                    <div class="card-meta">
-                        <span>Net Equity</span>
-                        <span class="card-meta-value" id="netWorthValue">--</span>
-                    </div>
                 </div>
             </a>
         </div>
@@ -1127,9 +1095,9 @@
                 const response = await fetch('/api/equipment/inventory/summary');
                 const data = await response.json();
                 if (data.success) {
-                    document.getElementById('equipmentCount').textContent = data.summary.totalEquipment || 0;
-                    document.getElementById('equipmentValue').textContent = '$' + (data.summary.totalValue || 0).toLocaleString();
-                    document.getElementById('netEquity').textContent = '$' + (data.summary.netWorth || 0).toLocaleString();
+                    // Totals are shown on Financials, not on the dashboard.
+                    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                    set('equipmentCount', data.summary.totalEquipment || 0);
                 }
             } catch (e) {
                 console.error('Error loading equipment stats:', e);
@@ -1174,11 +1142,12 @@
                     data.bins.forEach(bin => {
                         totalBushels += bin.currentBushels || 0;
                     });
-                    document.getElementById('grainInventory').textContent = totalBushels.toLocaleString();
-                    document.getElementById('grainBushels').textContent = totalBushels.toLocaleString() + ' bu';
+                    const bu = document.getElementById('grainBushels');
+                    if (bu) bu.textContent = totalBushels.toLocaleString() + ' bu';
                 }
             } catch (e) {
-                document.getElementById('grainInventory').textContent = '--';
+                const bu = document.getElementById('grainBushels');
+                if (bu) bu.textContent = '--';
             }
         }
 
