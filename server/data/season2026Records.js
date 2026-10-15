@@ -271,22 +271,25 @@ for (const g of plantGroups.values()) {
 for (const e of OPS_APP) {
   if (FALL_ATRAZINE_PLANS.includes(e.plan)) continue; // on the fall atrazine records above
   let spec = null;
-  if (e.plan === 'WSBD126') spec = { title: 'Wheat stubble burndown', cropYear: 2027, matchCrop: { year: 2026, crop: 'WHEAT' } };
-  else if (e.plan === 'WSBDParapex') spec = { title: 'Burndown (Parapex)', cropYear: 2027, matchCrop: null };
+  // Summer and fall fallow sprays are charged to the crop that pays them
+  // back: the next harvested crop on the card, else by rotation (2026 wheat
+  // -> 2027 corn, 2026 fallow -> 2027 wheat). Kyle, Oct 15, 2026.
+  if (e.plan === 'WSBD126') spec = { title: 'Wheat stubble burndown', cropYear: 2027, rotation: true, matchCrop: { year: 2026, crop: 'WHEAT' } };
+  else if (e.plan === 'WSBDParapex') spec = { title: 'Burndown (Parapex)', cropYear: 2027, rotation: true, matchCrop: null };
   else if (e.plan === '27wheatBD') spec = { title: 'Wheat 27 burndown', cropYear: 2027, crop: 'WHEAT', matchCrop: { year: 2027, crop: 'WHEAT' } };
-  else if (e.plan === '---' && e.start >= '2026-07-01') spec = { title: 'Spray, work plan not recorded', cropYear: 2027, matchCrop: null, review: 'No work plan or product recorded; check this pass.' };
+  else if (e.plan === '---' && e.start >= '2026-07-01') spec = { title: 'Spray, work plan not recorded', cropYear: 2027, rotation: true, matchCrop: null, review: 'No work plan or product recorded; check this pass.' };
   if (!spec) continue;
   OPS_RECORDS.push({
-    key: 'app26-spray-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.plan),
+    key: 'app26-spray-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.plan), rev: spec.rotation ? 2 : 1,
     fieldHint: opsNumber(e.opsField), matchBy: spec.matchCrop ? 'crop' : 'name', opsName: e.opsField,
     matchCropYear: spec.matchCrop ? spec.matchCrop.year : undefined, matchCrop: spec.matchCrop ? spec.matchCrop.crop : undefined,
-    cropYear: spec.cropYear, crop: spec.crop || null, cropFromCard: !spec.crop, acresFromField: true,
+    cropYear: spec.cropYear, crop: spec.crop || null, cropFromRotation: !!spec.rotation, cropFromCard: !spec.crop && !spec.rotation, acresFromField: true,
     type: 'spray', status: 'completed', title: spec.title,
     startDate: e.start, endDate: e.end || e.start,
     products: e.products,
     review: spec.review || (smallArea(e) ? 'Under 1 acre logged; likely overlap from the other half.' : null),
     source: 'Operations Center Application 2026 report, work plan ' + e.plan + ' (target rates)',
-    notes: reportLine(e) + ' Fallow work after the wheat 26 harvest is charged to the 2027 crop.'
+    notes: reportLine(e) + (spec.rotation ? ' Charged to the next harvested crop on the field, which pays this pass back.' : '')
   });
 }
 
