@@ -70,6 +70,14 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Field record updates failed:', e.message);
     }
+    // Fill blank Field Records details (county, section, FSA, soil tests...) from data on file
+    try {
+      const fieldBackfill = require('./services/fieldBackfill');
+      const filled = await fieldBackfill.apply();
+      if (filled.length) console.log(`Field details filled on ${filled.length} fields`);
+    } catch (e) {
+      console.error('Field detail fill failed:', e.message);
+    }
   })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
