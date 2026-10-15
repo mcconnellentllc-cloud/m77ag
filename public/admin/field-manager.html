@@ -1068,7 +1068,7 @@
                     <div class="info-item"><div class="info-label">Lease Type</div><div class="info-value">${v(lease.type)}</div></div>
                     <div class="info-item"><div class="info-label">Landlord</div><div class="info-value">${v(lease.landlord)}</div></div>
                     <div class="info-item"><div class="info-label">Rent / Acre</div><div class="info-value">${lease.rentPerAcre ? fmt2(lease.rentPerAcre) : lease.type === 'crop-share' ? 'Crop share' + (lease.sharePercentage ? ', landlord ' + lease.sharePercentage + '%' : '') : lease.type === 'owned' ? 'Owned' : '<span class="empty">--</span>'}</div></div>
-                    <div class="info-item"><div class="info-label">Property Tax / Acre</div><div class="info-value">${taxes.propertyTaxPerAcre ? fmt2(taxes.propertyTaxPerAcre) : '<span class="empty">--</span>'}</div></div>
+                    <div class="info-item"><div class="info-label">Property Tax / Acre</div><div class="info-value">${taxes.propertyTaxPerAcre ? fmt2(taxes.propertyTaxPerAcre) + ([taxes.taxingAuthority, taxes.taxYear].filter(Boolean).length ? ' <span style="color:#888;font-size:12px;">(' + escapeText([taxes.taxingAuthority, taxes.taxYear].filter(Boolean).join(', ')) + ')</span>' : '') : '<span class="empty">--</span>'}</div></div>
                 </div>
                 <div class="detail-actions">
                     <button class="btn btn-outline btn-sm" onclick="openDetailsModal('${f._id}')">Edit Details</button>

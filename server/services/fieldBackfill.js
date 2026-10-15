@@ -32,8 +32,10 @@ function detailsFor(cf) {
   return same.length === 1 ? same[0] : null;
 }
 // Lease comes from the farm records (the list marks every field owned, which
-// is wrong for landlord ground). Property tax is left off the cards for now.
-const DETAIL_PATHS = ['legal', 'fsaFarm', 'tract', 'acres', 'county', 'section', 'township', 'range', 'soil.type', 'soil.class'];
+// is wrong for landlord ground). Property tax is public record (county
+// treasurer); the per-acre figure comes from the field list.
+const DETAIL_PATHS = ['legal', 'fsaFarm', 'tract', 'acres', 'county', 'section', 'township', 'range', 'soil.type', 'soil.class',
+  'taxes.propertyTaxPerAcre', 'taxes.taxYear', 'taxes.taxingAuthority'];
 const getPath = (o, p) => p.split('.').reduce((v, k) => (v && typeof v === 'object' ? v[k] : undefined), o);
 
 // Township-range blocks and their county, as printed on the M77 AG 2026
