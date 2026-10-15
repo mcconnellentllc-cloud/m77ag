@@ -104,6 +104,32 @@ module.exports = [
     amazonUrl: amazon('11R22.5 steer tire all position load range G')
   },
   {
+    category: 'Other', seedKey: 'u3-wiper', name: 'Wiper blade',
+    spec: 'Measure the blade length and check the arm connector before ordering.',
+    fits: 'Unit #3', qtyNeeded: 2,
+    amazonUrl: amazon('heavy duty truck wiper blade International 9300'),
+    notes: 'Existing blade has lost its rubber.'
+  },
+  {
+    category: 'Other', seedKey: 'u3-windshield', name: 'Windshield',
+    spec: 'International 9300, two-piece windshield. Confirm one or both panes.',
+    fits: 'Unit #3', qtyNeeded: 1,
+    amazonUrl: amazon('International 9300 windshield'),
+    notes: 'Local glass shop supplies and installs; update the quantity if both panes are replaced.'
+  },
+  {
+    category: 'Tires and wheels', seedKey: 'u3-wheel-caps', name: 'Wheel caps (hub and axle covers)',
+    spec: 'For aluminum 10-hole wheels: steer hub covers and drive axle covers. Measure the hub and axle flange diameter.',
+    fits: 'Unit #3 (2 steer, 4 drive)', qtyNeeded: 6,
+    amazonUrl: amazon('semi truck hub cover axle cover set 10 lug aluminum wheel')
+  },
+  {
+    category: 'Tires and wheels', seedKey: 'u3-lug-caps', name: 'Lug nut caps',
+    spec: 'Push-on caps for hub-piloted flange nuts, normally 33 mm. Check one nut with a wrench first.',
+    fits: 'Unit #3 (10 per wheel, 6 wheel ends)', qtyNeeded: 60,
+    amazonUrl: amazon('33mm lug nut covers semi truck 60 pack')
+  },
+  {
     category: 'Filters', seedKey: 'u3-fuel-1', name: 'Fuel filter 1', spec: 'NAPA 3384',
     partNumber: 'NAPA 3384', fits: 'Unit #3 (Cat 3406E)', qtyNeeded: 0,
     amazonUrl: amazon('NAPA 3384 fuel filter'),
