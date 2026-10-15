@@ -16,6 +16,11 @@ module.exports = {
       seedKey: 'novus-sterling', name: 'NOVUS Glass - Sterling',
       website: 'https://www.novusglass.com/en-us/shop/sterling/', phone: '970-520-2525',
       notes: 'Glass shop for all M77 vehicles and equipment: trucks, semi tractors, trailers, tractors, combines, pickups. 932 Hamilton St, Sterling, CO 80751. Mon-Fri 8:30 AM-5:00 PM, closed weekends. Mobile service in Logan, Morgan, Phillips, Sedgwick, Washington and Yuma counties. Quote requested Oct 2026 for both Unit #3 windshield panes, installed.'
+    },
+    {
+      seedKey: 'oreilly-sterling', name: "O'Reilly Auto Parts - Sterling",
+      website: 'https://www.oreillyauto.com',
+      notes: '1213 West Main Street, Sterling, CO. Mon-Sat 7:30 AM-9:00 PM, Sun 9:00 AM-7:00 PM. Super Start battery warranty 866-830-4351.'
     }
   ],
   orders: [
@@ -55,6 +60,40 @@ module.exports = {
       ],
       shipping: 0, tax: 7.05, status: 'ordered',
       notes: 'Part of one Amazon checkout of $360.67 with Unit #106 parts. Tax and fees split by item share. Add the Amazon order number once placed.'
+    },
+    // One O'Reilly counter sale, invoice 2946-276253, $285.04, split by unit.
+    // Sales tax $20.09 is shared by each unit's share of the items:
+    // $13.65 Unit #4, $4.17 Ram 1500, $2.27 Claas.
+    {
+      seedKey: 'oreilly-2026-10-15-u4', vendorKey: 'oreilly-sterling', orderDate: '2026-10-15',
+      serial: '2HSFBAER8XC071832', unitLabel: 'Unit #4 International 9300',
+      lines: [
+        { name: 'Super Start 31-5TJ battery, Group 31, 950 CCA, 18 month limited warranty', partNumber: 'SSB 31-5TJ', qty: 1, unitPrice: 179.99 }
+      ],
+      shipping: 0, tax: 13.65, status: 'received',
+      invoiceNumber: '2946-276253', paidDate: '2026-10-15T23:36:00Z',
+      notes: "O'Reilly invoice 2946-276253 ($285.04 total, shared with Ram 1500 and Claas parts). Core charge $22.00 refunded on core exchange."
+    },
+    {
+      seedKey: 'oreilly-2026-10-15-ram1500', vendorKey: 'oreilly-sterling', orderDate: '2026-10-15',
+      serial: '1D7RV1CT9BS668428', unitLabel: '2011 Dodge Ram 1500',
+      lines: [
+        { partKey: 'ram1500-oil', name: 'WIX 57899XP oil filter', partNumber: 'WIX 57899XP', qty: 1, unitPrice: 16.99 },
+        { partKey: 'ram1500-air', name: 'WIX 42725 engine air filter', partNumber: 'WIX 42725', qty: 1, unitPrice: 37.99 }
+      ],
+      shipping: 0, tax: 4.17, status: 'received',
+      invoiceNumber: '2946-276253', paidDate: '2026-10-15T23:36:00Z',
+      notes: "O'Reilly invoice 2946-276253 ($285.04 total, shared with Unit #4 and Claas parts)."
+    },
+    {
+      seedKey: 'oreilly-2026-10-15-claas', vendorKey: 'oreilly-sterling', orderDate: '2026-10-15',
+      serial: 'C7900519', unitLabel: 'Claas Lexion 760 combine',
+      lines: [
+        { name: "O'Reilly DEX-COOL compatible antifreeze, 50/50 premix, 1 gal", partNumber: 'AFZ ORDEX50/50', qty: 2, unitPrice: 14.99 }
+      ],
+      shipping: 0, tax: 2.27, status: 'received',
+      invoiceNumber: '2946-276253', paidDate: '2026-10-15T23:36:00Z',
+      notes: "O'Reilly invoice 2946-276253 ($285.04 total, shared with Unit #4 and Ram 1500 parts). Passenger-car DEX-COOL type; confirm it matches the coolant in the combine before topping off (heavy-duty diesels call for ASTM D6210 extended life coolant)."
     }
   ]
 };
