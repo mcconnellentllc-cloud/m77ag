@@ -107,6 +107,13 @@ module.exports = [
     addNote: '5.7L HEMI V8. Door label: built 5-11 by Chrysler Group LLC, GVWR 6,800 lb, GAWR front 3,900 / rear 3,900 lb, ' +
       'tires P275/60R20 on 20x9.0 rims, cold pressure 35 psi front and rear, paint code PR4. ' +
       'Two-tone red and tan, chrome mirror caps, hood bug deflector, running boards, bed tonneau cover.'
+  },
+  {
+    key: 'intl-9300-unit4-battery-2026-10-15',
+    // Battery label photo at O'Reilly, Oct 15, 2026.
+    match: [{ serialNumber: '2HSFBAER8XC071832' }, { vin: '2HSFBAER8XC071832' }],
+    addNote: "Battery: Super Start 31-5TJ (O'Reilly), BCI Group 31, standard flooded, 950 CCA, reserve capacity 195 min; " +
+      'date sticker 9/26. Super Start warranty line 1-866-830-4351.'
   }
 ];
 
