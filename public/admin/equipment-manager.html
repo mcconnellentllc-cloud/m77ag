@@ -938,6 +938,7 @@
                 </div>
                 <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
                 <button class="btn btn-secondary" onclick="syncAllEquipment()" style="background:#d4a54a;color:#000;">Sync All</button>
+                <a class="btn btn-secondary" href="/admin/equipment/parts.html" style="text-decoration:none;">Common Parts</a>
                 <button class="btn btn-primary" onclick="openAddModal()">Add Equipment</button>
             </div>
         </div>
@@ -1043,6 +1044,16 @@
                     <div class="form-group">
                         <label>License plate (private)</label>
                         <input type="text" id="editLicense" autocomplete="off">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Length</label>
+                            <input type="text" id="editLength" placeholder="45 ft" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>Width</label>
+                            <input type="text" id="editWidth" placeholder="8.5 ft" autocomplete="off">
+                        </div>
                     </div>
                     <div class="form-group" id="towVehicleGroup">
                         <label>Pulled by (truck)</label>
@@ -1219,6 +1230,7 @@
                 renderCategoryTabs();
                 renderCategorySummary();
                 renderView();
+                checkPhotos();
             } catch (error) {
                 console.error('Error loading data:', error);
                 document.getElementById('tableContent').innerHTML = '<div class="no-payments">Error loading equipment data</div>';
@@ -1931,9 +1943,35 @@
         const EQUIPMENT_PHOTOS = {
             '1TDH45022YB098230': ['01', '02', '03', '09', '04', '05', '06', '07', '08', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25'].map(n => `/images/equipment/timpte-106/${n}.jpg`)
         };
+        // Site photos first, then uploaded ones. Links that fail to load are
+        // dropped by checkPhotos so a dead upload never hides the site photos.
         function photosOf(item) {
-            if (item.images && item.images.length) return item.images;
-            return EQUIPMENT_PHOTOS[item.serialNumber || item.vin] || [];
+            const site = EQUIPMENT_PHOTOS[item.serialNumber || item.vin] || [];
+            const uploaded = (item.images || []).filter(u => u && !brokenPhotos.has(u));
+            return [...new Set([...site, ...uploaded])];
+        }
+        const brokenPhotos = new Set();
+        function checkPhotos() {
+            const urls = new Set();
+            allEquipment.forEach(e => (e.images || []).forEach(u => { if (u && !brokenPhotos.has(u)) urls.add(u); }));
+            let pending = urls.size, changed = false;
+            urls.forEach(u => {
+                const img = new Image();
+                img.onload = () => { if (--pending === 0 && changed) renderView(); };
+                img.onerror = () => { brokenPhotos.add(u); changed = true; if (--pending === 0) renderView(); };
+                img.src = u;
+            });
+        }
+        // Specs kept in the site for units, keyed by serial/VIN; values saved on
+        // the card take precedence.
+        const EQUIPMENT_SPECS = {
+            '1TDH45022YB098230': { Length: '45 ft', Width: '8.5 ft' }
+        };
+        function specsOf(item) {
+            const saved = item.specs && typeof item.specs === 'object' ? item.specs : {};
+            const out = { ...(EQUIPMENT_SPECS[item.serialNumber || item.vin] || {}) };
+            Object.entries(saved).forEach(([k, v]) => { if (v) out[k] = v; });
+            return out;
         }
         function towLine(item) {
             if (item.category === 'Trailers' && item.towVehicle) {
@@ -2006,7 +2044,7 @@
 
             const usage = item.currentHours ? item.currentHours.toLocaleString() + ' hrs'
                 : item.currentMiles ? item.currentMiles.toLocaleString() + ' mi' : '';
-            const specs = item.specs && typeof item.specs === 'object' ? Object.entries(item.specs) : [];
+            const specs = Object.entries(specsOf(item));
             const details = [
                 detailRow('Year', item.year),
                 detailRow('Make', item.make),
@@ -2079,6 +2117,8 @@
             document.getElementById('editTitle').value = item.title || '';
             document.getElementById('editCategory').value = item.category || 'Other';
             document.getElementById('editLicense').value = licenseOf(item);
+            document.getElementById('editLength').value = specsOf(item).Length || '';
+            document.getElementById('editWidth').value = specsOf(item).Width || '';
             fillTowVehicleSelect(item);
             document.getElementById('editSerial').value = item.serialNumber || '';
             document.getElementById('editValue').value = item.currentValue || '';
@@ -2112,6 +2152,8 @@
             document.getElementById('editTitle').value = '';
             document.getElementById('editCategory').value = 'Other';
             document.getElementById('editLicense').value = '';
+            document.getElementById('editLength').value = '';
+            document.getElementById('editWidth').value = '';
             fillTowVehicleSelect(null);
             document.getElementById('editSerial').value = '';
             document.getElementById('editValue').value = '';
@@ -2169,6 +2211,17 @@
                 paymentFrequency: hasLoan ? document.getElementById('editFrequency').value : 'none',
                 nextPaymentDate: hasLoan && document.getElementById('editNextPayment').value ? document.getElementById('editNextPayment').value : null
             };
+
+            const length = document.getElementById('editLength').value.trim();
+            const width = document.getElementById('editWidth').value.trim();
+            if (id) {
+                data['specs.Length'] = length;
+                data['specs.Width'] = width;
+            } else {
+                data.specs = {};
+                if (length) data.specs.Length = length;
+                if (width) data.specs.Width = width;
+            }
 
             try {
                 const url = id ? `/api/equipment/inventory/${id}` : '/api/equipment/inventory';
