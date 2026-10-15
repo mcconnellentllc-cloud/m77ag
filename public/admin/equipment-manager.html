@@ -873,6 +873,19 @@
                 flex-wrap: wrap;
             }
         }
+        /* Open repairs and wiring chart */
+        .repair-badge { display: inline-block; margin-left: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: #fff; background: #b3261e; border-radius: 10px; padding: 2px 8px; vertical-align: middle; }
+        .repair-note { background: #fdecea; color: #8c1d18; border-radius: 6px; padding: 10px 12px; font-size: 13px; line-height: 1.5; margin-bottom: 12px; white-space: pre-wrap; }
+        .repair-note strong { display: block; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+        .wiring-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .wiring-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #666; padding: 6px 8px; border-bottom: 1px solid #e0e0e0; }
+        .wiring-table td { padding: 7px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        .wiring-table tr.hot td { background: #fdecea; }
+        .wire-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25); }
+        .wiring-steps { margin-top: 10px; font-size: 13px; line-height: 1.55; }
+        .wiring-steps summary { cursor: pointer; font-weight: 600; color: #2d5016; padding: 6px 0; }
+        .wiring-steps ol { padding-left: 20px; display: grid; gap: 6px; margin-top: 6px; }
+
         /* Equipment detail view: opened by clicking a list row or a card */
         .equipment-table tbody tr[data-id], .equipment-card[data-id] { cursor: pointer; }
         .equipment-table tbody tr[data-id]:hover .equipment-title { color: #2d5016; text-decoration: underline; }
@@ -1058,6 +1071,10 @@
                     <div class="form-group" id="towVehicleGroup">
                         <label>Pulled by (truck)</label>
                         <select id="editTowVehicle"><option value="">Not set</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Repairs needed</label>
+                        <textarea id="editRepairs" rows="2" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:5px;font-size:16px;font-family:inherit;" placeholder="Leave blank when nothing is open"></textarea>
                     </div>
                     <div class="form-group">
                         <label>Serial Number</label>
@@ -1565,7 +1582,7 @@
                 const isForSale = item.forSale && item.saleStatus === 'available';
                 html += `<tr data-id="${item._id}">
                     <td>
-                        <div class="equipment-title">${item.title}${isForSale ? '<span class="for-sale-badge">FOR SALE</span>' : ''}</div>
+                        <div class="equipment-title">${item.title}${isForSale ? '<span class="for-sale-badge">FOR SALE</span>' : ''}${repairsOf(item) ? '<span class="repair-badge">REPAIR</span>' : ''}</div>
                         <div class="equipment-subtitle">${item.subtitle || ''}</div>
                     </td>
                     <td>
@@ -1682,6 +1699,7 @@
                                 ` : ''}
                             </div>
 
+                            ${repairsOf(item) ? `<div class="repair-note"><strong>Repairs needed</strong>${escHtml(repairsOf(item))}</div>` : ''}
                             <div class="equipment-card-details">
                                 <div class="equipment-detail-row">
                                     <span class="equipment-detail-label">Serial/VIN</span>
@@ -1967,6 +1985,55 @@
         const EQUIPMENT_SPECS = {
             '1TDH45022YB098230': { Length: '45 ft', Width: '8.5 ft' }
         };
+        // Open repairs. A unit never edited shows the repair noted here; once
+        // the field is saved on the card (even blank) the card value is used.
+        const EQUIPMENT_REPAIRS = {
+            '1TDH45022YB098230': 'Brake (stop) lights not working. See the wiring chart and test steps below.'
+        };
+        function repairsOf(item) {
+            if (item.repairsNeeded !== undefined && item.repairsNeeded !== null) return item.repairsNeeded;
+            return EQUIPMENT_REPAIRS[item.serialNumber || item.vin] || '';
+        }
+
+        // SAE J560 7-way trailer connector, the standard for trucks and trailers.
+        const J560_PINS = [
+            { pin: '1', color: 'White', hex: '#ffffff', circuit: 'Ground return to the truck' },
+            { pin: '2', color: 'Black', hex: '#1a1a1a', circuit: 'Clearance, side marker and ID lamps' },
+            { pin: '3', color: 'Yellow', hex: '#f2c200', circuit: 'Left turn signal and hazard (with stop on combined lamps)', stop: true },
+            { pin: '4', color: 'Red', hex: '#c62828', circuit: 'Stop lamps; ABS backup power', stop: true },
+            { pin: '5', color: 'Green', hex: '#2e7d32', circuit: 'Right turn signal and hazard (with stop on combined lamps)', stop: true },
+            { pin: '6', color: 'Brown', hex: '#795548', circuit: 'Tail, license and rear marker lamps' },
+            { pin: '7', color: 'Blue', hex: '#1565c0', circuit: 'Center pin: ABS constant power, auxiliary' }
+        ];
+        const WIRING_SOURCE = {
+            '1TDH45022YB098230': 'Matches the wiring decal on this trailer. Rear lamps are Peterson combined stop / turn / tail (SAE-IST).'
+        };
+        function wiringHtml(item) {
+            if (!['Trailers', 'Trucks'].includes(item.category)) return '';
+            const isTrailer = item.category === 'Trailers';
+            const source = WIRING_SOURCE[item.serialNumber || item.vin] || 'Standard SAE J560 7-way. Confirm against the decal on the unit.';
+            return `<div class="detail-section">
+                <h3>Wiring chart: 7-way (SAE J560)</h3>
+                <div style="overflow-x:auto;"><table class="wiring-table">
+                    <thead><tr><th>Pin</th><th>Wire</th><th>Circuit</th></tr></thead>
+                    <tbody>${J560_PINS.map(p => `<tr class="${p.stop ? 'hot' : ''}"><td>${p.pin}</td><td><span class="wire-swatch" style="background:${p.hex}"></span>${p.color}</td><td>${p.circuit}</td></tr>`).join('')}</tbody>
+                </table></div>
+                <div class="muted" style="margin-top:6px;font-size:12px;color:#888;">${escHtml(source)} Highlighted rows carry the stop signal.</div>
+                <details class="wiring-steps" ${/brake|stop/i.test(repairsOf(item)) ? 'open' : ''}>
+                    <summary>Brake lights not working: test steps</summary>
+                    <ol>
+                        <li>Build air and hold the service brakes on (helper on the pedal or the trailer hand valve). Confirm the truck's own brake lights work.</li>
+                        <li>At the truck's 7-way socket, with the brakes on, check for 12 V on pin 4 (red). On most trucks pins 3 (yellow) and 5 (green) also carry stop when not signaling.</li>
+                        <li>No voltage at the truck socket: the fault is on the truck. Check the stop light air pressure switch, its fuse or relay, and the turn signal switch. Hook up a second truck to confirm.</li>
+                        <li>Voltage at the socket: check the cord both ends for a bent or corroded pin, then the trailer nose box for 12 V on the red terminal with the brakes on.</li>
+                        <li>Power at the nose box but lamps dark: trace the red, yellow and green circuits to the rear junction and the lamp plugs.${isTrailer ? ' Tail and turn signals working means the ground (pin 1, white) is likely good.' : ''}</li>
+                        <li>Both sides out together points to the circuit, not the lamps. One side out points to that lamp, its plug or its pigtail.</li>
+                        <li>On trailers that take ABS backup power from the stop circuit, a stop circuit fault can also set the ABS lamp.</li>
+                    </ol>
+                </details>
+            </div>`;
+        }
+
         function specsOf(item) {
             const saved = item.specs && typeof item.specs === 'object' ? item.specs : {};
             const out = { ...(EQUIPMENT_SPECS[item.serialNumber || item.vin] || {}) };
@@ -2073,13 +2140,16 @@
                     </div>
                 </div>` : '';
 
+            const repairs = repairsOf(item);
             document.getElementById('detailBody').innerHTML = `
+                ${repairs ? `<div class="repair-note"><strong>Repairs needed</strong>${escHtml(repairs)}</div>` : ''}
                 ${gallery}
                 <div class="detail-section">${stats}</div>
                 <div class="detail-section"><h3>Details</h3><div class="equipment-card-details">${details}</div></div>
                 ${loan ? `<div class="detail-section">${loan}</div>` : ''}
                 ${item.description ? `<div class="detail-section"><h3>Description</h3><div class="detail-text">${escHtml(item.description)}</div></div>` : ''}
                 ${item.notes ? `<div class="detail-section"><h3>Notes</h3><div class="detail-text">${escHtml(item.notes)}</div></div>` : ''}
+                ${wiringHtml(item)}
                 ${getEquipmentGuideLink(item) ? `<div class="detail-section">${getEquipmentGuideLink(item)}</div>` : ''}`;
 
             document.getElementById('detailFooter').innerHTML = `
@@ -2118,6 +2188,7 @@
             document.getElementById('editCategory').value = item.category || 'Other';
             document.getElementById('editLicense').value = licenseOf(item);
             document.getElementById('editLength').value = specsOf(item).Length || '';
+            document.getElementById('editRepairs').value = repairsOf(item);
             document.getElementById('editWidth').value = specsOf(item).Width || '';
             fillTowVehicleSelect(item);
             document.getElementById('editSerial').value = item.serialNumber || '';
@@ -2153,6 +2224,7 @@
             document.getElementById('editCategory').value = 'Other';
             document.getElementById('editLicense').value = '';
             document.getElementById('editLength').value = '';
+            document.getElementById('editRepairs').value = '';
             document.getElementById('editWidth').value = '';
             fillTowVehicleSelect(null);
             document.getElementById('editSerial').value = '';
@@ -2191,6 +2263,7 @@
                 title: document.getElementById('editTitle').value,
                 category: document.getElementById('editCategory').value,
                 licensePlate: document.getElementById('editLicense').value.trim().toUpperCase(),
+                repairsNeeded: document.getElementById('editRepairs').value.trim(),
                 towVehicle: document.getElementById('editCategory').value === 'Trailers' ? (document.getElementById('editTowVehicle').value || null) : null,
                 serialNumber: document.getElementById('editSerial').value,
                 currentValue: parseFloat(document.getElementById('editValue').value) || 0,

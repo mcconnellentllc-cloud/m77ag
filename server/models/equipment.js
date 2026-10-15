@@ -31,6 +31,8 @@ const equipmentSchema = new mongoose.Schema({
 
   // For a trailer, the truck that usually pulls it.
   towVehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment', default: null },
+  // Open repairs, shown on the card until cleared. Internal only.
+  repairsNeeded: { type: String, trim: true },
   videos: [String],
 
   // Specifications (flexible key-value)
