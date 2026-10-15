@@ -116,6 +116,11 @@ module.exports = [
     otherUrl: 'https://www.napaonline.com/en/search?text=3439'
   },
   {
+    category: 'Filters', seedKey: 'u3-air', name: 'Air filter', spec: 'Baldwin RS3530, radial seal',
+    partNumber: 'Baldwin RS3530', fits: 'Unit #3 (International air cleaner)', qtyNeeded: 0,
+    amazonUrl: amazon('Baldwin RS3530 air filter')
+  },
+  {
     category: 'Filters', seedKey: 'u3-oil', name: 'Oil filter', spec: 'NAPA 7792',
     partNumber: 'NAPA 7792', fits: 'Unit #3 (Cat 3406E)', qtyNeeded: 0,
     amazonUrl: amazon('NAPA 7792 oil filter'),
