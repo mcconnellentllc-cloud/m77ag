@@ -87,6 +87,12 @@ exports.getImport = async (req, res) => {
   try {
     const fields = await M77Field.find({}).select('name acres farm crop2026 legacySource legacyId').populate('farm', 'name').sort({ name: 1 });
     const cropOn = await cardCrops(fields);
+    // Row-crop planting dates on the cards: no tillage on a half after its
+    // corn, milo or sudangrass was planted (Kyle, Oct 15, 2026).
+    const plantings = await FieldOperation.find({ type: 'seeding', crop: { $in: ['CORN', 'SORGHUM', 'SORGHUM SUDAN'] } })
+      .select('m77Field startDate cropYear').lean();
+    const plantedBefore = (fieldId, date) => plantings.some(p => String(p.m77Field) === String(fieldId) && p.startDate &&
+      new Date(p.startDate) < new Date(date) && new Date(p.startDate).getUTCFullYear() === new Date(date).getUTCFullYear());
     const done = await FieldOperation.find({ sourceKey: { $in: imp.RECORDS.map(r => req.params.importId + ':' + r.key) } })
       .select('sourceKey sourceRev m77Field fieldName');
     const doneByKey = {};
@@ -99,6 +105,10 @@ exports.getImport = async (req, res) => {
       let cropNote = null;
       // Group of crops (tillage: spring passes go to the spring-planted half,
       // early summer passes to the fallow half).
+      if (r.type === 'tillage' && r.startDate && candidates.length > 1) {
+        const open = candidates.filter(f => !plantedBefore(f._id, r.startDate));
+        if (open.length) candidates = open;
+      }
       // matchCrops is a list of crop groups in order of preference.
       if (r.matchBy === 'crops' && candidates.length > 1) {
         for (const group of r.matchCrops) {
@@ -114,6 +124,8 @@ exports.getImport = async (req, res) => {
       // Whole-quarter pass split into one record per half.
       if (r.pickIndex !== undefined && candidates.length === 2) {
         candidates = [candidates.slice().sort((a, b) => a.name.localeCompare(b.name))[r.pickIndex]];
+      } else if (r.pickIndex > 0 && candidates.length === 1) {
+        cropNote = 'Only one half was open for tillage on this date (the other was growing a crop); this second-half record is likely not needed.';
       }
       if (r.matchBy === 'crop') {
         const year = r.matchCropYear || r.cropYear;
@@ -124,6 +136,9 @@ exports.getImport = async (req, res) => {
         }
       }
       const target = candidates.length === 1 ? candidates[0] : null;
+      if (!cropNote && target && r.type === 'tillage' && r.startDate && plantedBefore(target._id, r.startDate)) {
+        cropNote = `${target.name} was planted to a row crop before ${r.startDate}; no tillage over a growing crop. Pick the other half or leave it off.`;
+      }
       if (!cropNote && target && r.area !== undefined && target.acres > 0 && r.area < 0.25 * target.acres) {
         cropNote = `Logged ${r.area} ac on the ${target.acres}-ac field; likely a patch, headland or overlap. Check before adding.`;
       }
