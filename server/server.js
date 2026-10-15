@@ -70,6 +70,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Field record updates failed:', e.message);
     }
+    // Lease terms by farm (crop share 65/35, cash lease), applied once
+    try {
+      const { applyLeaseTerms } = require('./services/leaseTerms');
+      (await applyLeaseTerms()).forEach(r => console.log('Lease terms:', r));
+    } catch (e) {
+      console.error('Lease terms failed:', e.message);
+    }
     // Fill blank Field Records details (county, section, FSA, soil tests...) from data on file
     try {
       const fieldBackfill = require('./services/fieldBackfill');

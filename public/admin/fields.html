@@ -227,6 +227,7 @@
         .farm-type.owned { background: #e8f5e9; color: #2d5016; }
         .farm-type.crop-share { background: #fff8e1; color: #8a6d00; }
         .farm-type.custom { background: #ede9fe; color: #5b21b6; }
+        .farm-type.cash-rent { background: #e3f2fd; color: #1565c0; }
         .farm-meta { font-size: 12px; color: #666; margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; }
 
         .fields-list { padding: 4px 12px 12px 32px; display: flex; flex-direction: column; gap: 6px; }
@@ -933,7 +934,7 @@
 
                     const farmType = farm.type || 'crop-share';
                     const sharePctLabel = (farmType === 'crop-share' && farm.defaultShare !== null && farm.defaultShare !== undefined)
-                        ? ` · ${(farm.defaultShare * 100).toFixed(0)}%`
+                        ? ` · M77 ${(100 - farm.defaultShare * 100).toFixed(0)} / landlord ${(farm.defaultShare * 100).toFixed(0)}`
                         : (farmType === 'crop-share' && (farm.defaultShare === null || farm.defaultShare === undefined))
                             ? ' · share TBD'
                             : '';
@@ -944,7 +945,7 @@
                         <details class="farm-card" data-farm-id="${farm._id}">
                             <summary class="farm-summary">
                                 <span class="farm-name">${escapeHtml(farm.name)}</span>
-                                <span class="farm-type ${farmType}">${escapeHtml(farmType)}</span>
+                                <span class="farm-type ${farmType}">${escapeHtml(farmType === 'cash-rent' ? 'cash lease' : farmType)}</span>
                                 <span class="farm-landlord">${escapeHtml(farm.landlordName || '—')}${sharePctLabel}</span>
                                 <span class="farm-meta"><strong>${farmFieldCount}</strong> fields · <strong>${fmtAcres(farmAcres)}</strong> ac</span>
                             </summary>

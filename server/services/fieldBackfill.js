@@ -164,8 +164,10 @@ function plannedChanges(cf, farm, rawSoil) {
     if (isBlank(lease.type)) {
       if (farm.type === 'crop-share') set['lease.type'] = 'crop-share';
       else if (farm.type === 'owned') set['lease.type'] = 'owned';
+      else if (farm.type === 'cash-rent') set['lease.type'] = 'cash-rent';
     }
     if (isBlank(lease.landlord) && farm.type === 'crop-share' && farm.landlordName) set['lease.landlord'] = farm.landlordName;
+    if (isBlank(lease.landlord) && farm.type === 'cash-rent' && farm.landlordName && !/\//.test(farm.landlordName)) set['lease.landlord'] = farm.landlordName;
     const leaseType = set['lease.type'] || lease.type;
     if ((lease.sharePercentage === undefined || lease.sharePercentage === null) && leaseType === 'crop-share' && farm.defaultShare) {
       set['lease.sharePercentage'] = Math.round(farm.defaultShare * 100);
