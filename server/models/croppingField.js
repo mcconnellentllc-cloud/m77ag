@@ -51,6 +51,7 @@ const soilSampleSchema = new mongoose.Schema({
   nitrogen: Number,
   phosphorus: Number,
   potassium: Number,
+  K2Olbs: Number,            // Potassium as K2O lb/A
   sulfur: Number,
   zinc: Number,
   iron: Number,
