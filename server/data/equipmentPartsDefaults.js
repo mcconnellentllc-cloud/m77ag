@@ -1,22 +1,24 @@
 // Starting parts list, built from the Unit #106 photos (Oct 2026).
 // Amazon links are searches by size and type; open one, pick the listing that
 // matches the spec, and save that product link on the part.
+// Raise seedRev on an entry to push corrected details to a saved copy that has
+// not been edited on the site.
 const amazon = q => 'https://www.amazon.com/s?k=' + encodeURIComponent(q);
 
 module.exports = [
   {
-    category: 'Lighting', seedKey: 'u106-marker-red', name: 'Red marker / clearance lamp',
-    spec: 'Rectangular, 2-screw surface mount, red, DOT SAE P2',
+    category: 'Lighting', seedKey: 'u106-marker-red', seedRev: 2, name: 'Red marker / clearance lamp',
+    spec: 'Rectangular, 2-screw surface mount, red, DOT SAE P2. Plugs into a 2-prong quick connect in the panel.',
     fits: 'Unit #106', qtyNeeded: 5,
-    amazonUrl: amazon('red rectangular clearance marker light 2 screw surface mount trailer LED'),
-    notes: '5 needed. One rear lens is cracked and broken out along the bottom edge.'
+    amazonUrl: amazon('red rectangular clearance marker light 2 screw 2 prong plug trailer LED'),
+    notes: '5 needed. One rear lens is cracked and broken out along the bottom edge. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
   },
   {
-    category: 'Lighting', seedKey: 'u106-marker-amber', name: 'Amber side marker / clearance lamp',
-    spec: 'Rectangular, 2-screw surface mount, amber, DOT SAE P2',
+    category: 'Lighting', seedKey: 'u106-marker-amber', seedRev: 2, name: 'Amber side marker / clearance lamp',
+    spec: 'Rectangular, 2-screw surface mount, amber, DOT SAE P2. Plugs into a 2-prong quick connect in the panel.',
     fits: 'Unit #106', qtyNeeded: 4,
-    amazonUrl: amazon('amber rectangular clearance marker light 2 screw surface mount trailer LED'),
-    notes: '4 needed. Maker not readable on the lens; match size and screw spacing to the old lamp.'
+    amazonUrl: amazon('amber rectangular clearance marker light 2 screw 2 prong plug trailer LED'),
+    notes: '4 needed. Maker not readable on the lens; match size and screw spacing to the old lamp. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
   },
   {
     category: 'Lighting', seedKey: 'u106-stt-4in', name: '4 in round stop / turn / tail lamp',
