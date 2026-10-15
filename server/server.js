@@ -110,6 +110,7 @@ const fieldInsuranceRoutes = require('./routes/fieldInsurance');
 const fieldOperationRoutes = require('./routes/fieldOperations');
 const landlordSummaryRoutes = require('./routes/landlordSummary');
 const customWorkRoutes = require('./routes/customWork');
+const equipmentPartsRoutes = require('./routes/equipmentParts');
 const fieldOperationRateRoutes = require('./routes/fieldOperationRates');
 // Rental management (PR #191) — note: distinct from rentalRoutes above
 // (which is ./routes/rentals plural). These are renamed to avoid collision.
@@ -166,6 +167,7 @@ app.use('/api/field-insurance', fieldInsuranceRoutes);
 app.use('/api/field-operations', fieldOperationRoutes);
 app.use('/api/landlord-summary', landlordSummaryRoutes);
 app.use('/api/custom-work', customWorkRoutes);
+app.use('/api/equipment-parts', equipmentPartsRoutes);
 app.use('/api/field-operation-rates', fieldOperationRateRoutes);
 // Rental management (PR #191): mounted at /api so the inner paths resolve
 // to /api/rental-applications/* and /api/billing/invoices/*.

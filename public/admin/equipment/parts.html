@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common Parts - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 32px 40px 48px; }
+        .title-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; max-width: 720px; line-height: 1.5; }
+        .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 24px; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 20px; color: #2d5016; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .btn { padding: 12px 24px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; font-family: inherit; }
+        .btn:hover { background: #3d6b1f; }
+        .btn-secondary { background: #fff; color: #2d5016; box-shadow: inset 0 0 0 2px #2d5016; }
+        .btn-secondary:hover { background: #f5f3f0; }
+        .btn-gold { background: #d4a54a; color: #1a1a1a; }
+        .btn-gold:hover { background: #c4953a; }
+        .btn-danger { background: #fff; color: #b3261e; box-shadow: inset 0 0 0 2px #b3261e; }
+        .btn-small { padding: 8px 14px; font-size: 13px; }
+        .toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        input, select, textarea { padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; font-family: inherit; width: 100%; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #2d5016; }
+        .toolbar input { max-width: 360px; flex: 1 1 220px; }
+        .toolbar select { max-width: 240px; flex: 1 1 160px; }
+        .needed-list { display: grid; gap: 8px; }
+        .needed-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #fbf3e2; border-radius: 6px; padding: 10px 14px; font-size: 14px; flex-wrap: wrap; }
+        .needed-row .qty { font-family: 'Oswald', sans-serif; font-size: 18px; color: #8a6d00; min-width: 40px; }
+        .needed-row .name { flex: 1 1 200px; min-width: 0; }
+        .group-title { font-family: 'Oswald', sans-serif; font-size: 15px; color: #2d5016; text-transform: uppercase; letter-spacing: 0.5px; margin: 22px 0 10px; }
+        .group-title:first-child { margin-top: 0; }
+        .parts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+        .part { border-radius: 8px; background: #faf8f4; padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .part-name { font-weight: 700; color: #1a1a1a; font-size: 15px; display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+        .badge { font-size: 11px; font-weight: 700; color: #8a6d00; background: #fbf3e2; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+        .part-line { font-size: 13px; color: #444; line-height: 1.5; overflow-wrap: anywhere; }
+        .part-line .k { color: #888; }
+        .part-notes { font-size: 12px; color: #666; line-height: 1.5; }
+        .part-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .muted { color: #888; font-size: 12px; }
+        .empty { color: #888; font-size: 14px; padding: 12px 0; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; }
+        .modal-header { padding: 18px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-family: 'Oswald', sans-serif; font-size: 22px; }
+        .modal-close { background: none; border: none; font-size: 26px; cursor: pointer; color: #666; }
+        .modal-body { padding: 20px; display: grid; gap: 14px; }
+        .modal-body label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 6px; }
+        .form-row { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+        .modal-footer { padding: 16px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .modal-footer .right { display: flex; gap: 10px; margin-left: auto; }
+        .msg { font-size: 13px; color: #b3261e; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px 40px; }
+            .page-title { font-size: 26px; }
+            .card { padding: 18px 16px; }
+            .parts-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .toolbar input, .toolbar select { max-width: none; }
+        }
+        @media print {
+            .admin-header, .toolbar, .part-actions, #addBtn { display: none !important; }
+            body { background: #fff; }
+            .card { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/equipment-manager.html">Equipment Manager</a>
+            <a href="/admin/equipment/parts.html" class="active">Common Parts</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="title-row">
+            <div>
+                <h1 class="page-title">Common Parts</h1>
+                <p class="page-subtitle">Parts the fleet uses, what each one fits, how many are needed now, and where to buy. Starting Amazon links are searches by size and type; once you pick the right listing, edit the part and paste that product link.</p>
+            </div>
+            <button class="btn" id="addBtn" onclick="openPart()">Add Part</button>
+        </div>
+
+        <section class="card">
+            <h2>Needed now</h2>
+            <div id="needed" class="needed-list"><div class="empty">Loading...</div></div>
+        </section>
+
+        <section class="card">
+            <div class="toolbar">
+                <input type="search" id="filter" placeholder="Search parts, sizes, units" aria-label="Search parts">
+                <select id="catFilter" aria-label="Category"><option value="">All categories</option></select>
+            </div>
+            <div id="parts" style="margin-top:18px;"><div class="empty">Loading...</div></div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="partModal" onclick="if (event.target === this) closePart()">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="partTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="partTitle">Add Part</h2>
+                <button class="modal-close" onclick="closePart()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pId">
+                <div><label for="pName">Part</label><input id="pName" placeholder="Red rear marker lamp"></div>
+                <div class="form-row">
+                    <div><label for="pCategory">Category</label><select id="pCategory"></select></div>
+                    <div><label for="pQty">Needed now</label><input id="pQty" type="number" min="0" step="1" inputmode="numeric"></div>
+                </div>
+                <div><label for="pSpec">Size / spec</label><textarea id="pSpec" rows="2"></textarea></div>
+                <div class="form-row">
+                    <div><label for="pFits">Fits</label><input id="pFits" placeholder="Unit #106"></div>
+                    <div><label for="pNumber">Part no.</label><input id="pNumber"></div>
+                </div>
+                <div><label for="pAmazon">Amazon link</label><input id="pAmazon" type="url" placeholder="https://www.amazon.com/..."></div>
+                <div><label for="pOther">Other store link</label><input id="pOther" type="url"></div>
+                <div><label for="pNotes">Notes</label><textarea id="pNotes" rows="2"></textarea></div>
+                <div class="msg" id="pMsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-small" id="pDelete" onclick="deletePart()">Delete</button>
+                <div class="right">
+                    <button class="btn btn-secondary" onclick="closePart()">Cancel</button>
+                    <button class="btn" onclick="savePart()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CATEGORIES = ['Lighting', 'Brakes', 'Tires and wheels', 'Suspension', 'Air and electrical', 'Tarp', 'Other'];
+        let parts = [];
+
+        function getToken() { return localStorage.getItem('adminToken'); }
+        if (!getToken()) window.location.href = '/admin/login';
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function safeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : ''; }
+
+        async function api(path, opts = {}) {
+            const res = await fetch('/api/equipment-parts' + path, {
+                ...opts,
+                headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }
+            });
+            if (res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = '/admin/login'; throw new Error('Signed out'); }
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok || !body.success) throw new Error(body.message || 'Request failed (' + res.status + ')');
+            return body;
+        }
+
+        function buyButtons(p) {
+            const a = safeUrl(p.amazonUrl), o = safeUrl(p.otherUrl);
+            return (a ? `<a class="btn btn-gold btn-small" href="${esc(a)}" target="_blank" rel="noopener">Buy on Amazon</a>` : '') +
+                (o ? `<a class="btn btn-secondary btn-small" href="${esc(o)}" target="_blank" rel="noopener">Other store</a>` : '');
+        }
+
+        function render() {
+            const needed = parts.filter(p => p.qtyNeeded > 0);
+            document.getElementById('needed').innerHTML = needed.length ? needed.map(p => `
+                <div class="needed-row">
+                    <span class="qty">${p.qtyNeeded}</span>
+                    <span class="name"><strong>${esc(p.name)}</strong>${p.fits ? ' <span class="muted">' + esc(p.fits) + '</span>' : ''}</span>
+                    <span class="part-actions" style="margin-top:0;">${buyButtons(p)}</span>
+                </div>`).join('') : '<div class="empty">Nothing needed right now.</div>';
+
+            const q = document.getElementById('filter').value.trim().toLowerCase();
+            const cat = document.getElementById('catFilter').value;
+            const match = p => (!cat || p.category === cat) && (!q ||
+                [p.name, p.spec, p.partNumber, p.fits, p.notes, p.category].some(v => String(v || '').toLowerCase().includes(q)));
+            const html = CATEGORIES.map(c => {
+                const items = parts.filter(p => p.category === c && match(p));
+                if (!items.length) return '';
+                return `<div class="group-title">${esc(c)}</div><div class="parts-grid">` + items.map(p => `
+                    <div class="part">
+                        <div class="part-name"><span>${esc(p.name)}</span>${p.qtyNeeded > 0 ? `<span class="badge">Need ${p.qtyNeeded}</span>` : ''}</div>
+                        ${p.spec ? `<div class="part-line">${esc(p.spec)}</div>` : ''}
+                        ${p.partNumber ? `<div class="part-line"><span class="k">Part no.</span> ${esc(p.partNumber)}</div>` : ''}
+                        ${p.fits ? `<div class="part-line"><span class="k">Fits</span> ${esc(p.fits)}</div>` : ''}
+                        ${p.notes ? `<div class="part-notes">${esc(p.notes)}</div>` : ''}
+                        <div class="part-actions">${buyButtons(p)}<button class="btn btn-secondary btn-small" onclick="openPart('${p._id}')">Edit</button></div>
+                    </div>`).join('') + '</div>';
+            }).join('');
+            document.getElementById('parts').innerHTML = html || '<div class="empty">No parts match.</div>';
+        }
+
+        async function load() {
+            try {
+                parts = (await api('')).data;
+                render();
+            } catch (e) {
+                document.getElementById('parts').innerHTML = '<div class="empty">Could not load parts: ' + esc(e.message) + '</div>';
+                document.getElementById('needed').innerHTML = '';
+            }
+        }
+
+        function openPart(id) {
+            const p = parts.find(x => x._id === id) || { category: 'Other', qtyNeeded: 0 };
+            document.getElementById('partTitle').textContent = id ? 'Edit Part' : 'Add Part';
+            document.getElementById('pId').value = id || '';
+            document.getElementById('pName').value = p.name || '';
+            document.getElementById('pCategory').value = p.category || 'Other';
+            document.getElementById('pQty').value = p.qtyNeeded || 0;
+            document.getElementById('pSpec').value = p.spec || '';
+            document.getElementById('pFits').value = p.fits || '';
+            document.getElementById('pNumber').value = p.partNumber || '';
+            document.getElementById('pAmazon').value = p.amazonUrl || '';
+            document.getElementById('pOther').value = p.otherUrl || '';
+            document.getElementById('pNotes').value = p.notes || '';
+            document.getElementById('pMsg').textContent = '';
+            document.getElementById('pDelete').style.visibility = id ? 'visible' : 'hidden';
+            document.getElementById('partModal').classList.add('active');
+            document.getElementById('pName').focus();
+        }
+        function closePart() { document.getElementById('partModal').classList.remove('active'); }
+
+        async function savePart() {
+            const id = document.getElementById('pId').value;
+            const data = {
+                name: document.getElementById('pName').value.trim(),
+                category: document.getElementById('pCategory').value,
+                qtyNeeded: document.getElementById('pQty').value,
+                spec: document.getElementById('pSpec').value.trim(),
+                fits: document.getElementById('pFits').value.trim(),
+                partNumber: document.getElementById('pNumber').value.trim(),
+                amazonUrl: document.getElementById('pAmazon').value.trim(),
+                otherUrl: document.getElementById('pOther').value.trim(),
+                notes: document.getElementById('pNotes').value.trim()
+            };
+            if (!data.name) { document.getElementById('pMsg').textContent = 'Enter the part name.'; return; }
+            try {
+                await api(id ? '/' + id : '', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+                closePart();
+                await load();
+            } catch (e) { document.getElementById('pMsg').textContent = e.message; }
+        }
+
+        async function deletePart() {
+            const id = document.getElementById('pId').value;
+            const p = parts.find(x => x._id === id);
+            if (!id || !confirm('Delete ' + (p ? p.name : 'this part') + '?')) return;
+            try {
+                await api('/' + id, { method: 'DELETE' });
+                closePart();
+                await load();
+            } catch (e) { document.getElementById('pMsg').textContent = e.message; }
+        }
+
+        const catOptions = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+        document.getElementById('pCategory').innerHTML = catOptions;
+        document.getElementById('catFilter').innerHTML = '<option value="">All categories</option>' + catOptions;
+        document.getElementById('filter').addEventListener('input', render);
+        document.getElementById('catFilter').addEventListener('change', render);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closePart(); });
+        load();
+    </script>
+</body>
+</html>
