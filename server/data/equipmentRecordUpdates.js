@@ -85,6 +85,12 @@ module.exports = [
       'underbody toolboxes. TrailFX grille guard with LED light bar. Odometer 142,210 mi on Oct 15, 2026, check engine light on. ' +
       'Door label: built 7-06 by DaimlerChrysler (VIN model-year code 7 = 2007), GVWR 9,000 lb, GAWR front 5,200 / rear 6,010 lb, ' +
       'tires LT265/70R17E on 17x8.0 rims, cold pressure front 60 psi / rear 70 psi, paint code PDM, trim M9D5. ' +
-      'Jasper Engines & Transmissions sticker on the door jamb: a Jasper remanufactured unit has been installed; confirm which and the warranty.'
+      'Transmission: Jasper Engines & Transmissions remanufactured unit (sticker on the door jamb); install date and warranty not on file.'
+  },
+  {
+    key: 'ram2500-jasper-transmission',
+    // Confirmed 2026-10-15: the Jasper sticker is for the transmission.
+    match: [{ vin: '1D7KS28C27J501253' }, { title: /^2006 dodge ram 2500/i }],
+    addNote: 'Transmission: Jasper Engines & Transmissions remanufactured unit (sticker on the door jamb); install date and warranty not on file.'
   }
 ];
