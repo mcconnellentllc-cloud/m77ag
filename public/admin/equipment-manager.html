@@ -1461,7 +1461,7 @@
                 match: (item) => (item.serialNumber || item.vin) === '1TDH45022YB098230',
                 url: '/admin/equipment/timpte-106.html',
                 label: 'Unit #106 Spec Sheet and Photos',
-                sublabel: 'Data plate, tires, marker and rear lights, Neway air ride, hopper gates, pre-trip check'
+                sublabel: 'Parts needed, data plate, tires, lights, brakes, air ride, tarp, pre-trip check'
             },
             {
                 match: (item) => {
@@ -1929,7 +1929,7 @@
         // Photos kept in the site for units whose card has no uploaded images,
         // keyed by serial/VIN. License plates are blurred in these files.
         const EQUIPMENT_PHOTOS = {
-            '1TDH45022YB098230': ['01', '02', '03', '09', '04', '05', '06', '07', '08', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'].map(n => `/images/equipment/timpte-106/${n}.jpg`)
+            '1TDH45022YB098230': ['01', '02', '03', '09', '04', '05', '06', '07', '08', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'].map(n => `/images/equipment/timpte-106/${n}.jpg`)
         };
         function photosOf(item) {
             if (item.images && item.images.length) return item.images;
