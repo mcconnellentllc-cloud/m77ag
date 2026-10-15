@@ -114,6 +114,13 @@ module.exports = [
     match: [{ serialNumber: '2HSFBAER8XC071832' }, { vin: '2HSFBAER8XC071832' }],
     addNote: "Battery: Super Start 31-5TJ (O'Reilly), BCI Group 31, standard flooded, 950 CCA, reserve capacity 195 min; " +
       'date sticker 9/26. Super Start warranty line 1-866-830-4351.'
+  },
+  {
+    key: 'ram1500-filters-2026-10-15',
+    // Bought at O'Reilly Oct 15, 2026 (box photos).
+    match: [{ vin: '1D7RV1CT9BS668428' }, { title: /^2011 dodge ram 1500$/i }],
+    addNote: 'Filters: oil WIX 57899XP (the 57060 does not fit per O\'Reilly lookup), engine air WIX 42725. ' +
+      'No serviceable fuel filter on 2011 and later: it is part of the in-tank fuel pump module.'
   }
 ];
 
