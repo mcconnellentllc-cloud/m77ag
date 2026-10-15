@@ -7,6 +7,7 @@
     { label: 'Field Manager', href: '/admin/field-manager', match: ['/admin/field-manager'] },
     { label: 'Field Planner', href: '/admin/field-planner', match: ['/admin/field-planner', '/admin/farm-operations'] },
     { label: 'Projections', href: '/admin/farm-projections', match: ['/admin/farm-projections'] },
+    { label: 'Rates', href: '/admin/field-rates', match: ['/admin/field-rates'] },
     { label: 'Seed Orders', href: '/admin/farming/seed-orders', match: ['/admin/farming/seed-orders'] }
   ];
   const CSS = '.crops-nav{display:flex;gap:4px;flex-wrap:wrap;max-width:1400px;margin:0 auto;padding:14px 20px 0}' +

@@ -110,6 +110,7 @@ const fieldInsuranceRoutes = require('./routes/fieldInsurance');
 const fieldOperationRoutes = require('./routes/fieldOperations');
 const landlordSummaryRoutes = require('./routes/landlordSummary');
 const customWorkRoutes = require('./routes/customWork');
+const fieldOperationRateRoutes = require('./routes/fieldOperationRates');
 // Rental management (PR #191) — note: distinct from rentalRoutes above
 // (which is ./routes/rentals plural). These are renamed to avoid collision.
 const rentalApplicationRoutes = require('./routes/rental');
@@ -165,6 +166,7 @@ app.use('/api/field-insurance', fieldInsuranceRoutes);
 app.use('/api/field-operations', fieldOperationRoutes);
 app.use('/api/landlord-summary', landlordSummaryRoutes);
 app.use('/api/custom-work', customWorkRoutes);
+app.use('/api/field-operation-rates', fieldOperationRateRoutes);
 // Rental management (PR #191): mounted at /api so the inner paths resolve
 // to /api/rental-applications/* and /api/billing/invoices/*.
 app.use('/api', rentalApplicationRoutes);
@@ -312,6 +314,11 @@ app.get('/admin/partners', (req, res) => {
 // Farm projections
 app.get('/admin/farm-projections', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin/farm-projections.html'));
+});
+
+// Field operation rate list
+app.get('/admin/field-rates', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin/field-rates.html'));
 });
 
 // Field planner (formerly Farm Operations); the old address redirects.

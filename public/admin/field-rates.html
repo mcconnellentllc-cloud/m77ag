@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Operation Rates - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover, .admin-nav a.active { color: #d4af37; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px 40px 48px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 4px; max-width: 760px; line-height: 1.5; }
+        .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 24px; }
+        .formula { font-family: 'Oswald', sans-serif; font-size: 18px; color: #2d5016; }
+        .sources { font-size: 13px; color: #555; margin-top: 8px; line-height: 1.6; }
+        .sources a { color: #2d5016; }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; background: #f5f3f0; color: #2d5016; font-family: 'Oswald', sans-serif; font-weight: 500; letter-spacing: 0.5px; padding: 10px 12px; white-space: nowrap; }
+        td { padding: 9px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        tr.group td { background: #faf8f4; font-weight: 700; color: #2d5016; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        .num { text-align: right; white-space: nowrap; }
+        .rate { font-family: 'Oswald', sans-serif; font-size: 17px; color: #2d5016; }
+        .muted { color: #888; font-size: 12px; }
+        .flag { font-size: 11px; font-weight: 600; color: #8a6d00; background: #fbf3e2; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+        input[type=search] { padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; width: 100%; max-width: 360px; margin-bottom: 14px; font-family: inherit; }
+        @media (max-width: 700px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px 40px; }
+            .page-title { font-size: 26px; }
+            .card { padding: 18px 16px; }
+        }
+        @media print {
+            .admin-header, #cropsNav, input[type=search] { display: none !important; }
+            body { background: #fff; }
+            .card { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG ADMIN</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/field-manager">Field Manager</a>
+            <a href="/admin/field-planner">Field Planner</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+    <div id="cropsNav"></div>
+
+    <main class="container">
+        <h1 class="page-title">Field Operation Rates</h1>
+        <p class="page-subtitle">Per-acre cost applied to each field pass. Rates include tractor, fuel and operator labor; seed, chemical and fertilizer are not included.</p>
+
+        <section class="card">
+            <div class="formula" id="formula">Loading...</div>
+            <div class="sources" id="sources"></div>
+        </section>
+
+        <section class="card">
+            <input type="search" id="filter" placeholder="Search operations" aria-label="Search operations">
+            <div class="table-wrap" id="rateTable">Loading...</div>
+            <p class="muted" style="margin-top:10px;">Single source: only one university lists the operation, so the rate is 85% of that midpoint. Ranges are shown low to high as published.</p>
+        </section>
+    </main>
+
+    <script>
+        const CATS = { tillage: 'Tillage', planting: 'Planting', spraying: 'Spraying', fertilizer: 'Fertilizer application', harvest: 'Harvest', hay: 'Hay', other: 'Other' };
+        let data = null;
+
+        function getToken() { return localStorage.getItem('adminToken'); }
+        if (!getToken()) window.location.href = '/admin/login';
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function money(n, unit) {
+            const d = unit === 'bushel' ? 3 : 2;
+            return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+        }
+        function range(s, unit) {
+            if (!s) return '<span class="muted">Not listed</span>';
+            return `${money(s.low, unit)} - ${money(s.high, unit)}<div class="muted">mid ${money(s.midpoint, unit)} | ${esc(s.item)}</div>`;
+        }
+
+        function render() {
+            const q = document.getElementById('filter').value.trim().toLowerCase();
+            const rows = Object.keys(CATS).map(cat => {
+                const items = data.RATES.filter(r => r.category === cat && (!q || r.label.toLowerCase().includes(q) ||
+                    (r.isu && r.isu.item.toLowerCase().includes(q)) || (r.csu && r.csu.item.toLowerCase().includes(q))));
+                if (!items.length) return '';
+                return `<tr class="group"><td colspan="5">${CATS[cat]}</td></tr>` + items.map(r => `<tr>
+                    <td><strong>${esc(r.label)}</strong> <span class="muted">per ${esc(r.unit)}</span>${r.singleSource ? ' <span class="flag">Single source</span>' : ''}${r.note ? `<div class="muted">${esc(r.note)}</div>` : ''}</td>
+                    <td>${range(r.isu, r.unit)}</td>
+                    <td>${range(r.csu, r.unit)}</td>
+                    <td class="num">${money(r.averageMidpoint, r.unit)}</td>
+                    <td class="num rate">${money(r.rate, r.unit)}</td></tr>`).join('');
+            }).join('');
+            document.getElementById('rateTable').innerHTML = `<table>
+                <thead><tr><th>Operation</th><th>ISU 2026</th><th>CSU 2025 (Eastern CO)</th><th class="num">Average midpoint</th><th class="num">M77 rate (85%)</th></tr></thead>
+                <tbody>${rows || '<tr><td colspan="5" class="muted">No operations match.</td></tr>'}</tbody></table>`;
+        }
+
+        async function load() {
+            try {
+                const res = await fetch('/api/field-operation-rates', { headers: { 'Authorization': 'Bearer ' + getToken() } });
+                if (res.status === 401) { localStorage.removeItem('adminToken'); window.location.href = '/admin/login'; return; }
+                const body = await res.json().catch(() => ({}));
+                if (!res.ok || !body.success) throw new Error(body.message || 'Request failed (' + res.status + ')');
+                data = body.data;
+                document.getElementById('formula').textContent = data.year + ' rates: ' + data.formula;
+                document.getElementById('sources').innerHTML =
+                    `ISU: <a href="${esc(data.sources.isu.url)}" target="_blank" rel="noopener">${esc(data.sources.isu.title)}</a><br>` +
+                    `CSU: <a href="${esc(data.sources.csu.url)}" target="_blank" rel="noopener">${esc(data.sources.csu.title)}</a>`;
+                render();
+            } catch (e) {
+                document.getElementById('rateTable').textContent = 'Could not load rates: ' + e.message;
+            }
+        }
+        document.getElementById('filter').addEventListener('input', () => { if (data) render(); });
+        load();
+    </script>
+    <script src="/js/crops-nav.js"></script>
+</body>
+</html>
