@@ -55,10 +55,10 @@ const personalVehicles = [
     notes: 'Kyle & Brandi McConnell - Personal Asset'
   },
   {
-    name: 'Cadillac Escalade',
+    name: '2017 Cadillac Escalade ESV',
     type: 'other',
     category: 'other',
-    description: 'Cadillac Escalade SUV',
+    description: '2017 Cadillac Escalade ESV Luxury 4WD - 6.2L V8, VIN 1GYS4HKJ3HR132303',
     location: { associatedFarm: 'PERSONAL' },
     status: 'owned',
     currentValue: { estimatedValue: 0 }, // TODO: Enter actual value

@@ -401,7 +401,8 @@ router.post('/:id/maintenance', async (req, res) => {
       performedBy,
       vendor,
       nextServiceDue,
-      notes
+      notes,
+      date
     } = req.body;
 
     if (!description) {
@@ -428,7 +429,7 @@ router.post('/:id/maintenance', async (req, res) => {
       vendor,
       nextServiceDue,
       notes,
-      date: new Date()
+      date: date ? new Date(date) : new Date()
     });
 
     // Update current hours if provided
