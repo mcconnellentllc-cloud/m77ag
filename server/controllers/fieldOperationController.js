@@ -41,9 +41,9 @@ async function cardCrops(fields) {
 const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'cropFromCard', 'cropFromRotation', 'acresFromField', 'review'];
 // An expense is charged to the crop that pays it back: the next harvested
 // crop on the field after the pass (Kyle, Oct 15, 2026). The card's crops
-// decide; when the next year is not set yet, the rotation does:
-// wheat -> corn, fallow -> wheat.
-const ROTATION_NEXT = { WHEAT: 'CORN', FALLOW: 'WHEAT' };
+// decide; when the next year is not set yet, the usual rotation does:
+// wheat -> corn -> milo -> fallow -> wheat.
+const ROTATION_NEXT = { WHEAT: 'CORN', CORN: 'SORGHUM', SORGHUM: 'FALLOW', FALLOW: 'WHEAT' };
 const NOT_HARVESTED = ['FALLOW', 'PASTURE', 'WASTE', 'BUILDING SITE', 'CRP', ''];
 function payingCrop(cropOn, field, firstYear) {
   for (let y = firstYear; y <= firstYear + 2; y++) {
