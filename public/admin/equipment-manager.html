@@ -2157,6 +2157,7 @@
                 ${item.description ? `<div class="detail-section"><h3>Description</h3><div class="detail-text">${escHtml(item.description)}</div></div>` : ''}
                 ${item.notes ? `<div class="detail-section"><h3>Notes</h3><div class="detail-text">${escHtml(item.notes)}</div></div>` : ''}
                 ${wiringHtml(item)}
+                <div class="detail-section" id="detailOrders"></div>
                 ${getEquipmentGuideLink(item) ? `<div class="detail-section">${getEquipmentGuideLink(item)}</div>` : ''}`;
 
             document.getElementById('detailFooter').innerHTML = `
@@ -2169,7 +2170,33 @@
 
             document.getElementById('detailModal').classList.add('active');
             document.querySelector('#detailModal .modal').scrollTop = 0;
+            loadDetailOrders(item._id);
         }
+        // Parts orders charged to this unit, from Common Parts.
+        async function loadDetailOrders(id) {
+            const box = document.getElementById('detailOrders');
+            const token = localStorage.getItem('adminToken');
+            if (!box || !token) return;
+            try {
+                const res = await fetch('/api/equipment-parts/orders?equipment=' + encodeURIComponent(id), { headers: { 'Authorization': 'Bearer ' + token } });
+                const body = await res.json();
+                if (!res.ok || !body.success) return;
+                const orders = body.data.filter(o => o.status !== 'cancelled');
+                if (!orders.length || box !== document.getElementById('detailOrders')) return;
+                const total = orders.reduce((s, o) => s + (o.total || 0), 0);
+                const money = n => '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const day = d => d ? new Date(d).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                box.innerHTML = `<h3>Parts orders</h3>
+                    <div class="equipment-card-details">
+                        ${orders.map(o => `<div class="equipment-detail-row"><span class="equipment-detail-label">${escHtml(day(o.orderDate))} · ${escHtml(o.vendorName || '')}${o.invoiceNumber ? ' · Inv ' + escHtml(o.invoiceNumber) : ''} · ${escHtml(o.status)}</span><span class="equipment-detail-value">${money(o.total)}</span></div>`).join('')}
+                        <div class="equipment-detail-row"><span class="equipment-detail-label"><strong>Total parts cost</strong></span><span class="equipment-detail-value"><strong>${money(total)}</strong></span></div>
+                    </div>
+                    <a href="/admin/equipment/parts.html#ordersCard" style="font-size:13px;color:#2d5016;">Open orders in Common Parts</a>`;
+            } catch (e) {
+                console.warn('Parts orders lookup failed:', e.message);
+            }
+        }
+
         function closeDetail() {
             document.getElementById('detailModal').classList.remove('active');
         }
