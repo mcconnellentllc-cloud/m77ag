@@ -171,6 +171,11 @@ const croppingFieldSchema = new mongoose.Schema({
 
   fertilityPlans: [fertilityPlanSchema],
 
+  // Ground M77 AG farms with no financial tie (e.g. Lueking, cash leased by
+  // Allphin Farms). Kept out of budgets, projections and expense allocation.
+  excludeFromFinancials: { type: Boolean, default: false },
+  financialNote: String,
+
   // --- Lease / Ownership ---
   lease: {
     type: { type: String, enum: ['owned', 'cash-rent', 'crop-share', 'flex-lease', ''] },

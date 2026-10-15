@@ -798,6 +798,7 @@
                 totalAcres += ac;
                 const c = cropFor(f, selectedYear);
                 if (c && !nonProd.includes(c)) prodAcres += ac;
+                if (f.excludeFromFinancials) return; // no M77 financial tie
                 totalCost += (f.totalCost || 0);
                 totalRev += (f.totalRevenue || 0);
             });
@@ -1060,6 +1061,7 @@
                     <div class="info-item"><div class="info-label">Section / Twp / Rng</div><div class="info-value">${v(f.section)} / ${v(f.township)} / ${v(f.range)}</div></div>
                     <div class="info-item"><div class="info-label">Soil Type</div><div class="info-value">${v(f.soil && f.soil.type)}</div></div>
                     <div class="info-item"><div class="info-label">Soil Class</div><div class="info-value">${v(f.soil && f.soil.class)}</div></div>
+                    ${f.excludeFromFinancials ? `<div class="info-item" style="grid-column:1/-1;"><div class="info-label">Financial</div><div class="info-value">${escapeText(f.financialNote || 'No M77 AG financial tie.')}</div></div>` : ''}
                     <div class="info-item"><div class="info-label">Lease Type</div><div class="info-value">${v(lease.type)}</div></div>
                     <div class="info-item"><div class="info-label">Landlord</div><div class="info-value">${v(lease.landlord)}</div></div>
                     <div class="info-item"><div class="info-label">Rent / Acre</div><div class="info-value">${lease.rentPerAcre ? fmt2(lease.rentPerAcre) : lease.type === 'crop-share' ? 'Crop share' + (lease.sharePercentage ? ', landlord ' + lease.sharePercentage + '%' : '') : lease.type === 'owned' ? 'Owned' : '<span class="empty">--</span>'}</div></div>

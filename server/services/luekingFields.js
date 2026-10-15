@@ -15,7 +15,8 @@ async function addLuekingFields() {
     if (!cf) {
       const doc = {
         farm: DATA.farm, field: d.field, acres: d.acres,
-        lease: { type: 'crop-share', landlord: DATA.landlord },
+        excludeFromFinancials: true,
+        financialNote: DATA.financialNote,
         soil: { irrigated: !!d.irrigated, samples: [] },
         notes: 'Acres are 2026 seeded acres from Operations Center until FSA acres are on file.' + (d.note ? ' ' + d.note : '')
       };
@@ -29,12 +30,30 @@ async function addLuekingFields() {
     if (!linked) {
       const reg = await M77Field.find({ name: new RegExp('^' + esc(d.opsName.trim()) + '$', 'i'), $or: [{ legacyId: null }, { legacyId: { $exists: false } }] }).select('_id irrigation').lean();
       if (reg.length === 1) {
-        await M77Field.updateOne({ _id: reg[0]._id }, { $set: { legacySource: 'CroppingField', legacyId: cf._id } });
+        await M77Field.updateOne({ _id: reg[0]._id }, { $set: { legacySource: 'CroppingField', legacyId: cf._id, enterprise: 'Lueking' } });
         out.push('linked ' + d.field + ' to registry field ' + d.opsName);
       }
     }
   }
+  out.push(...(await applyCorrection()));
   return out;
+}
+
+// One time: cards added before the arrangement was recorded carried a crop
+// share with Allphin Farms as landlord, and 73.C.SW as sorghum. Corrects
+// those values only where they are still as first written.
+async function applyCorrection() {
+  if (await AppliedUpdate.exists({ key: DATA.correctionKey })) return [];
+  const names = DATA.fields.map(d => new RegExp('^' + esc(d.field) + '$', 'i'));
+  const flag = await CroppingField.updateMany({ farm: DATA.farm, field: { $in: names } }, { $set: { excludeFromFinancials: true, financialNote: DATA.financialNote } });
+  const lease = await CroppingField.updateMany({ farm: DATA.farm, 'lease.type': 'crop-share', 'lease.landlord': 'Allphin Farms' }, { $unset: { lease: '' } });
+  const crop = await CroppingField.updateOne({ farm: DATA.farm, field: /^73\.C\.SW\b/i, crop2026: 'SORGHUM' }, { $set: { crop2026: 'SORGHUM SUDAN' } });
+  // Registry fields linked to these cards are booked under Lueking, not M77 AG.
+  const ids = (await CroppingField.find({ farm: DATA.farm }).select('_id').lean()).map(c => c._id);
+  const reg = await M77Field.updateMany({ legacySource: 'CroppingField', legacyId: { $in: ids }, enterprise: { $ne: 'Lueking' } }, { $set: { enterprise: 'Lueking' } });
+  const line = `${DATA.correctionKey}: ${flag.modifiedCount} cards marked no M77 financial tie, crop-share lease removed from ${lease.modifiedCount}, 73.C.SW sorghum sudan ${crop.modifiedCount ? 'set' : 'already set'}, ${reg.modifiedCount} registry fields moved to the Lueking enterprise`;
+  await AppliedUpdate.create({ key: DATA.correctionKey, summary: [line] });
+  return [line];
 }
 
 // One time: 73 and 77 irrigated, every other field dryland, on the cards and
