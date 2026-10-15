@@ -357,7 +357,7 @@ router.get('/', async (req, res) => {
 // Get budget summary - overall M77 AG rollup
 router.get('/summary/budget', async (req, res) => {
   try {
-    const fields = await CroppingField.find({});
+    const fields = await CroppingField.find({ excludeFromFinancials: { $ne: true } });
 
     // Non-productive crop types - no revenue expected
     const nonProductive = ['PASTURE', 'FALLOW', 'WASTE', 'BUILDING SITE'];
@@ -467,7 +467,7 @@ router.get('/summary/budget', async (req, res) => {
 // Get budget detail for a specific farm
 router.get('/summary/budget/:farmName', async (req, res) => {
   try {
-    const fields = await CroppingField.find({ farm: req.params.farmName }).sort({ field: 1 });
+    const fields = await CroppingField.find({ farm: req.params.farmName, excludeFromFinancials: { $ne: true } }).sort({ field: 1 });
     const nonProductive = ['PASTURE', 'FALLOW', 'WASTE', 'BUILDING SITE'];
 
     let totalAcres = 0;
@@ -597,7 +597,7 @@ router.put('/:id/budget', async (req, res) => {
 router.get('/summary/crop-codes', async (req, res) => {
   try {
     const { year } = req.query;
-    const fields = await CroppingField.find({});
+    const fields = await CroppingField.find({ excludeFromFinancials: { $ne: true } });
 
     const codeSummary = {};
     const years = year ? [parseInt(year)] : [2025, 2026, 2027, 2028, 2029, 2030];

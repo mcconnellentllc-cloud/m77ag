@@ -107,7 +107,7 @@ router.post('/', async (req, res) => {
     let fields = [];
     if (fieldIds && fieldIds.length > 0) {
       // Specific fields selected
-      const fieldDocs = await CroppingField.find({ _id: { $in: fieldIds } });
+      const fieldDocs = await CroppingField.find({ _id: { $in: fieldIds }, excludeFromFinancials: { $ne: true } });
       fields = fieldDocs.map(f => ({
         fieldId: f._id,
         farm: f.farm,
@@ -125,8 +125,10 @@ router.post('/', async (req, res) => {
       const fullYear = 2000 + parseInt(yearSuffix);
       const cropField = `crop${fullYear}`;
 
+      // Ground with no M77 financial tie never takes a share of M77 expenses.
       const fieldDocs = await CroppingField.find({
-        [cropField]: { $regex: new RegExp('^' + cropName + '$', 'i') }
+        [cropField]: { $regex: new RegExp('^' + cropName + '$', 'i') },
+        excludeFromFinancials: { $ne: true }
       });
 
       fields = fieldDocs.map(f => ({
