@@ -539,6 +539,7 @@
                 <a href="/admin/farming/landlord-shares-2026-wheat.html" class="btn btn-secondary btn-sm">Landlord Shares</a>
                 <a href="/admin/farming/seed-cost-share.html" class="btn btn-secondary btn-sm">Seed Cost Share</a>
                 <button class="btn btn-secondary btn-sm" id="btnSeasonImport">2026 Season Records</button>
+                <button class="btn btn-secondary btn-sm" id="btnCostRecords" title="Cost field passes from the rate list">Cost Field Records</button>
                 <a href="/admin/farming/crop-insurance-2026-wheat.html" class="btn btn-secondary btn-sm">Loss Notice</a>
                 <button class="btn" id="btnNewField">Add Field</button>
             </div>
@@ -1383,6 +1384,7 @@
                         <div style="color:#666;">${fmtRange(o.startDate, o.endDate)}</div>
                         ${parts.join('')}
                         ${tickets}
+                        ${costLine(o)}
                         ${o.notes ? `<div style="color:#8a6d00;">${escapeHtml(o.notes)}</div>` : ''}
                         ${o.source ? `<div style="color:#999; font-size:11px;">Source: ${escapeHtml(o.source)}</div>` : ''}
                         <div><button class="btn btn-secondary btn-sm" data-op-remove="${o._id}" style="margin-top:6px;">Remove</button></div>
@@ -1391,10 +1393,14 @@
             const body = ops.length ? blocks
                 : `<div style="margin-top:8px; font-size:12px; color:#888;">No field records for crop year ${year}.</div>`;
             const badge = ops.length ? `<span style="background:#f3efe6; color:#5c4a1f; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">${ops.length} record${ops.length === 1 ? '' : 's'}</span>` : '';
+            const costed = ops.filter(o => o.cost && o.cost.rateKey);
+            const totalCost = costed.reduce((sum, o) => sum + (o.cost.amount || 0), 0);
+            const uncosted = ops.filter(o => o.status === 'completed' && !(o.cost && o.cost.rateKey)).length;
+            const costBadge = costed.length ? `<span style="background:#e8efe1; color:#2d5016; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">Machine cost ${money2(totalCost)}${f.acres ? ' · ' + money2(totalCost / f.acres) + '/ac' : ''}${uncosted ? ' · ' + uncosted + ' not costed' : ''}</span>` : '';
             return `
                 <details class="ops-section" style="grid-column: 1 / -1; background:#faf8f3; border:1px solid #e6e1d6; border-radius:5px; padding:10px 14px; margin-top:6px;">
                     <summary style="cursor:pointer; font-weight:600; font-size:13px; color:#5c4a1f; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                        Field Records &middot; ${year} ${badge}
+                        Field Records &middot; ${year} ${badge} ${costBadge}
                     </summary>
                     ${body}
                 </details>`;
@@ -1407,8 +1413,58 @@
             return data;
         }
 
+        // Field operation rate list (85% of the ISU/CSU midpoint average).
+        let opRates = [];
+        async function loadOpRates() {
+            if (opRates.length) return;
+            try {
+                const res = await fetch('/api/field-operation-rates', { headers: authHeaders() });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.success) opRates = data.data.RATES || [];
+            } catch (e) {
+                console.warn('Rate list load failed:', e.message);
+            }
+        }
+        function money2(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function costLine(o) {
+            const c = o.cost && o.cost.rateKey ? o.cost : null;
+            const opts = '<option value="">No cost</option>' + opRates.map(r =>
+                `<option value="${escapeHtml(r.key)}" ${c && c.rateKey === r.key ? 'selected' : ''}>${escapeHtml(r.label)} (${money2(r.rate)}/${escapeHtml(r.unit)})</option>`).join('');
+            const text = c
+                ? `<strong>${money2(c.amount)}</strong> <span style="color:#888;">${fmtNum(c.units, c.unit === 'bushel' ? 2 : 1)} ${escapeHtml(c.unit)}${c.units === 1 ? '' : 's'} × ${money2(c.rate)} · ${escapeHtml(c.rateLabel)}${c.setBy === 'manual' ? ' · set by hand' : ''}</span>`
+                : (o.status === 'planned' ? '<span style="color:#888;">Planned; costed once completed</span>' : '<span style="color:#a02818;">Not costed</span>');
+            return `<div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;"><span style="color:#888;">Machine cost</span><span style="text-align:right;">${text}</span></div>` +
+                (o.status === 'completed' && opRates.length ? `<select data-op-rate="${o._id}" aria-label="Rate for this pass" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:100%;">${opts}</select>` : '');
+        }
+        async function setOperationRate(id, rateKey) {
+            try {
+                const r = await opsRequest('/' + id + '/cost', { method: 'PUT', body: JSON.stringify({ rateKey: rateKey || null }) });
+                showBanner('success', r.message);
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not set the rate: ' + e.message);
+                await refreshSeedSection();
+            }
+        }
+        async function costAllRecords() {
+            const btn = document.getElementById('btnCostRecords');
+            btn.disabled = true;
+            try {
+                const r = await opsRequest('/costs/apply', { method: 'POST', body: JSON.stringify({}) });
+                const skipped = r.data.skipped || [];
+                showBanner(skipped.length ? 'error' : 'success', r.message + (skipped.length ? '. Needs a rate or acres: ' +
+                    skipped.slice(0, 12).map(x => (x.field || '') + ' ' + (x.title || '') + ' (' + x.reason + ')').join('; ') + (skipped.length > 12 ? '; and ' + (skipped.length - 12) + ' more' : '') : ''));
+                await refreshSeedSection();
+            } catch (e) {
+                showBanner('error', 'Could not cost the records: ' + e.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
         async function loadOperations() {
             try {
+                await loadOpRates();
                 const data = await opsRequest('');
                 opsByField = {};
                 for (const o of data.data || []) {
@@ -1919,6 +1975,11 @@
         });
 
         document.getElementById('btnSeasonImport').addEventListener('click', openSeasonImport);
+        document.getElementById('btnCostRecords').addEventListener('click', costAllRecords);
+        hierarchyEl.addEventListener('change', (e) => {
+            const sel = e.target.closest('[data-op-rate]');
+            if (sel) setOperationRate(sel.getAttribute('data-op-rate'), sel.value);
+        });
         document.getElementById('seasonImport').addEventListener('click', (e) => {
             if (e.target.id === 'btnSeasonApply') applySeasonImport();
             if (e.target.id === 'btnSeasonClose') document.getElementById('seasonImport').style.display = 'none';

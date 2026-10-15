@@ -54,6 +54,21 @@ const fieldOperationSchema = new mongoose.Schema({
   combineBu: { type: Number, default: null },
   tickets: { type: [ticketSchema], default: [] },
 
+  // Machine cost for this pass from the field operation rate list:
+  // units (usually acres) x rate. Kept as a snapshot so a later rate list
+  // does not silently change past costs.
+  cost: {
+    rateKey: { type: String, trim: true },
+    rateLabel: { type: String, trim: true },
+    rateYear: { type: Number },
+    unit: { type: String, trim: true },
+    units: { type: Number },
+    rate: { type: Number },
+    amount: { type: Number },
+    setBy: { type: String, enum: ['default', 'manual'] },
+    appliedAt: { type: Date }
+  },
+
   source: { type: String, trim: true },
   notes: { type: String, trim: true },
   // Set for records added from a prepared import, so re-running it updates instead of duplicating.
