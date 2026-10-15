@@ -1508,10 +1508,10 @@
                 ['Wheat 2026 planting (fall 2025)', r => !isOps(r) && r.cropYear === 2026 && r.type === 'seeding'],
                 ['Wheat 2027 drilling (Oct 2026)', r => !isOps(r) && r.cropYear === 2027 && r.type === 'seeding'],
                 ['Fall chemfallow for corn 2027', r => !isOps(r) && r.cropYear === 2027 && r.type === 'spray'],
-                ['Planting with starter (Ops Center Application 2026)', r => isOps(r) && r.type === 'seeding'],
+                ['Planting (Ops Center Seeding 2026; 2025 milo)', r => isOps(r) && r.type === 'seeding'],
                 ['Spray passes (Ops Center Application 2026)', r => isOps(r) && r.type === 'spray']
             ];
-            function isOps(r) { return String(r.key).startsWith('app26-'); }
+            function isOps(r) { return /^(app26|sd26)-/.test(String(r.key)); }
             const rows = groups.map(([label, test]) => {
                 const recs = seasonData.records.filter(test);
                 if (!recs.length) return '';
@@ -1530,6 +1530,13 @@
                 }).join('');
             }).join('');
             const pending = seasonData.records.filter(r => !r.addedTo).length;
+            const retired = seasonData.retired || [];
+            const retiredHtml = retired.length ? `
+                <div style="background:#fbf3e2; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:13px;">
+                    <strong>Replaced by newer data: remove from the cards</strong>
+                    <div style="color:#666; margin:2px 0 6px;">These records came from an earlier version of this list (for example planting inferred from starter, now replaced by the seeding report).</div>
+                    ${retired.map(r => `<label style="display:flex; gap:8px; align-items:center; padding:3px 0;"><input type="checkbox" data-season-retire="${escapeHtml(r.id)}" checked> ${escapeHtml(r.fieldName || '')} · ${escapeHtml(r.title || '')} · ${escapeHtml(r.crop || '')} ${yy(r.cropYear)}</label>`).join('')}
+                </div>` : '';
             const outdated = seasonData.records.filter(r => r.outdated).length;
             el.innerHTML = `
                 <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
@@ -1542,6 +1549,7 @@
                         <button class="btn btn-secondary btn-sm" id="btnSeasonClose">Close</button>
                     </div>
                 </div>
+                ${retiredHtml}
                 <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`;
         }
         // Consistency check: passes most fields of a crop got that others did not.
@@ -1621,10 +1629,11 @@
                 if (sel && sel.value && sel.value !== '__none__') assignments.push({ key, m77Field: sel.value });
                 else missing.push(key);
             });
+            const retire = [...document.querySelectorAll('[data-season-retire]:checked')].map(cb => cb.getAttribute('data-season-retire'));
             if (missing.length) return showBanner('error', 'Choose a field for: ' + missing.join(', '));
-            if (!assignments.length) return showBanner('error', 'Check at least one record.');
+            if (!assignments.length && !retire.length) return showBanner('error', 'Check at least one record.');
             try {
-                const data = await opsRequest('/imports/' + SEASON_IMPORT_ID, { method: 'POST', body: JSON.stringify({ assignments }) });
+                const data = await opsRequest('/imports/' + SEASON_IMPORT_ID, { method: 'POST', body: JSON.stringify({ assignments, retire }) });
                 showBanner('success', data.message || 'Records added.');
                 seasonData = (await opsRequest('/imports/' + SEASON_IMPORT_ID)).data;
                 renderSeasonImport();

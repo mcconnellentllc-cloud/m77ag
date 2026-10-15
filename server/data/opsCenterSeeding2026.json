@@ -1,0 +1,893 @@
+[
+ {
+  "opsField": "10.N",
+  "opsName": "10.N - LA OURS",
+  "farm": "LAFARMS",
+  "start": "2026-06-06",
+  "end": "2026-06-06",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 82.5,
+    "rate": "24,900 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 82.5
+ },
+ {
+  "opsField": "10.N",
+  "opsName": "10.N - LA OURS",
+  "farm": "LAFARMS",
+  "start": "2026-05-30",
+  "end": "2026-05-30",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 78.2,
+    "rate": "12,500 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 78.2
+ },
+ {
+  "opsField": "12.E",
+  "opsName": "12.E - LA BAM W/4 - East 80",
+  "farm": "LAFARMS",
+  "start": "2026-06-08",
+  "end": "2026-06-08",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 78.8,
+    "rate": "25,400 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 78.8
+ },
+ {
+  "opsField": "13.W",
+  "opsName": "13.W - LA BAM E/4 - West 80",
+  "farm": "LAFARMS",
+  "start": "2026-05-29",
+  "end": "2026-05-29",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 75.0,
+    "rate": "12,800 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 75.0
+ },
+ {
+  "opsField": "14.S",
+  "opsName": "14.S - LA BAM S/4 - S 80",
+  "farm": "LAFARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-08",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 91.1,
+    "rate": "26,200 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 91.1
+ },
+ {
+  "opsField": "16",
+  "opsName": "16 - LA ROSCOE BIG",
+  "farm": "LAFARMS",
+  "start": "2026-05-19",
+  "end": "2026-05-23",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P14364PCUE",
+    "acres": 190.2,
+    "rate": "14,400 seeds/ac",
+    "target": "14,000 seeds/ac"
+   }
+  ],
+  "area": 190.2
+ },
+ {
+  "opsField": "17",
+  "opsName": "17 - LA MULVIHILL",
+  "farm": "LAFARMS",
+  "start": "2026-05-23",
+  "end": "2026-05-23",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P14364PCUE",
+    "acres": 157.3,
+    "rate": "14,200 seeds/ac",
+    "target": "14,000 seeds/ac"
+   }
+  ],
+  "area": 157.3
+ },
+ {
+  "opsField": "23.E",
+  "opsName": "23.E - KB SOUTHWEST",
+  "farm": "KB FARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-07",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 3.0,
+    "rate": "25,400 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 3.0
+ },
+ {
+  "opsField": "24.E",
+  "opsName": "24.E - KB Section SE/4 - East",
+  "farm": "KB FARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-07",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 47.1,
+    "rate": "25,900 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 47.1
+ },
+ {
+  "opsField": "24.E",
+  "opsName": "24.E - KB Section SE/4 - East",
+  "farm": "KB FARMS",
+  "start": "2026-06-02",
+  "end": "2026-06-02",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 51.3,
+    "rate": "12,700 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 51.3
+ },
+ {
+  "opsField": "27",
+  "opsName": "27 - NW Michael",
+  "farm": "KB FARMS",
+  "start": "2026-06-09",
+  "end": "2026-06-09",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 50.9,
+    "rate": "25,500 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 50.9
+ },
+ {
+  "opsField": "27-N House",
+  "opsName": "27-N House",
+  "farm": "KB FARMS",
+  "start": "2026-05-24",
+  "end": "2026-05-25",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P14364PCUE",
+    "acres": 89.6,
+    "rate": "14,600 seeds/ac",
+    "target": "14,000 seeds/ac"
+   }
+  ],
+  "area": 89.6
+ },
+ {
+  "opsField": "28",
+  "opsName": "28 - Michael SW 1/4",
+  "farm": "KB FARMS",
+  "start": "2026-06-09",
+  "end": "2026-06-09",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 116.7,
+    "rate": "25,300 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 116.7
+ },
+ {
+  "opsField": "29",
+  "opsName": "29 - SE Michael",
+  "farm": "KB FARMS",
+  "start": "2026-06-24",
+  "end": "2026-06-24",
+  "crop": "Sudangrass",
+  "varieties": [
+   {
+    "variety": "845F",
+    "acres": 40.2,
+    "rate": "103,000 seeds/ac",
+    "target": "145,000 seeds/ac"
+   }
+  ],
+  "area": 40.2
+ },
+ {
+  "opsField": "29",
+  "opsName": "29 - SE Michael",
+  "farm": "KB FARMS",
+  "start": "2026-06-09",
+  "end": "2026-06-09",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 1.9,
+    "rate": "25,800 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 1.9
+ },
+ {
+  "opsField": "30.W",
+  "opsName": "30.W - Pole Rd 1/4",
+  "farm": "PETERSON",
+  "start": "2026-05-29",
+  "end": "2026-05-29",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 75.6,
+    "rate": "12,800 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 75.6
+ },
+ {
+  "opsField": "30.W",
+  "opsName": "30.W - Pole Rd 1/4",
+  "farm": "PETERSON",
+  "start": "2026-06-12",
+  "end": "2026-06-12",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 2.3,
+    "rate": "23,500 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 2.3
+ },
+ {
+  "opsField": "31.E",
+  "opsName": "31.E - Peterson Pole Rd - East",
+  "farm": "PETERSON",
+  "start": "2026-06-12",
+  "end": "2026-06-12",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 45.4,
+    "rate": "24,000 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 45.4
+ },
+ {
+  "opsField": "32.N",
+  "opsName": "32.N - PT Highland W - North 80",
+  "farm": "PETERSON",
+  "start": "2026-06-06",
+  "end": "2026-06-07",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 79.3,
+    "rate": "25,300 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 79.3
+ },
+ {
+  "opsField": "33.S",
+  "opsName": "33.S - PT Orpha's - South 80",
+  "farm": "PETERSON",
+  "start": "2026-05-31",
+  "end": "2026-06-02",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 79.3,
+    "rate": "12,600 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 79.3
+ },
+ {
+  "opsField": "41.E",
+  "opsName": "41.E - HD E/4 - East 80",
+  "farm": "HD Farms",
+  "start": "2026-05-27",
+  "end": "2026-05-28",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 78.4,
+    "rate": "12,700 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 78.4
+ },
+ {
+  "opsField": "44.W",
+  "opsName": "44.W - HD S TOWN",
+  "farm": "HD Farms",
+  "start": "2025-06-05",
+  "end": "2025-06-05",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20~2",
+    "acres": 78.8,
+    "rate": "31,600 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 78.8
+ },
+ {
+  "opsField": "44.W",
+  "opsName": "44.W - HD S TOWN",
+  "farm": "HD Farms",
+  "start": "2026-06-11",
+  "end": "2026-06-12",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 76.2,
+    "rate": "24,900 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 76.2
+ },
+ {
+  "opsField": "44.W",
+  "opsName": "44.W - HD S TOWN",
+  "farm": "HD Farms",
+  "start": "2026-06-16",
+  "end": "2026-06-17",
+  "crop": "Sudangrass",
+  "varieties": [
+   {
+    "variety": "845F",
+    "acres": 15.6,
+    "rate": "98,100 seeds/ac",
+    "target": "145,000 seeds/ac"
+   },
+   {
+    "variety": "877F",
+    "acres": 62.2,
+    "rate": "177,000 seeds/ac",
+    "target": "177,000 seeds/ac"
+   }
+  ],
+  "area": 77.8
+ },
+ {
+  "opsField": "45",
+  "opsName": "45 - HD W TOWN",
+  "farm": "HD Farms",
+  "start": "2026-05-12",
+  "end": "2026-05-12",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P1548AM",
+    "acres": 117.3,
+    "rate": "13,700 seeds/ac",
+    "target": "13,300 seeds/ac"
+   }
+  ],
+  "area": 117.3
+ },
+ {
+  "opsField": "45",
+  "opsName": "45 - HD W TOWN",
+  "farm": "HD Farms",
+  "start": "2025-06-04",
+  "end": "2025-06-04",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 122.1,
+    "rate": "31,800 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 122.1
+ },
+ {
+  "opsField": "46",
+  "opsName": "46 - HD HOME W",
+  "farm": "HD Farms",
+  "start": "2026-05-04",
+  "end": "2026-05-04",
+  "crop": "Sudangrass",
+  "varieties": [],
+  "area": 0
+ },
+ {
+  "opsField": "46",
+  "opsName": "46 - HD HOME W",
+  "farm": "HD Farms",
+  "start": "2025-06-04",
+  "end": "2025-06-04",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 68.3,
+    "rate": "29,800 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 68.3
+ },
+ {
+  "opsField": "46",
+  "opsName": "46 - HD HOME W",
+  "farm": "HD Farms",
+  "start": "2026-05-04",
+  "end": "2026-05-11",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P0075AM",
+    "acres": 0.8,
+    "rate": "52,200 seeds/ac",
+    "target": "113,000 seeds/ac"
+   },
+   {
+    "variety": "P11259PCE-PBHT",
+    "acres": 64.5,
+    "rate": "13,400 seeds/ac",
+    "target": "13,300 seeds/ac"
+   }
+  ],
+  "area": 65.3
+ },
+ {
+  "opsField": "47",
+  "opsName": "47 - HD HOME E",
+  "farm": "HD Farms",
+  "start": "2026-05-11",
+  "end": "2026-05-11",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P11259PCE-PBHT",
+    "acres": 62.8,
+    "rate": "13,500 seeds/ac",
+    "target": "13,300 seeds/ac"
+   },
+   {
+    "variety": "P13841PWUE",
+    "acres": 33.3,
+    "rate": "13,500 seeds/ac",
+    "target": "13,300 seeds/ac"
+   }
+  ],
+  "area": 96.1
+ },
+ {
+  "opsField": "53",
+  "opsName": "53 - ME DICKS",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-05-24",
+  "end": "2026-05-24",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P14364PCUE",
+    "acres": 74.8,
+    "rate": "14,200 seeds/ac",
+    "target": "14,000 seeds/ac"
+   }
+  ],
+  "area": 74.8
+ },
+ {
+  "opsField": "55.B",
+  "opsName": "55.B - Kirby House little",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-06-11",
+  "end": "2026-06-11",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 3.8,
+    "rate": "24,400 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 3.8
+ },
+ {
+  "opsField": "55.N",
+  "opsName": "55.N - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2025-06-04",
+  "end": "2025-06-04",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 0.1,
+    "rate": "27,300 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 0.1
+ },
+ {
+  "opsField": "55.S",
+  "opsName": "55.S - Kirby House",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-06-11",
+  "end": "2026-06-11",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 64.9,
+    "rate": "24,600 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 64.9
+ },
+ {
+  "opsField": "56.W",
+  "opsName": "56.W - KIRBY SOUTH - West 80",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-06-12",
+  "end": "2026-06-12",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "86P20",
+    "acres": 76.9,
+    "rate": "24,200 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 76.9
+ },
+ {
+  "opsField": "56.W",
+  "opsName": "56.W - KIRBY SOUTH - West 80",
+  "farm": "MCCONNELL ENT",
+  "start": "2026-05-30",
+  "end": "2026-05-30",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 79.0,
+    "rate": "12,600 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 79.0
+ },
+ {
+  "opsField": "60.E",
+  "opsName": "60.E - A1DAILEY RD",
+  "farm": "A1 FARMS",
+  "start": "2026-05-30",
+  "end": "2026-05-30",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 78.6,
+    "rate": "12,500 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 78.6
+ },
+ {
+  "opsField": "61.N",
+  "opsName": "61.N - A1 Highland E - North 80",
+  "farm": "A1 FARMS",
+  "start": "2026-06-07",
+  "end": "2026-06-07",
+  "crop": "Sorghum (Milo)",
+  "varieties": [],
+  "area": 0
+ },
+ {
+  "opsField": "71",
+  "opsName": "71 - Lueking Sec 19 NW",
+  "farm": "Lueking",
+  "start": "2026-06-03",
+  "end": "2026-06-03",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 99.4,
+    "rate": "12,600 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 99.4
+ },
+ {
+  "opsField": "72",
+  "opsName": "72 - Lueking S Big Circle",
+  "farm": "Lueking",
+  "start": "2026-06-17",
+  "end": "2026-06-17",
+  "crop": "Sudangrass",
+  "varieties": [
+   {
+    "variety": "845F",
+    "acres": 64.1,
+    "rate": "99,800 seeds/ac",
+    "target": "145,000 seeds/ac"
+   }
+  ],
+  "area": 64.1
+ },
+ {
+  "opsField": "73",
+  "opsName": "73 - Home Circle - Sec 19",
+  "farm": "Lueking",
+  "start": "2026-05-13",
+  "end": "2026-05-15",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P03115V - TP HC",
+    "acres": 1.8,
+    "rate": "31,900 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P03357PCE - TP HC",
+    "acres": 1.6,
+    "rate": "31,800 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P04651V - TP HC",
+    "acres": 1.6,
+    "rate": "31,000 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P05466V - TP HC",
+    "acres": 5.1,
+    "rate": "32,200 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P0622Q - TP HC",
+    "acres": 5.1,
+    "rate": "31,400 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P08527V",
+    "acres": 116.3,
+    "rate": "31,800 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P10625PCUE - TP HC",
+    "acres": 1.8,
+    "rate": "32,300 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P1420V - TP HC",
+    "acres": 1.8,
+    "rate": "32,500 seeds/ac",
+    "target": "31,800 seeds/ac"
+   },
+   {
+    "variety": "P1551V - TP HC",
+    "acres": 1.8,
+    "rate": "31,800 seeds/ac",
+    "target": "31,800 seeds/ac"
+   }
+  ],
+  "area": 136.9
+ },
+ {
+  "opsField": "73.C.SE",
+  "opsName": "73.C.SE - Southeast Corner Small Circle",
+  "farm": "Lueking",
+  "start": "2026-06-05",
+  "end": "2026-06-05",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "85Z153",
+    "acres": 5.3,
+    "rate": "25,000 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 5.3
+ },
+ {
+  "opsField": "73.C.SW",
+  "opsName": "73.C.SW - SW Corner Small Circle",
+  "farm": "Lueking",
+  "start": "2026-06-17",
+  "end": "2026-06-17",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "845F (1)",
+    "acres": 7.5,
+    "rate": "119,000 seeds/ac",
+    "target": "145,000 seeds/ac"
+   }
+  ],
+  "area": 7.5
+ },
+ {
+  "opsField": "75.E",
+  "opsName": "75.E - Lueking NE Home-",
+  "farm": "Lueking",
+  "start": "2026-06-04",
+  "end": "2026-06-05",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "85Z153",
+    "acres": 56.4,
+    "rate": "25,500 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 56.4
+ },
+ {
+  "opsField": "75.E",
+  "opsName": "75.E - Lueking NE Home-",
+  "farm": "Lueking",
+  "start": "2026-06-03",
+  "end": "2026-06-03",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05081AML",
+    "acres": 56.1,
+    "rate": "12,600 seeds/ac",
+    "target": "12,500 seeds/ac"
+   }
+  ],
+  "area": 56.1
+ },
+ {
+  "opsField": "76.E",
+  "opsName": "76.E - Lueking SE House",
+  "farm": "Lueking",
+  "start": "2026-06-04",
+  "end": "2026-06-04",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "85Z153",
+    "acres": 50.1,
+    "rate": "25,900 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 50.1
+ },
+ {
+  "opsField": "77",
+  "opsName": "77 - Big Circle - Sec 30",
+  "farm": "Lueking",
+  "start": "2026-05-14",
+  "end": "2026-05-15",
+  "crop": "Corn",
+  "varieties": [
+   {
+    "variety": "P05466V",
+    "acres": 93.5,
+    "rate": "27,900 seeds/ac",
+    "target": "27,900 seeds/ac"
+   },
+   {
+    "variety": "P0622Q",
+    "acres": 126.4,
+    "rate": "27,900 seeds/ac",
+    "target": "28,000 seeds/ac"
+   }
+  ],
+  "area": 219.9
+ },
+ {
+  "opsField": "77.C.NW",
+  "opsName": "77.C.NW - NW Corner Big Circle",
+  "farm": "Lueking",
+  "start": "2026-06-05",
+  "end": "2026-06-05",
+  "crop": "Sorghum (Milo)",
+  "varieties": [
+   {
+    "variety": "85Z153",
+    "acres": 14.0,
+    "rate": "25,500 seeds/ac",
+    "target": "30,000 seeds/ac"
+   }
+  ],
+  "area": 14.0
+ },
+ {
+  "opsField": "79.S",
+  "opsName": "79.S - Lueking By Steves",
+  "farm": "Lueking",
+  "start": "2026-06-17",
+  "end": "2026-06-17",
+  "crop": "Sudangrass",
+  "varieties": [
+   {
+    "variety": "845F",
+    "acres": 104.1,
+    "rate": "97,800 seeds/ac",
+    "target": "145,000 seeds/ac"
+   }
+  ],
+  "area": 104.1
+ }
+]

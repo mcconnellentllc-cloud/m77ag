@@ -34,7 +34,8 @@ async function cardCrops(fields) {
     const c = field.legacyId ? byId[String(field.legacyId)] : null;
     let crop = (c && c['crop' + year]) || (year === 2026 ? field.crop2026 : '') || '';
     crop = String(crop).toUpperCase().trim();
-    if (crop.startsWith('MILO') || crop.startsWith('SORGHUM')) return 'SORGHUM';
+    if (crop.startsWith('MILO') || crop === 'SORGHUM' || crop.startsWith('SORGHUM (')) return 'SORGHUM';
+    if (crop.startsWith('SUDAN') || crop.startsWith('SORGHUM SUDAN') || crop.startsWith('SORGHUM-SUDAN')) return 'SORGHUM SUDAN';
     return crop;
   };
 }
@@ -95,13 +96,18 @@ exports.getImport = async (req, res) => {
       let candidates = fields.filter(f => matches(r.fieldHint, f.name));
       // Operations Center names are not reliable for the half, so match by
       // field number and then by the crop on the card.
-      if (r.matchBy === 'crop' && candidates.length > 1) {
+      let cropNote = null;
+      if (r.matchBy === 'crop') {
         const year = r.matchCropYear || r.cropYear;
         const crop = r.matchCrop || r.crop;
-        if (crop) candidates = candidates.filter(f => cropOn(f, year) === crop);
+        if (crop && candidates.length > 1) candidates = candidates.filter(f => cropOn(f, year) === crop);
+        else if (crop && candidates.length === 1 && cropOn(candidates[0], year) !== crop) {
+          cropNote = `${candidates[0].name} is ${cropOn(candidates[0], year) || 'not set'} for ${year} on its card; the report says ${crop}. Check before adding.`;
+        }
       }
       return {
         ...r,
+        review: r.review || cropNote,
         addedTo: d ? { m77Field: d.m77Field, fieldName: d.fieldName } : null,
         outdated: !!d && (d.sourceRev || 1) < (r.rev || 1),
         suggested: candidates.length === 1 ? String(candidates[0]._id) : null,
@@ -118,9 +124,16 @@ exports.getImport = async (req, res) => {
       if (seen[k]) r.review = r.review || ('Same card and pass as ' + seen[k] + '; likely logged twice.');
       else seen[k] = r.fieldHint + ' ' + r.startDate;
     }
+    // Records on cards from an earlier version of this import whose data was
+    // replaced (for example starter-based planting replaced by the seeding
+    // report); offered for removal.
+    const current = new Set(imp.RECORDS.map(r => req.params.importId + ':' + r.key));
+    const retired = await FieldOperation.find({ sourceKey: { $regex: '^' + req.params.importId.replace(/[^a-z0-9-]/gi, '') + ':' } })
+      .select('sourceKey fieldName title cropYear crop startDate').lean();
     res.json({
       success: true,
       data: {
+        retired: retired.filter(r => !current.has(r.sourceKey)).map(r => ({ id: r._id, sourceKey: r.sourceKey, fieldName: r.fieldName, title: r.title, cropYear: r.cropYear, crop: r.crop, startDate: r.startDate })),
         records,
         fields: fields.map(f => ({ _id: f._id, name: f.name, acres: f.acres, farmName: f.farm ? f.farm.name : '' }))
       }
@@ -138,7 +151,17 @@ exports.applyImport = async (req, res) => {
   if (!imp) return res.status(404).json({ success: false, message: 'Import not found' });
   try {
     const assignments = Array.isArray(req.body && req.body.assignments) ? req.body.assignments : [];
-    if (!assignments.length) return res.status(400).json({ success: false, message: 'Pick at least one record to add' });
+    const retire = Array.isArray(req.body && req.body.retire) ? req.body.retire : [];
+    if (!assignments.length && !retire.length) return res.status(400).json({ success: false, message: 'Pick at least one record to add' });
+    // Remove superseded records (only ones from this import that are no longer in it).
+    const currentKeys = new Set(imp.RECORDS.map(r => req.params.importId + ':' + r.key));
+    let removed = 0;
+    for (const id of retire) {
+      const op = await FieldOperation.findById(id);
+      if (!op || !op.sourceKey || !op.sourceKey.startsWith(req.params.importId + ':') || currentKeys.has(op.sourceKey)) continue;
+      await op.deleteOne();
+      removed += 1;
+    }
     const byKey = {};
     for (const r of imp.RECORDS) byKey[r.key] = r;
     const fieldIds = Array.from(new Set(assignments.map(a => a.m77Field).filter(Boolean)));
@@ -179,7 +202,7 @@ exports.applyImport = async (req, res) => {
     res.json({
       success: errors.length === 0,
       data: { added, errors },
-      message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (errors.length ? `; ${errors.length} not added` : '')
+      message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (removed ? `; ${removed} superseded record${removed === 1 ? '' : 's'} removed` : '') + (errors.length ? `; ${errors.length} not added` : '')
     });
   } catch (err) {
     console.error('Apply field record import error:', err);

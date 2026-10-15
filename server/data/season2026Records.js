@@ -225,45 +225,58 @@ function reportLine(e) {
 
 const OPS_RECORDS = [];
 
-// Planting with starter: one pass per field number, crop and year.
+// Planting: Operations Center Seeding 2026 report (unfiltered), spring 2026
+// row crops and June 2025 milo. Wheat 27 drilling is already on the cards
+// from the seed ledgers. The UpShiftC starter from the Application report
+// rides on the matching planting pass. Matched by field number and the crop
+// on the card; acres are the card's acres.
+const OPS_SEED = require('./opsCenterSeeding2026.json');
+const SEED_CROP = { 'Corn': 'CORN', 'Sorghum (Milo)': 'SORGHUM', 'Sudangrass': 'SORGHUM SUDAN' };
+
 const plantGroups = new Map();
-for (const e of OPS_APP) {
-  const isStarter = /upshift|starter|^---$/i.test(e.plan) && !/^---$/.test(e.plan) || (/^---$/.test(e.plan) && /unspecified/i.test(e.crop) && e.start < '2026-07-01');
-  if (!isStarter) continue;
+for (const e of OPS_SEED) {
+  const crop = SEED_CROP[e.crop];
+  if (!crop) continue;
   const year = Number(e.start.slice(0, 4));
-  const crop = cropOf(e.crop) || (/corn starter/i.test(e.plan) ? 'CORN' : null);
-  const k = opsNumber(e.opsField) + '|' + year + '|' + (crop || '?');
+  const k = opsNumber(e.opsField) + '|' + year + '|' + crop;
   if (!plantGroups.has(k)) plantGroups.set(k, { num: opsNumber(e.opsField), year, crop, entries: [] });
   plantGroups.get(k).entries.push(e);
 }
-// A group that only logged under 1 acre, on a field that has a real pass that
-// year, is coverage noise from driving through; drop it.
+// A group that seeded nothing, on a field with a real planting that year, is
+// the planter passing through; drop it.
 for (const [k, g] of plantGroups) {
-  if (g.entries.some(e => !smallArea(e))) continue;
-  const other = [...plantGroups.values()].some(x => x !== g && x.num === g.num && x.year === g.year && x.entries.some(e => !smallArea(e)));
+  if (g.entries.some(e => e.area >= 1)) continue;
+  const other = [...plantGroups.values()].some(x => x !== g && x.num === g.num && x.year === g.year && x.entries.some(e => e.area >= 1));
   if (other) plantGroups.delete(k);
 }
-// A starter entry with no crop joins the field's one named crop that year.
-for (const [k, g] of plantGroups) {
-  if (g.crop) continue;
-  const named = [...plantGroups.values()].filter(x => x.num === g.num && x.year === g.year && x.crop);
-  if (named.length === 1) { named[0].entries.push(...g.entries); plantGroups.delete(k); }
+function starterFor(num, year, crop) {
+  const products = [];
+  for (const e of OPS_APP) {
+    if (opsNumber(e.opsField) !== num || Number(e.start.slice(0, 4)) !== year) continue;
+    if (!/upshift|starter/i.test(e.plan)) continue;
+    const c = cropOf(e.crop);
+    if (c && c !== crop) continue;
+    for (const p of e.products) if (!products.some(x => x.name === p.name && x.rateUnit === p.rateUnit)) products.push(p);
+  }
+  return products;
 }
 for (const g of plantGroups.values()) {
   const entries = g.entries.sort((a, b) => a.start.localeCompare(b.start));
-  const real = entries.filter(e => !smallArea(e));
-  const products = [];
-  for (const e of entries) for (const p of e.products) if (!products.some(x => x.name === p.name)) products.push(p);
+  const vars = [];
+  for (const e of entries) for (const v of e.varieties) vars.push(v);
+  vars.sort((a, b) => b.acres - a.acres);
+  const area = Math.round(entries.reduce((sum, e) => sum + e.area, 0) * 10) / 10;
   OPS_RECORDS.push({
-    key: 'app26-plant-' + g.num + '-' + g.year + '-' + slug(g.crop || 'crop'),
-    fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, cropFromCard: !g.crop, acresFromField: true,
-    type: 'seeding', status: 'completed',
-    title: 'Planted with starter',
+    key: 'sd26-' + g.num + '-' + g.year + '-' + slug(g.crop),
+    fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, acresFromField: true,
+    type: 'seeding', status: 'completed', title: 'Planted',
     startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,
-    products,
-    review: real.length ? null : 'Under 1 acre logged; check that this field was planted.',
-    source: 'Operations Center Application 2026 report (starter applied at planting)',
-    notes: entries.map(reportLine).join(' ')
+    variety: vars.map(v => v.variety).join(', '),
+    products: starterFor(g.num, g.year, g.crop),
+    review: area >= 1 ? null : 'Under 1 acre seeded; check that this field was planted.',
+    source: 'Operations Center Seeding 2026 report' + (starterFor(g.num, g.year, g.crop).length ? '; starter from the Application 2026 report' : ''),
+    notes: entries.map(e => 'Report: ' + e.opsName + ', ' + e.crop + ', ' + e.area + ' ac logged: ' +
+      e.varieties.map(v => v.variety + ' ' + v.acres + ' ac' + (v.rate ? ' at ' + v.rate : '') + (v.target ? ' (target ' + v.target + ')' : '')).join('; ') + '.').join(' ')
   });
 }
 
