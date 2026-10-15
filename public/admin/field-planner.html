@@ -101,6 +101,27 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 30px;
         }
+        .county-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .county-controls { display: flex; gap: 8px; align-items: center; }
+        .county-controls label { font-size: 13px; color: #666; }
+        .county-controls select { padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .county-print { padding: 8px 16px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .county-note { font-size: 13px; color: #666; margin: 6px 0 12px; }
+        .county-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .county-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .county-table th { text-align: right; background: #f5f3f0; color: #2d5016; font-family: 'Oswald', sans-serif; font-weight: 500; padding: 9px 10px; white-space: nowrap; }
+        .county-table th:first-child, .county-table td:first-child { text-align: left; }
+        .county-table td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .county-table td small { display: block; color: #999; font-size: 11px; }
+        .county-table tr.total td { border-top: 2px solid #2d5016; font-weight: 700; }
+        .county-table td.col-total { font-weight: 700; background: #faf8f4; }
+        .county-warn { font-size: 12px; color: #8a6d00; margin-top: 8px; }
+        @media print {
+            body.print-county * { visibility: hidden; }
+            body.print-county #countyReport, body.print-county #countyReport * { visibility: visible; }
+            body.print-county #countyReport { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+            body.print-county .county-controls { display: none; }
+        }
         .crop-summary h2 {
             font-family: 'Oswald', sans-serif;
             font-size: 22px;
@@ -1026,6 +1047,20 @@
             </div>
         </div>
 
+        <!-- Crop acres by county (USDA / FSA acreage reporting) -->
+        <div class="crop-summary county-report" id="countyReport">
+            <div class="county-head">
+                <h2>Crop Acres by County</h2>
+                <div class="county-controls">
+                    <label for="countyYear">Crop year</label>
+                    <select id="countyYear"></select>
+                    <button type="button" class="county-print" onclick="printCountyReport()">Print</button>
+                </div>
+            </div>
+            <p class="county-note">Total acres of each crop in each county, for USDA and FSA acreage reports. Every field on the planner is counted; the farm tabs do not filter this table.</p>
+            <div class="county-table-wrap" id="countyTable"></div>
+        </div>
+
         <!-- Expense Input Panel -->
         <div class="expense-panel">
             <button class="expense-panel-toggle" id="expenseToggle" onclick="toggleExpensePanel()">
@@ -1344,6 +1379,7 @@
 
                 renderSummary();
                 renderCropBars();
+                renderCountyReport();
                 renderFarmTabs();
                 renderCropFilters();
                 renderView();
@@ -1366,6 +1402,48 @@
                 return sum;
             }, 0);
             document.getElementById('productiveAcres').textContent = productiveAcres.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        // === Crop acres by county ===
+        const COUNTY_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
+        let countyYear = 2026;
+        function renderCountyReport() {
+            const sel = document.getElementById('countyYear');
+            if (!sel.options.length) {
+                sel.innerHTML = COUNTY_YEARS.map(y => `<option value="${y}" ${y === countyYear ? 'selected' : ''}>${y}</option>`).join('');
+                sel.addEventListener('change', () => { countyYear = parseInt(sel.value, 10); renderCountyReport(); });
+            }
+            const y = countyYear;
+            const NO_COUNTY = 'No county';
+            const cell = {}, cropTot = {}, countyTot = {};
+            let grand = { ac: 0, n: 0 };
+            const counties = new Set();
+            for (const f of allFields) {
+                const crop = (f['crop' + y] || 'NO CROP SET').toUpperCase().trim();
+                const county = (f.county || '').trim() || NO_COUNTY;
+                const ac = f.acres || 0;
+                counties.add(county);
+                const k = crop + '|' + county;
+                cell[k] = cell[k] || { ac: 0, n: 0 }; cell[k].ac += ac; cell[k].n += 1;
+                cropTot[crop] = cropTot[crop] || { ac: 0, n: 0 }; cropTot[crop].ac += ac; cropTot[crop].n += 1;
+                countyTot[county] = countyTot[county] || { ac: 0, n: 0 }; countyTot[county].ac += ac; countyTot[county].n += 1;
+                grand.ac += ac; grand.n += 1;
+            }
+            const cols = [...counties].sort((a, b) => (a === NO_COUNTY) - (b === NO_COUNTY) || a.localeCompare(b));
+            const rows = Object.keys(cropTot).sort((a, b) => (a === 'NO CROP SET') - (b === 'NO CROP SET') || cropTot[b].ac - cropTot[a].ac);
+            const fmtAc = v => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const td = c => c ? `${fmtAc(c.ac)}<small>${c.n} field${c.n === 1 ? '' : 's'}</small>` : '<span style="color:#ccc;">-</span>';
+            const label = c => c === 'NO CROP SET' ? 'No crop set' : cropLabel(c, y);
+            document.getElementById('countyTable').innerHTML = `<table class="county-table">
+                <thead><tr><th>Crop ${y}</th>${cols.map(c => `<th>${c}</th>`).join('')}<th>Total</th></tr></thead>
+                <tbody>${rows.map(r => `<tr><td><strong>${label(r)}</strong></td>${cols.map(c => `<td>${td(cell[r + '|' + c])}</td>`).join('')}<td class="col-total">${td(cropTot[r])}</td></tr>`).join('')}</tbody>
+                <tfoot><tr class="total"><td>All crops</td>${cols.map(c => `<td>${td(countyTot[c])}</td>`).join('')}<td class="col-total">${td(grand)}</td></tr></tfoot>
+            </table>` + (countyTot[NO_COUNTY] ? `<div class="county-warn">${countyTot[NO_COUNTY].n} field${countyTot[NO_COUNTY].n === 1 ? ' has' : 's have'} no county (${fmtAc(countyTot[NO_COUNTY].ac)} ac). Fill Missing Data on Field Records sets county from the legal description, or set it with Edit Details.</div>` : '');
+        }
+        function printCountyReport() {
+            document.body.classList.add('print-county');
+            window.print();
+            setTimeout(() => document.body.classList.remove('print-county'), 500);
         }
 
         function renderCropBars() {
