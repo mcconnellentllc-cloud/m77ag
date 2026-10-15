@@ -39,7 +39,7 @@ async function cardCrops(fields) {
     return crop;
   };
 }
-const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'cropFromCard', 'cropFromRotation', 'acresFromField', 'review'];
+const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'matchCrops', 'pickIndex', 'area', 'cropFromCard', 'cropFromRotation', 'acresFromField', 'review'];
 // An expense is charged to the crop that pays it back: the next harvested
 // crop on the field after the pass (Kyle, Oct 15, 2026). The card's crops
 // decide; when the next year is not set yet, the usual rotation does:
@@ -97,6 +97,24 @@ exports.getImport = async (req, res) => {
       // Operations Center names are not reliable for the half, so match by
       // field number and then by the crop on the card.
       let cropNote = null;
+      // Group of crops (tillage: spring passes go to the spring-planted half,
+      // early summer passes to the fallow half).
+      // matchCrops is a list of crop groups in order of preference.
+      if (r.matchBy === 'crops' && candidates.length > 1) {
+        for (const group of r.matchCrops) {
+          const narrowed = candidates.filter(f => group.includes(cropOn(f, r.matchCropYear)));
+          if (narrowed.length) { candidates = narrowed; break; }
+        }
+      }
+      // Ops Center name breaks a tie: use its half when that card exists.
+      if ((r.matchBy === 'name' || r.matchBy === 'crops') && r.opsName && candidates.length > 1 && r.pickIndex === undefined) {
+        const named = candidates.filter(f => matches(r.opsName, f.name));
+        if (named.length === 1) candidates = named;
+      }
+      // Whole-quarter pass split into one record per half.
+      if (r.pickIndex !== undefined && candidates.length === 2) {
+        candidates = [candidates.slice().sort((a, b) => a.name.localeCompare(b.name))[r.pickIndex]];
+      }
       if (r.matchBy === 'crop') {
         const year = r.matchCropYear || r.cropYear;
         const crop = r.matchCrop || r.crop;
@@ -104,6 +122,10 @@ exports.getImport = async (req, res) => {
         else if (crop && candidates.length === 1 && cropOn(candidates[0], year) !== crop) {
           cropNote = `${candidates[0].name} is ${cropOn(candidates[0], year) || 'not set'} for ${year} on its card; the report says ${crop}. Check before adding.`;
         }
+      }
+      const target = candidates.length === 1 ? candidates[0] : null;
+      if (!cropNote && target && r.area !== undefined && target.acres > 0 && r.area < 0.25 * target.acres) {
+        cropNote = `Logged ${r.area} ac on the ${target.acres}-ac field; likely a patch, headland or overlap. Check before adding.`;
       }
       return {
         ...r,
@@ -119,8 +141,8 @@ exports.getImport = async (req, res) => {
     const seen = {};
     for (const r of records) {
       const target = r.addedTo ? String(r.addedTo.m77Field) : r.suggested;
-      if (!target || !r.key.startsWith('app26')) continue;
-      const k = [target, r.type, r.cropYear, r.title].join('|');
+      if (!target || !/^(app26|sd26|till26)-/.test(r.key)) continue;
+      const k = [target, r.type, r.cropYear, r.title, r.startDate].join('|');
       if (seen[k]) r.review = r.review || ('Same card and pass as ' + seen[k] + '; likely logged twice.');
       else seen[k] = r.fieldHint + ' ' + r.startDate;
     }

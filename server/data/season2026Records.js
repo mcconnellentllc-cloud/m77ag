@@ -312,6 +312,46 @@ for (const e of OPS_APP) {
   });
 }
 
+// ---- Tillage: Operations Center Field Report Tillage 2026 ----
+// Every listed pass counts as done; acres are the card's acres. The report
+// names the tractor but not the implement, so the machine rate is picked on
+// the card (or set once Kyle names the implement per tractor and period).
+// Tillage is charged to the upcoming crop (Kyle, Oct 15, 2026): passes before
+// June go to the 2026 crop, later passes to the next harvested crop.
+// Card match, by what was on each half at the time: spring passes go to the
+// half planted in spring (else the fallow half), June to early July passes to
+// the fallow half (wheat still standing), later passes to the fallow or
+// wheat-stubble half (row crops still growing); the Ops name breaks a tie. A pass over 120 ac on
+// a split field (name ends in N/S/E/W) covered the whole quarter and is added
+// to both halves.
+const OPS_TILL = require('./opsCenterTillage2026.json');
+for (const e of OPS_TILL) {
+  const num = opsNumber(e.opsField);
+  const split = /[.\- ][NSEW]$/i.test(e.opsField);
+  const spring = e.start < '2026-06-01';
+  const earlySummer = !spring && e.start < '2026-07-06';
+  const matchCrops = spring ? [['CORN', 'SORGHUM', 'SORGHUM SUDAN'], ['FALLOW']]
+    : earlySummer ? [['FALLOW']] : [['FALLOW', 'WHEAT']];
+  const halves = split && e.area > 120 ? [1, 2] : [0];
+  for (const h of halves) {
+    OPS_RECORDS.push({
+      key: 'till26-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.equipment.join('-')) + (h ? '-half' + h : ''),
+      fieldHint: num, opsName: e.opsField,
+      matchBy: 'crops', matchCrops, matchCropYear: 2026, pickIndex: h ? h - 1 : undefined,
+      area: e.area,
+      cropYear: spring ? 2026 : 2027, crop: null, cropFromRotation: true, acresFromField: true,
+      type: 'tillage', status: 'completed',
+      title: e.kind === 'Shank' ? 'Shank' : 'Primary tillage',
+      startDate: e.start, endDate: e.end || e.start,
+      operator: e.operator, equipment: e.equipment.join(', '),
+      review: null,
+      source: 'Operations Center Field Report Tillage 2026',
+      notes: 'Report: ' + e.field + ', ' + e.area + ' ac logged, target depth ' + e.depth + ', ' + e.hours + ', ' + e.fuel + ' fuel.' +
+        (h ? ' Whole-quarter pass; this record is for half ' + h + '.' : '') + ' Implement not in the report.'
+    });
+  }
+}
+
 RECORDS.push(...OPS_RECORDS);
 
 module.exports = { RECORDS };
