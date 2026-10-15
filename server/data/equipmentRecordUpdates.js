@@ -92,5 +92,21 @@ module.exports = [
     // Confirmed 2026-10-15: the Jasper sticker is for the transmission.
     match: [{ vin: '1D7KS28C27J501253' }, { title: /^2006 dodge ram 2500/i }],
     addNote: 'Transmission: Jasper Engines & Transmissions remanufactured unit (sticker on the door jamb); install date and warranty not on file.'
+  },
+  {
+    key: 'ram1500-2026-10-15',
+    // From photos 2026-10-15; VIN and ratings from the driver door label.
+    match: [{ vin: '1D7RV1CT9BS668428' }, { title: /^dodge ram 1500$/i }, { make: /dodge/i, model: /ram 1500/i }],
+    replace: {
+      title: { from: ['Dodge Ram 1500'], to: '2011 Dodge Ram 1500' },
+      subtitle: { from: ['Red Pickup'], to: 'Red 4-Door Pickup - 5.7L HEMI' },
+      year: { from: [], to: 2011 },
+      vin: { from: [], to: '1D7RV1CT9BS668428' },
+      licensePlate: { from: [], to: 'DMA-942 (Colorado)' }
+    },
+    addNote: '5.7L HEMI V8. Door label: built 5-11 by Chrysler Group LLC, GVWR 6,800 lb, GAWR front 3,900 / rear 3,900 lb, ' +
+      'tires P275/60R20 on 20x9.0 rims, cold pressure 35 psi front and rear, paint code PR4. ' +
+      'Two-tone red and tan, chrome mirror caps, hood bug deflector, running boards, bed tonneau cover.'
   }
 ];
+
