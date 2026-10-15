@@ -68,5 +68,23 @@ module.exports = [
     match: [{ serialNumber: '1P9AB19339S276116' }],
     addNote: 'Avery Weigh-Tronix 640 scale head, hydraulic auger drive, 3000 RPM maximum. Engine: Briggs Vanguard 16 HP V-twin 479cc ' +
       '(series 305447), 1 in. shaft, 1/4 in. key. Replacement: Harbor Freight Predator 459cc item 58383. Wagon manual line 800-291-5487.'
+  },
+  {
+    key: 'ram2500-2026-10-15',
+    // From photos 2026-10-15, VIN and ratings from the driver door label.
+    match: [{ vin: '1D7KS28C27J501253' }, { title: /^2006 dodge ram 2500/i }, { year: 2006, make: /dodge/i, model: /2500/ }],
+    replace: {
+      vin: { from: [], to: '1D7KS28C27J501253' },
+      subtitle: { from: ['Krogman Bale Bed'], to: 'Krogmann Balehandler Bed' },
+      description: { from: ['Work truck with Krogman bale bed'], to: 'Work truck with Krogmann Balehandler bale bed, Cummins Turbo Diesel, Heavy Duty' },
+      licensePlate: { from: [], to: 'DMA-941 (Colorado)' },
+      repairsNeeded: { from: [], to: 'Check engine light on at 142,210 mi (Oct 15, 2026); read the code. Windshield cracked across the driver side; replace.' }
+    },
+    atLeast: { currentMiles: 142210 },
+    addNote: 'Cummins Turbo Diesel, Ram 2500 Heavy Duty, automatic. Krogmann Balehandler bale bed with headache rack and ' +
+      'underbody toolboxes. TrailFX grille guard with LED light bar. Odometer 142,210 mi on Oct 15, 2026, check engine light on. ' +
+      'Door label: built 7-06 by DaimlerChrysler (VIN model-year code 7 = 2007), GVWR 9,000 lb, GAWR front 5,200 / rear 6,010 lb, ' +
+      'tires LT265/70R17E on 17x8.0 rims, cold pressure front 60 psi / rear 70 psi, paint code PDM, trim M9D5. ' +
+      'Jasper Engines & Transmissions sticker on the door jamb: a Jasper remanufactured unit has been installed; confirm which and the warranty.'
   }
 ];
