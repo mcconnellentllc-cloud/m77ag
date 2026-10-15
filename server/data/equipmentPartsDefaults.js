@@ -7,18 +7,28 @@ const amazon = q => 'https://www.amazon.com/s?k=' + encodeURIComponent(q);
 
 module.exports = [
   {
-    category: 'Lighting', seedKey: 'u106-marker-red', seedRev: 3, name: 'Red marker / clearance lamp',
-    spec: 'Peterson Mfg. Co. LED (PM logo), rectangular, 2-screw surface mount, red, DOT SAE P2 97. Same housing as the amber lamp (back: 155 01 / 2968 01). Plugs into a 2-prong quick connect in the panel.',
-    partNumber: 'Peterson (back: 155 01 / 2968 01)', fits: 'Unit #106', qtyNeeded: 5,
-    amazonUrl: amazon('Peterson red LED clearance marker light 2 pin plug rectangular'),
-    notes: '5 needed. One rear lens is cracked and broken out along the bottom edge. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
+    category: 'Lighting', seedKey: 'u106-marker-red', seedRev: 4, name: 'Red marker / clearance lamp',
+    spec: 'Peterson 157R LED, red, 6 in x 2 in, 6 diodes, PC-rated, 2-screw surface mount on 4.8 in centers, plug-in receptacle on the back. Replaces the original Peterson 155 series red lamp.',
+    partNumber: 'Peterson 157R', fits: 'Unit #106', qtyNeeded: 5,
+    amazonUrl: amazon('Peterson 157R LED clearance marker light red'),
+    otherUrl: 'https://www.vehiclesafetysupply.com/peterson-led-marker-clearance-pc-rated-rectangular-quot-x2-quot-157r-p-191386.html',
+    notes: '5 needed. Vehicle Safety Supply listed $17.14 each, in stock (Oct 2026). Measure the screw-hole centers on an old lamp first; 4.8 in confirms the fit. Uses the Peterson 160-49 plug, the same family as the original 155.'
   },
   {
-    category: 'Lighting', seedKey: 'u106-marker-amber', seedRev: 3, name: 'Amber side marker / clearance lamp',
-    spec: 'Peterson Mfg. Co. LED, rectangular, 2-screw surface mount, amber, DOT SAE P2. Back of housing: 155 01 and 2968 01 either side of a molded arrow, DOT P2 98. Plugs into a 2-prong quick connect in the panel.',
-    partNumber: 'Peterson (back: 155 01 / 2968 01)', fits: 'Unit #106', qtyNeeded: 4,
-    amazonUrl: amazon('Peterson amber LED clearance marker light 2 pin plug rectangular'),
-    notes: '4 needed. Give the Peterson dealer the numbers on the back of the old lamp, or take it in. Buy lamps with 2-pin plug-in terminals to fit the existing sockets.'
+    category: 'Lighting', seedKey: 'u106-marker-amber', seedRev: 4, name: 'Amber side marker / clearance lamp',
+    spec: 'Peterson 157A LED, amber, 6 in x 2 in, 6 diodes, PC-rated, 2-screw surface mount on 4.8 in centers, plug-in receptacle on the back. Replaces the original Peterson 155 series amber lamp.',
+    partNumber: 'Peterson 157A', fits: 'Unit #106', qtyNeeded: 4,
+    amazonUrl: amazon('Peterson 157A LED clearance marker light amber'),
+    otherUrl: 'https://www.vehiclesafetysupply.com/peterson-led-marker-clearance-pc-rated-rectangular-quot-x2-quot-157a-p-191385.html',
+    notes: '4 needed. Vehicle Safety Supply listed $17.14 each, in stock (Oct 2026). Measure the screw-hole centers on an old lamp first; 4.8 in confirms the fit. Uses the Peterson 160-49 plug, the same family as the original 155.'
+  },
+  {
+    category: 'Lighting', seedKey: 'u106-plug-160-49', name: 'Marker lamp plug',
+    spec: 'Peterson 160-49 right-angle two-wire plug, 8 in leads, #10 ring terminal and stripped end. Fits Peterson 155, 157, 158 and 160 series lamps.',
+    partNumber: 'Peterson 160-49', fits: 'Unit #106 marker lamps', qtyNeeded: 0,
+    amazonUrl: amazon('Peterson 160-49 marker lamp plug'),
+    otherUrl: 'https://www.vehiclesafetysupply.com/peterson-160-49-marker-lamp-plug-quot-lead-p-190742.html',
+    notes: 'Listed at $2.71 (Oct 2026). Replace any panel plug that is corroded; set the quantity once each socket is checked.'
   },
   {
     category: 'Lighting', seedKey: 'u106-stt-4in', name: '4 in round stop / turn / tail lamp',
