@@ -36,6 +36,8 @@ async function addMissingDefaults() {
   }
 }
 
+exports.addMissingDefaults = addMissingDefaults;
+
 exports.list = async (req, res) => {
   try {
     await addMissingDefaults();

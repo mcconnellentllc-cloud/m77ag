@@ -63,6 +63,28 @@
         .modal-footer { padding: 16px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
         .modal-footer .right { display: flex; gap: 10px; margin-left: auto; }
         .msg { font-size: 13px; color: #b3261e; }
+        .card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+        .card-head h2 { margin-bottom: 0; }
+        .order { border-radius: 8px; background: #faf8f4; padding: 16px; margin-top: 12px; }
+        .order-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+        .order-title { font-weight: 700; color: #1a1a1a; }
+        .order-total { font-family: 'Oswald', sans-serif; font-size: 20px; color: #2d5016; }
+        .status { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 6px; }
+        .status.ordered { background: #fbf3e2; color: #8a6d00; }
+        .status.received { background: #e7f2e1; color: #2d5016; }
+        .status.cancelled { background: #eee; color: #777; }
+        .order-lines { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        .order-lines td { padding: 5px 4px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .order-lines td.num { text-align: right; white-space: nowrap; }
+        .order-meta { font-size: 12px; color: #777; margin-top: 8px; line-height: 1.5; }
+        .vendor { border-radius: 8px; background: #faf8f4; padding: 14px 16px; margin-top: 10px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+        .vendor-name { font-weight: 700; }
+        .vendor-line { font-size: 13px; color: #555; overflow-wrap: anywhere; }
+        .on-order { font-size: 11px; font-weight: 700; color: #2d5016; background: #e7f2e1; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+        .line-edit { display: grid; grid-template-columns: 2fr 70px 100px 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .line-edit button { background: none; border: none; font-size: 22px; color: #b3261e; cursor: pointer; }
+        .order-sum { text-align: right; font-weight: 700; color: #2d5016; }
+        .modal.wide { max-width: 720px; }
         @media (max-width: 700px) {
             .admin-header { padding: 16px; }
             .container { padding: 20px 16px 40px; }
@@ -70,6 +92,7 @@
             .card { padding: 18px 16px; }
             .parts-grid { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
+            .line-edit { grid-template-columns: 1fr 60px 80px 30px; }
             .toolbar input, .toolbar select { max-width: none; }
         }
         @media print {
@@ -110,7 +133,89 @@
             </div>
             <div id="parts" style="margin-top:18px;"><div class="empty">Loading...</div></div>
         </section>
+
+        <section class="card" id="ordersCard">
+            <div class="card-head"><h2>Orders</h2><button class="btn btn-small" onclick="openOrder()">Add Order</button></div>
+            <div id="orders"><div class="empty">Loading...</div></div>
+        </section>
+
+        <section class="card" id="vendorsCard">
+            <div class="card-head"><h2>Vendors</h2><button class="btn btn-secondary btn-small" onclick="openVendor()">Add Vendor</button></div>
+            <p class="muted">Account passwords belong in a password manager, not here.</p>
+            <div id="vendors"><div class="empty">Loading...</div></div>
+        </section>
     </main>
+
+    <div class="modal-overlay" id="orderModal" onclick="if (event.target === this) closeOrder()">
+        <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="orderTitle">Add Order</h2>
+                <button class="modal-close" onclick="closeOrder()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="oId">
+                <div class="form-row">
+                    <div><label for="oVendor">Vendor</label><select id="oVendor"></select></div>
+                    <div><label for="oDate">Order date</label><input id="oDate" type="date"></div>
+                </div>
+                <div class="form-row">
+                    <div><label for="oUnit">Unit</label><select id="oUnit"></select></div>
+                    <div><label for="oStatus">Status</label><select id="oStatus"><option value="ordered">Ordered</option><option value="received">Received</option><option value="cancelled">Cancelled</option></select></div>
+                </div>
+                <div>
+                    <label>Items</label>
+                    <div id="oLines"></div>
+                    <button class="btn btn-secondary btn-small" type="button" onclick="addLine()">Add Item</button>
+                </div>
+                <div class="form-row">
+                    <div><label for="oShipping">Shipping</label><input id="oShipping" type="number" min="0" step="0.01" inputmode="decimal"></div>
+                    <div><label for="oTax">Tax</label><input id="oTax" type="number" min="0" step="0.01" inputmode="decimal"></div>
+                </div>
+                <div class="order-sum" id="oTotal"></div>
+                <div class="form-row">
+                    <div><label for="oInvoice">Invoice no.</label><input id="oInvoice"></div>
+                    <div><label for="oPaid">Paid date</label><input id="oPaid" type="date"></div>
+                </div>
+                <div><label for="oPo">PO no.</label><input id="oPo"></div>
+                <div><label for="oNotes">Notes</label><textarea id="oNotes" rows="2"></textarea></div>
+                <div class="msg" id="oMsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-small" id="oDelete" onclick="deleteOrder()">Delete</button>
+                <div class="right">
+                    <button class="btn btn-secondary" onclick="closeOrder()">Cancel</button>
+                    <button class="btn" onclick="saveOrder()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="vendorModal" onclick="if (event.target === this) closeVendor()">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="vendorTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="vendorTitle">Add Vendor</h2>
+                <button class="modal-close" onclick="closeVendor()" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="vId">
+                <div><label for="vName">Name</label><input id="vName"></div>
+                <div><label for="vWebsite">Website</label><input id="vWebsite" type="url"></div>
+                <div class="form-row">
+                    <div><label for="vEmail">Account email</label><input id="vEmail" type="email"></div>
+                    <div><label for="vPhone">Phone</label><input id="vPhone" type="tel"></div>
+                </div>
+                <div><label for="vNotes">Notes</label><textarea id="vNotes" rows="2"></textarea></div>
+                <div class="msg" id="vMsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-small" id="vDelete" onclick="deleteVendor()">Delete</button>
+                <div class="right">
+                    <button class="btn btn-secondary" onclick="closeVendor()">Cancel</button>
+                    <button class="btn" onclick="saveVendor()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal-overlay" id="partModal" onclick="if (event.target === this) closePart()">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="partTitle">
@@ -176,7 +281,7 @@
             document.getElementById('needed').innerHTML = needed.length ? needed.map(p => `
                 <div class="needed-row">
                     <span class="qty">${p.qtyNeeded}</span>
-                    <span class="name"><strong>${esc(p.name)}</strong>${p.fits ? ' <span class="muted">' + esc(p.fits) + '</span>' : ''}</span>
+                    <span class="name"><strong>${esc(p.name)}</strong>${p.fits ? ' <span class="muted">' + esc(p.fits) + '</span>' : ''}${onOrder(p._id) ? ` <span class="on-order">On order ${onOrder(p._id)}</span>` : ''}</span>
                     <span class="part-actions" style="margin-top:0;">${buyButtons(p)}</span>
                 </div>`).join('') : '<div class="empty">Nothing needed right now.</div>';
 
@@ -189,7 +294,7 @@
                 if (!items.length) return '';
                 return `<div class="group-title">${esc(c)}</div><div class="parts-grid">` + items.map(p => `
                     <div class="part">
-                        <div class="part-name"><span>${esc(p.name)}</span>${p.qtyNeeded > 0 ? `<span class="badge">Need ${p.qtyNeeded}</span>` : ''}</div>
+                        <div class="part-name"><span>${esc(p.name)}</span><span>${p.qtyNeeded > 0 ? `<span class="badge">Need ${p.qtyNeeded}</span>` : ''}${onOrder(p._id) ? ` <span class="on-order">On order ${onOrder(p._id)}</span>` : ''}</span></div>
                         ${p.spec ? `<div class="part-line">${esc(p.spec)}</div>` : ''}
                         ${p.partNumber ? `<div class="part-line"><span class="k">Part no.</span> ${esc(p.partNumber)}</div>` : ''}
                         ${p.fits ? `<div class="part-line"><span class="k">Fits</span> ${esc(p.fits)}</div>` : ''}
@@ -203,11 +308,205 @@
         async function load() {
             try {
                 parts = (await api('')).data;
-                render();
+                const [o, v] = await Promise.all([api('/orders'), api('/vendors'), loadUnits()]);
+                orders = o.data; vendors = v.data;
+                render(); renderOrders(); renderVendors();
             } catch (e) {
                 document.getElementById('parts').innerHTML = '<div class="empty">Could not load parts: ' + esc(e.message) + '</div>';
                 document.getElementById('needed').innerHTML = '';
             }
+        }
+
+        // ---------- Orders ----------
+        let orders = [], vendors = [], units = null;
+        function fmt(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+        function isoDay(d) { return d ? new Date(d).toISOString().slice(0, 10) : ''; }
+        function onOrder(partId) {
+            return orders.filter(o => o.status === 'ordered').reduce((n, o) =>
+                n + o.lines.filter(l => l.part && String(l.part) === String(partId)).reduce((m, l) => m + (l.qty || 0) * (l.packOf || 1), 0), 0);
+        }
+        function unitName(o) {
+            const u = units && o.equipment ? units.find(x => String(x._id) === String(o.equipment)) : null;
+            return u ? u.title : (o.unitLabel || '');
+        }
+        function renderOrders() {
+            document.getElementById('orders').innerHTML = orders.length ? orders.map(o => `
+                <div class="order">
+                    <div class="order-top">
+                        <div><span class="order-title">${esc(o.vendorName || 'Vendor not set')}</span><span class="status ${esc(o.status)}">${esc(o.status)}</span>
+                            <div class="muted">${day(o.orderDate)}${unitName(o) ? ' · ' + esc(unitName(o)) : ''}</div></div>
+                        <div class="order-total">${fmt(o.total)}</div>
+                    </div>
+                    <table class="order-lines"><tbody>${o.lines.map(l => `<tr><td>${esc(l.name)}${l.partNumber ? ' <span class="muted">' + esc(l.partNumber) + '</span>' : ''}</td><td class="num">${l.qty}${(l.packOf || 1) > 1 ? ' (pack of ' + l.packOf + ')' : ''} x ${fmt(l.unitPrice)}</td><td class="num">${fmt(l.qty * l.unitPrice)}</td></tr>`).join('')}
+                        ${o.shipping ? `<tr><td>Shipping</td><td></td><td class="num">${fmt(o.shipping)}</td></tr>` : ''}
+                        ${o.tax ? `<tr><td>Tax</td><td></td><td class="num">${fmt(o.tax)}</td></tr>` : ''}</tbody></table>
+                    <div class="order-meta">${[o.invoiceNumber ? 'Invoice ' + esc(o.invoiceNumber) : '', o.paidDate ? 'Paid ' + day(o.paidDate) : '', o.poNumber ? 'PO ' + esc(o.poNumber) : '', o.notes ? esc(o.notes) : ''].filter(Boolean).join(' · ')}</div>
+                    <div class="part-actions">
+                        ${o.status === 'ordered' ? `<button class="btn btn-small" onclick="markReceived('${o._id}')">Mark Received</button>` : ''}
+                        <button class="btn btn-secondary btn-small" onclick="openOrder('${o._id}')">Edit</button>
+                    </div>
+                </div>`).join('') : '<div class="empty">No orders yet.</div>';
+        }
+        async function loadUnits() {
+            if (units) return units;
+            try {
+                const res = await fetch('/api/equipment/inventory');
+                const body = await res.json();
+                units = (body.equipment || []).filter(e => e.saleStatus !== 'sold').sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            } catch (e) { units = []; }
+            return units;
+        }
+        function lineRow(l = {}) {
+            const opts = '<option value="">Other item</option>' + parts.map(p =>
+                `<option value="${p._id}" ${l.part && String(l.part) === String(p._id) ? 'selected' : ''}>${esc(p.name)}${p.partNumber ? ' (' + esc(p.partNumber) + ')' : ''}</option>`).join('');
+            const row = document.createElement('div');
+            row.className = 'line-edit';
+            row.innerHTML = `<div><select class="lPart" aria-label="Part">${opts}</select><input class="lName" placeholder="Item" value="${esc(l.name || '')}" style="margin-top:6px;"></div>
+                <input class="lQty" type="number" min="0" step="1" inputmode="numeric" aria-label="Quantity" value="${l.qty != null ? l.qty : 1}">
+                <input class="lPrice" type="number" min="0" step="0.01" inputmode="decimal" aria-label="Unit price" placeholder="Price" value="${l.unitPrice != null ? l.unitPrice : ''}">
+                <button type="button" aria-label="Remove item">&times;</button>`;
+            row.querySelector('.lPart').onchange = e => {
+                const p = parts.find(x => x._id === e.target.value);
+                if (p) { row.querySelector('.lName').value = p.name; row.dataset.partNumber = p.partNumber || ''; }
+            };
+            row.dataset.partNumber = l.partNumber || '';
+            row.dataset.packOf = l.packOf || 1;
+            row.querySelector('button').onclick = () => { row.remove(); orderTotal(); };
+            row.addEventListener('input', orderTotal);
+            document.getElementById('oLines').appendChild(row);
+        }
+        function addLine() { lineRow(); orderTotal(); }
+        function readLines() {
+            return [...document.querySelectorAll('#oLines .line-edit')].map(r => ({
+                part: r.querySelector('.lPart').value || null,
+                name: r.querySelector('.lName').value.trim(),
+                partNumber: r.dataset.partNumber || '',
+                packOf: r.dataset.packOf || 1,
+                qty: r.querySelector('.lQty').value,
+                unitPrice: r.querySelector('.lPrice').value
+            })).filter(l => l.name);
+        }
+        function orderTotal() {
+            const items = readLines().reduce((s, l) => s + (parseFloat(l.qty) || 0) * (parseFloat(l.unitPrice) || 0), 0);
+            const t = items + (parseFloat(document.getElementById('oShipping').value) || 0) + (parseFloat(document.getElementById('oTax').value) || 0);
+            document.getElementById('oTotal').textContent = 'Total ' + fmt(t);
+        }
+        async function openOrder(id) {
+            const o = orders.find(x => x._id === id) || { status: 'ordered', lines: [], orderDate: new Date().toISOString() };
+            await loadUnits();
+            document.getElementById('orderTitle').textContent = id ? 'Edit Order' : 'Add Order';
+            document.getElementById('oId').value = id || '';
+            document.getElementById('oVendor').innerHTML = '<option value="">Not set</option>' + vendors.map(v =>
+                `<option value="${v._id}" ${String(o.vendor) === String(v._id) ? 'selected' : ''}>${esc(v.name)}</option>`).join('');
+            document.getElementById('oUnit').innerHTML = '<option value="">Not set</option>' + units.map(u =>
+                `<option value="${u._id}" ${String(o.equipment) === String(u._id) ? 'selected' : ''}>${esc(u.title)}${u.subtitle ? ' (' + esc(u.subtitle) + ')' : ''}</option>`).join('');
+            document.getElementById('oDate').value = isoDay(o.orderDate);
+            document.getElementById('oStatus').value = o.status || 'ordered';
+            document.getElementById('oLines').innerHTML = '';
+            (o.lines.length ? o.lines : [{}]).forEach(l => lineRow(l));
+            document.getElementById('oShipping').value = o.shipping || '';
+            document.getElementById('oTax').value = o.tax || '';
+            document.getElementById('oInvoice').value = o.invoiceNumber || '';
+            document.getElementById('oPaid').value = isoDay(o.paidDate);
+            document.getElementById('oPo').value = o.poNumber || '';
+            document.getElementById('oNotes').value = o.notes || '';
+            document.getElementById('oMsg').textContent = '';
+            document.getElementById('oDelete').style.visibility = id ? 'visible' : 'hidden';
+            orderTotal();
+            document.getElementById('orderModal').classList.add('active');
+        }
+        function closeOrder() { document.getElementById('orderModal').classList.remove('active'); }
+        async function saveOrder() {
+            const id = document.getElementById('oId').value;
+            const unitSel = document.getElementById('oUnit');
+            const data = {
+                vendor: document.getElementById('oVendor').value || null,
+                orderDate: document.getElementById('oDate').value || new Date().toISOString().slice(0, 10),
+                equipment: unitSel.value || null,
+                unitLabel: unitSel.value ? unitSel.options[unitSel.selectedIndex].text : '',
+                status: document.getElementById('oStatus').value,
+                lines: readLines(),
+                shipping: document.getElementById('oShipping').value,
+                tax: document.getElementById('oTax').value,
+                invoiceNumber: document.getElementById('oInvoice').value.trim(),
+                paidDate: document.getElementById('oPaid').value,
+                poNumber: document.getElementById('oPo').value.trim(),
+                notes: document.getElementById('oNotes').value.trim()
+            };
+            if (!data.lines.length) { document.getElementById('oMsg').textContent = 'Add at least one item.'; return; }
+            try {
+                await api(id ? '/orders/' + id : '/orders', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+                closeOrder();
+                await load();
+            } catch (e) { document.getElementById('oMsg').textContent = e.message; }
+        }
+        async function markReceived(id) {
+            if (!confirm('Mark this order received? Its quantities come off "Needed now".')) return;
+            try { await api('/orders/' + id, { method: 'PUT', body: JSON.stringify({ status: 'received' }) }); await load(); }
+            catch (e) { alert(e.message); }
+        }
+        async function deleteOrder() {
+            const id = document.getElementById('oId').value;
+            if (!id || !confirm('Delete this order?')) return;
+            try { await api('/orders/' + id, { method: 'DELETE' }); closeOrder(); await load(); }
+            catch (e) { document.getElementById('oMsg').textContent = e.message; }
+        }
+
+        // ---------- Vendors ----------
+        function renderVendors() {
+            document.getElementById('vendors').innerHTML = vendors.length ? vendors.map(v => {
+                const spent = orders.filter(o => String(o.vendor) === String(v._id) && o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
+                return `<div class="vendor">
+                    <div style="min-width:0;flex:1 1 220px;">
+                        <div class="vendor-name">${esc(v.name)}</div>
+                        ${safeUrl(v.website) ? `<div class="vendor-line"><a href="${esc(v.website)}" target="_blank" rel="noopener">${esc(v.website.replace(/^https?:\/\//, ''))}</a></div>` : ''}
+                        ${v.phone ? `<div class="vendor-line"><a href="tel:${esc(v.phone.replace(/[^0-9+]/g, ''))}">${esc(v.phone)}</a></div>` : ''}
+                        ${v.accountEmail ? `<div class="vendor-line">Account: ${esc(v.accountEmail)}</div>` : ''}
+                        ${v.notes ? `<div class="part-notes">${esc(v.notes)}</div>` : ''}
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="muted">Spent</div><div class="order-total">${fmt(spent)}</div>
+                        <button class="btn btn-secondary btn-small" style="margin-top:6px;" onclick="openVendor('${v._id}')">Edit</button>
+                    </div>
+                </div>`;
+            }).join('') : '<div class="empty">No vendors yet.</div>';
+        }
+        function openVendor(id) {
+            const v = vendors.find(x => x._id === id) || {};
+            document.getElementById('vendorTitle').textContent = id ? 'Edit Vendor' : 'Add Vendor';
+            document.getElementById('vId').value = id || '';
+            document.getElementById('vName').value = v.name || '';
+            document.getElementById('vWebsite').value = v.website || '';
+            document.getElementById('vEmail').value = v.accountEmail || '';
+            document.getElementById('vPhone').value = v.phone || '';
+            document.getElementById('vNotes').value = v.notes || '';
+            document.getElementById('vMsg').textContent = '';
+            document.getElementById('vDelete').style.visibility = id ? 'visible' : 'hidden';
+            document.getElementById('vendorModal').classList.add('active');
+        }
+        function closeVendor() { document.getElementById('vendorModal').classList.remove('active'); }
+        async function saveVendor() {
+            const id = document.getElementById('vId').value;
+            const data = {
+                name: document.getElementById('vName').value.trim(),
+                website: document.getElementById('vWebsite').value.trim(),
+                accountEmail: document.getElementById('vEmail').value.trim(),
+                phone: document.getElementById('vPhone').value.trim(),
+                notes: document.getElementById('vNotes').value.trim()
+            };
+            if (!data.name) { document.getElementById('vMsg').textContent = 'Enter the vendor name.'; return; }
+            try {
+                await api(id ? '/vendors/' + id : '/vendors', { method: id ? 'PUT' : 'POST', body: JSON.stringify(data) });
+                closeVendor();
+                await load();
+            } catch (e) { document.getElementById('vMsg').textContent = e.message; }
+        }
+        async function deleteVendor() {
+            const id = document.getElementById('vId').value;
+            if (!id || !confirm('Delete this vendor? Its orders keep the vendor name.')) return;
+            try { await api('/vendors/' + id, { method: 'DELETE' }); closeVendor(); await load(); }
+            catch (e) { document.getElementById('vMsg').textContent = e.message; }
         }
 
         function openPart(id) {
@@ -267,7 +566,9 @@
         document.getElementById('catFilter').innerHTML = '<option value="">All categories</option>' + catOptions;
         document.getElementById('filter').addEventListener('input', render);
         document.getElementById('catFilter').addEventListener('change', render);
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closePart(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePart(); closeOrder(); closeVendor(); } });
+        document.getElementById('oShipping').addEventListener('input', orderTotal);
+        document.getElementById('oTax').addEventListener('input', orderTotal);
         load();
     </script>
 </body>
