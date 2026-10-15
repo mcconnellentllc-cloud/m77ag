@@ -37,6 +37,20 @@ module.exports = {
 ,
     // 599 Pauls is idle ground with no rent (Kyle, Oct 15, 2026).
     { key: 'mefarms-599-idle-2026', farm: 'MEFARMS', year: 2025, source: 'Kyle, Oct 15, 2026',
-      lines: [{ workbook: '599 PAULS', match: /^599 PAULS\b/i, acres: 6.39, rate: 0, paid: 0, note: 'Idle ground, no rent.' }] }
+      lines: [{ workbook: '599 PAULS', match: /^599 PAULS\b/i, acres: 6.39, rate: 0, paid: 0, note: 'Idle ground, no rent.' }] },
+    // KBFARMS cash rent equals the yearly land loan payment, spread over the
+    // parcel's total acres (Kyle, Oct 15, 2026). Payments from the KB Farms
+    // capital records. Neal's Pasture is paid off: no loan, no rent.
+    { key: 'kbfarms-rent-2026', farm: 'KBFARMS', year: 2026, source: 'KB Farms land loans',
+      lines: [
+        { workbook: 'Pauli Section', match: /^(20 NORTH|21 SMALL|22 TOP HILL|23\.[EW] SW PAULI|24\.[EW] SE PAULI)\b/i, acres: 604, rate: 63.88, paid: 0,
+          note: 'Rent equals the Pauli Section loan payment: $38,583.17 per year (due Mar 1) over 604 ac = $63.88/ac.' },
+        { workbook: 'Michael Section', match: /^(25\.[CP] NW MICHAEL|26\.[EW] SW MICHAEL|28\.(E|NE|NW|SE|SW) MICHAEL|29\.[NS] MICHAEL|298 HWY HOUSE)\b/i, acres: 400, rate: 73.76, paid: 0,
+          note: 'Rent equals the Michael Ground loan payment: $29,502.43 per year (due Nov 1) over 400 ac = $73.76/ac.' },
+        { workbook: 'Madsen Pasture', match: /^202 SECTION\b/i, acres: 160, rate: 94.02, paid: 0,
+          note: 'Rent equals the Madsen Pasture loan payment: $15,042.48 per year (due Mar 1) over 160 ac = $94.02/ac.' },
+        { workbook: "Neal's Pasture", match: /^(201 BY NEAL'?S|299 BY NEALS)\b/i, acres: 152, rate: 0, paid: 0,
+          note: "Neal's Pasture is paid off: no loan, no rent." }
+      ] }
   ]
 };
