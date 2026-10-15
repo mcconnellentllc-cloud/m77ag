@@ -92,6 +92,22 @@
         .bf-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
         .bf-row .bf-n { color: #8a6d00; font-size: 12px; }
         .bf-progress { font-size: 13px; color: #2d5016; margin-top: 10px; }
+        .view-toggle { display: inline-flex; border: 2px solid #e0e0e0; border-radius: 5px; overflow: hidden; }
+        .view-toggle button { background: white; border: none; padding: 8px 14px; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; font-family: inherit; }
+        .view-toggle button.active { background: #2d5016; color: white; }
+        .crop-list { grid-column: 1 / -1; min-width: 0; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; }
+        .crop-totals { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 18px; }
+        .crop-total { background: #f5f3f0; border-radius: 6px; padding: 10px 12px; }
+        .crop-total .ct-name { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #555; }
+        .crop-total .ct-ac { font-family: 'Oswald', sans-serif; font-size: 22px; color: #2d5016; }
+        .crop-total .ct-sub { font-size: 11px; color: #888; }
+        .crop-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .crop-table th { text-align: left; background: #f5f3f0; color: #2d5016; font-family: 'Oswald', sans-serif; font-weight: 500; letter-spacing: 0.5px; padding: 9px 10px; white-space: nowrap; }
+        .crop-table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        .crop-table .right { text-align: right; white-space: nowrap; }
+        .crop-table tr.group td { background: #faf8f4; font-weight: 700; color: #2d5016; }
+        .crop-table tr.frow { cursor: pointer; }
+        .crop-table tr.frow:hover td { background: #faf8f4; }
 
         /* Soil quick-view on cards */
         .fc-soil-quick { display: flex; gap: 6px; padding: 8px 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid #f0f0f0; }
@@ -257,6 +273,10 @@
             <div class="page-controls">
                 <label for="yearSelect" style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Crop Year</label>
                 <select id="yearSelect" aria-label="Crop year for all cards" style="padding:8px 14px;border:2px solid #e0e0e0;border-radius:5px;font-size:16px;font-weight:600;cursor:pointer;"></select>
+                <div class="view-toggle" role="group" aria-label="View">
+                    <button type="button" id="viewCards" class="active" onclick="setView('cards')">Cards</button>
+                    <button type="button" id="viewList" onclick="setView('list')">Crop List</button>
+                </div>
                 <button class="btn btn-outline btn-sm" id="btnBackfill" onclick="openBackfill()">Fill Missing Data</button>
             </div>
         </div>
@@ -702,7 +722,55 @@
                 return;
             }
 
-            grid.innerHTML = fields.map(renderCard).join('');
+            grid.innerHTML = viewMode === 'list' ? renderCropList(fields) : fields.map(renderCard).join('');
+        }
+
+        // === CROP LIST VIEW: every field's crop for the selected year ===
+        let viewMode = 'cards';
+        try { if (localStorage.getItem('fmView') === 'list') viewMode = 'list'; } catch (e) {}
+        document.getElementById('viewCards').classList.toggle('active', viewMode === 'cards');
+        document.getElementById('viewList').classList.toggle('active', viewMode === 'list');
+        function setView(mode) {
+            viewMode = mode;
+            try { localStorage.setItem('fmView', mode); } catch (e) {}
+            document.getElementById('viewCards').classList.toggle('active', mode === 'cards');
+            document.getElementById('viewList').classList.toggle('active', mode === 'list');
+            renderFields();
+        }
+        function renderCropList(fields) {
+            const y = selectedYear;
+            const groups = {};
+            let total = 0;
+            for (const f of fields) {
+                const crop = (cropFor(f, y) || 'NO CROP SET').toUpperCase();
+                (groups[crop] = groups[crop] || []).push(f);
+                total += f.acres || 0;
+            }
+            const order = Object.keys(groups).sort((a, b) =>
+                (a === 'NO CROP SET') - (b === 'NO CROP SET') ||
+                groups[b].reduce((s, f) => s + (f.acres || 0), 0) - groups[a].reduce((s, f) => s + (f.acres || 0), 0));
+            const acresOf = c => groups[c].reduce((s, f) => s + (f.acres || 0), 0);
+            const tiles = order.map(c => `<div class="crop-total"><div class="ct-name">${escapeText(c === 'NO CROP SET' ? c : c + ' ' + yy(y))}</div>
+                <div class="ct-ac">${fmtAcres(acresOf(c))}</div><div class="ct-sub">${groups[c].length} field${groups[c].length === 1 ? '' : 's'}${total ? ', ' + Math.round(acresOf(c) / total * 100) + '% of acres' : ''}</div></div>`).join('');
+            const rows = order.map(c => `<tr class="group"><td colspan="4">${escapeText(c === 'NO CROP SET' ? c : c + ' ' + yy(y))}</td><td class="right">${fmtAcres(acresOf(c))} ac</td></tr>` +
+                groups[c].slice().sort((a, b) => a.field.localeCompare(b.field, undefined, { numeric: true })).map(f =>
+                    `<tr class="frow" tabindex="0" onclick="openFromList('${f._id}')" onkeydown="if(event.key==='Enter')openFromList('${f._id}')">
+                        <td><strong>${escapeText(f.field)}</strong></td><td>${escapeText(f.farm)}</td>
+                        <td>${escapeText(cropFor(f, y - 1) || '--')}</td><td>${escapeText(cropFor(f, y + 1) || '--')}</td>
+                        <td class="right">${fmtAcres(f.acres)}</td></tr>`).join('')).join('');
+            return `<div class="crop-list">
+                <div class="crop-totals">${tiles}</div>
+                <div style="overflow-x:auto;"><table class="crop-table">
+                    <thead><tr><th>Field</th><th>Farm</th><th>${y - 1} crop</th><th>${y + 1} crop</th><th class="right">Acres</th></tr></thead>
+                    <tbody>${rows}</tbody></table></div>
+                <div style="font-size:12px;color:#888;margin-top:8px;">Select a field to open its card.</div></div>`;
+        }
+        function openFromList(id) {
+            setView('cards');
+            const card = document.getElementById('card-' + id);
+            if (!card) return;
+            document.getElementById('detail-' + id).classList.add('open');
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function renderCard(f) {
