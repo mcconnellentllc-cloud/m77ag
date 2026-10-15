@@ -232,12 +232,17 @@ const OPS_RECORDS = [];
 // on the card; acres are the card's acres.
 const OPS_SEED = require('./opsCenterSeeding2026.json');
 const SEED_CROP = { 'Corn': 'CORN', 'Sorghum (Milo)': 'SORGHUM', 'Sudangrass': 'SORGHUM SUDAN' };
+// Crops logged wrong in the cab, corrected by Kyle: field|year -> crop.
+const CROP_CORRECTIONS = { '73.C.SW|2026': 'SORGHUM SUDAN' };
+function correctedCrop(field, year, crop) {
+  return CROP_CORRECTIONS[opsNumber(field) + '|' + year] || crop;
+}
 
 const plantGroups = new Map();
 for (const e of OPS_SEED) {
-  const crop = SEED_CROP[e.crop];
-  if (!crop) continue;
   const year = Number(e.start.slice(0, 4));
+  const crop = SEED_CROP[e.crop] && correctedCrop(e.opsField, year, SEED_CROP[e.crop]);
+  if (!crop) continue;
   const k = opsNumber(e.opsField) + '|' + year + '|' + crop;
   if (!plantGroups.has(k)) plantGroups.set(k, { num: opsNumber(e.opsField), year, crop, entries: [] });
   plantGroups.get(k).entries.push(e);
@@ -254,7 +259,7 @@ function starterFor(num, year, crop) {
   for (const e of OPS_APP) {
     if (opsNumber(e.opsField) !== num || Number(e.start.slice(0, 4)) !== year) continue;
     if (!/upshift|starter/i.test(e.plan)) continue;
-    const c = cropOf(e.crop);
+    const c = cropOf(e.crop) && correctedCrop(e.opsField, year, cropOf(e.crop));
     if (c && c !== crop) continue;
     for (const p of e.products) if (!products.some(x => x.name === p.name && x.rateUnit === p.rateUnit)) products.push(p);
   }
@@ -275,7 +280,8 @@ for (const g of plantGroups.values()) {
     products: starterFor(g.num, g.year, g.crop),
     review: area >= 1 ? null : 'Under 1 acre seeded; check that this field was planted.',
     source: 'Operations Center Seeding 2026 report' + (starterFor(g.num, g.year, g.crop).length ? '; starter from the Application 2026 report' : ''),
-    notes: entries.map(e => 'Report: ' + e.opsName + ', ' + e.crop + ', ' + e.area + ' ac logged: ' +
+    notes: (CROP_CORRECTIONS[g.num + '|' + g.year] ? 'Logged as ' + entries[0].crop + ' in the cab; corrected to ' + g.crop.toLowerCase() + ' (Kyle). ' : '') +
+      entries.map(e => 'Report: ' + e.opsName + ', ' + e.crop + ', ' + e.area + ' ac logged: ' +
       e.varieties.map(v => v.variety + ' ' + v.acres + ' ac' + (v.rate ? ' at ' + v.rate : '') + (v.target ? ' (target ' + v.target + ')' : '')).join('; ') + '.').join(' ')
   });
 }
