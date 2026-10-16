@@ -169,6 +169,21 @@ module.exports = [
       }
     },
     addNote: 'Coolant reservoir current part number: AGCO 4348254M3, superseding 4280681M1.'
+  },
+  {
+    key: 'rogator-coolant-tank-bought-2026-10-16',
+    match: [{ serialNumber: 'AGCA1300JCNSL1103' }, { title: /^ag ?chem 1300 rogator$/i }],
+    replace: {
+      repairsNeeded: {
+        from: [
+          'Replace coolant reservoir, AGCO 4348254M3 (supersedes 4280681M1), and its pressure cap, 95 kPa (about 14 psi), marked TVS 5659.',
+          'Replace coolant reservoir, AGCO 4280681M1 (polypropylene), and its pressure cap, 95 kPa (about 14 psi), marked TVS 5659.'
+        ],
+        to: 'Install the new coolant expansion tank (AGCO 4348254M5, in hand). Pressure cap still needed: 95 kPa (about 14 psi), marked TVS 5659.'
+      }
+    },
+    addNote: 'Coolant expansion tank bought Oct 16, 2026: AGCO 4348254M5 (current number, supersedes 4348254M3 and 4280681M1), ' +
+      'Regier Equipment, Madrid NE, invoice 50353, $201.47 with tax and card surcharge.'
   }
 ];
 
