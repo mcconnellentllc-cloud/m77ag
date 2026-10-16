@@ -158,6 +158,17 @@ module.exports = [
     addNote: 'Coolant reservoir: AGCO 4280681M1, polypropylene (marked PP), pressure cap 95 kPa / about 14 psi (TVS 5659). ' +
       'No dealer. Sources: NAPA by AGCO number, Abilene Machine, All States Ag Parts, eBay. Cap: match neck size and pressure at O\'Reilly ' +
       '(13-14 psi, not higher). Fallback: plastic-weld the old PP tank, or fit a universal heavy-duty expansion tank matching volume, hose nipples and cap neck.'
+  },
+  {
+    key: 'rogator-coolant-tank-supersede-2026-10-16',
+    match: [{ serialNumber: 'AGCA1300JCNSL1103' }, { title: /^ag ?chem 1300 rogator$/i }],
+    replace: {
+      repairsNeeded: {
+        from: ['Replace coolant reservoir, AGCO 4280681M1 (polypropylene), and its pressure cap, 95 kPa (about 14 psi), marked TVS 5659.'],
+        to: 'Replace coolant reservoir, AGCO 4348254M3 (supersedes 4280681M1), and its pressure cap, 95 kPa (about 14 psi), marked TVS 5659.'
+      }
+    },
+    addNote: 'Coolant reservoir current part number: AGCO 4348254M3, superseding 4280681M1.'
   }
 ];
 
