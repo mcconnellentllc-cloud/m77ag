@@ -18,6 +18,11 @@ module.exports = {
       notes: 'Glass shop for all M77 vehicles and equipment: trucks, semi tractors, trailers, tractors, combines, pickups. 932 Hamilton St, Sterling, CO 80751. Mon-Fri 8:30 AM-5:00 PM, closed weekends. Mobile service in Logan, Morgan, Phillips, Sedgwick, Washington and Yuma counties. Quote requested Oct 2026 for both Unit #3 windshield panes, installed.'
     },
     {
+      seedKey: 'regier-madrid', name: 'Regier Equipment Company',
+      website: 'https://www.regierequipment.com', phone: '308-326-4245',
+      notes: 'AGCO, Massey Ferguson, Fendt, Gleaner, Hesston parts. West Hwy 23, PO Box 164, Madrid, NE 69150. Toll free 800-361-6261, fax 308-326-4356. Account 11015.'
+    },
+    {
       seedKey: 'oreilly-sterling', name: "O'Reilly Auto Parts - Sterling",
       website: 'https://www.oreillyauto.com',
       notes: '1213 West Main Street, Sterling, CO. Mon-Sat 7:30 AM-9:00 PM, Sun 9:00 AM-7:00 PM. Super Start battery warranty 866-830-4351.'
@@ -94,6 +99,17 @@ module.exports = {
       shipping: 0, tax: 2.27, status: 'received',
       invoiceNumber: '2946-276253', paidDate: '2026-10-15T23:36:00Z',
       notes: "O'Reilly invoice 2946-276253 ($285.04 total, shared with Unit #4 and Ram 1500 parts). Passenger-car DEX-COOL type; confirm it matches the coolant in the combine before topping off (heavy-duty diesels call for ASTM D6210 extended life coolant)."
+    },
+    {
+      seedKey: 'regier-2026-10-16-rogator', vendorKey: 'regier-madrid', orderDate: '2026-10-16',
+      serial: 'AGCA1300JCNSL1103', unitLabel: 'Unit #208 AG CHEM 1300 Rogator',
+      lines: [
+        { partKey: 'rogator-coolant-tank', name: 'Coolant expansion tank (supersedes 4280681M1 and 4348254M3)', partNumber: 'AGCO 4348254M5', qty: 1, unitPrice: 185.40 },
+        { name: 'Card surcharge (3%)', qty: 1, unitPrice: 5.87 }
+      ],
+      shipping: 0, tax: 10.20, status: 'received',
+      invoiceNumber: '50353', paidDate: '2026-10-16T18:56:00Z',
+      notes: 'Regier Equipment invoice 50353, $201.47 total. Over the counter, not shipped.'
     }
   ]
 };

@@ -185,10 +185,10 @@ module.exports = [
     otherUrl: 'https://www.oreillyauto.com/search?q=42725'
   },
   {
-    category: 'Other', seedKey: 'rogator-coolant-tank', seedRev: 2, name: 'Coolant reservoir', spec: 'AGCO 4348254M3 (supersedes 4280681M1), polypropylene; no dealer, source by AGCO number',
-    partNumber: 'AGCO 4348254M3', fits: 'Unit #208 AG CHEM 1300 Rogator', qtyNeeded: 1,
-    amazonUrl: amazon('4348254M3'),
-    otherUrl: 'https://www.ebay.com/sch/i.html?_nkw=4348254M3'
+    category: 'Other', seedKey: 'rogator-coolant-tank', seedRev: 3, name: 'Coolant expansion tank', spec: 'AGCO 4348254M5 (supersedes 4348254M3 and 4280681M1); Regier Equipment, Madrid NE, $185.40 (Oct 2026)',
+    partNumber: 'AGCO 4348254M5', fits: 'Unit #208 AG CHEM 1300 Rogator', qtyNeeded: 0,
+    amazonUrl: amazon('4348254M5'),
+    otherUrl: 'https://www.regierequipment.com'
   },
   {
     category: 'Other', seedKey: 'rogator-coolant-cap', name: 'Coolant reservoir pressure cap', spec: '95 kPa (about 14 psi), original marked TVS 5659; match neck size, 13-14 psi',
