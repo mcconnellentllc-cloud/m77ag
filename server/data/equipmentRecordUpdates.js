@@ -121,6 +121,32 @@ module.exports = [
     match: [{ vin: '1D7RV1CT9BS668428' }, { title: /^2011 dodge ram 1500$/i }],
     addNote: 'Filters: oil WIX 57899XP (the 57060 does not fit per O\'Reilly lookup), engine air WIX 42725. ' +
       'No serviceable fuel filter on 2011 and later: it is part of the in-tank fuel pump module.'
-  }
+  },
+  ...(() => {
+    // Winterizing, Oct 16, 2026: 30 gal RV antifreeze at $2.99/gal (before tax),
+    // 14 gal per sprayer and 2 gal for the water truck pump and plumbing.
+    const fluid = qty => ({ name: 'RV antifreeze, -50 F (propylene glycol type)', quantity: qty, cost: Math.round(qty * 2.99 * 100) / 100 });
+    const sprayerSteps = 'Winterizing: rinse the tank; drain tank, pump, strainers, low points and boom-end flush caps; blow out each boom section with air; ' +
+      'run RV antifreeze (propylene glycol, -50 F) through the pump, every boom section, nozzles, agitation and bypass lines and the flow meter until it shows at each outlet; ' +
+      'pull strainer screens and leave valves half open. In spring catch and reuse the antifreeze. 14 gal per sprayer. ' +
+      'Avoid washer fluid and alcohol-based RV antifreeze: alcohol dries out pump and valve seals.';
+    const service = (qty, what) => [{
+      date: '2026-10-16T18:00:00Z', type: 'preventive',
+      description: 'Winterized ' + (what || 'spray system') + ' with RV antifreeze (' + qty + ' gal)',
+      parts: [fluid(qty)], totalCost: Math.round(qty * 2.99 * 100) / 100, performedBy: 'self',
+      nextServiceDue: { date: '2027-03-15', description: 'Spring: catch and reuse antifreeze, flush with water before first load' },
+      notes: '$2.99/gal before tax, from 30 gal bought for both sprayers and the water truck. Confirm the jug says propylene glycol.'
+    }];
+    return [
+      { key: 'winterize-rogator-2026', match: [{ serialNumber: 'AGCA1300JCNSL1103' }, { title: /^ag ?chem 1300 rogator$/i }],
+        addNote: sprayerSteps, service: service(14) },
+      { key: 'winterize-terragator-2026', match: [{ serialNumber: '1632504' }, { title: /terra ?gator floater/i }],
+        addNote: sprayerSteps, service: service(14) },
+      { key: 'winterize-water-truck-2026', match: [{ vin: '1HSZBJWR0EHA52860' }, { serialNumber: '1HSZBJWR0EHA52860' }, { title: /water truck/i }],
+        addNote: 'Winterizing: drain the 3200 gal tank and the 3 in pump, open low-point drains and the pump drain plug, then run RV antifreeze ' +
+          '(propylene glycol, -50 F) through the pump and discharge plumbing until it shows at the outlet. 2 gal.',
+        service: service(2, 'tank pump and plumbing') }
+    ];
+  })()
 ];
 
