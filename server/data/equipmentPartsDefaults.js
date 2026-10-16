@@ -191,9 +191,9 @@ module.exports = [
     otherUrl: 'https://www.regierequipment.com'
   },
   {
-    category: 'Other', seedKey: 'rogator-coolant-cap', name: 'Coolant reservoir pressure cap', spec: '95 kPa (about 14 psi), original marked TVS 5659; match neck size, 13-14 psi',
-    partNumber: 'TVS 5659 (95 kPa)', fits: 'Unit #208 AG CHEM 1300 Rogator', qtyNeeded: 1,
-    amazonUrl: amazon('radiator cap 13 psi Stant'),
-    otherUrl: 'https://www.oreillyauto.com/search?q=radiator%20cap%2013%20psi'
+    category: 'Other', seedKey: 'rogator-coolant-cap', seedRev: 2, name: 'Expansion tank threaded pressure cap', spec: 'AGCO threaded cap for tank 4348254M5 (not included with the tank); part number from Regier, (308) 326-4245. The old 95 kPa twist-on cap does not fit.',
+    partNumber: 'AGCO cap for 4348254M5 (number pending)', fits: 'Unit #208 AG CHEM 1300 Rogator', qtyNeeded: 1,
+    amazonUrl: amazon('AGCO expansion tank threaded cap 4348254M5'),
+    otherUrl: 'https://www.regierequipment.com'
   }
 ];

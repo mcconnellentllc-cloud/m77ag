@@ -184,6 +184,19 @@ module.exports = [
     },
     addNote: 'Coolant expansion tank bought Oct 16, 2026: AGCO 4348254M5 (current number, supersedes 4348254M3 and 4280681M1), ' +
       'Regier Equipment, Madrid NE, invoice 50353, $201.47 with tax and card surcharge.'
+  },
+  {
+    key: 'rogator-threaded-cap-2026-10-16',
+    match: [{ serialNumber: 'AGCA1300JCNSL1103' }, { title: /^ag ?chem 1300 rogator$/i }],
+    replace: {
+      repairsNeeded: {
+        from: ['Install the new coolant expansion tank (AGCO 4348254M5, in hand). Pressure cap still needed: 95 kPa (about 14 psi), marked TVS 5659.'],
+        to: 'Install the new coolant expansion tank (AGCO 4348254M5, in hand). Needs the AGCO threaded pressure cap for 4348254M5 (sold separately; ' +
+          'the old 95 kPa twist-on cap does not fit). Get the cap number from Regier, (308) 326-4245. New tank has no overflow nipple: plug or remove the old overflow hose.'
+      }
+    },
+    addNote: 'New tank 4348254M5 takes a threaded cap (not included) and has no overflow nipple; 1.88 gal, about 13.8 x 6.0 x 8.8 in. ' +
+      'Check every other hose on the old tank, especially the small top air-bleed line, has a matching port before installing.'
   }
 ];
 
