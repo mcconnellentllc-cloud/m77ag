@@ -122,9 +122,17 @@ exports.getLedger = async (req, res) => {
         missing.push({ label: passLabel + (when ? ' (' + when + ')' : ''), detail: why });
       }
       const passAcres = op.acres > 0 ? op.acres : null;
+      // Invoice costs carried on the pass (starter, planter products)
+      const covered = new Set();
+      for (const c of op.inputCosts || []) {
+        if (c.covers) covered.add(c.covers);
+        expenses.push({ group: c.group || 'Products', label: c.product, date: when,
+          detail: `${c.quantity} ${c.unit} x $${Number(c.pricePerUnit).toFixed(2)} · ${c.basis}`, amount: round2(c.amount), opId: op._id });
+      }
       for (const p of op.products || []) {
         // Seed treatments ride on the seed cost (seed cost-share entries).
         if (op.type === 'seeding' && p.rate == null && p.total == null) continue;
+        if (covered.has(p.name) && p.rateUnit === 'gal/ac') continue;
         const price = priceOf['product|' + p.name.toLowerCase()];
         const c = productCost(p, op, passAcres, price);
         if (c.missing === 'price') {

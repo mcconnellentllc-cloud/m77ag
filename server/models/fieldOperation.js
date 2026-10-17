@@ -71,6 +71,15 @@ const fieldOperationSchema = new mongoose.Schema({
     }]
   },
 
+  // Invoice costs carried on a pass (starter, planter products): each line
+  // is an invoice total spread over the season's passes. covers names the
+  // product on the pass it prices, so it is not priced twice.
+  inputCosts: [{
+    _id: false,
+    product: String, covers: String, group: String, quantity: Number, unit: String,
+    pricePerUnit: Number, amount: Number, basis: String, source: String
+  }],
+
   // Rate the import knows for this pass (tillage implement by tractor and
   // date); used as the default when the pass is costed.
   suggestedRateKey: { type: String, trim: true },

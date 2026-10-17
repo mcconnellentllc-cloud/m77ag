@@ -262,7 +262,11 @@ function starterFor(num, year, crop) {
     if (!/upshift|starter/i.test(e.plan)) continue;
     const c = cropOf(e.crop) && correctedCrop(e.opsField, year, cropOf(e.crop));
     if (c && c !== crop) continue;
-    for (const p of e.products) if (!products.some(x => x.name === p.name && x.rateUnit === p.rateUnit)) products.push(p);
+    for (const p0 of e.products) {
+      // The lb/ac "UpShiftC" entries were the dry zinc (Kyle, Oct 17, 2026).
+      const p = p0.name === 'UpShiftC' && p0.rateUnit === 'lb/ac' ? { ...p0, name: require('./starter2026').zincName } : p0;
+      if (!products.some(x => x.name === p.name && x.rateUnit === p.rateUnit)) products.push(p);
+    }
   }
   return products;
 }
@@ -353,6 +357,43 @@ function seedCostFor(g) {
   return { amount: sum('amount'), interest: interestPerUnit === null ? null : sum('interest'), interestPending: interestPerUnit === null,
     lines, source: PIONEER.source };
 }
+// UpShiftC+ starter: the invoice total spread over the gallons logged on the
+// 2026 corn and milo planting passes (rate in gal/ac x seeded acres). Passes
+// with no gallon rate (the ~2 lb/ac "Zn" entries) carry no UpShiftC.
+const STARTER = require('./starter2026');
+const starterGallons = new Map();
+for (const g of plantGroups.values()) {
+  if (g.year !== STARTER.year || !['CORN', 'SORGHUM'].includes(g.crop)) continue;
+  const p = starterFor(g.num, g.year, g.crop).find(x => x.name === STARTER.upshift.name && x.rateUnit === 'gal/ac' && x.rate > 0);
+  if (!p) continue;
+  const acres = g.entries.reduce((t, e) => t + e.varieties.reduce((u, v) => u + (v.acres || 0), 0), 0);
+  if (acres > 0) starterGallons.set(g, { rate: p.rate, acres: r2(acres), gallons: r2(p.rate * acres) });
+}
+const loggedGallons = [...starterGallons.values()].reduce((t, x) => t + x.gallons, 0);
+// Hopper throttle: all 2026 corn and milo acres (Kyle, Oct 17, 2026).
+const PLANTER_CROPS = ['CORN', 'SORGHUM'];
+const plantedAcres = g => r2(g.entries.reduce((t, e) => t + e.varieties.reduce((u, v) => u + (v.acres || 0), 0), 0));
+const planterAcres = [...plantGroups.values()].filter(g => g.year === STARTER.year && PLANTER_CROPS.includes(g.crop))
+  .reduce((t, g) => t + plantedAcres(g), 0);
+// Invoice costs carried on a planting pass (starter, planter products).
+function inputCostsFor(g) {
+  const out = [];
+  const x = starterGallons.get(g);
+  if (x) {
+    const perGal = STARTER.upshift.total / loggedGallons;
+    out.push({ product: STARTER.upshift.label, covers: STARTER.upshift.name, group: 'Fertilizer', quantity: x.gallons, unit: 'gal',
+      pricePerUnit: r2(perGal), amount: r2(x.gallons * perGal), source: STARTER.source,
+      basis: `${x.rate} gal/ac x ${x.acres} ac; invoice $${STARTER.upshift.total.toFixed(2)} (${STARTER.upshift.gallons.toLocaleString('en-US')} gal) over ${Math.round(loggedGallons).toLocaleString('en-US')} gal logged on corn and milo` });
+  }
+  if (g.year === STARTER.year && PLANTER_CROPS.includes(g.crop)) {
+    const ac = plantedAcres(g);
+    const ht = STARTER.hopperThrottle;
+    if (ac > 0) out.push({ product: ht.label, group: 'Planter products', quantity: ac, unit: 'ac', pricePerUnit: r2(ht.total / planterAcres),
+      amount: r2(ac * ht.total / planterAcres), source: STARTER.source,
+      basis: `invoice $${ht.total.toFixed(2)} over ${Math.round(planterAcres * 10) / 10} corn and milo acres` });
+  }
+  return out.length ? out : undefined;
+}
 for (const g of plantGroups.values()) {
   const entries = g.entries.sort((a, b) => a.start.localeCompare(b.start));
   const vars = [];
@@ -360,10 +401,13 @@ for (const g of plantGroups.values()) {
   vars.sort((a, b) => b.acres - a.acres);
   const area = Math.round(entries.reduce((sum, e) => sum + e.area, 0) * 10) / 10;
   const seedCost = seedCostFor(g);
+  const inputCosts = inputCostsFor(g);
   OPS_RECORDS.push({
     key: 'sd26-' + g.num + '-' + g.year + '-' + slug(g.crop),
     // rev 4: seed cost from the Pioneer 2026 invoice, each hybrid on its own acres
-    ...(seedCost ? { rev: 4, seedCost } : {}),
+    // rev 5: starter and planter product costs from the 2026 starter invoice
+    ...(seedCost ? { rev: inputCosts ? 5 : 4, seedCost } : {}),
+    ...(inputCosts ? { rev: 5, inputCosts } : {}),
     fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, acresFromField: true,
     type: 'seeding', status: 'completed', title: 'Planted',
     startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,
