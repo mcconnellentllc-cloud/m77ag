@@ -61,6 +61,7 @@ const fieldOperationSchema = new mongoose.Schema({
     amount: { type: Number },
     interest: { type: Number, default: null },
     interestPending: { type: Boolean },
+    interestEstimated: { type: Boolean },
     source: { type: String, trim: true },
     lines: [{
       _id: false,
