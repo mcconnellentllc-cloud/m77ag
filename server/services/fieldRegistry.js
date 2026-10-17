@@ -34,7 +34,35 @@ async function registryFarm(cf, farmsAdded) {
   return { _id: farm._id, client: client._id };
 }
 
+// Custom acres (fields farmed for outside operators): a custom farm per
+// operator and a registry field per field, added when missing. A field that
+// already exists under any farm is left where it is.
+const CUSTOM = require('../data/customFields');
+async function ensureCustomFields() {
+  const out = [];
+  let client = await Client.findOne({ type: 'custom' }).sort({ createdAt: 1 });
+  if (!client) client = await Client.create({ name: 'Custom', type: 'custom', contact: { name: 'Custom (no portal)' }, defaultEnterprise: 'Custom' });
+  for (const f of CUSTOM.farms) {
+    let farm = await M77Farm.findOne({ client: client._id, name: f.name }).lean();
+    if (!farm) {
+      farm = await M77Farm.create({ name: f.name, client: client._id, landlordName: f.name, type: 'custom', defaultShare: 0 });
+      out.push(`custom farm added: ${f.name}`);
+    }
+    for (const [name, acres] of f.fields) {
+      // Match curly and straight apostrophes alike.
+      const pattern = '^' + esc(name).replace(/[\u2019']/g, "['\u2019]") + '$';
+      if (await M77Field.exists({ name: new RegExp(pattern, 'i') })) continue;
+      await M77Field.create({ name, acres, owner: 'm77', landlordName: f.name, enterprise: 'Custom', rotationGroup: f.name,
+        client: client._id, farm: farm._id });
+      out.push(`custom field added: ${f.name} / ${name} (${acres} ac)`);
+    }
+  }
+  return out;
+}
+
 async function ensureRegistryFields() {
+  let customLines = [];
+  try { customLines = await ensureCustomFields(); } catch (e) { customLines = [`not added: custom acres (${e.message})`]; }
   const linked = new Set((await M77Field.find({ legacySource: 'CroppingField', legacyId: { $ne: null } }).select('legacyId').lean())
     .map(r => String(r.legacyId)));
   const cards = (await CroppingField.find({}).select('field farm acres county crop2026 lease soil').lean())
@@ -74,7 +102,7 @@ async function ensureRegistryFields() {
       failed.push(`${cf.field}: ${e.message}`);
     }
   }
-  const out = [];
+  const out = [...customLines];
   if (added.length) out.push(`registry fields added for ${added.length} cards: ${added.join(', ')}`);
   if (farmsAdded.length) out.push(`registry farms added: ${farmsAdded.join(', ')}`);
   if (failed.length) out.push(`not added, so not in the records lists: ${failed.join('; ')}`);

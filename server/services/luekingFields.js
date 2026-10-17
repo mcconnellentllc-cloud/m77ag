@@ -38,6 +38,7 @@ async function addLuekingFields() {
     }
   }
   out.push(...(await applyCorrection()));
+  out.push(...(await applyOpsAcres()));
   out.push(...(await applySplit75()));
   return out;
 }
@@ -56,6 +57,25 @@ async function applyCorrection() {
   const reg = await M77Field.updateMany({ legacySource: 'CroppingField', legacyId: { $in: ids }, enterprise: { $ne: 'Lueking' } }, { $set: { enterprise: 'Lueking' } });
   const line = `${DATA.correctionKey}: ${flag.modifiedCount} cards marked no M77 financial tie, crop-share lease removed from ${lease.modifiedCount}, 73.C.SW sorghum sudan ${crop.modifiedCount ? 'set' : 'already set'}, ${reg.modifiedCount} registry fields moved to the Lueking enterprise`;
   await AppliedUpdate.create({ key: DATA.correctionKey, summary: [line] });
+  return [line];
+}
+
+// One time: acres from the Operations Center boundary areas, on the card
+// and its registry field.
+async function applyOpsAcres() {
+  if (await AppliedUpdate.exists({ key: DATA.opsAcresKey })) return [];
+  const lines = [];
+  for (const [name, acres] of Object.entries(DATA.opsAcres)) {
+    const cf = await CroppingField.findOne({ field: new RegExp('^' + esc(name) + '$', 'i') }).select('_id acres').lean();
+    if (!cf) { lines.push(`${name}: no card`); continue; }
+    if (cf.acres !== acres) {
+      await CroppingField.updateOne({ _id: cf._id }, { $set: { acres, notes: 'Acres are the Operations Center boundary area until FSA acres are on file.' } });
+      lines.push(`${name}: ${cf.acres} -> ${acres} ac`);
+    }
+    await M77Field.updateOne({ legacySource: 'CroppingField', legacyId: cf._id }, { $set: { acres } });
+  }
+  const line = `${DATA.opsAcresKey}: ${lines.join('; ') || 'already matching'}`;
+  await AppliedUpdate.create({ key: DATA.opsAcresKey, summary: [line] });
   return [line];
 }
 
