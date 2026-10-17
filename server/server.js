@@ -83,6 +83,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Lueking fields failed:', e.message);
     }
+    // A registry field for every card, so each card can take records
+    try {
+      const { ensureRegistryFields } = require('./services/fieldRegistry');
+      (await ensureRegistryFields()).forEach(r => console.log('Field registry:', r));
+    } catch (e) {
+      console.error('Field registry check failed:', e.message);
+    }
     // Lease terms by farm (crop share 65/35, cash lease), applied once
     try {
       const { applyLeaseTerms } = require('./services/leaseTerms');

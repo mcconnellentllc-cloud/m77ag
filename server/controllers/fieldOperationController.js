@@ -86,7 +86,7 @@ exports.applyImport = async (req, res) => {
     res.json({
       success: errors.length === 0,
       data: { added, errors, costed: cost.costed },
-      message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (removed ? `; ${removed} superseded record${removed === 1 ? '' : 's'} removed` : '') + (errors.length ? `; ${errors.length} not added` : '')
+      message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (removed ? `; ${removed} superseded record${removed === 1 ? '' : 's'} removed` : '') + (errors.length ? `; ${errors.length} not added: ${errors.join('; ')}` : '')
     });
   } catch (err) {
     console.error('Apply field record import error:', err);

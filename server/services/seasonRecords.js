@@ -16,17 +16,24 @@ const IMPORTS = {
   'season-2026': season2026
 };
 
-// "42.W E/2 N/4" -> { num: '42', suffix: 'W' }
+// "42.W E/2 N/4" -> { num: '42', suffix: 'W', sub: '' }
+// "73.C.SE SE CORNER" -> { num: '73', suffix: '', sub: 'C.SE' }: a corner or
+// other sub-field is its own field, not a half of 73. M is a middle strip
+// (16.M), a part like E and W.
 function fieldNumber(name) {
-  const m = String(name || '').trim().match(/^#?(\d+)(?:\.?([NSEW]{1,2}))?(?![\d])/i);
-  return m ? { num: m[1], suffix: (m[2] || '').toUpperCase() } : null;
+  const t = String(name || '').trim();
+  const m = t.match(/^#?(\d+)(?:\.?([NSEW]{1,2}|M(?![A-Z])))?(?![\d])/i);
+  if (!m) return null;
+  const sub = t.match(/^#?\d+\.([A-Z](?:\.[A-Z]{1,2})?)(?![A-Z.])/i);
+  if (sub && !/^([NSEW]{1,2}|M)$/i.test(sub[1])) return { num: m[1], suffix: '', sub: sub[1].toUpperCase() };
+  return { num: m[1], suffix: (m[2] || '').toUpperCase(), sub: '' };
 }
 
 function matches(hint, name) {
   const h = fieldNumber(hint);
   if (!h) return String(name || '').trim().toLowerCase() === String(hint).trim().toLowerCase();
   const f = fieldNumber(name);
-  if (!f || f.num !== h.num) return false;
+  if (!f || f.num !== h.num || f.sub !== h.sub) return false;
   return !h.suffix || h.suffix === f.suffix;
 }
 
@@ -124,6 +131,13 @@ async function resolveImport(importId) {
     const target = candidates.length === 1 ? candidates[0] : null;
     if (!cropNote && target && r.type === 'tillage' && r.startDate && plantedBefore(target._id, r.startDate)) {
       cropNote = `${target.name} was planted to a row crop before ${r.startDate}; no tillage over a growing crop. Pick the other half or leave it off.`;
+    }
+    // The pass is charged to a crop on the card; with no crop set it cannot go on yet.
+    if (!cropNote && target && r.cropFromRotation && !payingCrop(cropOn, target, r.cropYear)) {
+      cropNote = `Set the ${r.cropYear} crop on ${target.name}; there is no crop to charge this pass to yet.`;
+    }
+    if (!cropNote && target && r.cropFromCard && !cropOn(target, r.cropYear)) {
+      cropNote = `Set the ${r.cropYear} crop on ${target.name} first.`;
     }
     if (!cropNote && target && r.area !== undefined && target.acres > 0 && r.area < 0.25 * target.acres) {
       cropNote = `Logged ${r.area} ac on the ${target.acres}-ac field; likely a patch, headland or overlap. Check before adding.`;

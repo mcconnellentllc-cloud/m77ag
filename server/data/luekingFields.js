@@ -4,6 +4,7 @@
 // 2026 seeded acres until FSA acres are on file. 73 and 77 are the only
 // irrigated fields on the operation (pivots); their corners are dryland.
 const BOUNDARY = 'Acres are the Operations Center boundary area until FSA acres are on file.';
+const DRILLED = 'Acres are the October 2026 wheat seeded acres from Operations Center until FSA acres are on file.';
 
 module.exports = {
   farm: 'LUEKING',
@@ -25,7 +26,13 @@ module.exports = {
     { field: '76.E LUEKING SE HOUSE', opsName: '76.E - Lueking SE House', acres: 50.1, crop2026: 'SORGHUM' },
     { field: '77 BIG CIRCLE SEC 30', opsName: '77 - Big Circle - Sec 30', acres: 219.9, crop2026: 'CORN', irrigated: true },
     { field: '77.C.NW NW CORNER BIG CIRCLE', opsName: '77.C.NW - NW Corner Big Circle', acres: 14, crop2026: 'SORGHUM' },
-    { field: '79.S LUEKING BY STEVES', opsName: '79.S - Lueking By Steves', acres: 104.1, crop2026: 'SORGHUM SUDAN' }
+    { field: '79.S LUEKING BY STEVES', opsName: '79.S - Lueking By Steves', acres: 104.1, crop2026: 'SORGHUM SUDAN' },
+    // Drilled to wheat in October 2026 (Byrd CL ledger; field order confirmed
+    // by Kyle Oct 12, 2026). Acres are the Operations Center seeded acres
+    // until FSA acres are on file; 79.N is 99.1 ac (Byrd CL and Fortify).
+    { field: '76.W LUEKING', opsMatch: /^76\.W\b/i, acres: 61.1, crop2027: 'WHEAT', acresNote: DRILLED },
+    { field: '78 LUEKING BULL PASTURE', opsName: '78 - Lueking Bull Pasture', acres: 29.1, crop2027: 'WHEAT', acresNote: DRILLED },
+    { field: '79.N LUEKING BY STEVES', opsMatch: /^79\.N\b/i, acres: 99.1, crop2027: 'WHEAT', acresNote: DRILLED }
   ],
   // Applied once: only 73 and 77 are irrigated, everything else is dryland.
   irrigationKey: 'irrigation-only-73-77',
