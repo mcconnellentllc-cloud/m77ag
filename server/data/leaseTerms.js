@@ -29,6 +29,11 @@ module.exports = {
     { key: 'lease-landlord-peterson-2026-10-15', farm: 'PETERSON', match: /./, landlord: 'Lynn Peterson' },
     { key: 'lease-landlord-kbfarms-2026-10-15', farm: 'KBFARMS', match: /./, landlord: 'Kyle & Brandi McConnell' }
   ],
+  // Lueking ground is cash leased by Allphin Farms; M77 AG has no share
+  // (Kyle, Oct 2026). Shown as the landlord so the cards are not blank.
+  otherFarms: [
+    { name: 'LUEKING', landlord: 'Lueking (cash leased by Allphin Farms; no M77 AG share)' }
+  ],
   // Cash rent per acre from the 2025 M77AG Master Workbook (Overview > Rental
   // Agreements). Set once on the matching cards; the note records 2025 billing.
   rents: [

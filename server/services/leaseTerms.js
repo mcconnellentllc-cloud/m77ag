@@ -20,6 +20,7 @@ async function applyLeaseTerms() {
     await AppliedUpdate.create({ key: u.key, summary: [line] });
     out.push(line);
   }
+  out.push(...(await fillBlanks()));
   for (const r of TERMS.rents || []) {
     if (await AppliedUpdate.exists({ key: r.key })) continue;
     const lines = [];
@@ -35,6 +36,65 @@ async function applyLeaseTerms() {
     await AppliedUpdate.create({ key: r.key, summary: lines });
     out.push(`${r.key}: ` + lines.join('; '));
   }
+  return out;
+}
+
+// Landlord a card on this farm gets when none is entered: the field's own
+// landlord (MEFARMS), else the farm's from the follow-ups or the farm terms.
+function defaultLandlord(farmTerms, fieldName) {
+  const hit = (farmTerms.fieldLandlords || []).find(l => l.match.test(fieldName || ''));
+  if (hit) return hit.landlord;
+  if (farmTerms.fieldLandlords) return '';
+  const fu = (TERMS.followUps || []).find(u => u.farm === farmTerms.name && String(u.match) === '/./');
+  return fu ? fu.landlord : (farmTerms.farmLandlord || '');
+}
+
+// Every start: fill lease type, landlord share and landlord on cards and
+// registry fields that are still blank, from the farm terms. Values entered
+// by hand are never changed. Cards added or renamed after the one-time
+// updates get the same terms as the rest of their farm.
+async function fillBlanks() {
+  const isBlank = v => v === undefined || v === null || String(v).trim() === '';
+  let cardsFilled = 0; let regsFilled = 0;
+  const stillBlank = [];
+  for (const f of TERMS.farms) {
+    const share = f.type === 'crop-share' ? Math.round(f.landlordShare * 100) : null;
+    const cards = await CroppingField.find({ farm: f.name }).select('field lease').lean();
+    for (const c of cards) {
+      const lease = c.lease || {};
+      const set = {};
+      if (isBlank(lease.type)) set['lease.type'] = f.type;
+      const type = set['lease.type'] || lease.type;
+      if (type === 'crop-share' && share !== null && (lease.sharePercentage === undefined || lease.sharePercentage === null)) set['lease.sharePercentage'] = share;
+      if (isBlank(lease.landlord)) {
+        const ll = defaultLandlord(f, c.field);
+        if (ll) set['lease.landlord'] = ll;
+        else stillBlank.push(`${f.name} ${c.field}`);
+      }
+      if (Object.keys(set).length) { await CroppingField.updateOne({ _id: c._id }, { $set: set }); cardsFilled++; }
+    }
+    const farm = await M77Farm.findOne({ name: f.name }).select('_id').lean();
+    if (farm) {
+      // Registry fields still at the defaults (owner M77, no landlord) get the farm terms.
+      const regs = await M77Field.find({ farm: farm._id, owner: { $in: [null, 'm77'] }, landlordName: { $in: [null, ''] } }).select('name').lean();
+      for (const r of regs) {
+        const set = f.type === 'crop-share'
+          ? { owner: 'shared', m77SharePercent: 100 - share, landlordSharePercent: share }
+          : { owner: 'landlord', m77SharePercent: 100, landlordSharePercent: 0 };
+        const ll = defaultLandlord(f, r.name);
+        if (ll) set.landlordName = ll;
+        await M77Field.updateOne({ _id: r._id }, { $set: set });
+        regsFilled++;
+      }
+    }
+  }
+  for (const o of TERMS.otherFarms || []) {
+    const r = await CroppingField.updateMany({ farm: o.name, 'lease.landlord': { $in: [null, ''] } }, { $set: { 'lease.landlord': o.landlord } });
+    cardsFilled += r.modifiedCount;
+  }
+  const out = [];
+  if (cardsFilled || regsFilled) out.push(`lease blanks filled: ${cardsFilled} cards, ${regsFilled} registry fields`);
+  if (stillBlank.length) out.push(`landlord not on file: ${stillBlank.join(', ')}`);
   return out;
 }
 
@@ -89,4 +149,4 @@ async function applyFarmTerms() {
   return summary;
 }
 
-module.exports = { applyLeaseTerms };
+module.exports = { applyLeaseTerms, fillBlanks };
