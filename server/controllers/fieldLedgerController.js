@@ -180,7 +180,8 @@ exports.getLedger = async (req, res) => {
         const rate = l.seedsPerAcre ? ` (${l.acres} ac at ${Number(l.seedsPerAcre).toLocaleString('en-US')} seeds/ac)` : ` (${l.acres} ac)`;
         expenses.push({ group: 'Seed', label: l.product, date: when, detail: qty + rate + ' · ' + l.basis, amount: round2(l.amount), opId: o._id });
         if (l.spread) expenses.push({ group: 'Seed', label: l.product + ', share of seed used', date: when, detail: `${l.units} ${l.unit}s · ${l.spreadBasis}`, amount: round2(l.spread), opId: o._id });
-        if (l.interest) expenses.push({ group: 'Seed', label: l.product + ' interest', date: when, detail: `${l.units} ${l.unit}s, deferred payment interest per unit`, amount: round2(l.interest), opId: o._id });
+        if (l.interest) expenses.push({ group: 'Seed', label: l.product + ' interest' + (sc.interestEstimated ? ' (estimate)' : ''), date: when,
+          detail: `${l.units} ${l.unit}s, deferred payment interest per unit (prime - 1%, Dec 5, 2025 to Dec 1, 2026)`, amount: round2(l.interest), opId: o._id });
         invoiceSeed += (l.amount || 0) + (l.spread || 0) + (l.interest || 0);
       }
       if (sc.interestPending) notes.push('Seed interest (deferred payment, prime - 1%) is not on file yet; it will be added per bag once known.');

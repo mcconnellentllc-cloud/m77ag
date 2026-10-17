@@ -10,6 +10,19 @@
 //  - Sudangrass and forage sorghum (50 lb bags; the planter logs seeds/ac,
 //    not pounds): the product's net invoice total spread over the 2026 acres
 //    planted to it.
+// Interest by the prime schedule: each period at prime + spread, simple interest.
+function interestTotal(i) {
+  if (i.statementTotal !== null) return { total: i.statementTotal, estimated: false };
+  const day = s => Date.parse(s + 'T00:00:00Z') / 864e5;
+  let total = 0;
+  i.prime.forEach(([start, rate], k) => {
+    const from = Math.max(day(start), day(i.from));
+    const to = Math.min(k + 1 < i.prime.length ? day(i.prime[k + 1][0]) : day(i.to), day(i.to));
+    if (to > from) total += i.principal * (rate + i.spread) * (to - from) / i.dayCount;
+  });
+  return { total: Math.round(total * 100) / 100, estimated: true };
+}
+
 // Planter names for an invoice product (Kyle, Oct 17, 2026).
 const ALIASES = { '85Z153': 'P88Z153' };
 
@@ -42,10 +55,20 @@ module.exports = {
   ],
   // Seeds per unit by packaging; bag products are spread by acres.
   seedsPerUnit: { '80K': 80000, '600K': 600000 },
-  // Deferred payment interest (prime - 1%). Billed per bag or unit: the total
-  // is divided evenly over the units on the planting records, so each field
-  // carries its units' share. null until the interest amount is known.
-  interest: { total: null, basis: 'Deferred payment interest, prime - 1%' },
+  // Deferred payment interest: prime - 1% on the net product value from
+  // Dec 5, 2025 to Dec 1, 2026 (Kyle, Oct 17, 2026), simple interest,
+  // actual/365. Prime (WSJ): 7.00% to Dec 10, 2025; 6.75% from Dec 11, 2025;
+  // 7.00% from Sep 17, 2026 (held to Dec 1 until a change is known).
+  // Estimated until Pioneer's statement shows the amount; set statementTotal
+  // then. Billed per bag or unit: the total is divided evenly over the units
+  // on the planting records, so each field carries its units' share.
+  interest: {
+    basis: 'Deferred payment interest, prime - 1%, Dec 5, 2025 to Dec 1, 2026',
+    principal: 177519.28,
+    from: '2025-12-05', to: '2026-12-01', dayCount: 365, spread: -0.01,
+    prime: [['2025-12-05', 0.0700], ['2025-12-11', 0.0675], ['2026-09-17', 0.0700]],
+    statementTotal: null
+  },
   // Planter names that differ from the invoice: test plot and lot suffixes.
   // A planter name not listed here and not on the invoice is not costed.
   normalize: name => {
@@ -53,3 +76,4 @@ module.exports = {
     return ALIASES[n.toUpperCase()] || n;
   }
 };
+module.exports.interest.computed = interestTotal(module.exports.interest);

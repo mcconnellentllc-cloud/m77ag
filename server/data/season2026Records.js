@@ -346,7 +346,7 @@ for (const lines of seedLines.values()) for (const l of lines) {
 const unplacedSeed = Object.entries(seedProducts).filter(([name]) => !hybridPlanted[name])
   .map(([name, p]) => ({ product: name, units: p.units, net: r2(p.net) }));
 // Deferred payment interest, billed per bag or unit over all the seed used.
-const interestPerUnit = PIONEER.interest.total === null ? null : PIONEER.interest.total / plantedUnits;
+const interestPerUnit = PIONEER.interest.computed.total / plantedUnits;
 function seedCostFor(g) {
   const lines = seedLines.get(g);
   if (!lines) return undefined;
@@ -356,7 +356,7 @@ function seedCostFor(g) {
     delete l.section;
   }
   const sum = k => r2(lines.reduce((t, l) => t + (l[k] || 0), 0));
-  return { amount: sum('amount'), interest: interestPerUnit === null ? null : sum('interest'), interestPending: interestPerUnit === null,
+  return { amount: sum('amount'), interest: sum('interest'), interestPending: false, interestEstimated: PIONEER.interest.computed.estimated,
     lines, source: PIONEER.source };
 }
 // UpShiftC+ starter: the invoice total spread over the gallons logged on the
@@ -420,9 +420,9 @@ for (const g of plantGroups.values()) {
     key: 'sd26-' + g.num + '-' + g.year + '-' + slug(g.crop),
     // rev 4: seed cost from the Pioneer 2026 invoice, each hybrid on its own acres
     // rev 5: starter and planter product costs from the 2026 starter invoice
-    // rev 6: Sulfur 17 (on hold) and 9% EDTA zinc; rev 7: Guard X Prephyte
-    ...(seedCost ? { rev: inputCosts ? 7 : 4, seedCost } : {}),
-    ...(inputCosts ? { rev: 7, inputCosts } : {}),
+    // rev 6: Sulfur 17 (on hold) and 9% EDTA zinc; rev 7: Guard X Prephyte; rev 8: seed interest
+    ...(seedCost ? { rev: 8, seedCost } : {}),
+    ...(inputCosts ? { rev: 8, inputCosts } : {}),
     fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, acresFromField: true,
     type: 'seeding', status: 'completed', title: 'Planted',
     startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,
