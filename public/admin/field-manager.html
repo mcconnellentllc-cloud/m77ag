@@ -1141,7 +1141,7 @@
         // Crop by year, the same fields the Field Planner sets. Years before
         // 2025 live in crop history.
         const EDIT_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
-        const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE', 'PEARL MILLET', 'SORGHUM SUDAN', 'OATS', 'WASTE', 'BUILDING SITE'];
+        const CROP_CHOICES = ['WHEAT', 'CORN', 'SORGHUM', 'FALLOW', 'PASTURE', 'TRITICALE', 'PEARL MILLET', 'SORGHUM SUDAN', 'OATS', 'OATS & VETCH', 'WASTE', 'BUILDING SITE'];
         function renderCropEditor(f) {
             const sels = EDIT_YEARS.map(y => {
                 const cur = f['crop' + y] || '';

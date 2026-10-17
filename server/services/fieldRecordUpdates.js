@@ -90,6 +90,20 @@ async function applyFieldRecordUpdates() {
     await AppliedUpdate.create({ key: mv.key, summary: lines });
     results.push(`${mv.key}: ${lines.join('; ')}`);
   }
+  for (const cs of UPDATES.cropSets || []) {
+    if (await AppliedUpdate.findOne({ key: cs.key })) continue;
+    const slot = 'crop' + cs.year;
+    const cards = await CroppingField.find({ field: cs.match }).select('field ' + slot).lean();
+    if (!cards.length) continue;
+    const lines = [];
+    for (const cf of cards) {
+      if (cf[slot]) { lines.push(`${cf.field}: ${cs.year} already ${cf[slot]}, left as is`); continue; }
+      await CroppingField.updateOne({ _id: cf._id }, { $set: { [slot]: cs.crop } });
+      lines.push(`${cf.field}: ${cs.year} crop set to ${cs.crop}`);
+    }
+    await AppliedUpdate.create({ key: cs.key, summary: lines });
+    results.push(`${cs.key}: ${lines.join('; ')}`);
+  }
   return results;
 }
 
