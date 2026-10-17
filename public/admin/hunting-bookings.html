@@ -735,11 +735,11 @@
                         </select>
                     </div>
                     <div style="flex: 1; min-width: 160px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Check-in</label>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">First Hunt Day</label>
                         <input type="date" id="mbCheckin" onchange="updateManualBookingTotal()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
                     </div>
                     <div style="flex: 1; min-width: 160px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Check-out</label>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Last Hunt Day</label>
                         <input type="date" id="mbCheckout" onchange="updateManualBookingTotal()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;">
                     </div>
                     <div style="flex: 1; min-width: 120px;">
@@ -760,6 +760,18 @@
                         </select>
                     </div>
                 </div>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                    <div style="flex: 1; min-width: 160px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333;">Camper</label>
+                        <select id="mbCamper" onchange="toggleManualCamper()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px;">
+                            <option value="">None</option>
+                            <option value="Camper 1">Camper 1</option>
+                            <option value="Camper 2">Camper 2</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="mbCamperNote" style="display: none; margin: 8px 0 0 0; font-size: 13px; color: #666;">Arrives the first hunt day, leaves the last: $50 per night plus $100 cleaning, with a hunt of 2 or more days. A season pass covers hunting days only; the camper is charged.</p>
 
                 <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #d4a54a;">
                     <label style="display: flex; align-items: center; font-weight: 600; color: #333; cursor: pointer;">
@@ -1262,7 +1274,7 @@
                     <tr>
                         <td><strong>${booking._id.slice(-8)}</strong></td>
                         <td>${booking.customerName}</td>
-                        <td>${booking.parcel}</td>
+                        <td>${booking.parcel}${booking.camper ? `<div style="font-size: 12px; color: #666;">${booking.camper}: ${formatDate(booking.camperCheckin)} to ${formatDate(booking.camperCheckout)}</div>` : ''}</td>
                         <td>${checkinDate} - ${checkoutDate}</td>
                         <td>${booking.numHunters}</td>
                         <td><strong>$${booking.totalPrice}</strong></td>
@@ -1645,26 +1657,44 @@
         }
 
         // Book for a Customer
+        // Hunt days, first through last day inclusive
         function huntDayCount() {
             const checkin = document.getElementById('mbCheckin').value;
             const checkout = document.getElementById('mbCheckout').value;
             if (!checkin || !checkout) return 0;
-            const days = Math.ceil((new Date(checkout) - new Date(checkin)) / 86400000);
+            const days = Math.round((new Date(checkout) - new Date(checkin)) / 86400000) + 1;
             return days > 0 ? days : 0;
         }
 
+        const CAMPER_NIGHTLY = 50;
+        const CAMPER_CLEANING = 100;
+
+        // Camper nights (first hunt day to last) and the camper charge
+        function manualCamperCharge() {
+            if (!document.getElementById('mbCamper').value) return { nights: 0, charge: 0 };
+            const nights = Math.max(huntDayCount() - 1, 0);
+            return { nights, charge: nights > 0 ? nights * CAMPER_NIGHTLY + CAMPER_CLEANING : 0 };
+        }
+
+        function toggleManualCamper() {
+            const on = !!document.getElementById('mbCamper').value;
+            document.getElementById('mbCamperNote').style.display = on ? 'block' : 'none';
+            toggleSeasonPassBooking();
+        }
+
         function updateManualBookingTotal() {
-            if (document.getElementById('mbUseSeasonPass').checked) return;
+            const usePass = document.getElementById('mbUseSeasonPass').checked;
             const days = huntDayCount();
-            if (!days) return;
             const dailyRate = document.getElementById('mbParcel').value === 'Both Properties' ? 300 : 200;
-            document.getElementById('mbTotal').value = (dailyRate * days).toFixed(2);
+            const total = (usePass ? 0 : dailyRate * days) + manualCamperCharge().charge;
+            if (days || total) document.getElementById('mbTotal').value = total.toFixed(2);
         }
 
         function toggleSeasonPassBooking() {
             const usePass = document.getElementById('mbUseSeasonPass').checked;
-            document.getElementById('mbPaymentFields').style.display = usePass ? 'none' : 'flex';
-            if (!usePass) updateManualBookingTotal();
+            const camper = !!document.getElementById('mbCamper').value;
+            document.getElementById('mbPaymentFields').style.display = usePass && !camper ? 'none' : 'flex';
+            updateManualBookingTotal();
         }
 
         function showManualBookingResult(message, isError) {
@@ -1682,13 +1712,13 @@
             const checkoutDate = document.getElementById('mbCheckout').value;
 
             if (!name || !email || !checkinDate || !checkoutDate) {
-                alert('Customer name, email, check-in and check-out are required');
+                alert('Customer name, email, first and last hunt day are required');
                 return;
             }
 
             const days = huntDayCount();
             if (!days) {
-                alert('Check-out must be after check-in');
+                alert('The last hunt day is before the first');
                 return;
             }
 
@@ -1707,16 +1737,26 @@
                 notes: document.getElementById('mbNotes').value.trim()
             };
 
-            if (!useSeasonPassCredits) {
+            const camper = document.getElementById('mbCamper').value;
+            if (camper) {
+                payload.camper = camper;
+                if (days < 2) {
+                    alert('A camper is available with a hunt of 2 or more days');
+                    return;
+                }
+            }
+
+            if (!useSeasonPassCredits || camper) {
                 payload.totalPrice = parseFloat(document.getElementById('mbTotal').value) || 0;
                 payload.paymentMethod = document.getElementById('mbPaymentMethod').value;
                 payload.paymentStatus = document.getElementById('mbPaymentStatus').value;
                 payload.paymentReference = document.getElementById('mbReference').value.trim();
             }
 
-            const summary = useSeasonPassCredits
-                ? `${days} day(s) drawn from the season pass`
-                : `$${payload.totalPrice.toFixed(2)}`;
+            const camperText = camper ? `, ${camper} ${manualCamperCharge().nights} night(s)` : '';
+            const summary = (useSeasonPassCredits
+                ? `${days} day(s) drawn from the season pass` + (camper ? `, $${payload.totalPrice.toFixed(2)} camper charge` : '')
+                : `$${payload.totalPrice.toFixed(2)}`) + camperText;
 
             if (!confirm(`Book ${payload.parcel} for ${name} from ${checkinDate} to ${checkoutDate} (${summary}) and email the confirmation and waiver link?`)) {
                 return;
@@ -1752,6 +1792,8 @@
                     document.getElementById('mbReference').value = '';
                     document.getElementById('mbNotes').value = '';
                     document.getElementById('mbUseSeasonPass').checked = false;
+                    document.getElementById('mbCamper').value = '';
+                    toggleManualCamper();
                     toggleSeasonPassBooking();
 
                     loadBookings();

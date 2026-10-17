@@ -11,6 +11,7 @@ router.get('/game-rest-dates', bookingController.getGameRestDates);
 router.get('/booking-info/:id', bookingController.getBookingInfo);
 router.post('/game-rest-request', bookingController.submitGameRestRequest);
 router.get('/availability', bookingController.checkAvailability);
+router.get('/campers', bookingController.getCampers);
 router.post('/attempts', bookingController.reportAttempt);
 
 // User routes (protected)

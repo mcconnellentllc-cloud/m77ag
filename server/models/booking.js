@@ -59,6 +59,19 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+
+  // Camper stay (server/data/campers.js). Nights run from camperCheckin to
+  // camperCheckout; the checkout day is open for the next guest.
+  camper: {
+    type: String,
+    enum: ['Camper 1', 'Camper 2', null],
+    default: null
+  },
+  camperCheckin: Date,
+  camperCheckout: Date,
+  camperNights: { type: Number, default: 0 },
+  camperFee: { type: Number, default: 0 },
+  camperCleaningFee: { type: Number, default: 0 },
   totalPrice: {
     type: Number,
     required: true

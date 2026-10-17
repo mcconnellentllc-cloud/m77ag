@@ -656,6 +656,18 @@
                     </label>
                 </div>
 
+                <div class="form-group" id="camperSection" style="background: #f5f3f0; padding: 20px; border-radius: 8px;">
+                    <label for="camperSelect">Stay in One of Our Campers</label>
+                    <p id="camperIntro" style="font-size: 14px; color: #555; margin: 0 0 12px 0; line-height: 1.6;"></p>
+                    <select id="camperSelect">
+                        <option value="">No camper</option>
+                    </select>
+                    <div id="camperDates" style="display: none; margin-top: 12px;">
+                        <div id="camperPrice" style="font-size: 15px; color: #2c5530; font-weight: 600;"></div>
+                    </div>
+                    <div id="camperTaken" style="font-size: 13px; color: #666; margin-top: 10px; line-height: 1.6;"></div>
+                </div>
+
                 <div class="form-group">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" id="pawAppSignup" style="width: auto; margin-right: 10px;">
@@ -1128,8 +1140,60 @@
                 });
         }
 
+        // Campers: rates, amenities and nights already taken (from the server)
+        let camperData = { campers: [], stays: [], minHuntDays: 2 };
+        function fmtShortDate(v) {
+            return new Date(v).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
+        }
+        function loadCampers() {
+            return fetch('/api/hunting/campers')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    camperData = { campers: data.campers || [], stays: data.stays || [], minHuntDays: data.minHuntDays || 2 };
+                    const select = document.getElementById('camperSelect');
+                    const chosen = select.value;
+                    select.innerHTML = '<option value="">No camper</option>' + camperData.campers
+                        .map(c => `<option value="${c.id}">${c.id} - $${c.nightlyRate}/night plus $${c.cleaningFee} cleaning</option>`).join('');
+                    select.value = chosen;
+                    const first = camperData.campers[0];
+                    document.getElementById('camperIntro').textContent = first
+                        ? 'Furnished campers on the farm with ' + first.amenities.join(', ') + '. $' + first.nightlyRate + ' per night plus a one-time $' + first.cleaningFee + ' cleaning fee per stay. Arrive on your first hunt day and leave on your last; available with a hunt of ' + camperData.minHuntDays + ' or more days. Discount codes apply to hunting only.'
+                        : '';
+                    document.getElementById('camperSection').style.display = camperData.campers.length ? 'block' : 'none';
+                    document.getElementById('camperTaken').innerHTML = camperData.campers.map(c => {
+                        const taken = camperData.stays.filter(st => st.camper === c.id)
+                            .map(st => fmtShortDate(st.checkin) + ' to ' + fmtShortDate(st.checkout));
+                        return '<strong>' + c.id + ':</strong> ' + (taken.length ? 'taken ' + taken.join(', ') : 'open');
+                    }).join('<br>');
+                })
+                .catch(error => console.error('Error loading campers:', error));
+        }
+
+        // Selected camper stay: arrive the first hunt day, leave the last.
+        // Returns nights, charge, or a problem message.
+        function camperStay() {
+            const id = document.getElementById('camperSelect').value;
+            const unit = camperData.campers.find(c => c.id === id);
+            if (!unit) return null;
+            const a = document.getElementById('startDate').value;
+            const d = document.getElementById('endDate').value;
+            const nights = a && d ? Math.round((new Date(d + 'T12:00:00Z') - new Date(a + 'T12:00:00Z')) / 86400000) : 0;
+            const stay = { id, arrival: a, departure: d, nights, nightly: nights * unit.nightlyRate, cleaning: unit.cleaningFee };
+            stay.total = nights > 0 ? stay.nightly + stay.cleaning : 0;
+            if (!a || !d) stay.problem = 'Choose your hunt dates for the camper.';
+            else if (nights + 1 < camperData.minHuntDays) stay.problem = 'A camper is available with a hunt of ' + camperData.minHuntDays + ' or more days.';
+            else {
+                const ai = new Date(a + 'T12:00:00Z'), di = new Date(d + 'T12:00:00Z');
+                const clash = camperData.stays.find(st => st.camper === id && new Date(st.checkin) < di && new Date(st.checkout) > ai);
+                if (clash) stay.problem = id + ' is taken ' + fmtShortDate(clash.checkin) + ' to ' + fmtShortDate(clash.checkout) + '. Choose other dates or the other camper.';
+            }
+            return stay;
+        }
+
         // Load all calendar data and generate
         function loadCalendarData() {
+            loadCampers();
             Promise.all([loadBookedDates(), loadGameRestDates()])
                 .then(() => {
                     generateCalendar();
@@ -1254,7 +1318,12 @@
 
             // Selected days that are booked or resting on this property
             const availabilityMsg = document.getElementById('availabilityMessage');
-            const conflict = rangeConflict(property, document.getElementById('startDate').value, document.getElementById('endDate').value);
+            const camper = camperStay();
+            const conflict = rangeConflict(property, document.getElementById('startDate').value, document.getElementById('endDate').value)
+                || (camper && camper.problem) || '';
+            document.getElementById('camperPrice').textContent = camper && !camper.problem
+                ? 'Arrive ' + fmtShortDate(camper.arrival + 'T12:00:00Z') + ', leave ' + fmtShortDate(camper.departure + 'T12:00:00Z') + ': ' + camper.nights + ' night' + (camper.nights === 1 ? '' : 's') + ' x $' + (camper.nightly / camper.nights) + ' + $' + camper.cleaning + ' cleaning = $' + camper.total
+                : '';
             if (conflict) {
                 availabilityMsg.textContent = conflict;
                 availabilityMsg.style.display = 'block';
@@ -1318,6 +1387,9 @@
                 discountMsg.style.display = 'none';
                 discountApplied.style.display = 'none';
             }
+
+            // The camper is charged in full; discount codes cover hunting only.
+            if (camper && !camper.problem) totalCost += camper.total;
 
             document.getElementById('totalAmount').textContent = '$' + totalCost;
 
@@ -1389,6 +1461,8 @@
                 start: document.getElementById('startDate').value,
                 end: document.getElementById('endDate').value
             });
+            const camper = camperStay();
+            if (camper) q.set('camper', camper.id);
             try {
                 const res = await fetch('/api/hunting/availability?' + q.toString());
                 const data = await res.json();
@@ -1517,6 +1591,7 @@
                 gameSpecies: gameSpecies.join(', '),
                 coyoteHuntingType: coyoteHuntingType,
                 campingFee: document.getElementById('campingAddon').checked ? CAMPING_RATE : 0,
+                camper: document.getElementById('camperSelect').value || undefined,
                 pawAppSignup: document.getElementById('pawAppSignup').checked,
                 totalPrice: totalCost,
                 paymentStatus: paymentStatus,
@@ -1593,6 +1668,7 @@
                     }
 
                     document.getElementById('bookingForm').reset();
+                    document.getElementById('camperDates').style.display = 'none';
                     calculateTotal();
                     loadCalendarData();
                 } else {
@@ -1626,6 +1702,11 @@
         document.getElementById('startDate').addEventListener('change', calculateTotal);
         document.getElementById('endDate').addEventListener('change', calculateTotal);
         document.getElementById('campingAddon').addEventListener('change', calculateTotal);
+        document.getElementById('camperSelect').addEventListener('change', () => {
+            const on = !!document.getElementById('camperSelect').value;
+            document.getElementById('camperDates').style.display = on ? 'block' : 'none';
+            calculateTotal();
+        });
         document.getElementById('discountCode').addEventListener('input', calculateTotal);
 
         // Account password is now always required (no checkbox needed)

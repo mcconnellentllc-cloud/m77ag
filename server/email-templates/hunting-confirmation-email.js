@@ -133,6 +133,12 @@ function getHuntingConfirmationEmail(booking) {
         <span class="detail-label">Number of Nights:</span> ${booking.numberOfNights}
       </div>
       
+      ${booking.camper ? `
+      <div class="detail-row">
+        <span class="detail-label">Camper:</span> ${booking.camper}, ${new Date(booking.camperCheckin).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} to ${new Date(booking.camperCheckout).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+        (${booking.camperNights} night${booking.camperNights === 1 ? '' : 's'} $${booking.camperFee} plus $${booking.camperCleaningFee} cleaning)
+      </div>` : ''}
+
       <div class="price">
         Total Price: $${booking.totalPrice}
       </div>
@@ -296,6 +302,7 @@ function getAdminNotificationEmail(booking) {
       <div class="detail"><span class="label">Check-out:</span> ${new Date(booking.checkoutDate).toLocaleDateString()}</div>
       <div class="detail"><span class="label">Hunters:</span> ${booking.numberOfHunters}</div>
       <div class="detail"><span class="label">Nights:</span> ${booking.numberOfNights}</div>
+      ${booking.camper ? `<div class="detail"><span class="label">Camper:</span> ${booking.camper}, ${new Date(booking.camperCheckin).toLocaleDateString()} to ${new Date(booking.camperCheckout).toLocaleDateString()} (${booking.camperNights} nights, $${booking.camperFee} plus $${booking.camperCleaningFee} cleaning)</div>` : ''}
       <div class="detail"><span class="label">Total Price:</span> $${booking.totalPrice}</div>
       <div class="detail"><span class="label">Payment Status:</span> ${booking.paymentStatus}</div>
       ${booking.discountCode === 'KIDS1ST' ? `
