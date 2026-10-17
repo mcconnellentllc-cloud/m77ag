@@ -195,5 +195,23 @@ module.exports = [
     partNumber: 'AGCO cap for 4348254M5 (number pending)', fits: 'Unit #208 AG CHEM 1300 Rogator', qtyNeeded: 1,
     amazonUrl: amazon('AGCO expansion tank threaded cap 4348254M5'),
     otherUrl: 'https://www.regierequipment.com'
+  },
+  {
+    category: 'Filters', seedKey: 'rogator-air-primary', name: 'Engine air filter, primary', spec: 'Donaldson PowerCore housing PSD10-0176 (OEM 544935D1); from the housing label',
+    partNumber: 'AGCO 4286479M2', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 0,
+    amazonUrl: amazon('4286479M2 air filter'),
+    otherUrl: 'https://www.regierequipment.com'
+  },
+  {
+    category: 'Filters', seedKey: 'rogator-air-safety', name: 'Engine air filter, safety', spec: 'Donaldson PowerCore housing PSD10-0176 (OEM 544935D1); from the housing label',
+    partNumber: 'AGCO 4286474M1', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 0,
+    amazonUrl: amazon('4286474M1 safety filter'),
+    otherUrl: 'https://www.regierequipment.com'
+  },
+  {
+    category: 'Other', seedKey: 'rogator-drive-belt', name: 'Drive belt (broke Oct 17, 2026)', spec: 'Poly V. Confirm whether it drives the alternator / water pump or the A/C compressor, then match by rib count and length (Gates or Dayco at O\'Reilly or NAPA), or by serial AGCA1300JCNSL1103 at Regier, (308) 326-4245.',
+    partNumber: 'Pending: rib count and length', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
+    amazonUrl: amazon('AGCO SISU 8.4 poly v belt RoGator RG1300'),
+    otherUrl: 'https://www.regierequipment.com'
   }
 ];

@@ -197,6 +197,29 @@ module.exports = [
     },
     addNote: 'New tank 4348254M5 takes a threaded cap (not included) and has no overflow nipple; 1.88 gal, about 13.8 x 6.0 x 8.8 in. ' +
       'Check every other hose on the old tank, especially the small top air-bleed line, has a matching port before installing.'
+  },
+  {
+    key: 'rogator-rg1300-identity-2026-10-17',
+    // Cab decal reads RG1300; PIN plate "RoGator, AGCO Corporation, Duluth GA"
+    // AGCA1300JCNSL1103. Engine photos Oct 17, 2026.
+    match: [{ serialNumber: 'AGCA1300JCNSL1103' }, { title: /^ag ?chem 1300 rogator$/i }],
+    replace: {
+      title: { from: ['AG CHEM 1300 Rogator'], to: 'RoGator RG1300' },
+      make: { from: ['AG CHEM'], to: 'AGCO RoGator' },
+      model: { from: ['1300'], to: 'RG1300' },
+      repairsNeeded: {
+        from: ['Install the new coolant expansion tank (AGCO 4348254M5, in hand). Needs the AGCO threaded pressure cap for 4348254M5 (sold separately; ' +
+          'the old 95 kPa twist-on cap does not fit). Get the cap number from Regier, (308) 326-4245. New tank has no overflow nipple: plug or remove the old overflow hose.'],
+        to: 'Install the new coolant expansion tank (AGCO 4348254M5, in hand). Needs the AGCO threaded pressure cap for 4348254M5 (sold separately; ' +
+          'the old 95 kPa twist-on cap does not fit). Get the cap number from Regier, (308) 326-4245. New tank has no overflow nipple: plug or remove the old overflow hose. ' +
+          'Replace the broken drive belt (Oct 17, 2026): confirm whether it is the alternator / water pump belt or the A/C compressor belt, then match by rib count and length or by serial at Regier.'
+      }
+    },
+    addNote: 'RoGator RG1300 (cab decal), PIN AGCA1300JCNSL1103. Model year likely 2012 (PIN year code C), to confirm from title. ' +
+      'Engine: AGCO SISU Power 8.4L six-cylinder, common rail, SisuTronic engine control. ' +
+      'Air brake compressor: Knorr-Bremse SEB01842000, type LK3996, gear driven (no belt). ' +
+      'Air cleaner: Donaldson PowerCore PSD10-0176 (OEM 544935D1); primary filter AGCO 4286479M2, safety filter AGCO 4286474M1. ' +
+      'Fuel filters: Baldwin, two (number to confirm). Filter WIX 57269 on the engine (service to confirm).'
   }
 ];
 
