@@ -77,7 +77,9 @@ const fieldOperationSchema = new mongoose.Schema({
   inputCosts: [{
     _id: false,
     product: String, covers: String, group: String, quantity: Number, unit: String,
-    pricePerUnit: Number, amount: Number, basis: String, source: String
+    pricePerUnit: Number, amount: Number, basis: String, source: String,
+    // On hold: shown on the card, not billed or counted
+    hold: { type: Boolean, default: false }
   }],
 
   // Rate the import knows for this pass (tillage implement by tractor and

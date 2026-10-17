@@ -393,6 +393,14 @@ function inputCostsFor(g) {
     if (ac > 0) out.push({ product: ht.label, group: 'Planter products', quantity: ac, unit: 'ac', pricePerUnit: r2(ht.total / planterAcres),
       amount: r2(ac * ht.total / planterAcres), source: STARTER.source,
       basis: `invoice $${ht.total.toFixed(2)} over ${Math.round(planterAcres * 10) / 10} corn and milo acres` });
+    const zn = STARTER.zinc;
+    if (ac > 0) out.push({ product: zn.label, covers: STARTER.zincName, group: 'Fertilizer', quantity: ac, unit: 'ac', pricePerUnit: r2(zn.total / planterAcres),
+      amount: r2(ac * zn.total / planterAcres), source: zn.source,
+      basis: `invoice $${zn.total.toFixed(2)} (${zn.gallons} gal x $${zn.pricePerGal.toFixed(2)} + $${zn.freight.toFixed(2)} freight) over ${Math.round(planterAcres * 10) / 10} corn and milo acres` });
+    const su = STARTER.sulfur;
+    if (ac > 0) out.push({ product: su.label, group: 'Fertilizer', quantity: ac, unit: 'ac', pricePerUnit: r2(su.total / planterAcres),
+      amount: r2(ac * su.total / planterAcres), hold: !!su.hold, source: STARTER.source,
+      basis: `invoice $${su.total.toFixed(2)} (${su.quantity} x $${su.price.toFixed(2)}) over ${Math.round(planterAcres * 10) / 10} corn and milo acres` });
   }
   return out.length ? out : undefined;
 }
@@ -408,8 +416,9 @@ for (const g of plantGroups.values()) {
     key: 'sd26-' + g.num + '-' + g.year + '-' + slug(g.crop),
     // rev 4: seed cost from the Pioneer 2026 invoice, each hybrid on its own acres
     // rev 5: starter and planter product costs from the 2026 starter invoice
-    ...(seedCost ? { rev: inputCosts ? 5 : 4, seedCost } : {}),
-    ...(inputCosts ? { rev: 5, inputCosts } : {}),
+    // rev 6: Sulfur 17 (on hold) and 9% EDTA zinc
+    ...(seedCost ? { rev: inputCosts ? 6 : 4, seedCost } : {}),
+    ...(inputCosts ? { rev: 6, inputCosts } : {}),
     fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, acresFromField: true,
     type: 'seeding', status: 'completed', title: 'Planted',
     startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,
