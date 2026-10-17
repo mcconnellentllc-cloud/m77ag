@@ -209,11 +209,11 @@ module.exports = [
     otherUrl: 'https://www.regierequipment.com'
   },
   {
-    category: 'Other', seedKey: 'rogator-drive-belt', seedRev: 1, name: 'A/C and water pump belt (broke Oct 17, 2026)', spec: 'AGCO 564691D1, 1366 mm, listed for the RoGator C-series (RG900C/RG1100C/RG1300C) AGCO Power engine; not yet confirmed for this 2012 Tier 4i RG1300. ' +
-      'Belt in hand looks 5-rib: 5PK1366 = Gates K050538 (5 rib, 53.77 in effective, interchange 5PK1365). Confirm the old belt is 5 ribs and about 53.75 in before buying. ' +
-      'Alternator/fan belt on the same engine: AGCO 588347D1, 12-rib serpentine.',
-    partNumber: 'AGCO 564691D1 / Gates K050538 (5PK1366)', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
-    amazonUrl: amazon('Gates K050538'),
-    otherUrl: 'https://www.napaonline.com/en/search?text=K050538'
+    category: 'Other', seedKey: 'rogator-drive-belt', seedRev: 2, name: 'Drive belt, 4-rib (broke Oct 17, 2026)', spec: 'Old belt: 4 ribs, about 58.5 in measured along the back (rough; broken in two, 30.5 + 28 in), so about 57.5-58 in effective. ' +
+      'Closest standard belt: Gates K040575 (4 rib, 57.5 in effective, 4PK1460). Have the counter measure the old pieces on a belt gauge, or string the pulleys with the tensioner mid-travel, to confirm. ' +
+      'Not AGCO 564691D1: that is the C-series A/C and water pump belt, 1366 mm (53.75 in). The alternator/fan belt on the C-series is 588347D1, 12-rib.',
+    partNumber: 'Gates K040575 (4PK1460), confirm length', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
+    amazonUrl: amazon('Gates K040575'),
+    otherUrl: 'https://www.napaonline.com/en/search?text=K040575'
   }
 ];
