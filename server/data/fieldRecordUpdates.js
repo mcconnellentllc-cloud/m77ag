@@ -36,5 +36,7 @@ module.exports.cropSets = [
   { key: 'crop-2027-21-small-2026-10-17', match: /^21 SMALL$/i, year: 2027, crop: 'OATS & VETCH' },
   // Kyle, Oct 17, 2026: fields 16 and 17 were entirely corn in 2026. Replaces
   // the planned crops on the cards (force).
-  { key: 'crop-2026-16-17-corn-2026-10-17', match: /^(16\.[EMW]|17\.[EW]) /i, year: 2026, crop: 'CORN', force: true }
+  { key: 'crop-2026-16-17-corn-2026-10-17', match: /^(16\.[EMW]|17\.[EW]) /i, year: 2026, crop: 'CORN', force: true },
+  // Kyle, Oct 17, 2026: 79.S is sorghum sudan for 2027, no wheat (79.N is the wheat).
+  { key: 'crop-2027-79s-sudan-2026-10-17', match: /^79\.S /i, year: 2027, crop: 'SORGHUM SUDAN', force: true }
 ];
