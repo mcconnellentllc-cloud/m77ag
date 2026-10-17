@@ -485,6 +485,36 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.background = '#e8f5e9';
+            errorDiv.style.color = '#2c5530';
+            errorDiv.style.borderColor = '#2c5530';
+            errorDiv.style.display = 'block';
+            document.getElementById('paypal-button-container').innerHTML = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Tell the office about a paid pass that did not save.
+        function reportFailedPurchase(order, message) {
+            fetch('/api/hunting/attempts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    kind: 'season-pass',
+                    message: message,
+                    name: document.getElementById('name').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    passType: selectedPassType,
+                    totalPrice: selectedPassPrice,
+                    paymentMethod: 'paypal',
+                    paymentReference: order && order.id
+                })
+            }).catch(() => {});
+        }
+
         function validateForm() {
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -560,18 +590,23 @@
 
                         const result = await response.json();
 
-                        if (result.success) {
+                        if (result.success && result.token) {
                             // Store the token
                             localStorage.setItem('userToken', result.token);
 
                             // Redirect to account dashboard
                             window.location.href = '/my-account.html?success=true';
+                        } else if (result.success) {
+                            // Returning customer: the pass is on their existing account
+                            showSuccess(result.message + ' Check your email for the waiver link and property maps.');
                         } else {
-                            showError(result.message || 'Failed to create account. Please contact us.');
+                            reportFailedPurchase(order, result.message || 'Server did not save the pass');
+                            showError((result.message || 'Your payment went through but the pass was not saved.') + ' The office has been notified. PayPal order ID: ' + order.id);
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        showError('An error occurred. Please contact us with your PayPal order ID: ' + order.id);
+                        reportFailedPurchase(order, 'Browser could not reach the server: ' + error.message);
+                        showError('Your payment went through but the pass could not be saved. The office has been notified. PayPal order ID: ' + order.id);
                     }
                 },
                 onError: function(err) {

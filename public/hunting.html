@@ -546,7 +546,7 @@
                 </p>
             </div>
 
-            <form id="bookingForm">
+            <form id="bookingForm" onsubmit="event.preventDefault();">
                 <div class="form-group">
                     <label>Select Property</label>
                     <select id="propertySelect" required>
@@ -780,6 +780,7 @@
                 <div class="price-display">
                     <div class="price-label">Total Amount</div>
                     <div class="price-amount" id="totalAmount">$0</div>
+                    <div id="availabilityMessage" style="display: none; margin-top: 10px; padding: 12px; border-radius: 5px; background: #ffebee; color: #c62828; font-size: 15px; font-weight: 600;"></div>
                     <div id="discountApplied" style="font-size: 14px; color: #2c5530; margin-top: 5px; display: none;"></div>
                 </div>
                 
@@ -788,13 +789,13 @@
 
                     <div id="paypal-button-container"></div>
 
-                    <button id="freeBookingBtn" onclick="submitFreeBooking()" onmouseover="this.style.background='#1f3d21'" onmouseout="this.style.background='#2c5530'" style="display: none; width: 100%; background: #2c5530; color: white; border: none; padding: 18px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 15px; transition: background 0.3s;">
+                    <button type="button" id="freeBookingBtn" onclick="submitFreeBooking()" onmouseover="this.style.background='#1f3d21'" onmouseout="this.style.background='#2c5530'" style="display: none; width: 100%; background: #2c5530; color: white; border: none; padding: 18px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-bottom: 15px; transition: background 0.3s;">
                         Complete Free Booking
                     </button>
 
-                    <a href="https://venmo.com/u/ToGoAg" target="_blank" class="payment-btn venmo-btn" id="venmoBtn">
-                        Pay with Venmo (@ToGoAg)
-                    </a>
+                    <button type="button" class="payment-btn venmo-btn" id="venmoBtn" onclick="submitVenmoBooking()" style="width: 100%; border: none; cursor: pointer; font-size: inherit;">
+                        Reserve and Pay with Venmo (@ToGoAg)
+                    </button>
 
                     <div class="contact-box">
                         <div style="margin-bottom: 10px;">Questions?</div>
@@ -837,9 +838,14 @@
                         You will NOT be allowed to hunt without a signed waiver.
                     </p>
                 </div>
+                <div id="venmoDueMessage" style="display: none; background: #e3f2fd; border-left: 5px solid #1976d2; padding: 20px; text-align: left; margin-bottom: 20px;">
+                    <p style="margin: 0 0 10px 0; color: #1565c0; font-weight: bold; font-size: 18px;">Payment Due: <span id="venmoDueAmount"></span></p>
+                    <p style="margin: 0 0 15px 0; color: #1565c0; line-height: 1.6;">Your dates are held. Send payment to <strong>@ToGoAg</strong> on Venmo with your name and hunt dates in the note.</p>
+                    <a href="https://venmo.com/u/ToGoAg" target="_blank" rel="noopener" style="display: block; text-align: center; background: #008CFF; color: white; padding: 14px; border-radius: 5px; font-weight: bold; text-decoration: none;">Open Venmo (@ToGoAg)</a>
+                </div>
                 <div id="accountCreatedMessage" style="display: none; background: #e7f5e7; border-left: 5px solid #2d7a2d; padding: 20px; text-align: left; margin-bottom: 20px;">
                     <p style="margin: 0 0 15px 0; color: #2d7a2d; font-weight: bold; font-size: 18px;">
-                        📱 Account Created! Add M77 AG to Your Home Screen
+                        Account Created! Add M77 AG to Your Home Screen
                     </p>
                     <p style="margin: 0 0 15px 0; color: #2d7a2d; line-height: 1.6;">
                         Get quick access to your bookings, season pass, and property maps!
@@ -847,7 +853,7 @@
 
                     <!-- iPhone Instructions -->
                     <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 iPhone/iPad:</p>
+                        <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">iPhone/iPad:</p>
                         <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8; font-size: 14px;">
                             <li>Tap the <strong>Share button</strong> (square with arrow pointing up) at the bottom of Safari</li>
                             <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
@@ -858,7 +864,7 @@
 
                     <!-- Android Instructions -->
                     <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">📱 Android:</p>
+                        <p style="margin: 0 0 10px 0; color: #2c5530; font-weight: bold;">Android:</p>
                         <ol style="margin: 0; padding-left: 20px; color: #555; line-height: 1.8; font-size: 14px;">
                             <li>Tap the <strong>menu button</strong> (three dots) in Chrome</li>
                             <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
@@ -868,7 +874,7 @@
                     </div>
 
                     <p style="margin: 15px 0 0 0; color: #2d7a2d; font-size: 13px; font-style: italic;">
-                        ✅ You can now access your bookings, season pass, and property information instantly from your home screen!
+                        You can now access your bookings, season pass, and property information instantly from your home screen!
                     </p>
                 </div>
                 <button onclick="document.getElementById('bookingSuccessModal').style.display='none'; document.body.style.overflow='auto';" style="background: #2c5530; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;">
@@ -1233,6 +1239,7 @@
             const codeInput = document.getElementById('discountCode').value.toUpperCase().trim();
 
             if (!property || !start || !end || isNaN(start) || isNaN(end)) {
+                document.getElementById('availabilityMessage').style.display = 'none';
                 document.getElementById('totalAmount').textContent = '$0';
                 document.getElementById('discountApplied').style.display = 'none';
                 return;
@@ -1244,6 +1251,20 @@
                 document.getElementById('discountApplied').style.display = 'none';
                 return;
             }
+
+            // Selected days that are booked or resting on this property
+            const availabilityMsg = document.getElementById('availabilityMessage');
+            const conflict = rangeConflict(property, document.getElementById('startDate').value, document.getElementById('endDate').value);
+            if (conflict) {
+                availabilityMsg.textContent = conflict;
+                availabilityMsg.style.display = 'block';
+                document.getElementById('totalAmount').textContent = '$0';
+                document.getElementById('freeBookingBtn').style.display = 'none';
+                document.getElementById('venmoBtn').style.display = 'none';
+                document.getElementById('paypal-button-container').innerHTML = '';
+                return;
+            }
+            availabilityMsg.style.display = 'none';
 
             // Determine daily rate based on property selection
             const dailyRate = property === 'Both Properties' ? 300 : DAILY_RATE;
@@ -1320,14 +1341,101 @@
             }
         }
         
+        // Days from start to end inclusive, as YYYY-MM-DD.
+        function daysInRange(startStr, endStr) {
+            const out = [];
+            const d = new Date(startStr + 'T00:00:00Z');
+            const end = new Date(endStr + 'T00:00:00Z');
+            if (isNaN(d) || isNaN(end)) return out;
+            for (; d <= end && out.length < 400; d.setUTCDate(d.getUTCDate() + 1)) out.push(d.toISOString().split('T')[0]);
+            return out;
+        }
+
+        // Message when a selected day is booked or resting on this property, else ''.
+        function rangeConflict(property, startStr, endStr) {
+            const props = property === 'Both Properties' ? ['Heritage Farm', 'Prairie Peace', 'Both Properties'] : [property, 'Both Properties'];
+            for (const day of daysInRange(startStr, endStr)) {
+                const label = new Date(day + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                if (props.some(p => (bookedDates[day] || {})[p])) return label + ' is already booked for ' + property + '. Please choose other dates.';
+                if (props.some(p => (gameRestDates[day] || {})[p])) return label + ' is a game rest day for ' + property + '. Please choose other dates.';
+            }
+            return '';
+        }
+
+        // Every required field filled in. Shows the browser's message when not.
+        function validateBookingForm() {
+            const form = document.getElementById('bookingForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
+            const gameChecked = ['muleDeerBuck', 'muleDeerDoe', 'whitetailBuck', 'whitetailDoe', 'pheasant', 'turkey', 'dove', 'coyote', 'prairieDogs', 'rattlesnake']
+                .some(id => document.getElementById(id).checked);
+            if (!gameChecked) {
+                alert('Please select at least one game species');
+                return false;
+            }
+            if (document.getElementById('endDate').value < document.getElementById('startDate').value) {
+                alert('The end date is before the start date');
+                return false;
+            }
+            return true;
+        }
+
+        // Ask the server whether the days are still open, right before payment.
+        async function checkServerAvailability() {
+            const q = new URLSearchParams({
+                parcel: document.getElementById('propertySelect').value,
+                start: document.getElementById('startDate').value,
+                end: document.getElementById('endDate').value
+            });
+            try {
+                const res = await fetch('/api/hunting/availability?' + q.toString());
+                const data = await res.json();
+                if (!data.success) return { available: false, message: data.message || 'Unable to check these dates' };
+                return { available: data.available, message: data.message };
+            } catch (e) {
+                return { available: false, message: 'Unable to reach the reservation system. Please check your connection and try again.' };
+            }
+        }
+
+        let bookingInProgress = false;
+
+        // Venmo: hold the dates as a booking awaiting payment, then show the Venmo link.
+        async function submitVenmoBooking() {
+            if (bookingInProgress || !validateBookingForm()) return;
+            const check = await checkServerAvailability();
+            if (!check.available) {
+                alert(check.message);
+                loadCalendarData();
+                return;
+            }
+            submitBooking('pending', null, 'venmo');
+        }
+
         // PayPal
         function renderPayPalButton() {
             if (totalCost === 0) return;
             
             const container = document.getElementById('paypal-button-container');
             container.innerHTML = '';
-            
+            if (typeof paypal === 'undefined') {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; background: #fff3cd; border-radius: 5px;">PayPal did not load. Please use the Venmo option below or refresh the page.</div>';
+                return;
+            }
+
             paypal.Buttons({
+                // Check the form and the dates before PayPal takes payment
+                onClick: async function(data, actions) {
+                    if (bookingInProgress || !validateBookingForm()) return actions.reject();
+                    const check = await checkServerAvailability();
+                    if (!check.available) {
+                        alert(check.message);
+                        loadCalendarData();
+                        return actions.reject();
+                    }
+                    return actions.resolve();
+                },
                 createOrder: function(data, actions) {
                     return actions.order.create({
                         purchase_units: [{
@@ -1360,47 +1468,22 @@
             });
         }
         
-        // Submit free booking (KCP100)
-        function submitFreeBooking() {
-            // Validate form
-            const form = document.getElementById('bookingForm');
-            if (!form.checkValidity()) {
-                form.reportValidity();
+        // Submit free booking (100% discount code)
+        async function submitFreeBooking() {
+            if (bookingInProgress || !validateBookingForm()) return;
+            const check = await checkServerAvailability();
+            if (!check.available) {
+                alert(check.message);
+                loadCalendarData();
                 return;
             }
-
-            // Validate required fields
-            if (!document.getElementById('hunterName').value ||
-                !document.getElementById('hunterEmail').value ||
-                !document.getElementById('hunterPhone').value ||
-                !document.getElementById('propertySelect').value ||
-                !document.getElementById('startDate').value ||
-                !document.getElementById('endDate').value) {
-                alert('Please fill out all required fields');
-                return;
-            }
-
-            // Validate at least one game species is selected
-            const gameChecked = document.getElementById('muleDeerBuck').checked ||
-                               document.getElementById('muleDeerDoe').checked ||
-                               document.getElementById('whitetailBuck').checked ||
-                               document.getElementById('whitetailDoe').checked ||
-                               document.getElementById('pheasant').checked ||
-                               document.getElementById('turkey').checked ||
-                               document.getElementById('dove').checked ||
-                               document.getElementById('coyote').checked ||
-                               document.getElementById('prairieDogs').checked ||
-                               document.getElementById('rattlesnake').checked;
-            if (!gameChecked) {
-                alert('Please select at least one game species');
-                return;
-            }
-
             submitBooking('complimentary', 'KCP100-FREE');
         }
 
         // Submit booking
-        function submitBooking(paymentStatus, transactionId = null) {
+        function submitBooking(paymentStatus, transactionId = null, method = null) {
+            bookingInProgress = true;
+            ['freeBookingBtn', 'venmoBtn'].forEach(id => { document.getElementById(id).disabled = true; });
             const gameSpecies = [];
             if (document.getElementById('muleDeerBuck').checked) gameSpecies.push('Mule Deer Buck');
             if (document.getElementById('muleDeerDoe').checked) gameSpecies.push('Mule Deer Doe');
@@ -1437,7 +1520,7 @@
                 pawAppSignup: document.getElementById('pawAppSignup').checked,
                 totalPrice: totalCost,
                 paymentStatus: paymentStatus,
-                paymentMethod: paymentStatus === 'paid' ? 'paypal' : (paymentStatus === 'complimentary' ? 'complimentary' : 'cash'),
+                paymentMethod: method || (paymentStatus === 'paid' ? 'paypal' : (paymentStatus === 'complimentary' ? 'complimentary' : 'cash')),
                 paypalTransactionId: transactionId,
                 dailyRate: dailyRate,
                 numNights: Math.ceil((new Date(document.getElementById('endDate').value) - new Date(document.getElementById('startDate').value)) / 86400000),
@@ -1490,6 +1573,13 @@
                     }
 
                     console.log('Showing success modal');
+                    const venmoDue = document.getElementById('venmoDueMessage');
+                    if (bookingData.paymentMethod === 'venmo') {
+                        document.getElementById('venmoDueAmount').textContent = '$' + bookingData.totalPrice;
+                        venmoDue.style.display = 'block';
+                    } else {
+                        venmoDue.style.display = 'none';
+                    }
                     const modal = document.getElementById('bookingSuccessModal');
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
@@ -1506,13 +1596,28 @@
                     calculateTotal();
                     loadCalendarData();
                 } else {
-                    alert('Error: ' + (data.message || 'Unable to complete booking. Please contact hunting@m77ag.com'));
+                    const paid = paymentStatus === 'paid';
+                    alert((data.message || 'Unable to complete booking.') +
+                        (paid ? ' Your payment went through and the office has been notified; we will contact you to confirm your dates.' : ' Please contact hunting@m77ag.com if you need help.'));
                     console.error('Booking error:', data);
+                    loadCalendarData();
                 }
             })
             .catch(error => {
                 console.error('Booking error:', error);
-                alert('Error creating booking. Please try again or contact hunting@m77ag.com');
+                // The server never answered: tell the office so the customer is not lost.
+                fetch('/api/hunting/attempts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...bookingData, message: 'Browser could not reach the server: ' + error.message, paymentReference: transactionId && transactionId !== 'KCP100-FREE' ? transactionId : undefined })
+                }).catch(() => {});
+                alert(paymentStatus === 'paid'
+                    ? 'Your payment went through but the reservation could not be saved. The office has been notified and will contact you. PayPal reference: ' + transactionId
+                    : 'Error creating booking. Please try again or contact hunting@m77ag.com');
+            })
+            .finally(() => {
+                bookingInProgress = false;
+                ['freeBookingBtn', 'venmoBtn'].forEach(id => { document.getElementById(id).disabled = false; });
             });
         }
         

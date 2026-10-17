@@ -10,6 +10,8 @@ router.get('/booked-dates', bookingController.getBookedDates);
 router.get('/game-rest-dates', bookingController.getGameRestDates);
 router.get('/booking-info/:id', bookingController.getBookingInfo);
 router.post('/game-rest-request', bookingController.submitGameRestRequest);
+router.get('/availability', bookingController.checkAvailability);
+router.post('/attempts', bookingController.reportAttempt);
 
 // User routes (protected)
 router.get('/my-bookings', authenticate, bookingController.getMyBookings);
@@ -22,6 +24,8 @@ router.put('/bookings/:id', authenticate, isAdmin, bookingController.updateBooki
 router.delete('/bookings/:id', authenticate, isAdmin, bookingController.cancelBooking);
 router.post('/bookings/:id/resend-confirmation', authenticate, isAdmin, bookingController.resendConfirmation);
 router.post('/bookings/:id/send-waiver-reminder', authenticate, isAdmin, bookingController.sendWaiverReminder);
+router.get('/attempts', authenticate, isAdmin, bookingController.getAttempts);
+router.patch('/attempts/:id/resolve', authenticate, isAdmin, bookingController.resolveAttempt);
 router.get('/search-customer', authenticate, isAdmin, bookingController.searchCustomer);
 router.post('/recalculate-spend', authenticate, isAdmin, bookingController.recalculateCustomerSpend);
 

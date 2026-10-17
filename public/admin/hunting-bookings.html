@@ -817,6 +817,20 @@
             </div>
         </div>
 
+        <!-- Failed booking and season pass attempts -->
+        <div class="bookings-section" style="margin-bottom: 20px;">
+            <div class="section-header">
+                <h2 class="section-title">Did Not Go Through</h2>
+                <label style="font-size: 14px; color: #555; display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="attemptsShowAll" onchange="loadAttempts()" style="width: auto;"> Show handled
+                </label>
+            </div>
+            <p style="margin: 0 0 15px 0; color: #555; font-size: 14px;">
+                Bookings and season passes customers tried that were not saved. Entries marked PAID took money; record them with Book for a Customer or Season Passes, then mark them handled.
+            </p>
+            <div id="attemptsList" style="display: grid; gap: 10px;"></div>
+        </div>
+
         <!-- Season Passes -->
         <div class="bookings-section" style="margin-bottom: 20px;">
             <div class="section-header">
@@ -1049,7 +1063,58 @@
                 return;
             }
             loadBookings();
+            loadAttempts();
         });
+
+        function attemptText(v) {
+            return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        async function loadAttempts() {
+            const list = document.getElementById('attemptsList');
+            try {
+                const all = document.getElementById('attemptsShowAll').checked;
+                const res = await fetch('/api/hunting/attempts' + (all ? '?all=true' : ''), {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken')}` }
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Failed to load');
+                if (!data.attempts.length) {
+                    list.innerHTML = '<div style="padding: 15px; background: #f9f9f9; border-radius: 8px; color: #666;">Nothing outstanding.</div>';
+                    return;
+                }
+                list.innerHTML = data.attempts.map(a => {
+                    const dates = a.checkinDate ? formatDate(a.checkinDate) + (a.checkoutDate && a.checkoutDate !== a.checkinDate ? ' - ' + formatDate(a.checkoutDate) : '') : '';
+                    const what = a.kind === 'season-pass' ? 'Season pass' + (a.passType ? ' (' + a.passType + ')' : '') : (a.parcel || 'Booking') + (dates ? ', ' + dates : '');
+                    return `<div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); ${a.paymentReference ? 'border-left: 4px solid #c62828;' : ''}">
+                        <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                            <strong>${a.paymentReference ? '<span style="color:#c62828;">PAID</span> ' : ''}${attemptText(a.customerName || 'Unknown')}</strong>
+                            <span style="color: #888; font-size: 13px;">${new Date(a.createdAt).toLocaleString('en-US')}</span>
+                        </div>
+                        <div style="font-size: 14px; color: #333; margin-top: 4px;">${attemptText(what)}${a.totalPrice !== undefined && a.totalPrice !== null ? ' - $' + attemptText(a.totalPrice) : ''}${a.paymentMethod ? ' - ' + attemptText(a.paymentMethod) : ''}</div>
+                        <div style="font-size: 14px; color: #555; margin-top: 4px;">${attemptText(a.email)}${a.phone ? ' | ' + attemptText(a.phone) : ''}</div>
+                        ${a.paymentReference ? `<div style="font-size: 13px; color: #c62828; margin-top: 4px;">Payment reference: ${attemptText(a.paymentReference)}</div>` : ''}
+                        <div style="font-size: 13px; color: #888; margin-top: 4px;">${attemptText(a.message)}</div>
+                        ${a.resolved
+                            ? `<div style="font-size: 13px; color: #2c5530; margin-top: 8px;">Handled${a.resolvedNote ? ': ' + attemptText(a.resolvedNote) : ''}</div>`
+                            : `<button onclick="resolveAttempt('${a._id}')" style="margin-top: 10px; padding: 8px 16px; background: #2c5530; color: white; border: none; border-radius: 5px; cursor: pointer;">Mark Handled</button>`}
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                list.innerHTML = '<div style="padding: 15px; color: #c62828;">Could not load attempts: ' + attemptText(e.message) + '</div>';
+            }
+        }
+
+        async function resolveAttempt(id) {
+            const note = prompt('Note (optional), e.g. booked manually, refunded, customer called:');
+            if (note === null) return;
+            await fetch('/api/hunting/attempts/' + id + '/resolve', {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken')}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ note })
+            });
+            loadAttempts();
+        }
 
         // Load all bookings
         // A hunting season runs April 1 through March 31, so a hunt in January 2027

@@ -69,18 +69,11 @@ const seasonPassController = {
 
       // Validate input
       if (!name || !email || !phone || !password || !passType || !amountPaid) {
+        await require('./bookingController').recordAttempt(req, 'rejected', 'Season pass purchase missing required fields',
+          { name, email, phone, passType, kind: 'season-pass', totalPrice: amountPaid, paymentMethod: 'paypal', paymentReference: paypalTransactionId || paypalOrderId });
         return res.status(400).json({
           success: false,
           message: 'Missing required fields'
-        });
-      }
-
-      // Check if user already exists
-      const existingUser = await User.findOne({ email: email.toLowerCase() });
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: 'An account with this email already exists. Please log in instead.'
         });
       }
 
@@ -93,27 +86,80 @@ const seasonPassController = {
         });
       }
 
+      const newPass = {
+        active: true,
+        type: passType,
+        purchaseDate: new Date(),
+        expiresAt: getSeasonExpiration(),
+        creditsTotal,
+        creditsRemaining: creditsTotal,
+        amountPaid,
+        paymentMethod: 'paypal',
+        paymentReference: paypalTransactionId || paypalOrderId,
+        bookingIds: []
+      };
+
+      // A returning customer already has an account. The pass is paid for,
+      // so it always goes on their account; they are signed in only when the
+      // password matches.
+      const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+      if (existingUser) {
+        const current = existingUser.seasonPass;
+        const stillValid = current && current.active && current.creditsRemaining > 0 &&
+          (!current.expiresAt || new Date(current.expiresAt) > new Date());
+        if (stillValid) {
+          // Unused days from a pass this season carry over on top of the new one.
+          existingUser.seasonPass.type = passType;
+          existingUser.seasonPass.purchaseDate = newPass.purchaseDate;
+          existingUser.seasonPass.expiresAt = newPass.expiresAt;
+          existingUser.seasonPass.creditsTotal = (current.creditsTotal || 0) + creditsTotal;
+          existingUser.seasonPass.creditsRemaining = current.creditsRemaining + creditsTotal;
+          existingUser.seasonPass.amountPaid = (Number(current.amountPaid) || 0) + Number(amountPaid);
+          existingUser.seasonPass.paymentMethod = 'paypal';
+          existingUser.seasonPass.paymentReference = [current.paymentReference, newPass.paymentReference].filter(Boolean).join(', ');
+        } else {
+          existingUser.seasonPass = newPass;
+        }
+        if (!existingUser.phone) existingUser.phone = phone;
+        await existingUser.save();
+
+        const passwordMatches = await existingUser.comparePassword(password).catch(() => false);
+        // Mail goes out after the reply so the buyer is never left waiting on it.
+        deliverPassDocuments(existingUser);
+        const documentsSent = 'sending';
+        console.log('Season pass purchased on existing account:', {
+          email: existingUser.email, type: passType, paypalOrderId, passwordMatches, documentsSent
+        });
+
+        return res.json({
+          success: true,
+          message: passwordMatches
+            ? 'Season pass added to your account.'
+            : 'Season pass added to your existing account. Sign in with your current password, or use Forgot Password.',
+          existingAccount: true,
+          documentsSent,
+          token: passwordMatches
+            ? jwt.sign({ userId: existingUser._id, email: existingUser.email, role: existingUser.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+            : null,
+          user: {
+            id: existingUser._id,
+            name: existingUser.name,
+            email: existingUser.email,
+            seasonPass: existingUser.seasonPass
+          }
+        });
+      }
+
       // Create new user with season pass
       const newUser = new User({
         name,
-        email: email.toLowerCase(),
+        email: email.toLowerCase().trim(),
         phone,
         password,
         role: 'customer',
         emailVerified: true, // Auto-verify since they paid
         isActive: true,
-        seasonPass: {
-          active: true,
-          type: passType,
-          purchaseDate: new Date(),
-          expiresAt: getSeasonExpiration(),
-          creditsTotal,
-          creditsRemaining: creditsTotal,
-          amountPaid,
-          paymentMethod: 'paypal',
-          paymentReference: paypalTransactionId || paypalOrderId,
-          bookingIds: []
-        }
+        seasonPass: newPass
       });
 
       await newUser.save();
@@ -129,8 +175,10 @@ const seasonPassController = {
         { expiresIn: JWT_EXPIRES_IN }
       );
 
-      // Email the waiver link and property maps to the buyer and notify the office
-      const documentsSent = await deliverPassDocuments(newUser);
+      // Email the waiver link and property maps to the buyer and notify the
+      // office, after the reply so the buyer is never left waiting on mail
+      deliverPassDocuments(newUser);
+      const documentsSent = 'sending';
 
       console.log('Season pass purchased:', {
         email: newUser.email,
@@ -155,6 +203,9 @@ const seasonPassController = {
 
     } catch (error) {
       console.error('Error purchasing season pass:', error);
+      await require('./bookingController').recordAttempt(req, 'error',
+        'Season pass paid but not saved: ' + error.message,
+        { ...req.body, password: undefined, kind: 'season-pass', totalPrice: req.body && req.body.amountPaid, paymentMethod: 'paypal', paymentReference: req.body && (req.body.paypalTransactionId || req.body.paypalOrderId) });
       res.status(500).json({
         success: false,
         message: 'Failed to purchase season pass: ' + error.message

@@ -72,7 +72,156 @@ async function createGameRestPeriods(booking) {
   }
 }
 
+// A booking or game rest period that overlaps the requested days on this
+// property. "Both Properties" overlaps everything. Returns a message, or null
+// when the days are open.
+async function findConflict(parcel, checkinDateTime, checkoutDateTime) {
+  const parcels = parcel === 'Both Properties'
+    ? ['Heritage Farm', 'Prairie Peace', 'Both Properties']
+    : [parcel, 'Both Properties'];
+  const existing = await Booking.findOne({
+    parcel: { $in: parcels },
+    status: { $in: ['pending', 'confirmed'] },
+    checkinDate: { $lte: checkoutDateTime },
+    checkoutDate: { $gte: checkinDateTime }
+  });
+  if (existing) {
+    if (parcel === 'Both Properties') return `Cannot book both properties - ${existing.parcel} is already booked for these dates`;
+    return existing.parcel === 'Both Properties'
+      ? 'These dates are booked - both properties are reserved'
+      : 'These dates are already booked for this property';
+  }
+  // Rest periods run from noon to the end of the day.
+  const dayStart = new Date(checkinDateTime); dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(checkoutDateTime); dayEnd.setHours(23, 59, 59, 999);
+  const rest = await GameRest.findOne({
+    parcel: { $in: parcels },
+    startDate: { $lte: dayEnd },
+    endDate: { $gte: dayStart }
+  });
+  if (rest) return `${rest.parcel} is resting the game on ${new Date(rest.startDate).toDateString()}. Choose other dates or request a change.`;
+  return null;
+}
+
+// Noon on the given calendar day, so the stored date never shifts a day.
+function noonOf(value) {
+  const d = new Date(value);
+  d.setHours(12, 0, 0, 0);
+  return d;
+}
+
+const BOOKABLE_PARCELS = ['Heritage Farm', 'Prairie Peace', 'Both Properties'];
+
+const clip = (v, n) => (v === undefined || v === null ? undefined : String(v).slice(0, n));
+const escHtml = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// Log a booking or pass that did not go through and tell the hunting mailbox,
+// at most once an hour per customer email. Never throws.
+async function recordAttempt(req, stage, message, data = {}) {
+  try {
+    const BookingAttempt = require('../models/bookingAttempt');
+    const validDate = v => (v && !isNaN(new Date(v)) ? new Date(v) : undefined);
+    const email = clip(data.email, 160);
+    const attempt = await BookingAttempt.create({
+      kind: data.kind === 'season-pass' ? 'season-pass' : 'booking',
+      stage,
+      message: clip(message, 500),
+      customerName: clip(data.customerName || data.name, 120),
+      email,
+      phone: clip(data.phone, 40),
+      parcel: clip(data.parcel, 40),
+      checkinDate: validDate(data.checkinDate),
+      checkoutDate: validDate(data.checkoutDate),
+      passType: clip(data.passType, 20),
+      totalPrice: Number.isFinite(Number(data.totalPrice)) ? Number(data.totalPrice) : undefined,
+      paymentMethod: clip(data.paymentMethod, 30),
+      paymentReference: clip(data.paymentReference || data.paypalTransactionId, 80),
+      userAgent: clip(req.headers['user-agent'], 300)
+    });
+
+    const recent = email ? await BookingAttempt.countDocuments({
+      email: email.toLowerCase(), _id: { $ne: attempt._id }, createdAt: { $gte: new Date(Date.now() - 3600000) }
+    }) : 0;
+    if (!recent) {
+      // Not awaited: the customer's request never waits on mail.
+      const dates = attempt.checkinDate
+        ? `${attempt.checkinDate.toDateString()}${attempt.checkoutDate ? ' to ' + attempt.checkoutDate.toDateString() : ''}`
+        : '';
+      sendHuntingEmail({
+        to: HUNTING_NOTIFICATION_RECIPIENTS,
+        subject: `${attempt.paymentReference ? 'PAID - ' : ''}Hunting ${attempt.kind === 'season-pass' ? 'season pass' : 'booking'} did not go through: ${attempt.customerName || attempt.email || 'unknown customer'}`,
+        html: `<p>A hunting ${attempt.kind === 'season-pass' ? 'season pass purchase' : 'booking'} on m77ag.com did not go through.</p>
+          <p><strong>Reason:</strong> ${escHtml(attempt.message)}</p>
+          <p><strong>Customer:</strong> ${escHtml(attempt.customerName)}<br>
+          <strong>Email:</strong> ${escHtml(attempt.email)}<br>
+          <strong>Phone:</strong> ${escHtml(attempt.phone)}<br>
+          ${attempt.parcel ? `<strong>Property:</strong> ${escHtml(attempt.parcel)}<br>` : ''}
+          ${dates ? `<strong>Dates:</strong> ${escHtml(dates)}<br>` : ''}
+          ${attempt.passType ? `<strong>Pass:</strong> ${escHtml(attempt.passType)}<br>` : ''}
+          ${attempt.totalPrice !== undefined ? `<strong>Amount:</strong> $${escHtml(attempt.totalPrice)}<br>` : ''}
+          ${attempt.paymentReference ? `<strong>Payment reference:</strong> ${escHtml(attempt.paymentReference)} (payment was taken)` : ''}</p>
+          <p>Failed attempts are listed on the Hunting Bookings admin page.</p>`
+      }).catch(e => console.error('Failed to email booking attempt notice:', e.message));
+    }
+  } catch (e) {
+    console.error('Failed to record booking attempt:', e.message);
+  }
+}
+
 const bookingController = {
+  // Public: the customer's browser reports a booking or pass it could not
+  // complete (network failure, payment taken but not recorded).
+  reportAttempt: async (req, res) => {
+    const b = req.body || {};
+    await recordAttempt(req, 'client', b.message || 'Browser could not complete the request', b);
+    res.json({ success: true });
+  },
+
+  // Admin: failed attempts, newest first.
+  getAttempts: async (req, res) => {
+    try {
+      const BookingAttempt = require('../models/bookingAttempt');
+      const filter = req.query.all === 'true' ? {} : { resolved: false };
+      const attempts = await BookingAttempt.find(filter).sort({ createdAt: -1 }).limit(200).lean();
+      res.json({ success: true, attempts });
+    } catch (error) {
+      console.error('Error loading booking attempts:', error);
+      res.status(500).json({ success: false, message: 'Failed to load attempts' });
+    }
+  },
+
+  // Admin: mark an attempt handled.
+  resolveAttempt: async (req, res) => {
+    try {
+      const BookingAttempt = require('../models/bookingAttempt');
+      const attempt = await BookingAttempt.findByIdAndUpdate(req.params.id,
+        { $set: { resolved: true, resolvedNote: clip(req.body && req.body.note, 500) } }, { new: true });
+      if (!attempt) return res.status(404).json({ success: false, message: 'Attempt not found' });
+      res.json({ success: true, attempt });
+    } catch (error) {
+      console.error('Error resolving booking attempt:', error);
+      res.status(500).json({ success: false, message: 'Failed to update attempt' });
+    }
+  },
+
+  // Public: are these days open on this property?
+  checkAvailability: async (req, res) => {
+    try {
+      const { parcel, start, end } = req.query;
+      if (!BOOKABLE_PARCELS.includes(parcel) || !start || !end || isNaN(new Date(start)) || isNaN(new Date(end))) {
+        return res.status(400).json({ success: false, message: 'Property, start date and end date are required' });
+      }
+      if (noonOf(end) < noonOf(start)) {
+        return res.status(400).json({ success: false, message: 'End date is before the start date' });
+      }
+      const conflict = await findConflict(parcel, noonOf(start), noonOf(end));
+      res.json({ success: true, available: !conflict, message: conflict || 'Available' });
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      res.status(500).json({ success: false, message: 'Failed to check availability' });
+    }
+  },
+
   // Create a new booking
   createBooking: async (req, res) => {
     try {
@@ -103,55 +252,28 @@ const bookingController = {
         originalPrice
       } = req.body;
 
+      if (!customerName || !email || !phone || !BOOKABLE_PARCELS.includes(parcel) ||
+          !checkinDate || !checkoutDate || isNaN(new Date(checkinDate)) || isNaN(new Date(checkoutDate))) {
+        const message = 'Name, email, phone, property and dates are required';
+        await recordAttempt(req, 'rejected', message, req.body);
+        return res.status(400).json({ success: false, message });
+      }
+
       // Create dates at noon local time to avoid timezone issues
-      const checkinDateTime = new Date(checkinDate);
-      checkinDateTime.setHours(12, 0, 0, 0);
+      const checkinDateTime = noonOf(checkinDate);
+      const checkoutDateTime = noonOf(checkoutDate);
+      if (checkoutDateTime < checkinDateTime) {
+        await recordAttempt(req, 'rejected', 'End date is before the start date', req.body);
+        return res.status(400).json({ success: false, message: 'End date is before the start date' });
+      }
 
-      const checkoutDateTime = new Date(checkoutDate);
-      checkoutDateTime.setHours(12, 0, 0, 0);
-
-      // Check if dates are already booked
-      let existingBooking;
-
-      if (parcel === 'Both Properties') {
-        // If booking both properties, check if either property is already booked
-        existingBooking = await Booking.findOne({
-          $or: [
-            { parcel: 'Heritage Farm' },
-            { parcel: 'Prairie Peace' },
-            { parcel: 'Both Properties' }
-          ],
-          status: { $in: ['pending', 'confirmed'] },
-          checkinDate: { $lte: checkoutDateTime },
-          checkoutDate: { $gte: checkinDateTime }
-        });
-
-        if (existingBooking) {
-          return res.status(400).json({
-            success: false,
-            message: `Cannot book both properties - ${existingBooking.parcel} is already booked for these dates`
-          });
-        }
-      } else {
-        // Check if this specific parcel is booked OR if both properties are booked
-        existingBooking = await Booking.findOne({
-          $or: [
-            { parcel: parcel },
-            { parcel: 'Both Properties' }
-          ],
-          status: { $in: ['pending', 'confirmed'] },
-          checkinDate: { $lte: checkoutDateTime },
-          checkoutDate: { $gte: checkinDateTime }
-        });
-
-        if (existingBooking) {
-          return res.status(400).json({
-            success: false,
-            message: existingBooking.parcel === 'Both Properties'
-              ? 'These dates are booked - both properties are reserved'
-              : 'These dates are already booked for this parcel'
-          });
-        }
+      // A paid booking is always recorded, even if the days filled while the
+      // customer was paying; the office sorts out the dates.
+      const conflict = await findConflict(parcel, checkinDateTime, checkoutDateTime);
+      const alreadyPaid = paymentStatus === 'paid' && paypalTransactionId;
+      if (conflict && !alreadyPaid) {
+        await recordAttempt(req, 'rejected', conflict, req.body);
+        return res.status(400).json({ success: false, message: conflict });
       }
 
       // Create new booking
@@ -176,7 +298,7 @@ const bookingController = {
         paymentMethod: paymentMethod || 'paypal',
         paymentStatus: paymentStatus || 'pending',
         paypalTransactionId,
-        notes,
+        notes: conflict ? [notes, `Date conflict when paid: ${conflict}`].filter(Boolean).join(' | ') : notes,
         discountCode,
         discountPercent,
         originalPrice,
@@ -185,6 +307,10 @@ const bookingController = {
       });
 
       await booking.save();
+      if (conflict) {
+        await recordAttempt(req, 'rejected', `Paid booking saved on dates already taken (${conflict}). Move or refund it.`,
+          { ...req.body, paymentReference: paypalTransactionId });
+      }
 
       // Update customer lifetime spend (for loyalty tracking)
       try {
@@ -224,29 +350,33 @@ const bookingController = {
       // Create automatic game rest periods
       await createGameRestPeriods(booking);
 
-      // Send booking confirmation email
-      try {
-        await sendBookingConfirmation(booking);
-        console.log('Booking confirmation emails sent successfully');
-      } catch (emailError) {
-        console.error('Failed to send booking confirmation email:', emailError);
-      }
-
-      // Send a sign-in link to their customer card
-      try {
-        const { issueCardLink } = require('./customerPortalController');
-        await issueCardLink({ email: booking.email, name: booking.customerName, issuedBy: 'booking confirmation' });
-      } catch (linkError) {
-        console.error('Failed to send customer card link:', linkError);
-      }
-
+      // Answer the customer now; mail goes out after, so a slow or failing
+      // mail server never holds up the booking.
       res.status(201).json({
         success: true,
         message: 'Booking created successfully',
         booking
       });
+
+      (async () => {
+        try {
+          await sendBookingConfirmation(booking);
+          console.log('Booking confirmation emails sent successfully');
+        } catch (emailError) {
+          console.error('Failed to send booking confirmation email:', emailError);
+        }
+        // Send a sign-in link to their customer card
+        try {
+          const { issueCardLink } = require('./customerPortalController');
+          await issueCardLink({ email: booking.email, name: booking.customerName, issuedBy: 'booking confirmation' });
+        } catch (linkError) {
+          console.error('Failed to send customer card link:', linkError);
+        }
+      })();
+      return;
     } catch (error) {
       console.error('Error creating booking:', error);
+      await recordAttempt(req, 'error', 'Server error while saving: ' + error.message, req.body);
       res.status(500).json({
         success: false,
         message: 'Failed to create booking'
@@ -309,25 +439,19 @@ const bookingController = {
           booking.vehicleLicense = vehicleLicense || booking.vehicleLicense;
           await booking.save();
 
-          // Send waiver confirmation email if booking exists
-          try {
-            await sendWaiverConfirmation(booking);
-            console.log('Waiver confirmation emails sent successfully');
-          } catch (emailError) {
-            console.error('Failed to send waiver confirmation email:', emailError);
-          }
+          // Send waiver confirmation email if booking exists (after the reply)
+          sendWaiverConfirmation(booking)
+            .then(() => console.log('Waiver confirmation emails sent successfully'))
+            .catch(emailError => console.error('Failed to send waiver confirmation email:', emailError));
         }
       }
 
       // A waiver signed without a booking belongs to a season pass holder or a
       // walk-up hunter. Send them the same dash card and property maps.
       if (!booking && waiver.email) {
-        try {
-          await sendStandaloneWaiverConfirmation(waiver);
-          console.log('Waiver documents and maps sent to:', waiver.email);
-        } catch (emailError) {
-          console.error('Failed to send standalone waiver documents:', emailError);
-        }
+        sendStandaloneWaiverConfirmation(waiver)
+          .then(() => console.log('Waiver documents and maps sent to:', waiver.email))
+          .catch(emailError => console.error('Failed to send standalone waiver documents:', emailError));
       }
 
       res.json({
@@ -1119,5 +1243,7 @@ const bookingController = {
     }
   }
 };
+
+bookingController.recordAttempt = recordAttempt;
 
 module.exports = bookingController;
