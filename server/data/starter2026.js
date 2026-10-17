@@ -13,10 +13,9 @@ module.exports = {
   // over the corn and milo acres. On hold: shown on the cards, not billed or
   // counted, until hold is set to false.
   sulfur: { label: 'Sulfur 17', quantity: 500, price: 20.00, total: 10000.00, hold: true },
-  // [product, quantity, price, total]. Guard X Prephyte use not yet known.
-  notPlaced: [
-    ['Guard X Prephyte', 5, 2400.00, 12000.00]
-  ],
+  // Guard X Prephyte went in the starter on all the corn and milo (Kyle,
+  // Oct 17, 2026); spread over the corn and milo acres.
+  guardX: { label: 'Guard X Prephyte', quantity: 5, price: 2400.00, total: 12000.00 },
   // The ~2 lb/ac entries logged as UpShiftC were the zinc, which went on all
   // the corn and milo (Kyle, Oct 17, 2026). Bamford Farms LLC invoice dated
   // Apr 1, 2026: 9% EDTA Zinc 500 gal x $14.11 = $7,055.00 plus $560.00
