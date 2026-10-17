@@ -272,8 +272,12 @@ async function autoLoad(importId = 'season-2026') {
     await AppliedUpdate.updateOne({ key: AUTO_KEY + ':' + importId },
       { $addToSet: { summary: { $each: newlyHandled } }, $setOnInsert: { appliedAt: new Date() } }, { upsert: true });
   }
+  // Overlap passes (under 3 acres logged) come off the cards.
+  const overlap = (IMPORTS[importId].overlapKeys || []).map(k => importId + ':' + k);
+  const removed = overlap.length ? (await FieldOperation.deleteMany({ sourceKey: { $in: overlap } })).deletedCount : 0;
   const cost = await costPending();
   const out = [];
+  if (removed) out.push(`${importId}: ${removed} overlap passes (under 3 ac logged) removed from cards`);
   if (added || refreshed) out.push(`${importId}: ${added} added to cards, ${refreshed} refreshed`);
   if (waiting.length) out.push(`${importId}: ${waiting.length} wait for review in 2026 Season Records`);
   if (cost.costed) out.push(`${cost.costed} completed passes costed at the default rates`);
