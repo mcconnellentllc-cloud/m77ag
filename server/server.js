@@ -105,6 +105,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Field detail fill failed:', e.message);
     }
+    // Hunts booked outside the website (applied once each)
+    try {
+      const { applyHuntingBookings } = require('./services/huntingBookingsToRecord');
+      (await applyHuntingBookings()).forEach(r => console.log('Hunting booking:', r));
+    } catch (e) {
+      console.error('Hunting bookings failed:', e.message);
+    }
     // Irrigation: 73 and 77 irrigated, all else dryland (applied once)
     try {
       const { applyIrrigation } = require('./services/luekingFields');

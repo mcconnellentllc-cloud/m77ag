@@ -1002,48 +1002,67 @@ const bookingController = {
   },
 
   // Search for customer by name or email (for manual booking creation)
+  // Admin: customers matching a name, email or phone, from their customer
+  // card (account), past bookings and signed waivers, newest details first.
   searchCustomer: async (req, res) => {
     try {
-      const { query } = req.query;
-
-      if (!query || query.length < 3) {
-        return res.json({
-          success: true,
-          customers: []
-        });
+      const query = String(req.query.query || req.query.q || '').trim();
+      if (query.length < 2) {
+        return res.json({ success: true, customers: [] });
       }
 
-      const Booking = require('../models/booking');
+      const User = require('../models/user');
+      const Waiver = require('../models/waiver');
+      const rx = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      const digits = query.replace(/\D/g, '');
+      const phoneRx = digits.length >= 4 ? new RegExp(digits.split('').join('\\D*')) : null;
+      const match = (nameField, emailField, phoneField) => ({
+        $or: [{ [nameField]: rx }, { [emailField]: rx }, ...(phoneRx ? [{ [phoneField]: phoneRx }] : [])]
+      });
 
-      // Search bookings by customer name or email
-      const bookings = await Booking.find({
-        $or: [
-          { customerName: new RegExp(query, 'i') },
-          { email: new RegExp(query, 'i') }
-        ]
-      }).sort({ createdAt: -1 }).limit(10);
+      const [users, bookings, waivers] = await Promise.all([
+        User.find({ role: 'customer', ...match('name', 'email', 'phone') })
+          .select('name email phone seasonPass').limit(10).lean(),
+        Booking.find(match('customerName', 'email', 'phone')).sort({ createdAt: -1 }).limit(20).lean(),
+        Waiver.find(match('hunterName', 'email', 'phone')).sort({ signedAt: -1 }).limit(20).lean()
+      ]);
 
-      // Get unique customers
-      const customersMap = new Map();
-      bookings.forEach(booking => {
-        const key = booking.email.toLowerCase();
-        if (!customersMap.has(key)) {
-          customersMap.set(key, {
-            name: booking.customerName,
-            email: booking.email,
-            phone: booking.phone,
-            lastBooking: booking.createdAt
-          });
+      const customers = new Map();
+      // The office's own addresses stand in on owner hunts; they are not customers.
+      const OFFICE = ['hunting@m77ag.com', 'office@m77ag.com'];
+      const entry = email => {
+        const key = String(email || '').toLowerCase().trim();
+        if (!key || OFFICE.includes(key)) return null;
+        if (!customers.has(key)) customers.set(key, { email: key, sources: [] });
+        return customers.get(key);
+      };
+      const fill = (c, name, phone) => {
+        if (!c.name && name) c.name = name;
+        if (!c.phone && phone) c.phone = phone;
+      };
+
+      for (const u of users) {
+        const c = entry(u.email); if (!c) continue;
+        fill(c, u.name, u.phone);
+        c.sources.push('customer card');
+        const sp = u.seasonPass;
+        if (sp && sp.active && !(sp.expiresAt && new Date(sp.expiresAt) < new Date())) {
+          c.seasonPass = { type: sp.type, creditsRemaining: sp.creditsRemaining };
         }
-      });
+      }
+      for (const b of bookings) {
+        const c = entry(b.email); if (!c) continue;
+        fill(c, b.customerName, b.phone);
+        if (!c.lastHunt) c.lastHunt = { date: b.checkinDate, parcel: b.parcel };
+        if (!c.sources.includes('bookings')) c.sources.push('bookings');
+      }
+      for (const w of waivers) {
+        const c = entry(w.email); if (!c) continue;
+        fill(c, w.hunterName, w.phone);
+        if (!c.sources.includes('waiver')) c.sources.push('waiver');
+      }
 
-      const customers = Array.from(customersMap.values());
-
-      res.json({
-        success: true,
-        customers
-      });
-
+      res.json({ success: true, customers: Array.from(customers.values()).slice(0, 10) });
     } catch (error) {
       console.error('Error searching customers:', error);
       res.status(500).json({
