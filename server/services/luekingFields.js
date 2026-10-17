@@ -21,6 +21,7 @@ async function addLuekingFields() {
         notes: (d.acresNote || 'Acres are 2026 seeded acres from Operations Center until FSA acres are on file.') + (d.note ? ' ' + d.note : '')
       };
       if (d.crop2026) doc.crop2026 = d.crop2026;
+      if (d.crop2027) doc.crop2027 = d.crop2027;
       // Raw insert: the card holds only what is known; later edits validate as usual.
       const r = await CroppingField.collection.insertOne({ client: 'MCC. ENT.', ...doc, cropHistory: [], createdAt: new Date(), updatedAt: new Date() });
       cf = { _id: r.insertedId, ...doc };

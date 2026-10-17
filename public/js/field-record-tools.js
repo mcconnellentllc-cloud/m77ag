@@ -48,6 +48,7 @@
     const onChange = cfg.onChange || async function () {};
     let opRates = [];
     let seasonData = null;
+    let showOnCard = false;
     let gapData = [];
 
     async function loadRates() {
@@ -161,8 +162,11 @@
         ['Spray passes (Ops Center Application 2026)', r => isOps(r) && r.type === 'spray'],
         ['Tillage (Ops Center Tillage 2026)', r => isOps(r) && r.type === 'tillage']
       ];
+      // A record on its card (with current data) is reconciled and leaves the
+      // list; showOnCard brings them back to check or move one.
+      const open = r => !r.addedTo || r.outdated;
       const rows = groups.map(([label, test]) => {
-        const recs = seasonData.records.filter(test);
+        const recs = seasonData.records.filter(test).filter(r => showOnCard || open(r));
         if (!recs.length) return '';
         return `<tr><td colspan="4" style="background:#f5f3f0; font-weight:700; color:#2d5016; padding:8px;">${label}</td></tr>` + recs.map(r => {
           const target = r.addedTo ? String(r.addedTo.m77Field) : (r.suggested || '');
@@ -179,6 +183,7 @@
         }).join('');
       }).join('');
       const pending = seasonData.records.filter(r => !r.addedTo).length;
+      const onCard = seasonData.records.filter(r => !open(r)).length;
       const outdated = seasonData.records.filter(r => r.outdated).length;
       const retired = seasonData.retired || [];
       const retiredHtml = retired.length ? `
@@ -195,11 +200,13 @@
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button class="btn btn-sm" data-frt="season-apply">Add checked records</button>
+            ${onCard ? `<button class="btn btn-secondary btn-sm" data-frt="season-toggle">${showOnCard ? 'Hide' : 'Show'} ${onCard} on cards</button>` : ''}
             <button class="btn btn-secondary btn-sm" data-frt="season-close">Close</button>
           </div>
         </div>
         ${retiredHtml}
-        <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`;
+        ${rows ? `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`
+          : '<p style="color:#2d5016; margin:10px 0 0;">Every record is on its card.</p>'}`;
     }
     async function openSeason() {
       const el = cfg.seasonEl;
@@ -297,6 +304,7 @@
       if (!b) return;
       if (b.dataset.frt === 'season-apply') applySeason();
       if (b.dataset.frt === 'season-close') cfg.seasonEl.style.display = 'none';
+      if (b.dataset.frt === 'season-toggle') { showOnCard = !showOnCard; renderSeason(); }
     });
     cfg.gapEl.addEventListener('click', e => {
       const b = e.target.closest('[data-frt]');
