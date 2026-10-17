@@ -79,7 +79,7 @@ const RECORDS = [
     startDate: '2026-07-12', endDate: '2026-07-12', netBu: 535.38, combineAcres: 73.2, combineBu: 792,
     tickets: [{ ticketNo: 'X045543', date: '2026-07-12', elevator: HAXTUN, account: '950891 M77 AG', netBu: 535.38, moisture: 13.2, testWeight: 56.4, protein: 15.3, fieldSource: 'printed on ticket' }],
     source: 'Scale tickets; John Deere combine report' },
-  { key: 'h26-30W', fieldHint: '30', cropYear: 2026, crop: 'WHEAT', type: 'harvest', title: 'Wheat harvest',
+  { key: 'h26-30W', fieldHint: '30.W', cropYear: 2026, crop: 'WHEAT', type: 'harvest', title: 'Wheat harvest',
     startDate: '2026-07-12', endDate: '2026-07-13', netBu: 1451.04, combineAcres: 80.3, combineBu: 2020,
     tickets: [
       { ticketNo: 'X045560', date: '2026-07-13', elevator: HAXTUN, account: '391145 Kyle D McConnell', netBu: 1189.73, moisture: 13.5, testWeight: 58.4, protein: 11.6, fieldSource: 'printed on ticket (#30)' },
@@ -99,7 +99,7 @@ const RECORDS = [
   // John Deere Operations Center Field Report "2025 Seeding", printed Oct 14,
   // 2026. Field names in Operations Center changed since fall 2025; the report
   // names are mapped to current fields (confirmed by Kyle, Oct 14, 2026):
-  // 12.E->12.W, 13.W->13, 23.E->23.W, 30.W->30, 41.E->41, 42.E->42.W,
+  // 12.E->12.W, 13.W->13, 23.E->23.W, 30.W stays 30.W (card was 36.W), 41.E->41, 42.E->42.W,
   // 61.N->61.S. Report area and applied pounds disagree by about 2x on most
   // passes, so acres are the insured or field acres and the report's own
   // numbers are kept in the notes until the drill records are reconciled.
@@ -119,14 +119,15 @@ const RECORDS = [
       '23.E: 145.2 ac, 69 lb/ac applied, 5,008 lb', '2025-10-11 (unit 0005-0002, 69.70 ac, CC practice)'],
     ['55.N', '2025-09-26', '2025-10-07', 75.67, 'KS Providence; fill-in AP Bigfoot', 62, 'Kyle McConnell',
       '55.N Sep 26: 169.2 ac, 60 lb/ac applied, 5,049 lb. Oct 7 fill-in (8370R): 11.1 ac, 39 lb/ac, 436 lb', '2025-09-22 (unit 0005-0007, 75.67 ac)'],
-    ['30', '2025-10-23', '2025-10-24', undefined, 'AP Bigfoot, WB4595', 70, 'Matt Allphin',
+    ['30.W', '2025-10-23', '2025-10-24', undefined, 'AP Bigfoot, WB4595', 70, 'Matt Allphin',
       '30.W: 171.7 ac, 63 lb/ac applied, 5,439 lb', null],
     ['32.N', '2025-10-03', '2025-10-04', undefined, 'AP Bigfoot', 60, 'Kyle McConnell, Matt Allphin',
       '32.N: 126.7 ac, 61 lb/ac applied, 5,206 lb (8320R and 8370R)', null],
     ['61.S', '2025-10-03', '2025-10-24', undefined, 'AP Bigfoot; fill-in AP Bigfoot, WB4595', 30, 'Matt Allphin',
       '61.N Oct 3: 39.2 ac, 62 lb/ac applied against a 30 lb/ac target, 1,197 lb, first variety blank. Oct 24 fill-in: 7.4 ac, 68 lb/ac, 253 lb', null]
   ].map(([hint, start, end, acres, variety, target, operator, report, rcis]) => ({
-    key: 'p26-' + hint.replace('.', ''), rev: 2, fieldHint: hint, cropYear: 2026, crop: 'WHEAT', type: 'seeding', title: 'Wheat planted',
+    // 30.W keeps its first key (p26-30) so a record already placed is not duplicated.
+    key: 'p26-' + (hint === '30.W' ? '30' : hint.replace('.', '')), rev: 2, fieldHint: hint, cropYear: 2026, crop: 'WHEAT', type: 'seeding', title: 'Wheat planted',
     startDate: start, endDate: end, acres, variety, operator, equipment: '8320R',
     source: 'John Deere Operations Center Field Report, 2025 Seeding' + (rcis ? '; 2026 Insurance Summary (Hofmeister, Oct 22, 2025)' : ''),
     notes: 'Target ' + target + ' lb/ac. Report: ' + report + '. Report acres and pounds not reconciled.' +

@@ -72,7 +72,7 @@ const fields = [
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
 
-  { client: 'MCC. ENT.', farm: 'LAFARMS', field: '36.W POLE RD SEC 15', legal: 'NE 15-7-48', fsaFarm: '4062', tract: '4014', acres: 78.00, crop2026: 'WHEAT',
+  { client: 'MCC. ENT.', farm: 'LAFARMS', field: '30.W POLE RD SEC 15', legal: 'NE 15-7-48', fsaFarm: '4062', tract: '4014', acres: 78.00, crop2026: 'WHEAT',
     county: 'Logan', section: '15', township: '7N', range: '48W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
@@ -266,17 +266,17 @@ const fields = [
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.50, taxYear: 2026, taxingAuthority: 'Phillips County' } },
 
-  { client: 'MCC. ENT.', farm: 'PETERSON', field: '35.W POLE RD SEC 14', legal: 'NE 14-7-48', fsaFarm: '4112', tract: '4044', acres: 51.90, crop2026: 'CORN',
+  { client: 'MCC. ENT.', farm: 'PETERSON', field: '31.W POLE RD SEC 14', legal: 'NE 14-7-48', fsaFarm: '4112', tract: '4044', acres: 51.90, crop2026: 'CORN',
     county: 'Logan', section: '14', township: '7N', range: '48W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
 
-  { client: 'MCC. ENT.', farm: 'PETERSON', field: '35.E POLE RD SEC 14', legal: 'NE 14-7-48', fsaFarm: '4112', tract: '4044', acres: 50.00, crop2026: 'FALLOW',
+  { client: 'MCC. ENT.', farm: 'PETERSON', field: '31.E POLE RD SEC 14', legal: 'NE 14-7-48', fsaFarm: '4112', tract: '4044', acres: 50.00, crop2026: 'FALLOW',
     county: 'Logan', section: '14', township: '7N', range: '48W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
 
-  { client: 'MCC. ENT.', farm: 'PETERSON', field: '36.E POLE RD SEC 15', legal: 'NE 15-7-48', fsaFarm: '4062', tract: '4014', acres: 78.70, crop2026: 'FALLOW',
+  { client: 'MCC. ENT.', farm: 'PETERSON', field: '30.E POLE RD SEC 15', legal: 'NE 15-7-48', fsaFarm: '4062', tract: '4014', acres: 78.70, crop2026: 'FALLOW',
     county: 'Logan', section: '15', township: '7N', range: '48W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
