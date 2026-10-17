@@ -217,6 +217,7 @@
           </div>
         </div>
         ${retiredHtml}
+        ${(seasonData.registryProblems || []).length ? `<div style="background:#fdecea; color:#a02818; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:13px;">Some cards cannot be chosen yet: ${esc(seasonData.registryProblems.join(' '))}</div>` : ''}
         ${rows ? `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:720px;"><tbody>${rows}</tbody></table></div>`
           : '<p style="color:#2d5016; margin:10px 0 0;">Every record is on its card.</p>'}`;
     }

@@ -34,6 +34,7 @@ exports.getImport = async (req, res) => {
       success: true,
       data: {
         retired: out.retired,
+        registryProblems: out.registryProblems,
         records: out.records,
         fields: out.fields.map(f => ({ _id: f._id, name: f.name, acres: f.acres, farmName: out.farmOf[String(f._id)] }))
       }

@@ -97,7 +97,8 @@ async function applyFieldRecordUpdates() {
     if (!cards.length) continue;
     const lines = [];
     for (const cf of cards) {
-      if (cf[slot]) { lines.push(`${cf.field}: ${cs.year} already ${cf[slot]}, left as is`); continue; }
+      if (cf[slot] === cs.crop) { lines.push(`${cf.field}: ${cs.year} already ${cs.crop}`); continue; }
+      if (cf[slot] && !cs.force) { lines.push(`${cf.field}: ${cs.year} already ${cf[slot]}, left as is`); continue; }
       await CroppingField.updateOne({ _id: cf._id }, { $set: { [slot]: cs.crop } });
       lines.push(`${cf.field}: ${cs.year} crop set to ${cs.crop}`);
     }

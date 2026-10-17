@@ -6,7 +6,8 @@
 // record lands on the same card either way.
 const FieldOperation = require('../models/fieldOperation');
 const M77Field = require('../models/m77Field');
-require('../models/m77Farm'); // populated on the field list
+const M77Farm = require('../models/m77Farm');
+const { ensureRegistryFields } = require('./fieldRegistry');
 const CroppingField = require('../models/croppingField');
 const AppliedUpdate = require('../models/appliedUpdate');
 const operationCost = require('./operationCost');
@@ -31,7 +32,9 @@ function fieldNumber(name) {
 
 function matches(hint, name) {
   const h = fieldNumber(hint);
-  if (!h) return String(name || '').trim().toLowerCase() === String(hint).trim().toLowerCase();
+  // Names without a field number match whole, apostrophes either way (Keith's / Keith’s).
+  const plain = v => String(v || '').trim().toLowerCase().replace(/\u2019/g, "'");
+  if (!h) return plain(name) === plain(hint);
   const f = fieldNumber(name);
   if (!f || f.num !== h.num || f.sub !== h.sub) return false;
   return !h.suffix || h.suffix === f.suffix;
@@ -88,7 +91,15 @@ function payingCrop(cropOn, field, firstYear) {
 async function resolveImport(importId) {
   const imp = IMPORTS[importId];
   if (!imp) return null;
-  const fields = await M77Field.find({}).select('name acres farm crop2026 rotationGroup legacySource legacyId').populate('farm', 'name').sort({ name: 1 });
+  // Every card needs a registry field to be chosen; add any that are missing
+  // and report the cards that still cannot be added.
+  const registryProblems = (await ensureRegistryFields()).filter(line => line.startsWith('not added'));
+  const fields = await M77Field.find({}).select('name acres farm crop2026 rotationGroup legacySource legacyId').sort({ name: 1 }).lean();
+  // Farm names read directly (not populated), so a field whose farm link does
+  // not resolve still groups by its card or rotation group.
+  const farmName = {};
+  for (const fm of await M77Farm.find({ _id: { $in: [...new Set(fields.map(f => f.farm).filter(Boolean).map(String))] } }).select('name').lean()) farmName[String(fm._id)] = fm.name;
+  for (const f of fields) f.farm = f.farm && farmName[String(f.farm)] ? { _id: f.farm, name: farmName[String(f.farm)] } : null;
   const cropOn = await cardCrops(fields);
   // Farm for each field as the cards show it (the card's farm), else the
   // registry farm, else the rotation group.
@@ -141,7 +152,8 @@ async function resolveImport(importId) {
       const year = r.matchCropYear || r.cropYear;
       const crop = r.matchCrop || r.crop;
       if (crop && candidates.length > 1) candidates = candidates.filter(f => cropOn(f, year) === crop);
-      else if (crop && candidates.length === 1 && cropOn(candidates[0], year) !== crop) {
+      // Custom acres have no card and no crop on file; the report's crop stands.
+      else if (crop && candidates.length === 1 && candidates[0].legacySource === 'CroppingField' && cropOn(candidates[0], year) !== crop) {
         cropNote = `${candidates[0].name} is ${cropOn(candidates[0], year) || 'not set'} for ${year} on its card; the report says ${crop}. Check before adding.`;
       }
     }
@@ -188,7 +200,8 @@ async function resolveImport(importId) {
     retired: retired.filter(r => !current.has(r.sourceKey)).map(r => ({ id: r._id, sourceKey: r.sourceKey, fieldName: r.fieldName, title: r.title, cropYear: r.cropYear, crop: r.crop, startDate: r.startDate })),
     records,
     fields,
-    farmOf
+    farmOf,
+    registryProblems
   };
 }
 

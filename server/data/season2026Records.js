@@ -515,8 +515,32 @@ for (const e of OPS_TILL) {
   }
 }
 
+// Whole fields planted to one crop (Kyle, Oct 17, 2026): 16 and 17 were
+// entirely corn in 2026. The planting pass and its seed and input costs are
+// split over the parts of the field by their acres (field list acres).
+const FIELD_LIST = require('./fieldDetails');
+const WHOLE_FIELD = { 'sd26-16-2026-corn': ['16.E', '16.M', '16.W'], 'sd26-17-2026-corn': ['17.E', '17.W'] };
+function splitWholeField(r, parts) {
+  const acresOf = part => (FIELD_LIST.find(d => d.field.startsWith(part + ' ')) || {}).acres;
+  const sized = parts.map(part => ({ part, acres: acresOf(part) }));
+  if (sized.some(x => !(x.acres > 0))) return [r];
+  const total = sized.reduce((t, x) => t + x.acres, 0);
+  return sized.map(({ part, acres }) => {
+    const f = acres / total;
+    const out = { ...r, key: r.key + '-' + slug(part), fieldHint: part, matchBy: undefined,
+      notes: (r.notes ? r.notes + ' ' : '') + `Whole field ${r.fieldHint} planted to ${r.crop.toLowerCase()} (Kyle); this part carries ${acres} of ${Math.round(total * 100) / 100} ac.` };
+    if (r.seedCost) {
+      out.seedCost = { ...r.seedCost, amount: r2(r.seedCost.amount * f), interest: r.seedCost.interest === null ? null : r2(r.seedCost.interest * f),
+        lines: r.seedCost.lines.map(l => ({ ...l, acres: r2(l.acres * f), units: l.units === undefined ? undefined : r2(l.units * f),
+          amount: l.amount === null || l.amount === undefined ? l.amount : r2(l.amount * f), interest: l.interest === undefined ? undefined : r2(l.interest * f) })) };
+    }
+    if (r.inputCosts) out.inputCosts = r.inputCosts.map(c => ({ ...c, quantity: r2(c.quantity * f), amount: r2(c.amount * f) }));
+    return out;
+  });
+}
 for (const r of OPS_RECORDS) {
   if (r.area !== undefined && r.area !== null && r.area < OVERLAP_ACRES) overlapKeys.push(r.key);
+  else if (WHOLE_FIELD[r.key]) RECORDS.push(...splitWholeField(r, WHOLE_FIELD[r.key]));
   else RECORDS.push(r);
 }
 
