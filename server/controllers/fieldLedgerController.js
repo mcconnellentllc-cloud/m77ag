@@ -127,6 +127,10 @@ exports.getLedger = async (req, res) => {
       const covered = new Set();
       for (const c of op.inputCosts || []) {
         if (c.covers) covered.add(c.covers);
+        if (c.hold) {
+          notes.push(`On hold, not billed or in totals: ${c.product} $${Number(c.amount).toFixed(2)} (${c.quantity} ${c.unit} x $${Number(c.pricePerUnit).toFixed(2)})`);
+          continue;
+        }
         invoiceStarter += c.amount || 0;
         expenses.push({ group: c.group || 'Products', label: c.product, date: when,
           detail: `${c.quantity} ${c.unit} x $${Number(c.pricePerUnit).toFixed(2)} · ${c.basis}`, amount: round2(c.amount), opId: op._id });
@@ -134,7 +138,7 @@ exports.getLedger = async (req, res) => {
       for (const p of op.products || []) {
         // Seed treatments ride on the seed cost (seed cost-share entries).
         if (op.type === 'seeding' && p.rate == null && p.total == null) continue;
-        if (covered.has(p.name) && p.rateUnit === 'gal/ac') continue;
+        if (covered.has(p.name)) continue;
         const price = priceOf['product|' + p.name.toLowerCase()];
         const c = productCost(p, op, passAcres, price);
         if (c.missing === 'price') {
