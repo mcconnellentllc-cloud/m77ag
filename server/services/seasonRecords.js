@@ -225,7 +225,13 @@ async function writeRecord(importId, rec, field, cropOn, userId) {
   const sourceKey = importId + ':' + key;
   const update = { ...data, sourceKey, sourceRev: rev || 1, m77Field: field._id, fieldName: field.name, farmName: field.farm ? field.farm.name : '' };
   if (userId) update.createdBy = userId;
-  await FieldOperation.findOneAndUpdate({ sourceKey }, update, { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true });
+  const op = await FieldOperation.findOneAndUpdate({ sourceKey }, update, { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true });
+  // A refreshed record re-costs at its default rate (acres may have changed);
+  // a rate set by hand stays as it is.
+  if (op.cost && op.cost.rateKey && op.cost.setBy === 'default') {
+    const cost = operationCost.costFor(op, op.cost.rateKey, 'default');
+    if (!cost.error && cost.amount !== op.cost.amount) { op.cost = cost; await op.save(); }
+  }
   return null;
 }
 
