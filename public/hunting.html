@@ -970,13 +970,13 @@
         const PHEASANT_SEASON_START = new Date(new Date().getFullYear(), 8, 1); // Sept 1
         const PHEASANT_SEASON_END = new Date(new Date().getFullYear() + 1, 0, 31); // Jan 31 next year
         
-        // OPENING DAY: First Saturday after Sept 1
+        // OPENING DAY: Colorado pheasant opens the second Saturday in November
+        // (CPW: Nov 8, 2025; Nov 14, 2026)
         function getOpeningDay() {
             const year = new Date().getFullYear();
-            const sept1 = new Date(year, 8, 1);
-            const dayOfWeek = sept1.getDay();
-            const daysUntilSaturday = (6 - dayOfWeek + 7) % 7 || 7;
-            return new Date(year, 8, 1 + daysUntilSaturday);
+            const nov1 = new Date(year, 10, 1);
+            const firstSaturday = 1 + (6 - nov1.getDay() + 7) % 7;
+            return new Date(year, 10, firstSaturday + 7);
         }
         
         const OPENING_DAY = getOpeningDay();
