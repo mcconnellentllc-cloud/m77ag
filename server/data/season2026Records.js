@@ -156,19 +156,22 @@ const RECORDS = [
     ['22', '2026-10-08', '2026-10-09', 119.7, 8754, 73.1],
     ['76.W', '2026-10-09', '2026-10-09', 61.1, 4354, 71.3],
     ['78', '2026-10-09', '2026-10-09', 29.1, 2058, 70.7],
-    ['79.N', '2026-10-09', '2026-10-10', 67.0, 4710, 70.3]
+    // 79.N acres from the Operations Center Seeding 2026 report, Lueking farm
+    // (Kyle, Oct 17, 2026): Byrd CL Plus 73.62 ac, Oct 9-10.
+    ['79.N', '2026-10-09', '2026-10-10', 73.6, 4710, 64.0]
   ].map(([hint, start, end, acres, lb, lbac]) => ({
-    key: 's27-byrd-' + hint.replace('.', ''), fieldHint: hint, cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
+    key: 's27-byrd-' + hint.replace('.', ''), ...(hint === '79.N' ? { rev: 2 } : {}), fieldHint: hint, cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
     startDate: start, endDate: end, acres, variety: 'Byrd CL Plus', seedLb: lb, seedLbPerAcre: lbac,
     products: [{ name: 'CruiserMaxx Vibrance' }, { name: 'Pivot Bio (treated on farm)' }],
     source: 'Byrd CL ledger: Carlson ticket 2476 (30,120 lb), split by Operations Center monitor pounds corrected x1.24 for drill calibration',
     notes: hint === '79.N'
-      ? 'Estimate. 79.N is 99.1 ac with Byrd CL and Fortify; which variety covered 64 ac is still open.'
+      ? 'Pounds are an estimate from the calibration correction. Acres from the Seeding 2026 report: 79.N is 99.1 ac, Byrd CL Plus 73.62 ac (monitor 4,176 lb) and Fortify 25.44 ac.'
       : 'Pounds are an estimate from the calibration correction.'
   })),
-  { key: 's27-fortify-79N', fieldHint: '79.N', cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
-    startDate: '2026-10-10', endDate: '2026-10-10', variety: 'Fortify (solid stem; WB4347 on the monitor)', seedLb: 3140,
-    source: 'Fill log, load 7', notes: 'Acres pending: 79.N is 99.1 ac total with Byrd CL.' },
+  { key: 's27-fortify-79N', rev: 2, fieldHint: '79.N', cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
+    startDate: '2026-10-10', endDate: '2026-10-10', acres: 25.4, variety: 'Fortify (solid stem; WB4347 on the monitor)', seedLb: 3140,
+    source: 'Fill log, load 7; acres from the Operations Center Seeding 2026 report',
+    notes: 'Seeding 2026 report: WB4347 (Fortify) 25.44 ac, monitor 1,440 lb (56.6 lb/ac). The fill log loaded 3,140 lb; the difference is not reconciled.' },
   { key: 's27-prov-23E', fieldHint: '23.E', cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
     startDate: '2026-10-12', endDate: '2026-10-12', acres: 38.6, variety: 'KS Providence',
     products: [{ name: 'Seed treatment (Andersons, treated)' }],
