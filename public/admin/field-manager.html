@@ -1051,11 +1051,14 @@
                     <div><div class="lt-l">Net</div><div class="lt-v" style="color:${t.net < 0 ? '#a02818' : '#2d5016'};">${m(t.net)}</div>${perAc(t.net)}</div>
                 </div>`;
             const sp = d.split;
-            const split = sp && (t.income || t.expenses) ? `<div class="ledger-split">
+            const split = sp && sp.kind === 'billed' && t.expenses ? `<div class="ledger-split">
+                    <div><strong>Billed to ${escapeText(sp.billedTo)}:</strong> ${sp.billedPercent}% of expenses, ${m(sp.billedExpenses)}${perAc(sp.billedExpenses)}</div>
+                    <div>M77 AG expenses ${m(sp.m77Expenses)}</div>
+                </div>` : sp && sp.kind !== 'billed' && (t.income || t.expenses) ? `<div class="ledger-split">
                     <div><strong>Crop share:</strong> landlord ${sp.landlordPercent}%${sp.landlord ? ' (' + escapeText(sp.landlord) + ')' : ''}</div>
                     <div>Landlord grain ${m(sp.landlordGrain)}${sp.landlordIndemnity ? ' · indemnity ' + m(sp.landlordIndemnity) : ''}${sp.landlordSeed ? ' · seed paid ' + m(sp.landlordSeed) : ''}</div>
                     <div>M77 AG: income ${m(sp.m77Income)} · expenses ${m(sp.m77Expenses)} · <strong style="color:${sp.m77Net < 0 ? '#a02818' : '#2d5016'};">net ${m(sp.m77Net)}</strong>${perAc(sp.m77Net)}</div>
-                    <div class="lg-detail">Only seed on seed cost-share entries is split with the landlord; other inputs, including invoice seed, are counted to M77 AG until a split is on file.</div>
+                    <div class="lg-detail">Seed is split with the landlord at the crop share; other inputs are counted to M77 AG until a split is on file.</div>
                 </div>` : '';
             const note = d.field.excludeFromFinancials ? `<div class="ledger-note">${escapeText(d.field.financialNote || 'Kept out of M77 AG financials.')}</div>` : '';
             const income = d.income.length ? `<table class="ledger-table"><thead><tr><th>Income</th><th class="num">${m(t.income)}</th></tr></thead><tbody>${ledgerRows(d.income, false)}</tbody></table>` : '<div class="lg-none">No income on file for ' + d.year + '.</div>';

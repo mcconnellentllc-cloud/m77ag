@@ -25,6 +25,7 @@ const SeedCostShare = require('../models/seedCostShare');
 const CropExpense = require('../models/cropExpense');
 const InputPrice = require('../models/inputPrice');
 const operationCost = require('../services/operationCost');
+const LUEKING_LEASE = require('../data/luekingLease2026');
 
 const OP_LABELS = { tillage: 'Tillage', spray: 'Spray', fertilizer: 'Fertilizer', seeding: 'Seeding', harvest: 'Harvest', other: 'Other' };
 const EXPENSE_LABELS = { seed: 'Seed', fertilizer: 'Fertilizer', chemicals: 'Chemicals', cropInsurance: 'Crop insurance', fuelOil: 'Fuel and oil',
@@ -150,6 +151,7 @@ exports.getLedger = async (req, res) => {
       landlordSeed += s.landlordAmount || 0;
     }
     // Seed from the seed invoice, carried on the planting record
+    let invoiceSeed = 0;
     const seedingOps = ops.filter(o => o.type === 'seeding' && o.status === 'completed');
     for (const o of seedingOps) {
       const sc = o.seedCost;
@@ -163,7 +165,9 @@ exports.getLedger = async (req, res) => {
         const qty = l.units ? `${l.units} ${l.unit}${l.units === 1 ? '' : 's'} x $${Number(l.pricePerUnit).toFixed(2)}` : '';
         const rate = l.seedsPerAcre ? ` (${l.acres} ac at ${Number(l.seedsPerAcre).toLocaleString('en-US')} seeds/ac)` : ` (${l.acres} ac)`;
         expenses.push({ group: 'Seed', label: l.product, date: when, detail: qty + rate + ' · ' + l.basis, amount: round2(l.amount), opId: o._id });
+        if (l.spread) expenses.push({ group: 'Seed', label: l.product + ', share of seed used', date: when, detail: `${l.units} ${l.unit}s · ${l.spreadBasis}`, amount: round2(l.spread), opId: o._id });
         if (l.interest) expenses.push({ group: 'Seed', label: l.product + ' interest', date: when, detail: `${l.units} ${l.unit}s, deferred payment interest per unit`, amount: round2(l.interest), opId: o._id });
+        invoiceSeed += (l.amount || 0) + (l.spread || 0) + (l.interest || 0);
       }
       if (sc.interestPending) notes.push('Seed interest (deferred payment, prime - 1%) is not on file yet; it will be added per bag once known.');
     }
@@ -244,7 +248,14 @@ exports.getLedger = async (req, res) => {
     // Crop-share: the landlord's share of the grain, their share of the
     // indemnity, and their seed share. Other input sharing is not on file.
     let split = null;
-    if (lease.type === 'crop-share' && lease.sharePercentage > 0) {
+    // Crop-share landlords pay their crop share of the invoice seed (35%;
+    // Kyle, Oct 17, 2026), interest included.
+    if (lease.type === 'crop-share' && lease.sharePercentage > 0) landlordSeed += invoiceSeed * lease.sharePercentage / 100;
+    if (String(cf.farm).toUpperCase() === 'LUEKING') {
+      // Lueking ground: every expense is billed 100% to its landlord (Kyle, Oct 17, 2026).
+      split = { kind: 'billed', billedTo: lease.landlord || LUEKING_LEASE.parties.landlordOnCards, billedPercent: 100,
+        billedExpenses: totalExpenses, m77Expenses: 0 };
+    } else if (lease.type === 'crop-share' && lease.sharePercentage > 0) {
       const grain = income.filter(l => l.group === 'Grain' || l.group === 'Crop history').reduce((s, l) => s + l.amount, 0);
       const landlordGrain = round2(grain * lease.sharePercentage / 100);
       const m77Income = round2(totalIncome - landlordGrain - landlordIndemnity);

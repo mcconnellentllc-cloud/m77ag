@@ -10,6 +10,9 @@
 //  - Sudangrass and forage sorghum (50 lb bags; the planter logs seeds/ac,
 //    not pounds): the product's net invoice total spread over the 2026 acres
 //    planted to it.
+// Planter names for an invoice product (Kyle, Oct 17, 2026).
+const ALIASES = { '85Z153': 'P88Z153' };
+
 module.exports = {
   source: 'Pioneer 2026 invoice, Oct 17, 2026 (BP 18482203), net of 22% Infinity Discount and 2% Early Commitment Bonus',
   year: 2026,
@@ -40,10 +43,13 @@ module.exports = {
   // Seeds per unit by packaging; bag products are spread by acres.
   seedsPerUnit: { '80K': 80000, '600K': 600000 },
   // Deferred payment interest (prime - 1%). Billed per bag or unit: the total
-  // is divided evenly over every unit on the invoice (611), and each field
-  // carries the units it planted. null until the interest amount is known.
+  // is divided evenly over the units on the planting records, so each field
+  // carries its units' share. null until the interest amount is known.
   interest: { total: null, basis: 'Deferred payment interest, prime - 1%' },
   // Planter names that differ from the invoice: test plot and lot suffixes.
   // A planter name not listed here and not on the invoice is not costed.
-  normalize: name => String(name || '').replace(/\s*-\s*TP HC$/i, '').replace(/-PBHT$/i, '').replace(/~\d+$/, '').replace(/\s*\(\d+\)$/, '').trim()
+  normalize: name => {
+    const n = String(name || '').replace(/\s*-\s*TP HC$/i, '').replace(/-PBHT$/i, '').replace(/~\d+$/, '').replace(/\s*\(\d+\)$/, '').trim();
+    return ALIASES[n.toUpperCase()] || n;
+  }
 };
