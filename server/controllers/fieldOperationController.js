@@ -35,7 +35,7 @@ exports.getImport = async (req, res) => {
       data: {
         retired: out.retired,
         records: out.records,
-        fields: out.fields.map(f => ({ _id: f._id, name: f.name, acres: f.acres, farmName: f.farm ? f.farm.name : '' }))
+        fields: out.fields.map(f => ({ _id: f._id, name: f.name, acres: f.acres, farmName: out.farmOf[String(f._id)] }))
       }
     });
   } catch (err) {

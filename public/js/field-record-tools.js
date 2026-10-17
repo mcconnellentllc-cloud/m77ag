@@ -148,10 +148,21 @@
       if (r.netBu != null) bits.push(fmtNum(r.netBu, 2) + ' bu');
       return bits.join(' · ');
     }
+    // Field options for one farm; the field list waits until a farm is chosen.
+    function fieldOptions(farm, selected) {
+      if (!farm) return '<option value="">Choose farm first</option>';
+      return '<option value="">Choose field</option>' + seasonData.fields.filter(fl => (fl.farmName || 'Other') === farm)
+        .map(fl => `<option value="${esc(fl._id)}" ${String(fl._id) === String(selected) ? 'selected' : ''}>${esc(fl.name)}</option>`).join('');
+    }
     function renderSeason() {
       const el = cfg.seasonEl;
       if (!seasonData) { el.innerHTML = '<p>Loading...</p>'; return; }
-      const opts = seasonData.fields.map(fl => `<option value="${esc(fl._id)}">${esc(fl.name)}${fl.farmName ? ' (' + esc(fl.farmName) + ')' : ''}</option>`).join('');
+      // Farm, then the fields of that farm (dependent dropdowns).
+      const farmOfField = {};
+      seasonData.fields.forEach(fl => { farmOfField[String(fl._id)] = fl.farmName || 'Other'; });
+      const farms = [...new Set(Object.values(farmOfField))].sort((a, b) => a.localeCompare(b));
+      const farmSelect = (key, farm) => `<select data-season-farm="${esc(key)}" aria-label="Farm" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:160px;"><option value="">Choose farm</option>` +
+        farms.map(f => `<option value="${esc(f)}" ${f === farm ? 'selected' : ''}>${esc(f)}</option>`).join('') + '</select>';
       function isOps(r) { return /^(app26|sd26|till26)-/.test(String(r.key)); }
       const groups = [
         ['Wheat 2026 harvest', r => r.cropYear === 2026 && r.type === 'harvest'],
@@ -168,7 +179,7 @@
       const rows = groups.map(([label, test]) => {
         const recs = seasonData.records.filter(test).filter(r => showOnCard || open(r));
         if (!recs.length) return '';
-        return `<tr><td colspan="4" style="background:#f5f3f0; font-weight:700; color:#2d5016; padding:8px;">${label}</td></tr>` + recs.map(r => {
+        return `<tr><td colspan="5" style="background:#f5f3f0; font-weight:700; color:#2d5016; padding:8px;">${label}</td></tr>` + recs.map(r => {
           const target = r.addedTo ? String(r.addedTo.m77Field) : (r.suggested || '');
           const status = r.outdated ? '<span style="color:#8a6d00; font-weight:600;">Update available</span>'
             : r.addedTo ? '<span style="color:#2d5016; font-weight:600;">On card</span>'
@@ -177,9 +188,10 @@
           return `<tr>
             <td style="padding:6px;"><input type="checkbox" data-season-check="${esc(r.key)}" ${(!r.addedTo && r.suggested && !r.review) || r.outdated ? 'checked' : ''} aria-label="Add ${esc(r.key)}"></td>
             <td style="padding:6px;"><strong>${esc(r.fieldHint)}</strong> · ${esc(r.title || '')}<br><span style="color:#888; font-size:12px;">${fmtRange(r.startDate, r.endDate)}${seasonSummary(r) ? ' · ' + esc(seasonSummary(r)) : ''}</span></td>
-            <td style="padding:6px;"><select data-season-field="${esc(r.key)}" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:220px;"><option value="">Choose field</option>${opts}</select></td>
+            <td style="padding:6px;">${farmSelect(r.key, target ? farmOfField[target] : '')}</td>
+            <td style="padding:6px;"><select data-season-field="${esc(r.key)}" aria-label="Field" style="padding:6px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:220px;">${fieldOptions(target ? farmOfField[target] : '', target)}</select></td>
             <td style="padding:6px; font-size:12px;">${status}${r.review && !r.addedTo ? `<div style="color:#8a6d00; margin-top:2px;">${esc(r.review)}</div>` : ''}${r.cropFromCard ? '<div style="color:#888; margin-top:2px;">Crop from the card</div>' : ''}${r.cropFromRotation ? '<div style="color:#888; margin-top:2px;">Charged to the next harvested crop (card, else wheat → corn → milo → fallow → wheat)</div>' : ''}</td>
-          </tr>`.replace(`<option value="${esc(target)}">`, target ? `<option value="${esc(target)}" selected>` : '<option value="__none__">');
+          </tr>`;
         }).join('');
       }).join('');
       const pending = seasonData.records.filter(r => !r.addedTo).length;
@@ -205,7 +217,7 @@
           </div>
         </div>
         ${retiredHtml}
-        ${rows ? `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:560px;"><tbody>${rows}</tbody></table></div>`
+        ${rows ? `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; min-width:720px;"><tbody>${rows}</tbody></table></div>`
           : '<p style="color:#2d5016; margin:10px 0 0;">Every record is on its card.</p>'}`;
     }
     async function openSeason() {
@@ -227,7 +239,7 @@
       el.querySelectorAll('[data-season-check]:checked').forEach(cb => {
         const key = cb.getAttribute('data-season-check');
         const sel = el.querySelector(`[data-season-field="${CSS.escape(key)}"]`);
-        if (sel && sel.value && sel.value !== '__none__') assignments.push({ key, m77Field: sel.value });
+        if (sel && sel.value) assignments.push({ key, m77Field: sel.value });
         else missing.push(key);
       });
       const retire = [...el.querySelectorAll('[data-season-retire]:checked')].map(cb => cb.getAttribute('data-season-retire'));
@@ -299,6 +311,13 @@
     }
 
     // Panel buttons and rate selectors (event delegation).
+    cfg.seasonEl.addEventListener('change', e => {
+      const farmSel = e.target.closest('[data-season-farm]');
+      if (!farmSel) return;
+      const key = farmSel.getAttribute('data-season-farm');
+      const fieldSel = cfg.seasonEl.querySelector(`[data-season-field="${CSS.escape(key)}"]`);
+      if (fieldSel) fieldSel.innerHTML = fieldOptions(farmSel.value, '');
+    });
     cfg.seasonEl.addEventListener('click', e => {
       const b = e.target.closest('[data-frt]');
       if (!b) return;

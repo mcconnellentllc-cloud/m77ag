@@ -88,8 +88,15 @@ function payingCrop(cropOn, field, firstYear) {
 async function resolveImport(importId) {
   const imp = IMPORTS[importId];
   if (!imp) return null;
-  const fields = await M77Field.find({}).select('name acres farm crop2026 legacySource legacyId').populate('farm', 'name').sort({ name: 1 });
+  const fields = await M77Field.find({}).select('name acres farm crop2026 rotationGroup legacySource legacyId').populate('farm', 'name').sort({ name: 1 });
   const cropOn = await cardCrops(fields);
+  // Farm for each field as the cards show it (the card's farm), else the
+  // registry farm, else the rotation group.
+  const cardFarm = {};
+  const cardIds = fields.filter(f => f.legacySource === 'CroppingField' && f.legacyId).map(f => f.legacyId);
+  for (const c of await CroppingField.find({ _id: { $in: cardIds } }).select('farm').lean()) cardFarm[String(c._id)] = c.farm;
+  const farmOf = {};
+  for (const f of fields) farmOf[String(f._id)] = (f.legacyId && cardFarm[String(f.legacyId)]) || (f.farm && f.farm.name) || f.rotationGroup || 'Other';
   // Row-crop planting dates on the cards: no tillage on a half after its
   // corn, milo or sudangrass was planted (Kyle, Oct 15, 2026).
   const plantings = await FieldOperation.find({ type: 'seeding', crop: { $in: ['CORN', 'SORGHUM', 'SORGHUM SUDAN'] } })
@@ -180,7 +187,8 @@ async function resolveImport(importId) {
   return {
     retired: retired.filter(r => !current.has(r.sourceKey)).map(r => ({ id: r._id, sourceKey: r.sourceKey, fieldName: r.fieldName, title: r.title, cropYear: r.cropYear, crop: r.crop, startDate: r.startDate })),
     records,
-    fields
+    fields,
+    farmOf
   };
 }
 
