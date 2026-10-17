@@ -10,7 +10,8 @@
     { label: 'Projections', href: '/admin/farm-projections', match: ['/admin/farm-projections'] },
     { label: 'Rates', href: '/admin/field-rates', match: ['/admin/field-rates'] },
     { label: 'Fertility Standards', href: '/admin/fertility-standards.html', match: ['/admin/fertility-standards'] },
-    { label: 'Seed Orders', href: '/admin/farming/seed-orders', match: ['/admin/farming/seed-orders'] }
+    { label: 'Seed Orders', href: '/admin/farming/seed-orders', match: ['/admin/farming/seed-orders'] },
+    { label: 'Lueking Books', href: '/admin/lueking-books.html', match: ['/admin/lueking-books'] }
   ];
   const CSS = '.crops-nav{display:flex;gap:4px;flex-wrap:wrap;max-width:1400px;margin:0 auto;padding:14px 20px 0}' +
     '.crops-nav .cn-title{font-family:Oswald,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#888;align-self:center;margin-right:10px}' +

@@ -5,6 +5,15 @@ const Transaction = require('../models/transaction');
 const Property = require('../models/property');
 const Field = require('../models/field');
 
+// Financial records: never for hunting customers (any signed-in account
+// could read every transaction before).
+router.use(authenticate, (req, res, next) => {
+  if (!req.user || req.user.role === 'customer') {
+    return res.status(403).json({ success: false, message: 'You do not have access to this area.' });
+  }
+  next();
+});
+
 // Get all transactions
 router.get('/', authenticate, async (req, res) => {
   try {
@@ -13,7 +22,7 @@ router.get('/', authenticate, async (req, res) => {
 
     // Build query based on role and filters
     if (role === 'landlord') {
-      query.landlord = req.user._id;
+      query.landlord = req.userId;
     }
 
     // Apply filters from query params
@@ -96,7 +105,7 @@ router.get('/:id', authenticate, async (req, res) => {
     }
 
     // Check access permissions
-    if (req.user.role === 'landlord' && transaction.landlord && transaction.landlord._id.toString() !== req.user._id.toString()) {
+    if (req.user.role === 'landlord' && transaction.landlord && transaction.landlord._id.toString() !== req.userId.toString()) {
       return res.status(403).json({
         success: false,
         message: 'You do not have permission to access this transaction'
@@ -130,7 +139,7 @@ router.post('/', authenticate, async (req, res) => {
 
     const transactionData = {
       ...req.body,
-      createdBy: req.user._id
+      createdBy: req.userId
     };
 
     const transaction = new Transaction(transactionData);
@@ -179,7 +188,7 @@ router.post('/bulk', authenticate, async (req, res) => {
     // Add createdBy to each transaction
     const transactionsWithCreator = transactions.map(t => ({
       ...t,
-      createdBy: req.user._id
+      createdBy: req.userId
     }));
 
     const created = await Transaction.insertMany(transactionsWithCreator);
@@ -277,7 +286,7 @@ router.get('/reports/by-category', authenticate, async (req, res) => {
     const filters = {};
 
     if (req.user.role === 'landlord') {
-      filters.landlord = req.user._id;
+      filters.landlord = req.userId;
     }
 
     if (req.query.property) filters.property = req.query.property;
@@ -317,7 +326,7 @@ router.get('/reports/property/:propertyId', authenticate, async (req, res) => {
     // Check access permissions
     if (req.user.role === 'landlord') {
       const property = await Property.findById(propertyId);
-      if (!property || property.landlord.toString() !== req.user._id.toString()) {
+      if (!property || property.landlord.toString() !== req.userId.toString()) {
         return res.status(403).json({
           success: false,
           message: 'You do not have permission to access this property'

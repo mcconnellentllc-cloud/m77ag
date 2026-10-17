@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/js/admin-auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lueking Books - M77 AG</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f3f0; color: #2c2c2c; min-height: 100vh; }
+        .admin-header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .admin-logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: #d4af37; text-decoration: none; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 24px; flex-wrap: wrap; }
+        .admin-nav a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .admin-nav a:hover { color: #d4af37; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 28px 40px 48px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 34px; color: #1a1a1a; letter-spacing: 1px; }
+        .page-subtitle { font-size: 14px; color: #666; margin-top: 6px; max-width: 800px; line-height: 1.6; }
+        .card { background: #fff; padding: 22px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px; }
+        .card h2 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 21px; color: #2d5016; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; }
+        .toolbar label { font-size: 13px; color: #555; display: flex; align-items: center; gap: 8px; }
+        .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+        .tile { background: #fff; border-radius: 8px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .tile .lbl { font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: #888; }
+        .tile .val { font-family: 'Oswald', sans-serif; font-size: 28px; color: #1a1a1a; margin-top: 6px; }
+        .tile .val.neg { color: #b3261e; }
+        .rows { display: grid; gap: 6px; font-size: 14px; }
+        .rows div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+        .rows div strong { font-weight: 600; }
+        .rows .total { border-top: 2px solid #2d5016; font-weight: 700; }
+        .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #555; }
+        .form-grid label.wide { grid-column: 1 / -1; }
+        .check { flex-direction: row !important; align-items: center; gap: 8px !important; font-size: 14px !important; color: #333 !important; }
+        .check input { width: auto; }
+        input, select, textarea { padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; font-family: inherit; width: 100%; background: #fff; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #2d5016; }
+        .toolbar select { width: auto; }
+        .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { border-collapse: collapse; font-size: 13px; width: 100%; }
+        th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; padding: 8px 6px; border-bottom: 1px solid #eee; white-space: nowrap; }
+        td { padding: 8px 6px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
+        td.num, th.num { text-align: right; white-space: nowrap; }
+        .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+        .pill-income { background: #e8efe1; color: #2d5016; }
+        .pill-expense { background: #f5f3f0; color: #555; }
+        .pill-unpaid { background: #fbf3e2; color: #8a6d00; }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+        .btn { padding: 12px 24px; background: #2d5016; color: #fff; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .btn:hover { background: #3d6b1f; }
+        .btn-secondary { background: #fff; color: #2d5016; box-shadow: inset 0 0 0 2px #2d5016; }
+        .btn-small { padding: 6px 12px; font-size: 12px; }
+        .btn-danger { background: #fff; color: #b3261e; box-shadow: inset 0 0 0 2px #e6b8b4; }
+        .alert { display: none; padding: 12px 16px; border-radius: 6px; margin-top: 16px; font-size: 14px; }
+        .alert.show { display: block; }
+        .alert-success { background: #e8efe1; color: #2d5016; }
+        .alert-error { background: #fbe9e7; color: #b3261e; }
+        .muted { color: #888; font-size: 12px; line-height: 1.6; }
+        @media (max-width: 760px) {
+            .admin-header { padding: 16px; }
+            .container { padding: 20px 16px 40px; }
+            .page-title { font-size: 28px; }
+            .card { padding: 16px; }
+            .tiles { grid-template-columns: minmax(0, 1fr); }
+            .two { grid-template-columns: minmax(0, 1fr); }
+            .btn { width: 100%; }
+            .btn-small { width: auto; }
+        }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <a href="/admin/dashboard" class="admin-logo">M77 AG</a>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/field-records">Field Records</a>
+            <a href="/admin/financials">Financials</a>
+        </nav>
+    </header>
+    <div id="cropsNav"></div>
+
+    <div class="container">
+        <h1 class="page-title">Lueking Books</h1>
+        <p class="page-subtitle" id="leaseLine">Lueking is a stand-alone entity, kept out of M77 AG's financials. M77 AG manages the operation and records its income and expenses here.</p>
+        <div class="toolbar">
+            <label>Crop year <select id="yearSel" onchange="load(Number(this.value))"></select></label>
+            <button class="btn btn-small btn-secondary" onclick="newEntry()">Add Entry</button>
+        </div>
+        <div id="alertSuccess" class="alert alert-success"></div>
+        <div id="alertError" class="alert alert-error"></div>
+
+        <div class="tiles">
+            <div class="tile"><div class="lbl">Income</div><div class="val" id="tIncome">--</div></div>
+            <div class="tile"><div class="lbl">Expenses</div><div class="val" id="tExpense">--</div></div>
+            <div class="tile"><div class="lbl">Net</div><div class="val" id="tNet">--</div></div>
+        </div>
+
+        <div class="card" id="dueCard" style="display:none;">
+            <h2>Due and Unpaid</h2>
+            <div id="dueList"></div>
+        </div>
+
+        <div class="card">
+            <h2>Lease Profit Share</h2>
+            <div class="rows" id="shareRows"></div>
+            <p class="muted" id="shareNote" style="margin-top:10px;"></p>
+        </div>
+
+        <div class="card" id="formCard" style="display:none;">
+            <h2 id="formTitle">Add Entry</h2>
+            <div class="form-grid">
+                <label>Type
+                    <select id="fType" onchange="fillCategories()"><option value="expense">Expense</option><option value="income">Income</option></select>
+                </label>
+                <label>Category <select id="fCategory"></select></label>
+                <label>Amount ($)<input id="fAmount" type="number" min="0" step="0.01" inputmode="decimal"></label>
+                <label>Crop year<input id="fYear" type="number" min="2000" max="2100" step="1" inputmode="numeric"></label>
+                <label class="wide">Description<input id="fDesc" type="text" maxlength="300" placeholder="e.g. Anhydrous, 73 Home Circle"></label>
+                <label>Date<input id="fDate" type="date"></label>
+                <label>Field
+                    <input id="fField" type="text" list="fieldList" maxlength="120" placeholder="Optional">
+                    <datalist id="fieldList"></datalist>
+                </label>
+                <label>Paid to / received from<input id="fParty" type="text" maxlength="120"></label>
+                <label>Invoice, check or ticket no.<input id="fRef" type="text" maxlength="80"></label>
+                <label>Due date<input id="fDue" type="date"></label>
+                <label class="check"><input id="fPaid" type="checkbox" checked> Paid / received</label>
+                <label class="wide">Notes<textarea id="fNotes" rows="2" maxlength="1000"></textarea></label>
+            </div>
+            <div class="actions">
+                <button class="btn" onclick="saveEntry()">Save Entry</button>
+                <button class="btn btn-secondary" onclick="closeForm()">Cancel</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Entries</h2>
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Field</th><th>Party</th><th class="num">Amount</th><th></th></tr></thead>
+                    <tbody id="entryRows"><tr><td colspan="8" class="muted">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="two">
+            <div class="card"><h2>By Category</h2><div class="rows" id="byCategory"></div></div>
+            <div class="card"><h2>Expenses by Field</h2><div class="rows" id="byField"></div></div>
+        </div>
+    </div>
+
+    <script src="/js/crops-nav.js"></script>
+    <script>
+        const ENTERPRISE = 'Lueking';
+        const API = '/api/enterprise-books/' + ENTERPRISE;
+        const LABELS = {
+            rent: 'Rent', seed: 'Seed', fertilizer: 'Fertilizer', chemicals: 'Chemicals', fuel: 'Fuel', irrigation_power: 'Irrigation power',
+            repairs: 'Repairs', labor: 'Labor', custom_hire: 'Custom hire', crop_insurance: 'Crop insurance premium',
+            trucking_drying: 'Trucking and drying', property_tax: 'Property tax', other_expense: 'Other expense',
+            grain_sale: 'Grain sale', government_payment: 'Government payment', crop_insurance_payment: 'Crop insurance payment',
+            hunting_grazing_rent: 'Hunting / grazing rent', other_income: 'Other income'
+        };
+        let state = null;
+        let editingId = null;
+
+        const money = n => (n < 0 ? '-' : '') + '$' + Math.abs(Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const esc = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const day = v => v ? new Date(v).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        const ymd = v => v ? new Date(v).toISOString().split('T')[0] : '';
+
+        function showAlert(kind, msg) {
+            const el = document.getElementById(kind === 'ok' ? 'alertSuccess' : 'alertError');
+            el.textContent = msg; el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 4000);
+        }
+        async function api(url, opts) {
+            const res = await fetch(url, { ...(opts || {}), headers: { 'Content-Type': 'application/json' } });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed (' + res.status + ')');
+            return data;
+        }
+
+        async function load(year) {
+            try {
+                const data = (await api(API + (year ? '?year=' + year : ''))).data;
+                state = data;
+                render();
+            } catch (e) {
+                showAlert('err', e.message);
+            }
+        }
+
+        function render() {
+            const d = state;
+            document.getElementById('yearSel').innerHTML = d.years.map(y => `<option value="${y}"${y === d.year ? ' selected' : ''}>${y}</option>`).join('');
+            const L = d.lease;
+            document.getElementById('leaseLine').innerHTML = esc(`Lueking is a stand-alone entity, kept out of M77 AG's financials. M77 AG manages the operation and records its income and expenses here. ` +
+                `Landlord: ${L.parties.landlordOnCards}. Owner of record: ${L.parties.owner}. Lease signed ${L.signed}; initial term to ${day(L.term.end + 'T12:00:00Z')}, ` +
+                `base rent ${money(L.rent.base)} on ${L.totals.acres} acres.`);
+            const s = d.summary;
+            document.getElementById('tIncome').textContent = money(s.totals.income);
+            document.getElementById('tExpense').textContent = money(s.totals.expenses);
+            const net = document.getElementById('tNet');
+            net.textContent = money(s.totals.net);
+            net.classList.toggle('neg', s.totals.net < 0);
+
+            const due = document.getElementById('dueCard');
+            due.style.display = s.unpaid.length ? 'block' : 'none';
+            document.getElementById('dueList').innerHTML = s.unpaid.map(u => `
+                <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+                    <div><strong>${esc(u.description)}</strong><div class="muted">${u.dueDate ? 'Due ' + day(u.dueDate) : ''}${u.party ? ' to ' + esc(u.party) : ''}</div></div>
+                    <div style="display:flex;gap:10px;align-items:center;"><strong>${money(u.amount)}</strong>
+                    <button class="btn btn-small" onclick="markPaid('${u._id}')">Mark Paid</button></div>
+                </div>`).join('');
+
+            const p = s.profitShare;
+            document.getElementById('shareRows').innerHTML = p ? `
+                <div><span>Gross revenue (grain, government payments, crop insurance)</span><strong>${money(p.grossRevenue)}</strong></div>
+                <div><span>Operating expenses</span><strong>-${money(p.operatingExpenses)}</strong></div>
+                <div><span>Base rent</span><strong>-${money(p.baseRent)}</strong></div>
+                <div class="total"><span>Net profit</span><strong>${money(p.netProfit)}</strong></div>
+                <div><span>Above the ${money(p.threshold)} threshold</span><strong>${money(p.aboveThreshold)}</strong></div>
+                <div><span>Landlord share (35%)</span><strong>${money(p.landlordShare)}</strong></div>
+                <div><span>Tenant share (65%)</span><strong>${money(p.tenantShare)}</strong></div>
+                ${p.otherUseRent ? `<div><span>Hunting / grazing rent ${money(p.otherUseRent)}: landlord 65%</span><strong>${money(p.otherUseLandlord)}</strong></div>` : ''}` : '';
+            document.getElementById('shareNote').textContent = p ? `Per the lease: net profit = gross revenue - operating expenses - base rent; the amount above ${money(p.threshold)} splits 65% tenant / 35% landlord, settled ${p.settles}. Hunting and grazing rent splits 65% landlord / 35% tenant.` : '';
+
+            const rows = d.entries;
+            document.getElementById('entryRows').innerHTML = rows.length ? rows.map(e => `
+                <tr>
+                    <td>${day(e.date) || (e.dueDate ? 'Due ' + day(e.dueDate) : '')}</td>
+                    <td><span class="pill pill-${e.type}">${e.type === 'income' ? 'Income' : 'Expense'}</span>${e.paid ? '' : ' <span class="pill pill-unpaid">Unpaid</span>'}</td>
+                    <td>${esc(LABELS[e.category] || e.category)}</td>
+                    <td>${esc(e.description)}${e.reference ? `<div class="muted">${esc(e.reference)}</div>` : ''}${e.notes ? `<div class="muted">${esc(e.notes)}</div>` : ''}</td>
+                    <td>${esc(e.fieldName || '')}</td>
+                    <td>${esc(e.party || '')}</td>
+                    <td class="num">${e.type === 'expense' ? '-' : ''}${money(e.amount)}</td>
+                    <td style="white-space:nowrap;"><button class="btn btn-small btn-secondary" onclick="editEntry('${e._id}')">Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteEntry('${e._id}')">Delete</button></td>
+                </tr>`).join('') : '<tr><td colspan="8" class="muted">No entries for this crop year yet.</td></tr>';
+
+            const list = (obj, sign) => Object.keys(obj).length
+                ? Object.entries(obj).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div><span>${esc(LABELS[k] || k)}</span><strong>${sign}${money(v)}</strong></div>`).join('')
+                : '<p class="muted">None yet.</p>';
+            document.getElementById('byCategory').innerHTML = list(s.incomeByCategory, '') + list(s.expensesByCategory, '-');
+            document.getElementById('byField').innerHTML = list(s.expensesByField, '-');
+        }
+
+        function fillCategories(selected) {
+            const type = document.getElementById('fType').value;
+            const cats = (state && state.categories[type]) || [];
+            document.getElementById('fCategory').innerHTML = cats.map(c => `<option value="${c}"${c === selected ? ' selected' : ''}>${LABELS[c] || c}</option>`).join('');
+        }
+
+        function openForm(title) {
+            document.getElementById('formTitle').textContent = title;
+            document.getElementById('formCard').style.display = 'block';
+            document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function closeForm() { document.getElementById('formCard').style.display = 'none'; editingId = null; }
+
+        function setForm(e) {
+            document.getElementById('fType').value = e.type || 'expense';
+            fillCategories(e.category);
+            document.getElementById('fAmount').value = e.amount != null ? e.amount : '';
+            document.getElementById('fYear').value = e.cropYear || (state && state.year) || new Date().getFullYear();
+            document.getElementById('fDesc').value = e.description || '';
+            document.getElementById('fDate').value = ymd(e.date);
+            document.getElementById('fField').value = e.fieldName || '';
+            document.getElementById('fParty').value = e.party || '';
+            document.getElementById('fRef').value = e.reference || '';
+            document.getElementById('fDue').value = ymd(e.dueDate);
+            document.getElementById('fPaid').checked = e.paid !== false;
+            document.getElementById('fNotes').value = e.notes || '';
+        }
+        function newEntry() { editingId = null; setForm({ date: new Date().toISOString() }); openForm('Add Entry'); }
+        function editEntry(id) {
+            const e = state.entries.find(x => x._id === id);
+            if (!e) return;
+            editingId = id; setForm(e); openForm('Edit Entry');
+        }
+
+        async function saveEntry() {
+            const body = {
+                type: document.getElementById('fType').value,
+                category: document.getElementById('fCategory').value,
+                amount: document.getElementById('fAmount').value,
+                cropYear: document.getElementById('fYear').value,
+                description: document.getElementById('fDesc').value.trim(),
+                date: document.getElementById('fDate').value || null,
+                fieldName: document.getElementById('fField').value.trim(),
+                party: document.getElementById('fParty').value.trim(),
+                reference: document.getElementById('fRef').value.trim(),
+                dueDate: document.getElementById('fDue').value || null,
+                paid: document.getElementById('fPaid').checked,
+                notes: document.getElementById('fNotes').value.trim()
+            };
+            if (!body.description || !(Number(body.amount) > 0) || !body.cropYear) {
+                showAlert('err', 'Description, amount and crop year are required');
+                return;
+            }
+            try {
+                await api(editingId ? `${API}/${editingId}` : API, { method: editingId ? 'PUT' : 'POST', body: JSON.stringify(body) });
+                showAlert('ok', 'Entry saved');
+                closeForm();
+                load(Number(body.cropYear));
+            } catch (e) { showAlert('err', e.message); }
+        }
+
+        async function markPaid(id) {
+            const date = prompt('Date paid (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+            if (date === null) return;
+            const ref = prompt('Check or reference number (optional):', '');
+            if (ref === null) return;
+            try {
+                await api(`${API}/${id}`, { method: 'PUT', body: JSON.stringify({ paid: true, date: date || null, reference: ref }) });
+                showAlert('ok', 'Marked paid');
+                load(state.year);
+            } catch (e) { showAlert('err', e.message); }
+        }
+
+        async function deleteEntry(id) {
+            const e = state.entries.find(x => x._id === id);
+            if (!e || !confirm(`Delete "${e.description}" (${money(e.amount)})?`)) return;
+            try {
+                await api(`${API}/${id}`, { method: 'DELETE' });
+                showAlert('ok', 'Entry deleted');
+                load(state.year);
+            } catch (err) { showAlert('err', err.message); }
+        }
+
+        // Lueking field cards for the Field box
+        async function loadFields() {
+            try {
+                const res = await fetch('/api/cropping-fields?farm=LUEKING');
+                const data = await res.json();
+                document.getElementById('fieldList').innerHTML = (data.fields || []).map(f => `<option value="${esc(f.field)}">`).join('');
+            } catch (e) { /* the field box still takes typed names */ }
+        }
+
+        load();
+        loadFields();
+    </script>
+</body>
+</html>
