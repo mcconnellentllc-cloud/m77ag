@@ -10,12 +10,16 @@ const campers = [
     nightlyRate: 50,
     cleaningFee: 100,
     amenities: ['Starlink internet', 'TV', 'electric and water hookups', 'a gravel pad'],
-    description: 'Kitchen with stove, oven, microwave and refrigerator; bedroom; bathroom with shower; dinette and sofa.',
+    description: 'Rockwood Signature Ultra Lite fifth wheel with a slide-out. Kitchen with stove, oven, microwave and refrigerator; bedroom; bunk room; bathroom with shower; dinette, sofa and TV.',
     // public/images/campers/camper-1 (location data removed)
     photos: [
+      { src: '/images/campers/camper-1/06.jpg', caption: 'Outside' },
+      { src: '/images/campers/camper-1/07.jpg', caption: 'Kitchen and living area' },
       { src: '/images/campers/camper-1/01.jpg', caption: 'Kitchen' },
       { src: '/images/campers/camper-1/02.jpg', caption: 'Bedroom' },
-      { src: '/images/campers/camper-1/03.jpg', caption: 'Bathroom with shower' },
+      { src: '/images/campers/camper-1/08.jpg', caption: 'Bunk room' },
+      { src: '/images/campers/camper-1/03.jpg', caption: 'Shower' },
+      { src: '/images/campers/camper-1/09.jpg', caption: 'Bathroom' },
       { src: '/images/campers/camper-1/04.jpg', caption: 'Dinette' },
       { src: '/images/campers/camper-1/05.jpg', caption: 'Sofa' }
     ]
