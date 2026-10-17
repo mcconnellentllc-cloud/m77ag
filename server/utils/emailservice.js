@@ -404,6 +404,7 @@ const sendStandaloneWaiverConfirmation = async (waiver) => {
     phone: waiver.phone,
     parcel: waiver.property || 'Both Properties',
     checkinDate: waiver.huntDate,
+    checkoutDate: waiver.huntEndDate || waiver.huntDate,
     numHunters: 1,
     totalPrice: 0,
     paymentStatus: 'paid',

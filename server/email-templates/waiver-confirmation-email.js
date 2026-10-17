@@ -2,6 +2,21 @@
 // Final email sent AFTER customer signs waiver
 // Contains printable vehicle dash card and property boundary maps
 
+// Who a hunter calls before following downed game off the property
+const DOWNED_GAME_CONTACTS = [
+  { label: 'Kyle (cell)', phone: '970-571-1015' },
+  { label: 'Matt (cell)', phone: '970-466-9369' },
+  { label: 'M77 AG Office', phone: '970-774-3276' }
+];
+
+// Hunt date or range, read in UTC so a stored date never shows a day early.
+function huntDatesText(booking) {
+  const fmt = d => new Date(d).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  const start = fmt(booking.checkinDate);
+  const end = booking.checkoutDate ? fmt(booking.checkoutDate) : start;
+  return end === start ? start : `${start} through ${end}`;
+}
+
 function getWaiverConfirmationEmail(booking) {
   const propertyName = booking.parcel === 'Both Properties' ? 'Both Properties (Heritage Farm & Prairie Peace)'
     : booking.parcel === 'Heritage Farm' ? 'M77 AG Heritage Farm'
@@ -12,12 +27,7 @@ function getWaiverConfirmationEmail(booking) {
     : (booking.parcel === 'Heritage Farm' || booking.parcel === 'heritage-farm') ? 'Sedgwick County, Colorado'
     : 'Logan County, Colorado (South of Haxtun)';
 
-  const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const huntDate = huntDatesText(booking);
 
   const emergencyContact = '970-571-1015';
 
@@ -166,9 +176,9 @@ function getWaiverConfirmationEmail(booking) {
     ` : ''}
 
     <div class="emergency">
-      <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - EMAIL IMMEDIATELY:</p>
-      <p style="margin: 0; font-size: 20px; font-weight: bold;">hunting@m77ag.com</p>
-      <p style="margin: 10px 0 0 0; font-size: 14px;">Emergency contact: ${emergencyContact} (provided below)</p>
+      <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; color: #c62828;">DOWNED GAME - CALL BEFORE PURSUING:</p>
+      <p style="margin: 0; font-size: 18px; font-weight: bold; line-height: 1.6;">${DOWNED_GAME_CONTACTS.map(c => `${c.label} ${c.phone}`).join('<br>')}</p>
+      <p style="margin: 10px 0 0 0; font-size: 14px;">Email: hunting@m77ag.com. No response does not mean permission.</p>
     </div>
     
     <div style="border-top: 2px solid #ddd; margin-top: 25px; padding-top: 20px; text-align: center;">
@@ -364,10 +374,11 @@ function getWaiverConfirmationEmail(booking) {
       
       <div style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 15px 0;">
         <p style="margin: 0 0 10px 0; font-weight: bold; color: #856404; font-size: 16px;">DOWNED GAME PROTOCOL - MANDATORY</p>
-        <p style="margin: 0 0 5px 0; color: #856404; font-size: 18px;"><strong>Email: hunting@m77ag.com</strong></p>
+        <p style="margin: 0 0 5px 0; color: #856404; font-size: 18px;"><strong>${DOWNED_GAME_CONTACTS.map(c => `${c.label} ${c.phone}`).join(' | ')}</strong></p>
         <p style="margin: 0; color: #856404;">
-          Email IMMEDIATELY when game is down. Do not pursue onto neighboring properties without
-          explicit permission. Emergency contact: ${emergencyContact}.
+          Call or text IMMEDIATELY when game is down, before following it off the property.
+          Email: hunting@m77ag.com. Do not pursue onto neighboring properties without
+          explicit permission.
           Unauthorized retrieval is criminal trespassing.
         </p>
       </div>
@@ -531,12 +542,7 @@ function getWaiverConfirmationEmail(booking) {
 // Admin notification
 function getAdminWaiverNotification(booking) {
   const propertyName = booking.parcel === 'heritage-farm' ? 'M77 AG Heritage Farm' : 'Prairie Peace';
-  const huntDate = new Date(booking.checkinDate).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const huntDate = huntDatesText(booking);
 
   return `
 <!DOCTYPE html>

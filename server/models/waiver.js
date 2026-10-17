@@ -27,6 +27,8 @@ const waiverSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  // Last hunt day of a multi-day hunt (same as huntDate for one day)
+  huntEndDate: Date,
   property: {
     type: String,
     required: true,
