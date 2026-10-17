@@ -209,11 +209,25 @@ module.exports = [
     otherUrl: 'https://www.regierequipment.com'
   },
   {
-    category: 'Other', seedKey: 'rogator-drive-belt', seedRev: 2, name: 'Drive belt, 4-rib (broke Oct 17, 2026)', spec: 'Old belt: 4 ribs, about 58.5 in measured along the back (rough; broken in two, 30.5 + 28 in), so about 57.5-58 in effective. ' +
-      'Closest standard belt: Gates K040575 (4 rib, 57.5 in effective, 4PK1460). Have the counter measure the old pieces on a belt gauge, or string the pulleys with the tensioner mid-travel, to confirm. ' +
-      'Not AGCO 564691D1: that is the C-series A/C and water pump belt, 1366 mm (53.75 in). The alternator/fan belt on the C-series is 588347D1, 12-rib.',
-    partNumber: 'Gates K040575 (4PK1460), confirm length', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
+    category: 'Other', seedKey: 'rogator-drive-belt', seedRev: 3, name: 'Drive belt, 4-rib (broke Oct 17, 2026)', spec: 'Old belt: 4 ribs, about 58.5 in measured along the back (rough; broken in two, 30.5 + 28 in), so about 57.5-58 in effective. ' +
+      'Closest standard belt: Gates K040575 (4 rib, 57.5 in effective, 4PK1460); NAPA Belts & Hose equivalent 25-040575 (confirm at the counter). ' +
+      'NAPA Sterling, 1370 W Main St, (970) 522-1334 (Mon-Fri 7-6, Sat 7-5, Sun 10-3): take both old pieces to measure on their belt gauge. ' +
+      'Not AGCO 564691D1: that is the C-series A/C and water pump belt, 1366 mm (53.75 in).',
+    partNumber: 'Gates K040575 / NAPA 25-040575 (4PK1460), confirm length', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
     amazonUrl: amazon('Gates K040575'),
-    otherUrl: 'https://www.napaonline.com/en/search?text=K040575'
+    otherUrl: 'https://www.napaonline.com/en/search?text=25-040575'
+  },
+  {
+    category: 'Filters', seedKey: 'rogator-oil', name: 'Engine oil filter', spec: 'AGCO V836862582 (listed for RG900/RG1100/RG1300 chassis 2012-2014, sn CXXX1001-EXXX9999). WIX 57269 is the one on the engine. Crosses: NAPA Gold 7269, Baldwin B7363, Mann W1374/7. Spin-on, 1-1/2-16 thread.',
+    partNumber: 'WIX 57269 / NAPA Gold 7269 (AGCO V836862582)', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 0,
+    amazonUrl: amazon('WIX 57269'),
+    otherUrl: 'https://www.napaonline.com/en/search?text=7269'
+  },
+  {
+    category: 'Filters', seedKey: 'rogator-fuel', name: 'Fuel filters (2, Baldwin spin-on)', spec: 'Two red Baldwin spin-on fuel filters on the engine; read the BF number printed on each can and record it here. ' +
+      'Likely AGCO fuel filter kit V837091436 (listed for the RG1300B and the MF 8650-8690 with the same Tier 4i 8.4L engine), not confirmed for this 2012 RG1300. Tank-side prefilter/water separator to check separately.',
+    partNumber: 'Pending: Baldwin numbers from the cans', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 0,
+    amazonUrl: amazon('V837091436 fuel filter kit'),
+    otherUrl: 'https://www.napaonline.com/en/search?text=V837091436'
   }
 ];
