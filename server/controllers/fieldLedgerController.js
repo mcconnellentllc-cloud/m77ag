@@ -77,6 +77,36 @@ function inLease(lease, year) {
   return true;
 }
 
+// Crops not sold as grain: no projected income or break-even per bushel.
+const NOT_SOLD = ['FALLOW', 'PASTURE', 'SORGHUM SUDAN', 'OATS & VETCH', 'WASTE', 'BUILDING SITE', 'CRP'];
+function normCrop(c) {
+  const x = String(c || '').toUpperCase().trim();
+  if (x.startsWith('SUDAN') || x.startsWith('SORGHUM SUDAN') || x.startsWith('SORGHUM-SUDAN')) return 'SORGHUM SUDAN';
+  if (x.startsWith('MILO') || x === 'SORGHUM' || x === 'GRAIN SORGHUM' || x.startsWith('SORGHUM (')) return 'SORGHUM';
+  return x;
+}
+// The card's crop for the year: cropYYYY, else the crop history entry.
+function cropOf(cf, year, hist) {
+  return normCrop(cf['crop' + year] || (hist && hist.crop) || '');
+}
+// APH for the crop on this field: the insurance unit for the year, else the
+// most recent unit for the crop, else the average crop-history yield for the
+// crop (up to the last 10 years before this one).
+async function aphFor(regIds, cf, crop, year) {
+  if (!crop) return null;
+  const units = regIds.length ? await FieldInsurance.find({ m77Field: { $in: regIds }, aph: { $gt: 0 } }).sort({ cropYear: -1 }).lean() : [];
+  const forCrop = units.filter(u => normCrop(u.crop) === crop);
+  const unit = forCrop.find(u => u.cropYear === year) || forCrop[0];
+  if (unit) return { value: unit.aph, source: `APH, ${unit.cropYear} insurance unit ${unit.unitNumber}` };
+  const entered = (cf.aph || []).find(a => normCrop(a.crop) === crop && a.value > 0);
+  if (entered) return { value: entered.value, source: entered.source || 'APH entered on the card', entered: true };
+  const yields = (cf.cropHistory || []).filter(h => h.year < year && normCrop(h.crop) === crop && h.yieldPerAcre > 0)
+    .sort((a, b) => b.year - a.year).slice(0, 10);
+  if (!yields.length) return null;
+  const avg = Math.round(yields.reduce((t, h) => t + h.yieldPerAcre, 0) / yields.length * 10) / 10;
+  return { value: avg, source: `average yield, ${yields.length} year${yields.length === 1 ? '' : 's'} of crop history` };
+}
+
 // GET /api/field-ledger/:id?year=2026   (id = the card's CroppingField id)
 exports.getLedger = async (req, res) => {
   try {
@@ -256,6 +286,25 @@ exports.getLedger = async (req, res) => {
       landlordIndemnity += round2(u.totalPayable * (u.landlordShare || 0));
     }
 
+    // Projected income: APH x acres x the current average price for the crop
+    // (Kyle, Oct 17, 2026). Used when no grain has been delivered for the year.
+    const crop = cropOf(cf, year, hist);
+    const aph = await aphFor(regIds, cf, crop, year);
+    const sold = crop && !NOT_SOLD.includes(crop);
+    const priceSet = sold ? priceOf['grain|' + crop.toLowerCase()] : null;
+    if (sold && !harvests.length && !(hist && hist.grossRevenue > 0)) {
+      if (!priceSet) {
+        pricesNeeded['grain|' + crop] = { kind: 'grain', name: crop, unit: 'bu' };
+        missing.push({ label: `Projected ${crop.toLowerCase()} income`, detail: `No ${year} ${crop.toLowerCase()} price (current average)` });
+      } else if (!aph) {
+        missing.push({ label: `Projected ${crop.toLowerCase()} income`, detail: `No APH on file for ${crop.toLowerCase()} on this field` });
+      } else if (acres) {
+        income.push({ group: 'Projected', projected: true, label: `${crop} at APH`,
+          detail: `${aph.value} bu/ac (${aph.source}) x ${acres} ac x $${priceSet.price.toFixed(2)}/bu current average`,
+          amount: round2(aph.value * acres * priceSet.price), crop });
+      }
+    }
+
     const totalIncome = round2(income.reduce((s, l) => s + l.amount, 0));
     const totalExpenses = round2(expenses.reduce((s, l) => s + l.amount, 0));
     const net = round2(totalIncome - totalExpenses);
@@ -272,7 +321,7 @@ exports.getLedger = async (req, res) => {
       split = { kind: 'billed', billedTo: lease.landlord || LUEKING_LEASE.parties.landlordOnCards, billedPercent: 100,
         billedExpenses: totalExpenses, m77Expenses: 0 };
     } else if (lease.type === 'crop-share' && lease.sharePercentage > 0) {
-      const grain = income.filter(l => l.group === 'Grain' || l.group === 'Crop history').reduce((s, l) => s + l.amount, 0);
+      const grain = income.filter(l => l.group === 'Grain' || l.group === 'Crop history' || l.group === 'Projected').reduce((s, l) => s + l.amount, 0);
       const landlordGrain = round2(grain * lease.sharePercentage / 100);
       const m77Income = round2(totalIncome - landlordGrain - landlordIndemnity);
       const m77Expenses = round2(totalExpenses - landlordSeed);
@@ -283,9 +332,31 @@ exports.getLedger = async (req, res) => {
       };
     }
 
+    // Break-even price at APH: what each bushel must bring to cover the
+    // expenses. M77 AG's on crop-share ground: its expenses over its share of
+    // the bushels.
+    let breakEven = null;
+    if (sold && aph && acres) {
+      const bushels = round2(aph.value * acres);
+      breakEven = { crop, aph: aph.value, aphSource: aph.source, acres, bushels,
+        perBu: bushels ? round2(totalExpenses / bushels) : null,
+        price: priceSet ? priceSet.price : null };
+      if (split && split.kind !== 'billed' && lease.sharePercentage > 0) {
+        const m77Bu = bushels * (1 - lease.sharePercentage / 100);
+        breakEven.m77PerBu = m77Bu ? round2(split.m77Expenses / m77Bu) : null;
+        breakEven.m77Share = 100 - lease.sharePercentage;
+      }
+    } else if (sold) {
+      missing.push({ label: 'Break-even price', detail: `No APH on file for ${crop.toLowerCase()} on this field` });
+    }
+
     res.json({
       success: true,
       data: {
+        crop: crop || '',
+        aph: aph ? { value: aph.value, source: aph.source, entered: !!aph.entered } : null,
+        aphNeeded: !!(sold && !aph),
+        breakEven,
         field: { id: cf._id, name: cf.field, farm: cf.farm || '', acres, lease: { type: lease.type || '', landlord: lease.landlord || '', sharePercentage: lease.sharePercentage, rentPerAcre: lease.rentPerAcre },
           excludeFromFinancials: !!cf.excludeFromFinancials, financialNote: cf.financialNote || '' },
         year,
@@ -342,3 +413,26 @@ exports.setPrice = async (req, res) => {
 };
 
 exports._test = { quantityIn, productCost, defaultUnit };
+
+// PUT /api/field-ledger/:id/aph  Body: { crop, value, source }  (value null removes)
+exports.setAph = async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ success: false, message: 'Invalid field' });
+    const crop = normCrop(req.body && req.body.crop);
+    if (!crop) return res.status(400).json({ success: false, message: 'Crop is required' });
+    const cf = await CroppingField.findById(req.params.id).select('field aph');
+    if (!cf) return res.status(404).json({ success: false, message: 'Field not found' });
+    const raw = req.body.value;
+    const list = (cf.aph || []).filter(a => normCrop(a.crop) !== crop);
+    if (raw !== null && raw !== '' && raw !== undefined) {
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value <= 0 || value > 400) return res.status(400).json({ success: false, message: 'APH must be bu/ac, above 0' });
+      list.push({ crop, value, source: req.body.source ? String(req.body.source).slice(0, 120) : 'APH entered on the card', setBy: req.user && req.user.email, setAt: new Date() });
+    }
+    await CroppingField.updateOne({ _id: cf._id }, { $set: { aph: list } });
+    res.json({ success: true, message: `${cf.field}: ${crop.toLowerCase()} APH ${raw ? raw + ' bu/ac' : 'removed'}` });
+  } catch (err) {
+    console.error('Set APH error:', err);
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
