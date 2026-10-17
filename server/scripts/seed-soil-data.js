@@ -60,7 +60,7 @@ function getFarmForFieldNum(num) {
 
 // Special overrides for fields that don't follow the default farm assignment
 const FARM_OVERRIDES = {
-  '36-W': 'LAFARMS'   // 36.W POLE RD SEC 15 is LAFARMS, not PETERSON
+  '36-W': 'LAFARMS'   // 30.W POLE RD SEC 15 is LAFARMS, not PETERSON
 };
 
 // Convert a soil history record to a soil sample document
