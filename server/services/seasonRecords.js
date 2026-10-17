@@ -244,6 +244,9 @@ const AUTO_KEY = 'season-records-auto-load';
 async function autoLoad(importId = 'season-2026') {
   const doc = await AppliedUpdate.findOne({ key: AUTO_KEY + ':' + importId });
   const handled = new Set(doc ? doc.summary : []);
+  // Keys handled at any revision: a record taken off its card stays off when
+  // a newer revision of it arrives.
+  const handledKeys = new Set([...handled].map(t => t.replace(/@\d+$/, '')));
   const newlyHandled = [];
   let added = 0, refreshed = 0;
   const waiting = [];
@@ -255,7 +258,7 @@ async function autoLoad(importId = 'season-2026') {
     for (const r of resolved.records.filter(phase)) {
       const tag = r.key + '@' + (r.rev || 1);
       if (handled.has(tag)) continue;
-      if (r.addedTo && !r.outdated) { handled.add(tag); newlyHandled.push(tag); continue; }
+      if ((r.addedTo && !r.outdated) || (!r.addedTo && handledKeys.has(r.key))) { handled.add(tag); newlyHandled.push(tag); continue; }
       const field = r.addedTo ? fieldById[String(r.addedTo.m77Field)] : (!r.review && r.suggested ? fieldById[r.suggested] : null);
       if (!field) { waiting.push(r.key); continue; }
       const err = await writeRecord(importId, r, field, cropOn, null);

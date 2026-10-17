@@ -54,6 +54,21 @@ const fieldOperationSchema = new mongoose.Schema({
   combineBu: { type: Number, default: null },
   tickets: { type: [ticketSchema], default: [] },
 
+  // Seed cost for a planting pass, from the seed invoice: one line per
+  // hybrid planted. interest stays null while the invoice interest is not
+  // known (interestPending).
+  seedCost: {
+    amount: { type: Number },
+    interest: { type: Number, default: null },
+    interestPending: { type: Boolean },
+    source: { type: String, trim: true },
+    lines: [{
+      _id: false,
+      product: String, acres: Number, seedsPerAcre: Number, units: Number, unit: String,
+      pricePerUnit: Number, amount: Number, interest: Number, basis: String
+    }]
+  },
+
   // Rate the import knows for this pass (tillage implement by tractor and
   // date); used as the default when the pass is costed.
   suggestedRateKey: { type: String, trim: true },
