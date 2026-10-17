@@ -90,6 +90,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Lease terms failed:', e.message);
     }
+    // Crop history 2018-2025 from the farm's workbook and spray records (applied once)
+    try {
+      const { applyCropHistoryImport } = require('./services/cropHistoryImport');
+      (await applyCropHistoryImport()).forEach(r => console.log('Crop history:', r));
+    } catch (e) {
+      console.error('Crop history import failed:', e.message);
+    }
     // Fill blank Field Records details (county, section, FSA, soil tests...) from data on file
     try {
       const fieldBackfill = require('./services/fieldBackfill');

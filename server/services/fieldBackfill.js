@@ -6,8 +6,6 @@
 //   - lease type and landlord from the farm (M77Farm)
 //   - legal, FSA farm / tract, acres, county, section / township / range,
 //     soil type and class from the field list in server/data/fieldDetails.js
-//   - the 2025 crop from the 2024 soil lab sample (samples are pulled in
-//     the fall, so the year N lab record names the N+1 crop)
 //   - values missing on lab samples already on the card
 //   - soil survey map units and capability class from USDA SSURGO, using
 //     the field boundary on the linked M77Field
@@ -130,6 +128,17 @@ function labCrop(c) {
   return LAB_CROP[u] || u;
 }
 
+// The crop named on a field's 2024 lab samples, or null when they name none
+// or disagree. This fill once set the 2025 crop from it; the farm's records
+// show the lab crop is usually the 2024 crop, so the crop history import
+// replaces those values.
+function labCrop2025(fieldName) {
+  const crops = [...new Set(soilRecordsFor(fieldName)
+    .map(r => (r.history || []).find(h => h.year === 2024))
+    .filter(h => h && !isBlank(h.crop)).map(h => labCrop(h.crop)))];
+  return crops.length === 1 ? crops[0] : null;
+}
+
 // "SE4 35-7-47" -> { section: '35', township: '7N', range: '47W' }
 function parseLegal(legal) {
   const m = String(legal || '').match(/(\d{1,2})\s*-\s*(\d{1,2})\s*-\s*(\d{2})\b/);
@@ -206,15 +215,6 @@ function plannedChanges(cf, farm, rawSoil) {
     return out;
   });
   if (!lab.length) notes.push('No soil lab records for this field number');
-
-  // 2025 crop from the 2024 lab sample, when every matching record agrees.
-  if (isBlank(cf.crop2025)) {
-    const crops = [...new Set(soilRecordsFor(cf.field)
-      .map(r => (r.history || []).find(h => h.year === 2024))
-      .filter(h => h && !isBlank(h.crop)).map(h => labCrop(h.crop)))];
-    if (crops.length === 1) set.crop2025 = crops[0];
-    else if (crops.length > 1) notes.push('2024 lab samples disagree on the 2025 crop: ' + crops.join(', '));
-  }
 
   return { set, samples, merged, valuesFilled, notes };
 }
@@ -371,4 +371,4 @@ async function soilSurvey(croppingFieldId) {
   return { field: cf.field, mapUnits: units, capabilityClass: set['soil.capabilityClass'] };
 }
 
-module.exports = { preview, apply, soilSurvey, soilSamplesFor, parseLegal, fieldNumber, COUNTY_BY_TR };
+module.exports = { preview, apply, soilSurvey, soilSamplesFor, parseLegal, fieldNumber, labCrop2025, COUNTY_BY_TR };
