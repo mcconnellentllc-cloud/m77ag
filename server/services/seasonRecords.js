@@ -38,16 +38,26 @@ function matches(hint, name) {
 }
 
 // Crop on a card for a year: the linked CroppingField's cropYYYY, else the
-// M77Field 2026 crop. Upper case, milo read as sorghum.
+// M77Field 2026 crop, else the crop of a completed planting record on the
+// card for that year (wheat drilled in October 2026 is the 2027 crop even
+// before the card's 2027 crop is set). Upper case, milo read as sorghum.
 async function cardCrops(fields) {
   const legacyIds = fields.filter(f => f.legacySource === 'CroppingField' && f.legacyId).map(f => f.legacyId);
   const cfs = legacyIds.length ? await CroppingField.find({ _id: { $in: legacyIds } })
     .select('crop2025 crop2026 crop2027 crop2028 crop2029 crop2030').lean() : [];
   const byId = {};
   for (const c of cfs) byId[String(c._id)] = c;
+  const planted = {};
+  const seedings = await FieldOperation.find({ type: 'seeding', status: 'completed', m77Field: { $in: fields.map(f => f._id) } })
+    .select('m77Field cropYear crop').lean();
+  for (const o of seedings) {
+    const k = String(o.m77Field) + '|' + o.cropYear;
+    // Two different crops planted for one year (replant, double crop): leave it to the card.
+    planted[k] = planted[k] === undefined || planted[k] === o.crop ? o.crop : null;
+  }
   return (field, year) => {
     const c = field.legacyId ? byId[String(field.legacyId)] : null;
-    let crop = (c && c['crop' + year]) || (year === 2026 ? field.crop2026 : '') || '';
+    let crop = (c && c['crop' + year]) || (year === 2026 ? field.crop2026 : '') || planted[String(field._id) + '|' + year] || '';
     crop = String(crop).toUpperCase().trim();
     if (crop.startsWith('MILO') || crop === 'SORGHUM' || crop.startsWith('SORGHUM (')) return 'SORGHUM';
     if (crop.startsWith('SUDAN') || crop.startsWith('SORGHUM SUDAN') || crop.startsWith('SORGHUM-SUDAN')) return 'SORGHUM SUDAN';
