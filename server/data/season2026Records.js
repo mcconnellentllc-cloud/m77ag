@@ -218,7 +218,6 @@ function cropOf(label) {
   return null;
 }
 function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-function smallArea(e) { return e.area !== null && e.area < 1; }
 function reportLine(e) {
   return 'Report: ' + e.opsName + ', ' + (e.plan || 'no work plan') + ' - ' + (e.crop || 'no crop') + ', ' +
     (e.area === null ? 'coverage not logged' : e.area + ' ac logged') + '.';
@@ -248,12 +247,15 @@ for (const e of OPS_SEED) {
   if (!plantGroups.has(k)) plantGroups.set(k, { num: opsNumber(e.opsField), year, crop, entries: [] });
   plantGroups.get(k).entries.push(e);
 }
-// A group that seeded nothing, on a field with a real planting that year, is
-// the planter passing through; drop it.
+// A pass that logged under 3 acres is overlap from the other half or a
+// headland (Kyle, Oct 17, 2026): it is not a record and comes off any card.
+const OVERLAP_ACRES = 3;
+const overlapKeys = [];
 for (const [k, g] of plantGroups) {
-  if (g.entries.some(e => e.area >= 1)) continue;
-  const other = [...plantGroups.values()].some(x => x !== g && x.num === g.num && x.year === g.year && x.entries.some(e => e.area >= 1));
-  if (other) plantGroups.delete(k);
+  const area = g.entries.reduce((t, e) => t + (e.area || 0), 0);
+  if (area >= OVERLAP_ACRES) continue;
+  overlapKeys.push('sd26-' + g.num + '-' + g.year + '-' + slug(g.crop));
+  plantGroups.delete(k);
 }
 function starterFor(num, year, crop) {
   const products = [];
@@ -441,7 +443,8 @@ for (const e of OPS_APP) {
     type: 'spray', status: 'completed', title: spec.title,
     startDate: e.start, endDate: e.end || e.start,
     products: e.products,
-    review: spec.review || (smallArea(e) ? 'Under 1 acre logged; likely overlap from the other half.' : null),
+    area: e.area === null ? undefined : e.area,
+    review: spec.review || null,
     source: 'Operations Center Application 2026 report, work plan ' + e.plan + ' (target rates)',
     notes: reportLine(e) + (spec.rotation ? ' Charged to the next harvested crop on the field, which pays this pass back.' : '')
   });
@@ -499,6 +502,9 @@ for (const e of OPS_TILL) {
   }
 }
 
-RECORDS.push(...OPS_RECORDS);
+for (const r of OPS_RECORDS) {
+  if (r.area !== undefined && r.area !== null && r.area < OVERLAP_ACRES) overlapKeys.push(r.key);
+  else RECORDS.push(r);
+}
 
-module.exports = { RECORDS, unplacedSeed };
+module.exports = { RECORDS, unplacedSeed, overlapKeys };
