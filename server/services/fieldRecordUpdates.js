@@ -1,5 +1,7 @@
 const CroppingField = require('../models/croppingField');
 const M77Field = require('../models/m77Field');
+const M77Farm = require('../models/m77Farm');
+const AppliedUpdate = require('../models/appliedUpdate');
 const UPDATES = require('../data/fieldRecordUpdates');
 
 const empty = v => v === undefined || v === null || v === '';
@@ -68,6 +70,25 @@ async function applyFieldRecordUpdates() {
     await require('../models/cropExpense').updateMany({ 'fields.fieldId': oldCf._id }, { $set: { 'fields.$[x].fieldId': newCf._id } }, { arrayFilters: [{ 'x.fieldId': oldCf._id }] });
     await CroppingField.deleteOne({ _id: oldCf._id });
     results.push(`${u.key}: merged ${oldName} into ${newCf.field}`);
+  }
+  for (const mv of UPDATES.farmMoves || []) {
+    if (await AppliedUpdate.findOne({ key: mv.key })) continue;
+    const cards = await CroppingField.find({ field: mv.match }).select('field farm').lean();
+    const farm = await M77Farm.findOne({ name: mv.farm }).select('_id client').lean();
+    const lines = [];
+    for (const cf of cards) {
+      await CroppingField.updateOne({ _id: cf._id }, { $set: {
+        farm: mv.farm, 'lease.type': 'crop-share', 'lease.landlord': mv.landlord, 'lease.sharePercentage': mv.sharePercentage
+      } });
+      const regSet = { rotationGroup: mv.farm, landlordName: mv.landlord };
+      if (farm) { regSet.farm = farm._id; if (farm.client) regSet.client = farm.client; }
+      await M77Field.updateOne({ legacySource: 'CroppingField', legacyId: cf._id }, { $set: regSet });
+      lines.push(`${cf.field}: ${cf.farm} -> ${mv.farm}, landlord ${mv.landlord} ${mv.sharePercentage}%`);
+    }
+    // Recorded only once the card exists, so a move waits for a rename that runs later.
+    if (!cards.length) continue;
+    await AppliedUpdate.create({ key: mv.key, summary: lines });
+    results.push(`${mv.key}: ${lines.join('; ')}`);
   }
   return results;
 }

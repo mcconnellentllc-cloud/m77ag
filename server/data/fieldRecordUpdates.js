@@ -18,3 +18,11 @@ module.exports = [
   { key: 'pole-rd-35e-to-31e', from: /^35\.E POLE RD SEC 14$/i, to: '31.E POLE RD SEC 14' },
   { key: 'pole-rd-35w-to-31w', from: /^35\.W POLE RD SEC 14$/i, to: '31.W POLE RD SEC 14' }
 ];
+
+// Cards moved to another farm, applied once each. The card's landlord and
+// share follow the new farm; the registry field moves to that farm too.
+module.exports.farmMoves = [
+  // 30.W is Peterson ground: the 2026 wheat landlord statement pays Lynn
+  // Peterson 35% (Kyle, Oct 17, 2026). It was filed under LAFARMS.
+  { key: 'field-30w-to-peterson-2026-10-17', match: /^30\.W POLE RD SEC 15$/i, farm: 'PETERSON', landlord: 'Lynn Peterson', sharePercentage: 35 }
+];

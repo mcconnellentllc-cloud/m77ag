@@ -72,7 +72,7 @@ const fields = [
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.25, taxYear: 2026, taxingAuthority: 'Sedgwick County' } },
 
-  { client: 'MCC. ENT.', farm: 'LAFARMS', field: '30.W POLE RD SEC 15', legal: 'NE 15-7-48', fsaFarm: '4062', tract: '4014', acres: 78.00, crop2026: 'WHEAT',
+  { client: 'MCC. ENT.', farm: 'PETERSON', field: '30.W POLE RD SEC 15', legal: 'NE 15-7-48', fsaFarm: '4062', tract: '4014', acres: 78.00, crop2026: 'WHEAT',
     county: 'Logan', section: '15', township: '7N', range: '48W',
     soil: { type: 'Hard', class: 'II' }, lease: { type: 'owned' },
     taxes: { propertyTaxPerAcre: 1.10, taxYear: 2026, taxingAuthority: 'Logan County' } },
