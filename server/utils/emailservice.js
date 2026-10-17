@@ -15,9 +15,13 @@ const MAIL_HOST = process.env.MAIL_HOST || process.env.SMTP_HOST || 'smtp.office
 const MAIL_PORT = Number(process.env.MAIL_PORT || process.env.SMTP_PORT) || 587;
 const MAIL_SERVICE = process.env.MAIL_SERVICE;
 
+// Give up on an unreachable mail server in seconds, not nodemailer's default
+// two minutes, so a mail problem never stalls a request.
+const MAIL_TIMEOUTS = { connectionTimeout: 15000, greetingTimeout: 10000, socketTimeout: 30000 };
+
 const buildTransport = (user, pass) => {
   if (MAIL_SERVICE) {
-    return nodemailer.createTransport({ service: MAIL_SERVICE, auth: { user, pass } });
+    return nodemailer.createTransport({ service: MAIL_SERVICE, auth: { user, pass }, ...MAIL_TIMEOUTS });
   }
 
   return nodemailer.createTransport({
@@ -27,7 +31,8 @@ const buildTransport = (user, pass) => {
     secure: MAIL_PORT === 465,
     requireTLS: MAIL_PORT !== 465,
     auth: { user, pass },
-    tls: { minVersion: 'TLSv1.2' }
+    tls: { minVersion: 'TLSv1.2' },
+    ...MAIL_TIMEOUTS
   });
 };
 
