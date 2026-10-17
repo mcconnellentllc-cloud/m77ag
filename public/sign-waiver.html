@@ -315,8 +315,13 @@
             </div>
 
             <div class="form-group">
-                <label for="huntDate">Hunt Date *</label>
+                <label for="huntDate">First Hunt Day *</label>
                 <input type="date" id="huntDate" name="huntDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="huntEndDate">Last Hunt Day *</label>
+                <input type="date" id="huntEndDate" name="huntEndDate" required>
             </div>
 
             <div class="form-group">
@@ -386,7 +391,14 @@
                 <p>I understand that if wounded or downed game crosses property lines, I MUST:</p>
                 <ul>
                     <li>Immediately cease pursuit</li>
-                    <li>Contact M77 AG at hunting@m77ag.com before proceeding (emergency contact in booking confirmation)</li>
+                    <li>Call or text M77 AG before proceeding:
+                        <ul>
+                            <li>Kyle McConnell (cell): <a href="tel:9705711015">970-571-1015</a></li>
+                            <li>Matt (cell): <a href="tel:9704669369">970-466-9369</a></li>
+                            <li>M77 AG Office: <a href="tel:9707743276">970-774-3276</a></li>
+                            <li>Email: hunting@m77ag.com</li>
+                        </ul>
+                    </li>
                     <li>Wait for authorization before entering neighboring property</li>
                     <li>Follow all directions provided by property management</li>
                 </ul>
@@ -415,13 +427,21 @@
             <div class="warning-box">
                 <h3>DOWNED GAME PROTOCOL</h3>
                 <p><strong>IF GAME CROSSES PROPERTY LINES:</strong></p>
-                <p>You MUST immediately email hunting@m77ag.com before pursuing or retrieving any downed game that has crossed onto neighboring property. Emergency contact information will be provided in your booking confirmation.</p>
+                <p>You MUST call or text before pursuing or retrieving any downed game that has crossed onto neighboring property:</p>
+                <p><strong>Kyle McConnell (cell):</strong> <a href="tel:9705711015">970-571-1015</a><br>
+                <strong>Matt (cell):</strong> <a href="tel:9704669369">970-466-9369</a><br>
+                <strong>M77 AG Office:</strong> <a href="tel:9707743276">970-774-3276</a><br>
+                <strong>Email:</strong> hunting@m77ag.com</p>
+                <p>No response does not mean permission. Wait for authorization.</p>
                 <p>Failure to follow this protocol may result in trespassing charges and termination of hunting privileges.</p>
             </div>
 
             <!-- Acknowledgment Checkboxes -->
             <div class="checkbox-group">
                 <h3>Required Acknowledgments:</h3>
+                <button type="button" onclick="acceptAllAcknowledgments(this)" style="display: block; width: 100%; padding: 14px; margin-bottom: 18px; background: #2d5016; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                    Accept All Acknowledgments
+                </button>
 
                 <div class="checkbox-item">
                     <input type="checkbox" id="check1" required>
@@ -450,7 +470,7 @@
 
                 <div class="checkbox-item">
                     <input type="checkbox" id="check6" required>
-                    <label for="check6">I understand the downed game protocol and will contact M77 AG (hunting@m77ag.com) if downed game goes outside of property controlled by M77 AG</label>
+                    <label for="check6">I understand the downed game protocol and will call M77 AG (Kyle 970-571-1015, Matt 970-466-9369, or the office 970-774-3276) before following downed game outside of property controlled by M77 AG</label>
                 </div>
 
                 <div class="checkbox-item">
@@ -498,12 +518,31 @@
             day: 'numeric'
         });
 
+        // Manual entry: a one-day hunt unless a later last day is chosen
+        document.getElementById('huntDate').addEventListener('change', () => {
+            const first = document.getElementById('huntDate').value;
+            const last = document.getElementById('huntEndDate');
+            last.min = first;
+            if (!last.value || last.value < first) last.value = first;
+        });
+
         // Check for bookingId in URL
         const urlParams = new URLSearchParams(window.location.search);
         const urlBookingId = urlParams.get('bookingId');
         if (urlBookingId) {
             document.getElementById('bookingIdInput').value = urlBookingId;
             lookupBooking();
+        }
+
+        // YYYY-MM-DD and a readable date, both in UTC
+        function utcDay(v) {
+            return new Date(v).toISOString().split('T')[0];
+        }
+        function fmtUtc(v) {
+            return new Date(v).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
+        }
+        function escapeText(v) {
+            return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
         // Lookup booking by ID
@@ -532,26 +571,41 @@
                     document.getElementById('email').value = data.booking.email || '';
                     document.getElementById('phone').value = data.booking.phone || '';
 
-                    if (data.booking.checkinDate) {
-                        const date = new Date(data.booking.checkinDate);
-                        document.getElementById('huntDate').value = date.toISOString().split('T')[0];
+                    // Hunt dates and property come from the booking and are locked.
+                    // Dates are read in UTC: older bookings are stored at midnight
+                    // UTC, which local time would show a day early.
+                    const start = data.booking.checkinDate;
+                    const end = data.booking.checkoutDate || start;
+                    const huntDate = document.getElementById('huntDate');
+                    const huntEndDate = document.getElementById('huntEndDate');
+                    if (start) {
+                        huntDate.value = utcDay(start);
+                        huntEndDate.value = utcDay(end);
+                        huntDate.readOnly = true;
+                        huntEndDate.readOnly = true;
                     }
 
                     const property = data.booking.property || data.booking.parcel;
+                    const propertySelect = document.getElementById('property');
                     if (property) {
-                        const propertySelect = document.getElementById('property');
                         const formattedProperty = property === 'heritage-farm' ? 'Heritage Farm' :
                                                  property === 'prairie-peace' ? 'Prairie Peace' : property;
                         propertySelect.value = formattedProperty;
+                        propertySelect.disabled = true;
                     }
 
-                    // Show booking info
+                    // The booking is loaded: no lookup or manual entry needed
+                    document.querySelector('.lookup-section').style.display = 'none';
+                    document.querySelector('.manual-entry').style.display = 'none';
+
+                    const startText = start ? fmtUtc(start) : '';
+                    const endText = start ? fmtUtc(end) : '';
                     document.getElementById('bookingInfo').style.display = 'block';
                     document.getElementById('bookingDetails').innerHTML = `
-                        Booking ID: <strong>${bookingId.slice(-8).toUpperCase()}</strong><br>
-                        Hunter: <strong>${data.booking.customerName}</strong><br>
-                        Property: <strong>${property}</strong><br>
-                        Date: <strong>${new Date(data.booking.checkinDate).toLocaleDateString()}</strong>
+                        Booking ID: <strong>${String(data.booking._id).slice(-8).toUpperCase()}</strong><br>
+                        Hunter: <strong>${escapeText(data.booking.customerName)}</strong><br>
+                        Property: <strong>${escapeText(property)}</strong><br>
+                        Hunt Dates: <strong>${startText}${endText && endText !== startText ? ' through ' + endText : ''}</strong>
                     `;
 
                     // Scroll to form
@@ -575,6 +629,11 @@
             const errorDiv = document.getElementById('errorDiv');
             const loadingDiv = document.getElementById('loadingDiv');
 
+            if (document.getElementById('huntEndDate').value < document.getElementById('huntDate').value) {
+                showError('The last hunt day is before the first hunt day');
+                return;
+            }
+
             submitButton.disabled = true;
             submitButton.textContent = 'SUBMITTING...';
             errorDiv.style.display = 'none';
@@ -585,6 +644,7 @@
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 huntDate: document.getElementById('huntDate').value,
+                huntEndDate: document.getElementById('huntEndDate').value,
                 property: document.getElementById('property').value,
                 signature: document.getElementById('signature').value,
                 signedAt: new Date().toISOString(),
@@ -642,6 +702,14 @@
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Check every acknowledgment in this list. The hunter can still clear any one.
+        function acceptAllAcknowledgments(btn) {
+            btn.closest('.checkbox-group').querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+                cb.dispatchEvent(new Event('change', { bubbles: true }));
+            });
         }
     </script>
 </body>

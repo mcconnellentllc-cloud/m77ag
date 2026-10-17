@@ -467,6 +467,7 @@ const bookingController = {
         email,
         phone,
         huntDate,
+        huntEndDate,
         property,
         vehicleMake,
         vehicleModel,
@@ -477,14 +478,24 @@ const bookingController = {
         userAgent
       } = req.body;
 
+      // A waiver signed from a booking takes the booking's hunt dates and
+      // property, whatever the form sent.
+      const linked = bookingId && require('mongoose').isValidObjectId(bookingId)
+        ? await Booking.findById(bookingId)
+        : null;
+      const dayOf = v => (v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(v + 'T12:00:00Z') : (v ? new Date(v) : null));
+      const start = linked ? linked.checkinDate : (dayOf(huntDate) || new Date());
+      const end = linked ? linked.checkoutDate : (dayOf(huntEndDate) || start);
+
       // Create waiver document
       const waiverData = {
-        bookingId: bookingId || null,
+        bookingId: linked ? linked._id : null,
         hunterName: hunterName || req.body.participantName,
         email: email || req.body.participantEmail,
         phone: phone || req.body.participantPhone,
-        huntDate: huntDate ? new Date(huntDate) : new Date(),
-        property: property || 'Prairie Peace',
+        huntDate: start,
+        huntEndDate: end < start ? start : end,
+        property: (linked && linked.parcel) || property || 'Prairie Peace',
         vehicleMake,
         vehicleModel,
         vehicleColor,
@@ -498,25 +509,21 @@ const bookingController = {
       const waiver = new Waiver(waiverData);
       await waiver.save();
 
-      // If bookingId provided, update the booking
-      let booking = null;
-      if (bookingId) {
-        booking = await Booking.findById(bookingId);
+      // If the waiver came from a booking, update the booking
+      const booking = linked;
+      if (booking) {
+        booking.waiverSigned = true;
+        booking.waiverSignedDate = waiver.signedAt;
+        booking.vehicleMake = vehicleMake || booking.vehicleMake;
+        booking.vehicleModel = vehicleModel || booking.vehicleModel;
+        booking.vehicleColor = vehicleColor || booking.vehicleColor;
+        booking.vehicleLicense = vehicleLicense || booking.vehicleLicense;
+        await booking.save();
 
-        if (booking) {
-          booking.waiverSigned = true;
-          booking.waiverSignedDate = waiver.signedAt;
-          booking.vehicleMake = vehicleMake || booking.vehicleMake;
-          booking.vehicleModel = vehicleModel || booking.vehicleModel;
-          booking.vehicleColor = vehicleColor || booking.vehicleColor;
-          booking.vehicleLicense = vehicleLicense || booking.vehicleLicense;
-          await booking.save();
-
-          // Send waiver confirmation email if booking exists (after the reply)
-          sendWaiverConfirmation(booking)
-            .then(() => console.log('Waiver confirmation emails sent successfully'))
-            .catch(emailError => console.error('Failed to send waiver confirmation email:', emailError));
-        }
+        // Send waiver confirmation email if booking exists (after the reply)
+        sendWaiverConfirmation(booking)
+          .then(() => console.log('Waiver confirmation emails sent successfully'))
+          .catch(emailError => console.error('Failed to send waiver confirmation email:', emailError));
       }
 
       // A waiver signed without a booking belongs to a season pass holder or a
@@ -634,7 +641,18 @@ const bookingController = {
   // Public endpoint for dash card - returns limited booking info
   getBookingInfo: async (req, res) => {
     try {
-      const booking = await Booking.findById(req.params.id);
+      // Full booking id, or the 8-character Booking ID printed in the
+      // confirmation email (the last 8 characters of the id).
+      const id = String(req.params.id || '').trim().toLowerCase();
+      let booking = null;
+      if (require('mongoose').isValidObjectId(id) && id.length === 24) {
+        booking = await Booking.findById(id);
+      } else if (/^[0-9a-f]{8}$/.test(id)) {
+        const matches = await Booking.find({
+          $expr: { $eq: [{ $substrCP: [{ $toString: '$_id' }, 16, 8] }, id] }
+        }).limit(2);
+        booking = matches.length === 1 ? matches[0] : null;
+      }
 
       if (!booking) {
         return res.status(404).json({
