@@ -26,3 +26,12 @@ module.exports.farmMoves = [
   // Peterson 35% (Kyle, Oct 17, 2026). It was filed under LAFARMS.
   { key: 'field-30w-to-peterson-2026-10-17', match: /^30\.W POLE RD SEC 15$/i, farm: 'PETERSON', landlord: 'Lynn Peterson', sharePercentage: 35 }
 ];
+
+// Crops set on cards, applied once each and only where the year is still
+// blank, so a crop changed on the site later is left alone.
+module.exports.cropSets = [
+  // Kyle, Oct 17, 2026: 20 goes to sorghum sudan for 2027, 21 to grazing
+  // oats and vetch. The summer 2026 tillage on each is charged to these crops.
+  { key: 'crop-2027-20-north-2026-10-17', match: /^20 NORTH$/i, year: 2027, crop: 'SORGHUM SUDAN' },
+  { key: 'crop-2027-21-small-2026-10-17', match: /^21 SMALL$/i, year: 2027, crop: 'OATS & VETCH' }
+];
