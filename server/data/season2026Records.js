@@ -316,24 +316,29 @@ for (const g of plantGroups.values()) {
   for (const e of g.entries) for (const v of e.varieties) vars.push(v);
   seedLines.set(g, baseLines(vars.sort((x, y) => y.acres - x.acres)));
 }
-// All the seed on the invoice was used (Kyle, Oct 17, 2026), but the
-// planting records account for less than was bought (hybrids logged under
-// another name, rates logged low). The rest of each section's invoice total
-// is spread per unit planted in that section, so the cards add up to the
-// invoice.
-const sectionNet = {}, sectionPlanted = {}, sectionPriced = {};
-for (const p of Object.values(seedProducts)) sectionNet[sectionOf(p)] = (sectionNet[sectionOf(p)] || 0) + p.net;
+// Right seed on the right acre (Kyle, Oct 17, 2026): each hybrid's invoice
+// total goes only on the fields planted to it, in proportion to the seed
+// planted there. All the seed was used, so a hybrid's planting records carry
+// its whole invoice amount even when the logged rates add up to more or less
+// than was bought. A hybrid with no planting record cannot be placed and is
+// listed in unplacedSeed.
+const hybridPlanted = {};
 let plantedUnits = 0;
 for (const lines of seedLines.values()) for (const l of lines) {
   if (l.amount === null || l.amount === undefined) continue;
-  sectionPlanted[l.section] = (sectionPlanted[l.section] || 0) + l.units;
-  sectionPriced[l.section] = (sectionPriced[l.section] || 0) + l.amount;
+  hybridPlanted[l.product] = (hybridPlanted[l.product] || 0) + l.units;
   plantedUnits += l.units;
 }
-const spreadPerUnit = {};
-for (const k of Object.keys(sectionNet)) {
-  spreadPerUnit[k] = sectionPlanted[k] ? Math.max(0, sectionNet[k] - sectionPriced[k]) / sectionPlanted[k] : 0;
+for (const lines of seedLines.values()) for (const l of lines) {
+  if (l.amount === null || l.amount === undefined || l.section === 'bag') continue;
+  const p = seedProducts[l.product];
+  const planted = hybridPlanted[l.product];
+  l.pricePerUnit = r2(p.net / planted);
+  l.amount = r2(p.net * l.units / planted);
+  l.basis = `${l.basis}; invoice $${p.net.toFixed(2)} for ${p.units} units ($${(p.net / p.units).toFixed(2)}/unit) over ${r2(planted)} units planted`;
 }
+const unplacedSeed = Object.entries(seedProducts).filter(([name]) => !hybridPlanted[name])
+  .map(([name, p]) => ({ product: name, units: p.units, net: r2(p.net) }));
 // Deferred payment interest, billed per bag or unit over all the seed used.
 const interestPerUnit = PIONEER.interest.total === null ? null : PIONEER.interest.total / plantedUnits;
 function seedCostFor(g) {
@@ -341,16 +346,11 @@ function seedCostFor(g) {
   if (!lines) return undefined;
   for (const l of lines) {
     if (l.amount === null || l.amount === undefined) continue;
-    const per = spreadPerUnit[l.section] || 0;
-    if (per > 0.005) {
-      l.spread = r2(l.units * per);
-      l.spreadBasis = `share of ${l.section === 'bag' ? 'bagged' : l.section === 80000 ? 'corn' : 'milo'} seed not on the planting records, $${per.toFixed(2)} per unit planted`;
-    }
     if (interestPerUnit !== null) l.interest = r2(l.units * interestPerUnit);
     delete l.section;
   }
   const sum = k => r2(lines.reduce((t, l) => t + (l[k] || 0), 0));
-  return { amount: r2(sum('amount') + sum('spread')), interest: interestPerUnit === null ? null : sum('interest'), interestPending: interestPerUnit === null,
+  return { amount: sum('amount'), interest: interestPerUnit === null ? null : sum('interest'), interestPending: interestPerUnit === null,
     lines, source: PIONEER.source };
 }
 for (const g of plantGroups.values()) {
@@ -362,8 +362,8 @@ for (const g of plantGroups.values()) {
   const seedCost = seedCostFor(g);
   OPS_RECORDS.push({
     key: 'sd26-' + g.num + '-' + g.year + '-' + slug(g.crop),
-    // rev 3: seed cost from the Pioneer 2026 invoice, whole invoice spread
-    ...(seedCost ? { rev: 3, seedCost } : {}),
+    // rev 4: seed cost from the Pioneer 2026 invoice, each hybrid on its own acres
+    ...(seedCost ? { rev: 4, seedCost } : {}),
     fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, acresFromField: true,
     type: 'seeding', status: 'completed', title: 'Planted',
     startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,
@@ -457,4 +457,4 @@ for (const e of OPS_TILL) {
 
 RECORDS.push(...OPS_RECORDS);
 
-module.exports = { RECORDS };
+module.exports = { RECORDS, unplacedSeed };
