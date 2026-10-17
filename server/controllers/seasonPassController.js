@@ -476,6 +476,17 @@ const seasonPassController = {
         'seasonPass.active': true
       }).select('-password').sort({ 'seasonPass.purchaseDate': -1 });
 
+      // Hunts booked on each pass: the pass's booking ids, plus bookings
+      // under the holder's email paid with the pass.
+      const Booking = require('../models/booking');
+      const hunts = await Booking.find({
+        status: { $in: ['pending', 'confirmed', 'completed'] },
+        $or: [
+          { _id: { $in: users.flatMap(u => (u.seasonPass.bookingIds || []).filter(Boolean)) } },
+          { email: { $in: users.map(u => u.email) }, paymentMethod: 'season-pass' }
+        ]
+      }).select('email parcel checkinDate checkoutDate numNights camper status').sort({ checkinDate: 1 }).lean();
+
       res.json({
         success: true,
         passes: users.map(user => ({
@@ -483,7 +494,9 @@ const seasonPassController = {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          seasonPass: user.seasonPass
+          seasonPass: user.seasonPass,
+          hunts: hunts.filter(h => String(h.email).toLowerCase() === String(user.email).toLowerCase() ||
+            (user.seasonPass.bookingIds || []).some(id => String(id) === String(h._id)))
         }))
       });
 
