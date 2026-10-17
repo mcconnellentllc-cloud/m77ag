@@ -9,7 +9,16 @@ const campers = [
     id: 'Camper 1',
     nightlyRate: 50,
     cleaningFee: 100,
-    amenities: ['Starlink internet', 'TV', 'electric and water hookups', 'a gravel pad']
+    amenities: ['Starlink internet', 'TV', 'electric and water hookups', 'a gravel pad'],
+    description: 'Kitchen with stove, oven, microwave and refrigerator; bedroom; bathroom with shower; dinette and sofa.',
+    // public/images/campers/camper-1 (location data removed)
+    photos: [
+      { src: '/images/campers/camper-1/01.jpg', caption: 'Kitchen' },
+      { src: '/images/campers/camper-1/02.jpg', caption: 'Bedroom' },
+      { src: '/images/campers/camper-1/03.jpg', caption: 'Bathroom with shower' },
+      { src: '/images/campers/camper-1/04.jpg', caption: 'Dinette' },
+      { src: '/images/campers/camper-1/05.jpg', caption: 'Sofa' }
+    ]
   },
   {
     id: 'Camper 2',
