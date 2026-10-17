@@ -209,9 +209,11 @@ module.exports = [
     otherUrl: 'https://www.regierequipment.com'
   },
   {
-    category: 'Other', seedKey: 'rogator-drive-belt', name: 'Drive belt (broke Oct 17, 2026)', spec: 'Poly V. Confirm whether it drives the alternator / water pump or the A/C compressor, then match by rib count and length (Gates or Dayco at O\'Reilly or NAPA), or by serial AGCA1300JCNSL1103 at Regier, (308) 326-4245.',
-    partNumber: 'Pending: rib count and length', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
-    amazonUrl: amazon('AGCO SISU 8.4 poly v belt RoGator RG1300'),
-    otherUrl: 'https://www.regierequipment.com'
+    category: 'Other', seedKey: 'rogator-drive-belt', seedRev: 1, name: 'A/C and water pump belt (broke Oct 17, 2026)', spec: 'AGCO 564691D1, 1366 mm, listed for the RoGator C-series (RG900C/RG1100C/RG1300C) AGCO Power engine; not yet confirmed for this 2012 Tier 4i RG1300. ' +
+      'Belt in hand looks 5-rib: 5PK1366 = Gates K050538 (5 rib, 53.77 in effective, interchange 5PK1365). Confirm the old belt is 5 ribs and about 53.75 in before buying. ' +
+      'Alternator/fan belt on the same engine: AGCO 588347D1, 12-rib serpentine.',
+    partNumber: 'AGCO 564691D1 / Gates K050538 (5PK1366)', fits: 'Unit #208 RoGator RG1300 (AGCO SISU Power 8.4L)', qtyNeeded: 1,
+    amazonUrl: amazon('Gates K050538'),
+    otherUrl: 'https://www.napaonline.com/en/search?text=K050538'
   }
 ];
