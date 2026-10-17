@@ -288,6 +288,11 @@ app.use(express.static(path.join(__dirname, '../public'), {
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
     }
+    // Scripts and styles revalidate on every load (304 when unchanged), so a
+    // deploy reaches open browsers without a manual refresh.
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
   }
 }));
 
