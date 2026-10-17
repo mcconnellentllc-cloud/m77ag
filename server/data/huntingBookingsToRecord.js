@@ -30,17 +30,34 @@ module.exports = [
       customerName: 'Don Burtis',
       parcel: 'Heritage Farm',
       checkinDate: '2026-11-21T12:00:00Z',
-      checkoutDate: '2026-11-22T12:00:00Z',
+      checkoutDate: '2026-11-21T12:00:00Z',
       numHunters: 1,
       gameSpecies: 'Pheasant',
       dailyRate: 200,
-      numNights: 2,
-      totalPrice: 400,
+      numNights: 1,
+      totalPrice: 200,
       depositPaid: 200,
-      balanceDue: 200,
+      balanceDue: 0,
       paymentMethod: 'venmo',
-      paymentStatus: 'deposit_paid',
-      notes: 'Weekend after the pheasant opener (Kyle, Oct 17 2026). Venmo Oct 10 2026: $196.10 received ($200 less the Venmo fee), covering one day. Confirm whether the second day ($200) is owed.'
+      paymentStatus: 'paid',
+      notes: 'Saturday after the pheasant opener, one day (Kyle, Oct 17 2026). Paid by Venmo Oct 10 2026: $196.10 received ($200 less the Venmo fee).'
+    }
+  },
+  {
+    // Don hunts one day, not two (Kyle, Oct 17 2026). Corrects the booking
+    // if it was already recorded as Nov 21-22.
+    key: 'hunt-2026-11-21-don-burtis-one-day',
+    update: {
+      find: { customerName: /burtis/i, checkinDate: '2026-11-21T12:00:00Z' },
+      set: {
+        checkoutDate: '2026-11-21T12:00:00Z',
+        numNights: 1,
+        totalPrice: 200,
+        depositPaid: 200,
+        balanceDue: 0,
+        paymentStatus: 'paid',
+        notes: 'Saturday after the pheasant opener, one day (Kyle, Oct 17 2026). Paid by Venmo Oct 10 2026: $196.10 received ($200 less the Venmo fee).'
+      }
     }
   },
   {

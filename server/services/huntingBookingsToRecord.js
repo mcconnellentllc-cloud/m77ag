@@ -9,6 +9,19 @@ async function applyHuntingBookings() {
   const results = [];
   for (const e of ENTRIES) {
     if (await AppliedUpdate.findOne({ key: e.key }).lean()) continue;
+
+    // A correction to a hunt already recorded
+    if (e.update) {
+      const find = { ...e.update.find };
+      if (find.checkinDate) find.checkinDate = new Date(find.checkinDate);
+      const set = { ...e.update.set };
+      ['checkinDate', 'checkoutDate', 'camperCheckin', 'camperCheckout'].forEach(k => { if (set[k]) set[k] = new Date(set[k]); });
+      const r = await Booking.updateMany(find, { $set: set });
+      const summary = [`${r.modifiedCount} booking(s) updated`];
+      await AppliedUpdate.create({ key: e.key, summary });
+      results.push(`${e.key}: ${summary[0]}`);
+      continue;
+    }
     const b = { ...e.booking, checkinDate: new Date(e.booking.checkinDate), checkoutDate: new Date(e.booking.checkoutDate) };
     if (b.camperCheckin) b.camperCheckin = new Date(b.camperCheckin);
     if (b.camperCheckout) b.camperCheckout = new Date(b.camperCheckout);
