@@ -65,7 +65,9 @@ const fieldOperationSchema = new mongoose.Schema({
     lines: [{
       _id: false,
       product: String, acres: Number, seedsPerAcre: Number, units: Number, unit: String,
-      pricePerUnit: Number, amount: Number, interest: Number, basis: String
+      pricePerUnit: Number, amount: Number, interest: Number, basis: String,
+      // Share of invoice seed not on the planting records, per unit planted
+      spread: Number, spreadBasis: String
     }]
   },
 
