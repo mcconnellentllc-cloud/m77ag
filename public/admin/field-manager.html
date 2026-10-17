@@ -1089,7 +1089,7 @@
         }
 
         function renderHistoryTable(f) {
-            const history = f.cropHistory || [];
+            const history = [...(f.cropHistory || [])].sort((a, b) => b.year - a.year);
             if (history.length === 0) {
                 return `
                     <div class="empty-state">No crop history recorded yet.</div>
@@ -1104,7 +1104,7 @@
                 const ppa = h.profitPerAcre;
                 return `<tr class="${h.year === year ? 'year-row' : ''}">
                     <td><strong>${h.year}</strong></td>
-                    <td>${h.crop || '--'}</td>
+                    <td>${h.crop || '--'}${h.notes ? `<div style="font-size:11px;color:#888;max-width:260px;">${escapeText(h.notes)}</div>` : ''}</td>
                     <td>${h.variety || '--'}</td>
                     <td class="right">${h.yieldPerAcre ? h.yieldPerAcre.toFixed(1) : '--'}</td>
                     <td class="right">${h.pricePerBushel ? '$' + h.pricePerBushel.toFixed(2) : '--'}</td>
