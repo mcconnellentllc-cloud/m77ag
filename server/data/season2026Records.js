@@ -266,14 +266,68 @@ function starterFor(num, year, crop) {
   }
   return products;
 }
+// Seed cost from the Pioneer 2026 invoice (server/data/pioneerSeed2026.js).
+const PIONEER = require('./pioneerSeed2026');
+const seedProducts = {};
+for (const [product, , packaging, units, , net] of PIONEER.lines) {
+  const p = seedProducts[product] = seedProducts[product] || { units: 0, net: 0, seedsPerUnit: null };
+  p.units += units;
+  p.net += units * net;
+  const per = Object.keys(PIONEER.seedsPerUnit).find(k => packaging.startsWith(k));
+  if (per) p.seedsPerUnit = PIONEER.seedsPerUnit[per];
+}
+const invoiceUnits = PIONEER.lines.reduce((s, l) => s + l[3], 0);
+const interestPerUnit = PIONEER.interest.total === null ? null : PIONEER.interest.total / invoiceUnits;
+const seedCount = s => (s ? Number(String(s).replace(/[^0-9.]/g, '')) || null : null);
+// Acres planted to each bag product in 2026, to spread its invoice total.
+const bagAcres = {};
+for (const g of plantGroups.values()) {
+  if (g.year !== PIONEER.year) continue;
+  for (const e of g.entries) for (const v of e.varieties) {
+    const name = PIONEER.normalize(v.variety);
+    if (seedProducts[name] && !seedProducts[name].seedsPerUnit) bagAcres[name] = (bagAcres[name] || 0) + (v.acres || 0);
+  }
+}
+// Interest per bag or unit, once the total is known.
+function withInterest(line) {
+  if (interestPerUnit !== null && line.units) line.interest = Math.round(line.units * interestPerUnit * 100) / 100;
+  return line;
+}
+function seedCostFor(g, vars) {
+  if (g.year !== PIONEER.year) return undefined;
+  const lines = vars.map(v => {
+    const product = PIONEER.normalize(v.variety);
+    const p = seedProducts[product];
+    const acres = v.acres || 0;
+    if (!p) return { product: v.variety, acres, amount: null, basis: 'Not on the Pioneer 2026 invoice' };
+    const price = Math.round(p.net / p.units * 100) / 100;
+    if (p.seedsPerUnit) {
+      const rate = seedCount(v.rate) || seedCount(v.target);
+      if (!rate) return { product, acres, amount: null, basis: 'No planted rate logged' };
+      const units = Math.round(acres * rate / p.seedsPerUnit * 100) / 100;
+      return withInterest({ product, acres, seedsPerAcre: rate, units, unit: p.seedsPerUnit === 80000 ? '80K unit' : '600K unit', pricePerUnit: price,
+        amount: Math.round(units * price * 100) / 100, basis: (seedCount(v.rate) ? 'planted rate' : 'target rate') + ' x acres' });
+    }
+    const perAcre = p.net / bagAcres[product];
+    const bags = Math.round(acres * p.units / bagAcres[product] * 100) / 100;
+    return withInterest({ product, acres, units: bags, unit: '50 lb bag', pricePerUnit: price, amount: Math.round(acres * perAcre * 100) / 100,
+      basis: `invoice $${p.net.toFixed(2)} (${p.units} bags) over ${Math.round(bagAcres[product] * 10) / 10} ac planted` });
+  });
+  const sum = k => Math.round(lines.reduce((s, l) => s + (l[k] || 0), 0) * 100) / 100;
+  return { amount: sum('amount'), interest: interestPerUnit === null ? null : sum('interest'), interestPending: interestPerUnit === null,
+    lines, source: PIONEER.source };
+}
 for (const g of plantGroups.values()) {
   const entries = g.entries.sort((a, b) => a.start.localeCompare(b.start));
   const vars = [];
   for (const e of entries) for (const v of e.varieties) vars.push(v);
   vars.sort((a, b) => b.acres - a.acres);
   const area = Math.round(entries.reduce((sum, e) => sum + e.area, 0) * 10) / 10;
+  const seedCost = seedCostFor(g, vars);
   OPS_RECORDS.push({
     key: 'sd26-' + g.num + '-' + g.year + '-' + slug(g.crop),
+    // rev 2: seed cost from the Pioneer 2026 invoice
+    ...(seedCost ? { rev: 2, seedCost } : {}),
     fieldHint: g.num, matchBy: 'crop', cropYear: g.year, crop: g.crop, acresFromField: true,
     type: 'seeding', status: 'completed', title: 'Planted',
     startDate: entries[0].start, endDate: entries[entries.length - 1].end || entries[entries.length - 1].start,

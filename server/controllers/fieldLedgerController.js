@@ -149,9 +149,26 @@ exports.getLedger = async (req, res) => {
         detail: `${s.bushels} bu (${s.quantityLb} lb${s.estimated ? ', estimated' : ''})`, amount: total });
       landlordSeed += s.landlordAmount || 0;
     }
+    // Seed from the seed invoice, carried on the planting record
     const seedingOps = ops.filter(o => o.type === 'seeding' && o.status === 'completed');
-    if (seedingOps.length && !seeds.length) {
-      missing.push({ label: 'Seed for ' + seedingOps.map(o => o.variety || o.crop).join('; '), detail: 'No seed cost-share entry for this field and year' });
+    for (const o of seedingOps) {
+      const sc = o.seedCost;
+      if (!sc || !sc.lines || !sc.lines.length) continue;
+      const when = o.startDate ? new Date(o.startDate).toISOString().slice(0, 10) : '';
+      for (const l of sc.lines) {
+        if (l.amount === null || l.amount === undefined) {
+          missing.push({ label: `Seed: ${l.product}, ${l.acres} ac`, detail: l.basis || 'Not priced' });
+          continue;
+        }
+        const qty = l.units ? `${l.units} ${l.unit}${l.units === 1 ? '' : 's'} x $${Number(l.pricePerUnit).toFixed(2)}` : '';
+        const rate = l.seedsPerAcre ? ` (${l.acres} ac at ${Number(l.seedsPerAcre).toLocaleString('en-US')} seeds/ac)` : ` (${l.acres} ac)`;
+        expenses.push({ group: 'Seed', label: l.product, date: when, detail: qty + rate + ' · ' + l.basis, amount: round2(l.amount), opId: o._id });
+        if (l.interest) expenses.push({ group: 'Seed', label: l.product + ' interest', date: when, detail: `${l.units} ${l.unit}s, deferred payment interest per unit`, amount: round2(l.interest), opId: o._id });
+      }
+      if (sc.interestPending) notes.push('Seed interest (deferred payment, prime - 1%) is not on file yet; it will be added per bag once known.');
+    }
+    if (seedingOps.length && !seeds.length && !seedingOps.some(o => o.seedCost && o.seedCost.lines && o.seedCost.lines.length)) {
+      missing.push({ label: 'Seed for ' + seedingOps.map(o => o.variety || o.crop).join('; '), detail: 'No seed invoice or seed cost-share entry for this field and year' });
     }
 
     // Crop expenses posted to this field
