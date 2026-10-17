@@ -107,7 +107,9 @@
       const costed = ops.filter(o => o.cost && o.cost.rateKey);
       const total = costed.reduce((s, o) => s + (o.cost.amount || 0), 0);
       return { total, perAcre: acres ? total / acres : null, costed: costed.length,
-        uncosted: ops.filter(o => o.status === 'completed' && !(o.cost && o.cost.rateKey)).length };
+        uncosted: ops.filter(o => o.status === 'completed' && !(o.cost && o.cost.rateKey) &&
+          // Nothing harvested (appraised or abandoned): no combine pass to cost.
+          !(o.type === 'harvest' && !(o.combineAcres > 0) && !(o.acres > 0) && !(o.netBu > 0))).length };
     }
 
     async function setRate(id, rateKey) {

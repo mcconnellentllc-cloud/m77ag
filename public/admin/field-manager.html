@@ -31,6 +31,35 @@
         .tool-panel { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 18px; margin-bottom: 20px; }
         .rec-summary { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #555; }
         .rec-summary strong { color: #2d5016; }
+        .ledger-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .ledger-head label { font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ledger-year { padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; font-weight: 600; }
+        .ledger-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .ledger-tiles > div { background: #f5f3f0; border-radius: 6px; padding: 8px 10px; }
+        .lt-l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; }
+        .lt-v { font-size: 16px; font-weight: 700; color: #333; }
+        .lg-ac { font-size: 11px; color: #888; }
+        .ledger-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        .ledger-table th { text-align: left; color: #2d5016; font-family: 'Oswald', sans-serif; font-size: 15px; border-bottom: 2px solid #d4a54a; padding: 4px 0; }
+        .ledger-table td { padding: 5px 0; border-bottom: 1px solid #f0ece4; vertical-align: top; }
+        .ledger-table .num { text-align: right; white-space: nowrap; padding-left: 10px; }
+        .lg-group td { font-weight: 700; color: #555; background: #faf8f4; padding: 5px 4px; }
+        .lg-detail { color: #888; font-size: 11px; }
+        .lg-date { color: #999; font-size: 11px; }
+        .lg-none { color: #999; font-size: 13px; margin-top: 10px; }
+        .ledger-split, .ledger-note, .ledger-prices, .ledger-missing { font-size: 13px; border-radius: 6px; padding: 8px 10px; margin-top: 10px; display: grid; gap: 4px; }
+        .ledger-split { background: #eef3ea; }
+        .ledger-note { background: #f5f3f0; color: #666; }
+        .ledger-prices { background: #fbf3e2; }
+        .ledger-missing { background: #fff; border: 1px solid #ecdcb4; }
+        .ledger-missing ul { margin: 2px 0 0 18px; padding: 0; }
+        .lp-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .lp-in { display: flex; align-items: center; gap: 4px; }
+        .lp-in input { width: 100px; padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .lp-in select { padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .ledger-prices .btn { justify-self: start; margin-top: 4px; }
+        .ledger-passes { margin-top: 12px; font-size: 13px; }
+        .ledger-passes summary { cursor: pointer; font-weight: 600; color: #2d5016; padding: 6px 0; }
 
         /* Farm Tabs */
         .farm-tabs { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; }
@@ -962,16 +991,109 @@
             const n = opsForYear(f).length;
             return n ? ' (' + n + ')' : '';
         }
+        // Records tab: the year's income and expenses (field ledger), then
+        // the field passes behind them. The ledger loads when the tab opens.
+        const ledgerCache = {};   // 'cardId|year' -> ledger data
+        function escAttr(s) { return escapeText(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
         function renderRecordsPanel(f) {
             const y = yearOf(f);
             const ops = opsForYear(f);
-            if (!ops.length) return `<div class="empty-state">No field records for crop year ${y}. Add them with 2026 Season Records at the top of the page.</div>`;
-            const sum = recordTools.costSummary(ops, f.acres);
-            return `<div class="rec-summary">
-                    <span>${ops.length} record${ops.length === 1 ? '' : 's'} for ${y}</span>
-                    <span>Machine cost <strong>${recordTools.money2(sum.total)}</strong>${sum.perAcre !== null ? ' · <strong>' + recordTools.money2(sum.perAcre) + '/ac</strong>' : ''}</span>
-                    ${sum.uncosted ? `<span style="color:#a02818;">${sum.uncosted} not costed</span>` : ''}
-                </div>` + ops.map(o => recordTools.recordBlock(o, f.acres)).join('');
+            const yearOptions = CROP_YEARS.map(yr => `<option value="${yr}" ${yr === y ? 'selected' : ''}>${yr}</option>`).join('');
+            const passes = ops.length ? (() => {
+                const sum = recordTools.costSummary(ops, f.acres);
+                return `<details class="ledger-passes"><summary>Field passes for ${y} (${ops.length}) · machine cost ${recordTools.money2(sum.total)}${sum.uncosted ? ' · <span style="color:#a02818;">' + sum.uncosted + ' not costed</span>' : ''}</summary>` +
+                    ops.map(o => recordTools.recordBlock(o, f.acres)).join('') + '</details>';
+            })() : `<div class="empty-state">No field passes on this card for crop year ${y}.</div>`;
+            return `<div class="ledger-head">
+                    <label for="recYear-${f._id}">Crop year</label>
+                    <select id="recYear-${f._id}" class="ledger-year" onchange="setCardYear('${f._id}', this.value)">${yearOptions}</select>
+                </div>
+                <div id="ledger-${f._id}" class="ledger"><div class="empty-state">Loading income and expenses...</div></div>
+                ${passes}`;
+        }
+        async function loadLedger(id, force) {
+            const f = allFields.find(x => x._id === id);
+            const el = document.getElementById('ledger-' + id);
+            if (!f || !el) return;
+            const y = yearOf(f);
+            const k = id + '|' + y;
+            if (!ledgerCache[k] || force) {
+                try {
+                    const res = await fetch(`${API}/api/field-ledger/${id}?year=${y}`, { headers: { 'Authorization': 'Bearer ' + getToken() } });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok || !data.success) throw new Error(data.message || 'Request failed (' + res.status + ')');
+                    ledgerCache[k] = data.data;
+                } catch (e) {
+                    el.innerHTML = `<div class="empty-state" style="color:#a02818;">Could not load income and expenses: ${escapeText(e.message)}</div>`;
+                    return;
+                }
+            }
+            if (yearOf(f) === y && document.getElementById('ledger-' + id)) document.getElementById('ledger-' + id).innerHTML = renderLedger(f, ledgerCache[k]);
+        }
+        function ledgerRows(lines, withGroups) {
+            const m = n => (n < 0 ? '-' : '') + recordTools.money2(Math.abs(n));
+            const groups = {};
+            for (const l of lines) (groups[l.group] = groups[l.group] || []).push(l);
+            return Object.entries(groups).map(([g, list]) => {
+                const sub = list.reduce((s, l) => s + l.amount, 0);
+                return (withGroups ? `<tr class="lg-group"><td>${escapeText(g)}</td><td class="num">${m(sub)}</td></tr>` : '') +
+                    list.map(l => `<tr><td><div>${escapeText(l.label)}${l.date ? ' <span class="lg-date">' + escapeText(l.date) + '</span>' : ''}</div>${l.detail ? '<div class="lg-detail">' + escapeText(l.detail) + '</div>' : ''}</td><td class="num">${m(l.amount)}</td></tr>`).join('');
+            }).join('');
+        }
+        function renderLedger(f, d) {
+            const m = n => (n < 0 ? '-' : '') + recordTools.money2(Math.abs(n));
+            const t = d.totals;
+            const ac = d.field.acres;
+            const perAc = n => ac ? ' <span class="lg-ac">' + m(n / ac) + '/ac</span>' : '';
+            const tiles = `<div class="ledger-tiles">
+                    <div><div class="lt-l">Income</div><div class="lt-v">${m(t.income)}</div>${perAc(t.income)}</div>
+                    <div><div class="lt-l">Expenses</div><div class="lt-v">${m(t.expenses)}</div>${perAc(t.expenses)}</div>
+                    <div><div class="lt-l">Net</div><div class="lt-v" style="color:${t.net < 0 ? '#a02818' : '#2d5016'};">${m(t.net)}</div>${perAc(t.net)}</div>
+                </div>`;
+            const sp = d.split;
+            const split = sp && (t.income || t.expenses) ? `<div class="ledger-split">
+                    <div><strong>Crop share:</strong> landlord ${sp.landlordPercent}%${sp.landlord ? ' (' + escapeText(sp.landlord) + ')' : ''}</div>
+                    <div>Landlord grain ${m(sp.landlordGrain)}${sp.landlordIndemnity ? ' · indemnity ' + m(sp.landlordIndemnity) : ''}${sp.landlordSeed ? ' · seed paid ' + m(sp.landlordSeed) : ''}</div>
+                    <div>M77 AG: income ${m(sp.m77Income)} · expenses ${m(sp.m77Expenses)} · <strong style="color:${sp.m77Net < 0 ? '#a02818' : '#2d5016'};">net ${m(sp.m77Net)}</strong>${perAc(sp.m77Net)}</div>
+                    <div class="lg-detail">Only seed is split with the landlord; other shared inputs are not on file and are counted to M77 AG.</div>
+                </div>` : '';
+            const note = d.field.excludeFromFinancials ? `<div class="ledger-note">${escapeText(d.field.financialNote || 'Kept out of M77 AG financials.')}</div>` : '';
+            const income = d.income.length ? `<table class="ledger-table"><thead><tr><th>Income</th><th class="num">${m(t.income)}</th></tr></thead><tbody>${ledgerRows(d.income, false)}</tbody></table>` : '<div class="lg-none">No income on file for ' + d.year + '.</div>';
+            const expenses = d.expenses.length ? `<table class="ledger-table"><thead><tr><th>Expenses</th><th class="num">${m(t.expenses)}</th></tr></thead><tbody>${ledgerRows(d.expenses, true)}</tbody></table>` : '<div class="lg-none">No expenses on file for ' + d.year + '.</div>';
+            const prices = d.pricesNeeded.length ? `<div class="ledger-prices"><strong>Set ${d.year} prices</strong> <span class="lg-detail">(applies to every field for ${d.year})</span>` +
+                d.pricesNeeded.map((p, i) => `<div class="lp-row" data-kind="${escAttr(p.kind)}" data-name="${escAttr(p.name)}">
+                    <span class="lp-name">${escapeText(p.kind === 'grain' ? p.name + ' (grain sold)' : p.name)}</span>
+                    <span class="lp-in">$<input type="number" step="0.01" min="0" inputmode="decimal" aria-label="Price for ${escAttr(p.name)}">
+                    ${p.kind === 'grain' ? '<span>/bu</span>' : `<select aria-label="Unit for ${escAttr(p.name)}">${['gal', 'lb', 'ac'].map(u => `<option value="${u}" ${u === p.unit ? 'selected' : ''}>/${u}</option>`).join('')}</select>`}</span>
+                </div>`).join('') + `<button type="button" class="btn btn-sm" onclick="saveLedgerPrices('${f._id}', this)">Save prices</button></div>` : '';
+            const missing = d.missing.length ? `<div class="ledger-missing"><strong>Not counted yet (${d.missing.length})</strong><ul>${d.missing.map(x => `<li>${escapeText(x.label)}: <span class="lg-detail">${escapeText(x.detail)}</span></li>`).join('')}</ul></div>` : '';
+            const notes = d.notes.length ? `<div class="ledger-note">${d.notes.map(escapeText).join('<br>')}</div>` : '';
+            return note + tiles + split + income + expenses + prices + missing + notes;
+        }
+        async function saveLedgerPrices(id, btn) {
+            const box = btn.closest('.ledger-prices');
+            const rows = [...box.querySelectorAll('.lp-row')].map(r => ({
+                kind: r.dataset.kind, name: r.dataset.name,
+                price: r.querySelector('input').value.trim(),
+                unit: r.querySelector('select') ? r.querySelector('select').value : 'bu'
+            })).filter(r => r.price !== '');
+            if (!rows.length) { showAlert('error', 'Enter at least one price', { noScroll: true }); return; }
+            const f = allFields.find(x => x._id === id);
+            btn.disabled = true;
+            try {
+                for (const r of rows) {
+                    const res = await fetch(`${API}/api/field-ledger/prices`, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ year: yearOf(f), ...r }) });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok || !data.success) throw new Error((r.name + ': ') + (data.message || 'Request failed'));
+                }
+                showAlert('success', rows.length + ' price' + (rows.length === 1 ? '' : 's') + ' saved for ' + yearOf(f), { noScroll: true });
+                Object.keys(ledgerCache).forEach(k => delete ledgerCache[k]);
+                await loadLedger(id, true);
+            } catch (e) {
+                showAlert('error', 'Could not save prices: ' + e.message, { noScroll: true });
+                btn.disabled = false;
+            }
         }
         async function refreshRecords() {
             const open = [...document.querySelectorAll('.fc-detail.open')].map(d => {
@@ -980,6 +1102,7 @@
                 return { id, tab: act ? act.id.split('-')[1] : 'info' };
             });
             await loadHarvest();
+            Object.keys(ledgerCache).forEach(k => delete ledgerCache[k]);
             renderFields();
             for (const o of open) {
                 const d = document.getElementById('detail-' + o.id);
@@ -1646,8 +1769,12 @@
             card.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
             card.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('active'));
             const TAB_ORDER = ['info', 'history', 'soil', 'insurance', 'records'];
-            card.querySelector(`.detail-tab:nth-child(${TAB_ORDER.indexOf(tabName) + 1 || 1})`).classList.add('active');
+            const tab = card.querySelector(`.detail-tab:nth-child(${TAB_ORDER.indexOf(tabName) + 1 || 1})`);
+            tab.classList.add('active');
+            // Keep the active tab in view on narrow screens (the tab row scrolls sideways).
+            tab.parentElement.scrollLeft = Math.max(0, tab.offsetLeft - tab.parentElement.offsetLeft - 16);
             document.getElementById(`panel-${tabName}-${fieldId}`).classList.add('active');
+            if (tabName === 'records') loadLedger(fieldId);
         }
 
         // === MODALS ===

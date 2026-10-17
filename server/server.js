@@ -105,6 +105,14 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Field detail fill failed:', e.message);
     }
+    // 2026 season records (JD Ops seeding, application and tillage reports,
+    // harvest tickets, seed ledgers) onto their cards, then machine costs
+    try {
+      const { autoLoad } = require('./services/seasonRecords');
+      (await autoLoad()).forEach(r => console.log('Season records:', r));
+    } catch (e) {
+      console.error('Season records load failed:', e.message);
+    }
     // Hunts booked outside the website (applied once each)
     try {
       const { applyHuntingBookings } = require('./services/huntingBookingsToRecord');
@@ -238,6 +246,7 @@ app.use('/api/m77-farms', m77FarmRoutes);
 app.use('/api/seed-cost-shares', seedCostShareRoutes);
 app.use('/api/field-insurance', fieldInsuranceRoutes);
 app.use('/api/field-operations', fieldOperationRoutes);
+app.use('/api/field-ledger', require('./routes/fieldLedger'));
 app.use('/api/landlord-summary', landlordSummaryRoutes);
 app.use('/api/custom-work', customWorkRoutes);
 app.use('/api/equipment-parts', equipmentPartsRoutes);

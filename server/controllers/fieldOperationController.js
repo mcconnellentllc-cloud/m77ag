@@ -1,63 +1,8 @@
 const FieldOperation = require('../models/fieldOperation');
 const M77Field = require('../models/m77Field');
-const season2026 = require('../data/season2026Records');
 const operationCost = require('../services/operationCost');
-
-const IMPORTS = {
-  'season-2026': season2026
-};
-
-// "42.W E/2 N/4" -> { num: '42', suffix: 'W' }
-function fieldNumber(name) {
-  const m = String(name || '').trim().match(/^#?(\d+)(?:\.?([NSEW]{1,2}))?(?![\d])/i);
-  return m ? { num: m[1], suffix: (m[2] || '').toUpperCase() } : null;
-}
-
-function matches(hint, name) {
-  const h = fieldNumber(hint);
-  if (!h) return String(name || '').trim().toLowerCase() === String(hint).trim().toLowerCase();
-  const f = fieldNumber(name);
-  if (!f || f.num !== h.num) return false;
-  return !h.suffix || h.suffix === f.suffix;
-}
-
-// Crop on a card for a year: the linked CroppingField's cropYYYY, else the
-// M77Field 2026 crop. Upper case, milo read as sorghum.
-const CroppingField = require('../models/croppingField');
-async function cardCrops(fields) {
-  const legacyIds = fields.filter(f => f.legacySource === 'CroppingField' && f.legacyId).map(f => f.legacyId);
-  const cfs = legacyIds.length ? await CroppingField.find({ _id: { $in: legacyIds } })
-    .select('crop2025 crop2026 crop2027 crop2028 crop2029 crop2030').lean() : [];
-  const byId = {};
-  for (const c of cfs) byId[String(c._id)] = c;
-  return (field, year) => {
-    const c = field.legacyId ? byId[String(field.legacyId)] : null;
-    let crop = (c && c['crop' + year]) || (year === 2026 ? field.crop2026 : '') || '';
-    crop = String(crop).toUpperCase().trim();
-    if (crop.startsWith('MILO') || crop === 'SORGHUM' || crop.startsWith('SORGHUM (')) return 'SORGHUM';
-    if (crop.startsWith('SUDAN') || crop.startsWith('SORGHUM SUDAN') || crop.startsWith('SORGHUM-SUDAN')) return 'SORGHUM SUDAN';
-    return crop;
-  };
-}
-const IMPORT_ONLY_KEYS = ['key', 'fieldHint', 'rev', 'matchBy', 'opsName', 'matchCropYear', 'matchCrop', 'matchCrops', 'pickIndex', 'area', 'cropFromCard', 'cropFromRotation', 'acresFromField', 'review'];
-// An expense is charged to the crop that pays it back: the next harvested
-// crop on the field after the pass (Kyle, Oct 15, 2026). The card's crops
-// decide; when the next year is not set yet, the usual rotation does:
-// wheat -> corn -> milo -> fallow -> wheat.
-const ROTATION_NEXT = { WHEAT: 'CORN', CORN: 'SORGHUM', SORGHUM: 'FALLOW', FALLOW: 'WHEAT' };
-const NOT_HARVESTED = ['FALLOW', 'PASTURE', 'WASTE', 'BUILDING SITE', 'CRP', ''];
-function payingCrop(cropOn, field, firstYear) {
-  for (let y = firstYear; y <= firstYear + 2; y++) {
-    const c = cropOn(field, y);
-    if (c && !NOT_HARVESTED.includes(c)) return { crop: c, cropYear: y };
-    if (!c) {
-      const prev = cropOn(field, y - 1);
-      if (ROTATION_NEXT[prev]) return { crop: ROTATION_NEXT[prev], cropYear: y };
-      return null;
-    }
-  }
-  return null;
-}
+const seasonRecords = require('../services/seasonRecords');
+const { IMPORTS, cardCrops } = seasonRecords;
 
 // GET /api/field-operations?cropYear=&m77Field=
 exports.listEntries = async (req, res) => {
@@ -82,97 +27,15 @@ exports.listEntries = async (req, res) => {
 // GET /api/field-operations/imports/:importId
 // Each prepared record with the card it is already on, or the suggested card.
 exports.getImport = async (req, res) => {
-  const imp = IMPORTS[req.params.importId];
-  if (!imp) return res.status(404).json({ success: false, message: 'Import not found' });
   try {
-    const fields = await M77Field.find({}).select('name acres farm crop2026 legacySource legacyId').populate('farm', 'name').sort({ name: 1 });
-    const cropOn = await cardCrops(fields);
-    // Row-crop planting dates on the cards: no tillage on a half after its
-    // corn, milo or sudangrass was planted (Kyle, Oct 15, 2026).
-    const plantings = await FieldOperation.find({ type: 'seeding', crop: { $in: ['CORN', 'SORGHUM', 'SORGHUM SUDAN'] } })
-      .select('m77Field startDate cropYear').lean();
-    const plantedBefore = (fieldId, date) => plantings.some(p => String(p.m77Field) === String(fieldId) && p.startDate &&
-      new Date(p.startDate) < new Date(date) && new Date(p.startDate).getUTCFullYear() === new Date(date).getUTCFullYear());
-    const done = await FieldOperation.find({ sourceKey: { $in: imp.RECORDS.map(r => req.params.importId + ':' + r.key) } })
-      .select('sourceKey sourceRev m77Field fieldName');
-    const doneByKey = {};
-    for (const d of done) doneByKey[d.sourceKey] = d;
-    const records = imp.RECORDS.map(r => {
-      const d = doneByKey[req.params.importId + ':' + r.key];
-      let candidates = fields.filter(f => matches(r.fieldHint, f.name));
-      // Operations Center names are not reliable for the half, so match by
-      // field number and then by the crop on the card.
-      let cropNote = null;
-      // Group of crops (tillage: spring passes go to the spring-planted half,
-      // early summer passes to the fallow half).
-      if (r.type === 'tillage' && r.startDate && candidates.length > 1) {
-        const open = candidates.filter(f => !plantedBefore(f._id, r.startDate));
-        if (open.length) candidates = open;
-      }
-      // matchCrops is a list of crop groups in order of preference.
-      if (r.matchBy === 'crops' && candidates.length > 1) {
-        for (const group of r.matchCrops) {
-          const narrowed = candidates.filter(f => group.includes(cropOn(f, r.matchCropYear)));
-          if (narrowed.length) { candidates = narrowed; break; }
-        }
-      }
-      // Ops Center name breaks a tie: use its half when that card exists.
-      if ((r.matchBy === 'name' || r.matchBy === 'crops') && r.opsName && candidates.length > 1 && r.pickIndex === undefined) {
-        const named = candidates.filter(f => matches(r.opsName, f.name));
-        if (named.length === 1) candidates = named;
-      }
-      // Whole-quarter pass split into one record per half.
-      if (r.pickIndex !== undefined && candidates.length === 2) {
-        candidates = [candidates.slice().sort((a, b) => a.name.localeCompare(b.name))[r.pickIndex]];
-      } else if (r.pickIndex > 0 && candidates.length === 1) {
-        cropNote = 'Only one half was open for tillage on this date (the other was growing a crop); this second-half record is likely not needed.';
-      }
-      if (r.matchBy === 'crop') {
-        const year = r.matchCropYear || r.cropYear;
-        const crop = r.matchCrop || r.crop;
-        if (crop && candidates.length > 1) candidates = candidates.filter(f => cropOn(f, year) === crop);
-        else if (crop && candidates.length === 1 && cropOn(candidates[0], year) !== crop) {
-          cropNote = `${candidates[0].name} is ${cropOn(candidates[0], year) || 'not set'} for ${year} on its card; the report says ${crop}. Check before adding.`;
-        }
-      }
-      const target = candidates.length === 1 ? candidates[0] : null;
-      if (!cropNote && target && r.type === 'tillage' && r.startDate && plantedBefore(target._id, r.startDate)) {
-        cropNote = `${target.name} was planted to a row crop before ${r.startDate}; no tillage over a growing crop. Pick the other half or leave it off.`;
-      }
-      if (!cropNote && target && r.area !== undefined && target.acres > 0 && r.area < 0.25 * target.acres) {
-        cropNote = `Logged ${r.area} ac on the ${target.acres}-ac field; likely a patch, headland or overlap. Check before adding.`;
-      }
-      return {
-        ...r,
-        review: r.review || cropNote,
-        addedTo: d ? { m77Field: d.m77Field, fieldName: d.fieldName } : null,
-        outdated: !!d && (d.sourceRev || 1) < (r.rev || 1),
-        suggested: candidates.length === 1 ? String(candidates[0]._id) : null,
-        candidateCount: candidates.length
-      };
-    });
-    // Two records of the same kind landing on one card are likely the same
-    // pass logged twice (wrong half picked in the cab); flag all but the first.
-    const seen = {};
-    for (const r of records) {
-      const target = r.addedTo ? String(r.addedTo.m77Field) : r.suggested;
-      if (!target || !/^(app26|sd26|till26)-/.test(r.key)) continue;
-      const k = [target, r.type, r.cropYear, r.title, r.startDate].join('|');
-      if (seen[k]) r.review = r.review || ('Same card and pass as ' + seen[k] + '; likely logged twice.');
-      else seen[k] = r.fieldHint + ' ' + r.startDate;
-    }
-    // Records on cards from an earlier version of this import whose data was
-    // replaced (for example starter-based planting replaced by the seeding
-    // report); offered for removal.
-    const current = new Set(imp.RECORDS.map(r => req.params.importId + ':' + r.key));
-    const retired = await FieldOperation.find({ sourceKey: { $regex: '^' + req.params.importId.replace(/[^a-z0-9-]/gi, '') + ':' } })
-      .select('sourceKey fieldName title cropYear crop startDate').lean();
+    const out = await seasonRecords.resolveImport(req.params.importId);
+    if (!out) return res.status(404).json({ success: false, message: 'Import not found' });
     res.json({
       success: true,
       data: {
-        retired: retired.filter(r => !current.has(r.sourceKey)).map(r => ({ id: r._id, sourceKey: r.sourceKey, fieldName: r.fieldName, title: r.title, cropYear: r.cropYear, crop: r.crop, startDate: r.startDate })),
-        records,
-        fields: fields.map(f => ({ _id: f._id, name: f.name, acres: f.acres, farmName: f.farm ? f.farm.name : '' }))
+        retired: out.retired,
+        records: out.records,
+        fields: out.fields.map(f => ({ _id: f._id, name: f.name, acres: f.acres, farmName: f.farm ? f.farm.name : '' }))
       }
     });
   } catch (err) {
@@ -214,31 +77,15 @@ exports.applyImport = async (req, res) => {
       const field = fieldById[String(a.m77Field)];
       if (!rec) { errors.push(a.key + ': record not found'); continue; }
       if (!field) { errors.push(a.key + ': field not found'); continue; }
-      const data = { ...rec };
-      for (const k of IMPORT_ONLY_KEYS) delete data[k];
-      const { key, rev } = rec;
-      if (rec.cropFromRotation) {
-        const pays = payingCrop(cropOn, field, rec.cropYear);
-        if (!pays) { errors.push(`${key}: set the ${rec.cropYear} crop on ${field.name}; no crop to charge this pass to`); continue; }
-        data.crop = pays.crop;
-        data.cropYear = pays.cropYear;
-      }
-      if (rec.cropFromCard) {
-        data.crop = cropOn(field, rec.cropYear);
-        if (!data.crop) { errors.push(`${key}: set the ${rec.cropYear} crop on ${field.name} first`); continue; }
-      }
-      if (rec.acresFromField) data.acres = field.acres || null;
-      const sourceKey = req.params.importId + ':' + key;
-      await FieldOperation.findOneAndUpdate(
-        { sourceKey },
-        { ...data, sourceKey, sourceRev: rev || 1, m77Field: field._id, fieldName: field.name, farmName: field.farm ? field.farm.name : '', createdBy: req.userId },
-        { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
-      );
+      const err = await seasonRecords.writeRecord(req.params.importId, rec, field, cropOn, req.userId);
+      if (err) { errors.push(err); continue; }
       added += 1;
     }
+    // Newly placed passes get their machine cost right away.
+    const cost = await seasonRecords.costPending();
     res.json({
       success: errors.length === 0,
-      data: { added, errors },
+      data: { added, errors, costed: cost.costed },
       message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (removed ? `; ${removed} superseded record${removed === 1 ? '' : 's'} removed` : '') + (errors.length ? `; ${errors.length} not added` : '')
     });
   } catch (err) {
@@ -266,23 +113,7 @@ exports.deleteEntry = async (req, res) => {
 // also refreshes default-rate costs (for example after acres were corrected).
 exports.applyCosts = async (req, res) => {
   try {
-    const recost = req.body && req.body.recost === true;
-    const ops = await FieldOperation.find({ status: 'completed' });
-    let costed = 0;
-    const skipped = [];
-    for (const op of ops) {
-      const has = op.cost && op.cost.rateKey;
-      if (has && (op.cost.setBy === 'manual' || !recost)) continue;
-      // Nothing was harvested (appraised or abandoned): no combine pass to cost.
-      if (op.type === 'harvest' && !(op.combineAcres > 0) && !(op.acres > 0) && !(op.netBu > 0)) continue;
-      const key = operationCost.defaultRateKey(op);
-      if (!key) { skipped.push({ id: op._id, field: op.fieldName, title: op.title, reason: 'Pick a rate (' + op.type + ' needs the implement)' }); continue; }
-      const cost = operationCost.costFor(op, key, 'default');
-      if (cost.error) { skipped.push({ id: op._id, field: op.fieldName, title: op.title, reason: cost.error }); continue; }
-      op.cost = cost;
-      await op.save();
-      costed += 1;
-    }
+    const { costed, skipped } = await seasonRecords.costPending({ recost: req.body && req.body.recost === true });
     res.json({ success: true, data: { costed, skipped }, message: `${costed} pass${costed === 1 ? '' : 'es'} costed` + (skipped.length ? `; ${skipped.length} need a rate or acres` : '') });
   } catch (err) {
     console.error('Apply field operation costs error:', err);

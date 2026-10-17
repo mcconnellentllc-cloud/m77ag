@@ -65,7 +65,7 @@ async function applyFieldRecordUpdates() {
     } else if (oldReg && !newReg) {
       await M77Field.updateOne({ _id: oldReg._id }, { $set: { legacyId: newCf._id, name: u.to } });
     }
-    try { await require('mongoose').model('CropExpense').updateMany({ fieldId: oldCf._id }, { $set: { fieldId: newCf._id } }); } catch (e) { /* model not loaded */ }
+    await require('../models/cropExpense').updateMany({ 'fields.fieldId': oldCf._id }, { $set: { 'fields.$[x].fieldId': newCf._id } }, { arrayFilters: [{ 'x.fieldId': oldCf._id }] });
     await CroppingField.deleteOne({ _id: oldCf._id });
     results.push(`${u.key}: merged ${oldName} into ${newCf.field}`);
   }
