@@ -162,18 +162,18 @@ const RECORDS = [
     // 79.2 lb/ac over the field.
     ['79.N', '2026-10-09', '2026-10-10', 59.5, 4710, 79.2]
   ].map(([hint, start, end, acres, lb, lbac]) => ({
-    key: 's27-byrd-' + hint.replace('.', ''), ...(hint === '79.N' ? { rev: 3 } : {}), fieldHint: hint, cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
+    key: 's27-byrd-' + hint.replace('.', ''), ...(hint === '79.N' ? { rev: 4 } : {}), fieldHint: hint, cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
     startDate: start, endDate: end, acres, variety: 'Byrd CL Plus', seedLb: lb, seedLbPerAcre: lbac,
     products: [{ name: 'CruiserMaxx Vibrance' }, { name: 'Pivot Bio (treated on farm)' }],
     source: 'Byrd CL ledger: Carlson ticket 2476 (30,120 lb), split by Operations Center monitor pounds corrected x1.24 for drill calibration',
     notes: hint === '79.N'
-      ? 'Estimate. Pounds from the calibration correction. 79.N is 99.1 ac with Byrd CL Plus and Fortify; the monitor variety was not changed, so acres are split by pounds (Byrd 4,710 lb, Fortify 3,140 lb, 79.2 lb/ac).'
+      ? 'Pounds from the calibration correction. 79.N is 99.1 ac with Byrd CL Plus and Fortify; the monitor variety was not changed, so acres are split by pounds (Byrd 4,710 lb, Fortify 3,140 lb, 79.2 lb/ac), confirmed by Kyle Oct 17, 2026.'
       : 'Pounds are an estimate from the calibration correction.'
   })),
-  { key: 's27-fortify-79N', rev: 4, fieldHint: '79.N', cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
+  { key: 's27-fortify-79N', rev: 5, fieldHint: '79.N', cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
     startDate: '2026-10-10', endDate: '2026-10-10', acres: 39.6, variety: 'Fortify (solid stem; WB4347 on the monitor)', seedLb: 3140, seedLbPerAcre: 79.2,
     source: 'Fill log, load 7',
-    notes: 'Estimate. All 3,140 lb of Fortify went on 79.N (Kyle, Oct 17, 2026). The operator did not change the variety on the monitor, so the monitor split (WB4347 25.44 ac) is not used; acres are split by pounds with the Byrd CL Plus (79.2 lb/ac over 99.1 ac). 79.S is sorghum sudan, no wheat; the 0.04 ac wheat entry logged on 79.S is overlap.' },
+    notes: 'All 3,140 lb of Fortify went on 79.N (Kyle, Oct 17, 2026). The operator did not change the variety on the monitor, so the monitor split (WB4347 25.44 ac) is not used; acres are split by pounds with the Byrd CL Plus (79.2 lb/ac over 99.1 ac), confirmed by Kyle. 79.S is sorghum sudan, no wheat; the 0.04 ac wheat entry logged on 79.S is overlap.' },
   { key: 's27-prov-23E', fieldHint: '23.E', cropYear: 2027, crop: 'WHEAT', type: 'seeding', title: 'Wheat drilled',
     startDate: '2026-10-12', endDate: '2026-10-12', acres: 38.6, variety: 'KS Providence',
     products: [{ name: 'Seed treatment (Andersons, treated)' }],
