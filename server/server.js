@@ -112,6 +112,13 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Hunting bookings failed:', e.message);
     }
+    // Lueking books: rent installments from the lease schedule (entered once each)
+    try {
+      const { seedLeaseSchedule } = require('./controllers/enterpriseBooksController');
+      (await seedLeaseSchedule()).forEach(r => console.log('Enterprise books:', r));
+    } catch (e) {
+      console.error('Enterprise books seed failed:', e.message);
+    }
     // Irrigation: 73 and 77 irrigated, all else dryland (applied once)
     try {
       const { applyIrrigation } = require('./services/luekingFields');
@@ -220,6 +227,7 @@ app.use('/api/upload', imageUploadRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/cropping-fields', croppingFieldRoutes);
 app.use('/api/fertility-standards', fertilityStandardRoutes);
+app.use('/api/enterprise-books', require('./routes/enterpriseBooks'));
 app.use('/api/crop-expenses', cropExpenseRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/mail-center', mailCenterRoutes);
