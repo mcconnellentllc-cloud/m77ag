@@ -7,7 +7,7 @@ const BOUNDARY = 'Acres are the Operations Center boundary area until FSA acres 
 
 module.exports = {
   farm: 'LUEKING',
-  financialNote: 'Cash leased by Allphin Farms. M77 AG has no financial tie to this ground.',
+  financialNote: 'Stand-alone entity, kept out of M77 AG financials. Landlord: Matt Allphin. Ground owned by The Iona Bartlett Estate (Melissa Hunter, Personal Representative), cash leased 2026 (initial term to Oct 31, 2026; base rent $109,023.55). M77 AG manages the operation and costs.',
   // Applied once to cards created before the arrangement was recorded.
   correctionKey: 'lueking-allphin-cash-lease',
   // Applied once: the first 75.E card held all of field 75 with no crop.
