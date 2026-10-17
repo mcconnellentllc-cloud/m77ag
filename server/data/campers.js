@@ -3,14 +3,15 @@
 // fee per stay (laundry and cleaning); hunting discount codes do not apply.
 // Guests arrive on the first hunt day and leave on the last, so a stay runs
 // one night less than the hunt, and a camper comes only with a hunt of at
-// least minHuntDays days. Add septic to the amenities once it is in.
+// least minHuntDays days. Add septic, Starlink or TV service to the
+// amenities once they are in.
 const campers = [
   {
     id: 'Camper 1',
     nightlyRate: 50,
     cleaningFee: 100,
-    amenities: ['Starlink internet', 'TV', 'electric and water hookups', 'a gravel pad'],
-    description: 'Rockwood Signature Ultra Lite fifth wheel with a slide-out. Kitchen with stove, oven, microwave and refrigerator; bedroom; bunk room; bathroom with shower; dinette, sofa and TV.',
+    amenities: ['electric and water hookups', 'a gravel pad'],
+    description: 'Rockwood Signature Ultra Lite fifth wheel with a slide-out. Kitchen with stove, oven, microwave and refrigerator; bedroom; bunk room; bathroom with shower; dinette and sofa.',
     // public/images/campers/camper-1 (location data removed)
     photos: [
       { src: '/images/campers/camper-1/06.jpg', caption: 'Outside' },
@@ -28,7 +29,7 @@ const campers = [
     id: 'Camper 2',
     nightlyRate: 50,
     cleaningFee: 100,
-    amenities: ['Starlink internet', 'TV', 'electric and water hookups', 'a gravel pad']
+    amenities: ['electric and water hookups', 'a gravel pad']
   }
 ];
 
