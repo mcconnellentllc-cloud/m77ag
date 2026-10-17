@@ -106,7 +106,7 @@ exports.getLedger = async (req, res) => {
     const pricesNeeded = {};
     const notes = [];
 
-    let invoiceStarter = 0;
+    let invoiceStarter = 0; // starter and planter products from invoices
     // Machine work and products on each pass
     for (const op of ops) {
       if (op.status !== 'completed') continue;
@@ -127,7 +127,7 @@ exports.getLedger = async (req, res) => {
       const covered = new Set();
       for (const c of op.inputCosts || []) {
         if (c.covers) covered.add(c.covers);
-        if (c.group === 'Fertilizer') invoiceStarter += c.amount || 0;
+        invoiceStarter += c.amount || 0;
         expenses.push({ group: c.group || 'Products', label: c.product, date: when,
           detail: `${c.quantity} ${c.unit} x $${Number(c.pricePerUnit).toFixed(2)} · ${c.basis}`, amount: round2(c.amount), opId: op._id });
       }
@@ -260,7 +260,7 @@ exports.getLedger = async (req, res) => {
     let split = null;
     // Crop-share landlords pay their crop share of the invoice seed (35%;
     // Kyle, Oct 17, 2026), interest included, and of the starter.
-    // Starter too (Kyle, Oct 17, 2026).
+    // Starter and hopper throttle too (Kyle, Oct 17, 2026).
     if (lease.type === 'crop-share' && lease.sharePercentage > 0) landlordSeed += (invoiceSeed + invoiceStarter) * lease.sharePercentage / 100;
     if (String(cf.farm).toUpperCase() === 'LUEKING') {
       // Lueking ground: every expense is billed 100% to its landlord (Kyle, Oct 17, 2026).

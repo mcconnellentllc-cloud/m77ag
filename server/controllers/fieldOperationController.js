@@ -70,11 +70,12 @@ exports.applyImport = async (req, res) => {
     const fieldById = {};
     for (const f of fields) fieldById[String(f._id)] = f;
 
-    let added = 0;
+    let added = 0, overlapSkipped = 0;
     const errors = [];
     for (const a of assignments) {
       const rec = byKey[a.key];
       const field = fieldById[String(a.m77Field)];
+      if (!rec && (imp.overlapKeys || []).includes(a.key)) { overlapSkipped += 1; continue; }
       if (!rec) { errors.push(a.key + ': record not found'); continue; }
       if (!field) { errors.push(a.key + ': field not found'); continue; }
       const err = await seasonRecords.writeRecord(req.params.importId, rec, field, cropOn, req.userId);
@@ -86,7 +87,8 @@ exports.applyImport = async (req, res) => {
     res.json({
       success: errors.length === 0,
       data: { added, errors, costed: cost.costed },
-      message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (removed ? `; ${removed} superseded record${removed === 1 ? '' : 's'} removed` : '') + (errors.length ? `; ${errors.length} not added: ${errors.join('; ')}` : '')
+      message: `${added} record${added === 1 ? '' : 's'} added to field cards` + (removed ? `; ${removed} superseded record${removed === 1 ? '' : 's'} removed` : '')
+        + (overlapSkipped ? `; ${overlapSkipped} overlap pass${overlapSkipped === 1 ? '' : 'es'} (under 3 ac logged) left off` : '') + (errors.length ? `; ${errors.length} not added: ${errors.join('; ')}` : '')
     });
   } catch (err) {
     console.error('Apply field record import error:', err);
