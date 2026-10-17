@@ -29,10 +29,15 @@ module.exports = {
     { key: 'lease-landlord-peterson-2026-10-15', farm: 'PETERSON', match: /./, landlord: 'Lynn Peterson' },
     { key: 'lease-landlord-kbfarms-2026-10-15', farm: 'KBFARMS', match: /./, landlord: 'Kyle & Brandi McConnell' }
   ],
-  // Lueking ground is cash leased by Allphin Farms; M77 AG has no share
-  // (Kyle, Oct 2026). Shown as the landlord so the cards are not blank.
+  // Lueking is a stand-alone entity; M77 AG manages the operation and costs
+  // and Matt Allphin is the landlord (Kyle, Oct 17 2026). Ground owned by
+  // The Iona Bartlett Estate (2026 cash lease). replaces: earlier values
+  // set by this fill, changed once to the new ones.
   otherFarms: [
-    { name: 'LUEKING', landlord: 'Lueking (cash leased by Allphin Farms; no M77 AG share)' }
+    { name: 'LUEKING', landlord: 'Matt Allphin',
+      key: 'lueking-landlord-allphin-2026-10-17',
+      replaces: { landlord: 'Lueking (cash leased by Allphin Farms; no M77 AG share)', financialNote: 'Cash leased by Allphin Farms. M77 AG has no financial tie to this ground.' },
+      financialNote: 'Stand-alone entity, kept out of M77 AG financials. Landlord: Matt Allphin. Ground owned by The Iona Bartlett Estate (Melissa Hunter, Personal Representative), cash leased 2026 (initial term to Oct 31, 2026; base rent $109,023.55). M77 AG manages the operation and costs.' }
   ],
   // Cash rent per acre from the 2025 M77AG Master Workbook (Overview > Rental
   // Agreements). Set once on the matching cards; the note records 2025 billing.

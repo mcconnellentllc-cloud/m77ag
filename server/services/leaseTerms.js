@@ -89,6 +89,14 @@ async function fillBlanks() {
     }
   }
   for (const o of TERMS.otherFarms || []) {
+    // Values this fill set earlier are changed once to the current ones.
+    if (o.key && o.replaces && !(await AppliedUpdate.exists({ key: o.key }))) {
+      const ll = await CroppingField.updateMany({ farm: o.name, 'lease.landlord': o.replaces.landlord }, { $set: { 'lease.landlord': o.landlord } });
+      const note = o.financialNote
+        ? await CroppingField.updateMany({ farm: o.name, financialNote: { $in: [o.replaces.financialNote, null, ''] } }, { $set: { financialNote: o.financialNote } })
+        : { modifiedCount: 0 };
+      await AppliedUpdate.create({ key: o.key, summary: [`${o.name}: landlord ${o.landlord} on ${ll.modifiedCount} cards, note on ${note.modifiedCount}`] });
+    }
     const r = await CroppingField.updateMany({ farm: o.name, 'lease.landlord': { $in: [null, ''] } }, { $set: { 'lease.landlord': o.landlord } });
     cardsFilled += r.modifiedCount;
   }
