@@ -111,6 +111,49 @@ function noonOf(value) {
 }
 
 const BOOKABLE_PARCELS = ['Heritage Farm', 'Prairie Peace', 'Both Properties'];
+const CAMPERS = require('../data/campers');
+
+// Camper stay for a hunt. Guests arrive on the first hunt day and leave on the
+// last, so the camper runs one night less than the hunt days and the
+// departure day is open for the next guest. Returns { stay } priced from
+// server/data/campers.js, { error }, or {} when no camper was chosen;
+// conflict names an existing stay on overlapping nights.
+async function camperStay({ camper, checkinDate, checkoutDate, start, end }, excludeId) {
+  if (!camper) return {};
+  const unit = CAMPERS.find(c => c.id === camper);
+  if (!unit) return { error: 'Unknown camper' };
+  const arrival = checkinDate || start;
+  const departure = checkoutDate || end;
+  if (!arrival || !departure || isNaN(new Date(arrival)) || isNaN(new Date(departure))) {
+    return { error: 'Hunt dates are required for a camper' };
+  }
+  const checkin = noonOf(arrival);
+  const checkout = noonOf(departure);
+  const nights = Math.round((checkout - checkin) / 86400000);
+  if (nights + 1 < CAMPERS.minHuntDays) {
+    return { error: `A camper is available with a hunt of ${CAMPERS.minHuntDays} or more days` };
+  }
+  const existing = await Booking.findOne({
+    camper,
+    status: { $in: ['pending', 'confirmed'] },
+    camperCheckin: { $lt: checkout },
+    camperCheckout: { $gt: checkin },
+    ...(excludeId ? { _id: { $ne: excludeId } } : {})
+  });
+  return {
+    stay: {
+      camper,
+      camperCheckin: checkin,
+      camperCheckout: checkout,
+      camperNights: nights,
+      camperFee: nights * unit.nightlyRate,
+      camperCleaningFee: unit.cleaningFee
+    },
+    conflict: existing
+      ? `${camper} is taken ${new Date(existing.camperCheckin).toDateString()} to ${new Date(existing.camperCheckout).toDateString()}`
+      : null
+  };
+}
 
 const clip = (v, n) => (v === undefined || v === null ? undefined : String(v).slice(0, n));
 const escHtml = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -204,6 +247,27 @@ const bookingController = {
     }
   },
 
+  // Public: campers, their rates and the nights already taken.
+  getCampers: async (req, res) => {
+    try {
+      const since = new Date(); since.setDate(since.getDate() - 1);
+      const stays = await Booking.find({
+        camper: { $in: CAMPERS.map(c => c.id) },
+        status: { $in: ['pending', 'confirmed'] },
+        camperCheckout: { $gte: since }
+      }).select('camper camperCheckin camperCheckout').sort({ camperCheckin: 1 }).lean();
+      res.json({
+        success: true,
+        campers: CAMPERS,
+        minHuntDays: CAMPERS.minHuntDays,
+        stays: stays.map(s => ({ camper: s.camper, checkin: s.camperCheckin, checkout: s.camperCheckout }))
+      });
+    } catch (error) {
+      console.error('Error loading campers:', error);
+      res.status(500).json({ success: false, message: 'Failed to load campers' });
+    }
+  },
+
   // Public: are these days open on this property?
   checkAvailability: async (req, res) => {
     try {
@@ -214,7 +278,9 @@ const bookingController = {
       if (noonOf(end) < noonOf(start)) {
         return res.status(400).json({ success: false, message: 'End date is before the start date' });
       }
-      const conflict = await findConflict(parcel, noonOf(start), noonOf(end));
+      const camper = await camperStay({ camper: req.query.camper, start, end });
+      if (camper.error) return res.status(400).json({ success: false, message: camper.error });
+      const conflict = await findConflict(parcel, noonOf(start), noonOf(end)) || camper.conflict;
       res.json({ success: true, available: !conflict, message: conflict || 'Available' });
     } catch (error) {
       console.error('Error checking availability:', error);
@@ -267,9 +333,15 @@ const bookingController = {
         return res.status(400).json({ success: false, message: 'End date is before the start date' });
       }
 
+      const camper = await camperStay(req.body);
+      if (camper.error) {
+        await recordAttempt(req, 'rejected', camper.error, req.body);
+        return res.status(400).json({ success: false, message: camper.error });
+      }
+
       // A paid booking is always recorded, even if the days filled while the
       // customer was paying; the office sorts out the dates.
-      const conflict = await findConflict(parcel, checkinDateTime, checkoutDateTime);
+      const conflict = await findConflict(parcel, checkinDateTime, checkoutDateTime) || camper.conflict || null;
       const alreadyPaid = paymentStatus === 'paid' && paypalTransactionId;
       if (conflict && !alreadyPaid) {
         await recordAttempt(req, 'rejected', conflict, req.body);
@@ -302,6 +374,7 @@ const bookingController = {
         discountCode,
         discountPercent,
         originalPrice,
+        ...(camper.stay || {}),
         status: 'confirmed',
         waiverSigned: false
       });
@@ -997,15 +1070,17 @@ const bookingController = {
       const checkoutDateTime = new Date(checkoutDate);
       checkoutDateTime.setHours(12, 0, 0, 0);
 
-      if (checkoutDateTime <= checkinDateTime) {
+      // checkoutDate is the last hunt day, as on the public booking page and
+      // the calendar, so a one-day hunt blocks one day.
+      if (checkoutDateTime < checkinDateTime) {
         return res.status(400).json({
           success: false,
-          message: 'Check-out must be after check-in'
+          message: 'The last hunt day is before the first'
         });
       }
 
-      // Calculate days
-      const numNights = Math.ceil((checkoutDateTime - checkinDateTime) / 86400000);
+      // Hunt days, first through last inclusive
+      const numNights = Math.round((checkoutDateTime - checkinDateTime) / 86400000) + 1;
       const dailyRate = parcel === 'Both Properties' ? 300 : 200;
 
       // A season pass hunt draws one credit per day. Verify the pass covers the
@@ -1070,6 +1145,12 @@ const bookingController = {
         });
       }
 
+      const camper = await camperStay(req.body);
+      if (camper.error || camper.conflict) {
+        return res.status(400).json({ success: false, message: camper.error || camper.conflict });
+      }
+      const camperCharges = camper.stay ? camper.stay.camperFee + camper.stay.camperCleaningFee : 0;
+
       // Create booking
       const booking = new Booking({
         customerName,
@@ -1084,9 +1165,13 @@ const bookingController = {
         dailyRate: useSeasonPassCredits ? 0 : dailyRate,
         numNights,
         campingFee: 0,
-        totalPrice: useSeasonPassCredits ? 0 : (totalPrice || (dailyRate * numNights)),
+        ...(camper.stay || {}),
+        // A season pass covers hunting days only; the camper is still charged.
+        totalPrice: useSeasonPassCredits ? camperCharges : (totalPrice || (dailyRate * numNights + camperCharges)),
         paymentMethod: useSeasonPassCredits ? 'season-pass' : (paymentMethod || 'cash'),
-        paymentStatus: useSeasonPassCredits ? 'paid' : (paymentStatus || 'paid'),
+        paymentStatus: useSeasonPassCredits
+          ? (camperCharges > 0 ? (paymentStatus || 'pending') : 'paid')
+          : (paymentStatus || 'paid'),
         paypalTransactionId: paymentReference,
         status: 'confirmed',
         waiverSigned: false,

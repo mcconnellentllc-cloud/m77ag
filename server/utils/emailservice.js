@@ -158,12 +158,21 @@ const sendBookingConfirmation = async (booking) => {
       email: booking.email,
       phone: booking.phone,
       property: booking.parcel,
-      checkIn: booking.checkinDate,
-      checkOut: booking.checkoutDate,
+      checkinDate: booking.checkinDate,
+      checkoutDate: booking.checkoutDate,
       numberOfHunters: booking.numHunters,
       numberOfNights: booking.numNights,
       totalPrice: booking.totalPrice,
-      paymentStatus: booking.paymentStatus
+      paymentStatus: booking.paymentStatus,
+      discountCode: booking.discountCode,
+      discountPercent: booking.discountPercent,
+      originalPrice: booking.originalPrice,
+      camper: booking.camper,
+      camperCheckin: booking.camperCheckin,
+      camperCheckout: booking.camperCheckout,
+      camperNights: booking.camperNights,
+      camperFee: booking.camperFee,
+      camperCleaningFee: booking.camperCleaningFee
     };
     
     // Generate HTML emails from templates
