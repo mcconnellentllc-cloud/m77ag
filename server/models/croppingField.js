@@ -171,6 +171,17 @@ const croppingFieldSchema = new mongoose.Schema({
 
   fertilityPlans: [fertilityPlanSchema],
 
+  // APH (bu/ac) by crop, entered on the Records tab when no insurance unit
+  // on file carries one. Used for projected income and the break-even price.
+  aph: [{
+    _id: false,
+    crop: { type: String, uppercase: true, trim: true },
+    value: { type: Number, min: 0 },
+    source: { type: String, trim: true },
+    setBy: String,
+    setAt: Date
+  }],
+
   // Ground M77 AG farms with no financial tie (e.g. Lueking, cash leased by
   // Allphin Farms). Kept out of budgets, projections and expense allocation.
   excludeFromFinancials: { type: Boolean, default: false },

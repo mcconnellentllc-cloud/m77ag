@@ -8,6 +8,7 @@ router.use(authenticate, isStaff);
 
 router.get('/prices', controller.listPrices);
 router.put('/prices', controller.setPrice);
+router.put('/:id/aph', controller.setAph);
 router.get('/:id', controller.getLedger);
 
 module.exports = router;

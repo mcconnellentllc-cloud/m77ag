@@ -44,6 +44,8 @@
         .ledger-table td { padding: 5px 0; border-bottom: 1px solid #f0ece4; vertical-align: top; }
         .ledger-table .num { text-align: right; white-space: nowrap; padding-left: 10px; }
         .lg-group td { font-weight: 700; color: #555; background: #faf8f4; padding: 5px 4px; }
+        .lg-total td { font-weight: 700; color: #2d5016; padding: 6px 0; border-bottom: 1px solid #e6e1d6; }
+        .ledger-table .lg-pa { color: #666; }
         .lg-detail { color: #888; font-size: 11px; }
         .lg-date { color: #999; font-size: 11px; }
         .lg-none { color: #999; font-size: 13px; margin-top: 10px; }
@@ -58,6 +60,10 @@
         .lp-in input { width: 100px; padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
         .lp-in select { padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
         .ledger-prices .btn { justify-self: start; margin-top: 4px; }
+        .ledger-breakeven { border: 2px solid #d4a54a; border-radius: 6px; padding: 10px 12px; margin: 0 0 10px; font-size: 13px; display: grid; gap: 4px; background: #fffdf7; }
+        .be-head { font-family: 'Oswald', sans-serif; color: #2d5016; font-size: 15px; }
+        .be-row { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .be-row strong { color: #2d5016; font-size: 15px; }
         .ledger-passes { margin-top: 12px; font-size: 13px; }
         .ledger-passes summary { cursor: pointer; font-weight: 600; color: #2d5016; padding: 6px 0; }
 
@@ -1030,14 +1036,16 @@
             }
             if (yearOf(f) === y && document.getElementById('ledger-' + id)) document.getElementById('ledger-' + id).innerHTML = renderLedger(f, ledgerCache[k]);
         }
-        function ledgerRows(lines, withGroups) {
+        // Each line with its total and its cost per acre of the card.
+        function ledgerRows(lines, withGroups, acres) {
             const m = n => (n < 0 ? '-' : '') + recordTools.money2(Math.abs(n));
+            const pa = n => acres ? m(n / acres) : '--';
             const groups = {};
             for (const l of lines) (groups[l.group] = groups[l.group] || []).push(l);
             return Object.entries(groups).map(([g, list]) => {
                 const sub = list.reduce((s, l) => s + l.amount, 0);
-                return (withGroups ? `<tr class="lg-group"><td>${escapeText(g)}</td><td class="num">${m(sub)}</td></tr>` : '') +
-                    list.map(l => `<tr><td><div>${escapeText(l.label)}${l.date ? ' <span class="lg-date">' + escapeText(l.date) + '</span>' : ''}</div>${l.detail ? '<div class="lg-detail">' + escapeText(l.detail) + '</div>' : ''}</td><td class="num">${m(l.amount)}</td></tr>`).join('');
+                return (withGroups ? `<tr class="lg-group"><td>${escapeText(g)}</td><td class="num">${m(sub)}</td><td class="num">${pa(sub)}</td></tr>` : '') +
+                    list.map(l => `<tr><td><div>${escapeText(l.label)}${l.date ? ' <span class="lg-date">' + escapeText(l.date) + '</span>' : ''}</div>${l.detail ? '<div class="lg-detail">' + escapeText(l.detail) + '</div>' : ''}</td><td class="num">${m(l.amount)}</td><td class="num lg-pa">${pa(l.amount)}</td></tr>`).join('');
             }).join('');
         }
         function renderLedger(f, d) {
@@ -1045,11 +1053,27 @@
             const t = d.totals;
             const ac = d.field.acres;
             const perAc = n => ac ? ' <span class="lg-ac">' + m(n / ac) + '/ac</span>' : '';
+            const projected = d.income.some(l => l.projected);
             const tiles = `<div class="ledger-tiles">
-                    <div><div class="lt-l">Income</div><div class="lt-v">${m(t.income)}</div>${perAc(t.income)}</div>
                     <div><div class="lt-l">Expenses</div><div class="lt-v">${m(t.expenses)}</div>${perAc(t.expenses)}</div>
-                    <div><div class="lt-l">Net</div><div class="lt-v" style="color:${t.net < 0 ? '#a02818' : '#2d5016'};">${m(t.net)}</div>${perAc(t.net)}</div>
+                    <div><div class="lt-l">Income${projected ? ' (projected)' : ''}</div><div class="lt-v">${m(t.income)}</div>${perAc(t.income)}</div>
+                    <div><div class="lt-l">Net${projected ? ' (projected)' : ''}</div><div class="lt-v" style="color:${t.net < 0 ? '#a02818' : '#2d5016'};">${m(t.net)}</div>${perAc(t.net)}</div>
                 </div>`;
+            // Break-even price at APH, always shown for a grain crop.
+            const be = d.breakEven;
+            const breakEven = be ? `<div class="ledger-breakeven">
+                    <div class="be-head">Break-even at APH · ${escapeText(be.crop)} ${d.year}</div>
+                    <div class="be-row"><span>Break-even price</span><strong>${be.perBu !== null ? m(be.perBu) + '/bu' : '--'}</strong></div>
+                    ${be.m77PerBu !== undefined && be.m77PerBu !== null ? `<div class="be-row"><span>M77 AG break-even (${be.m77Share}% of the crop)</span><strong>${m(be.m77PerBu)}/bu</strong></div>` : ''}
+                    ${be.price !== null ? `<div class="be-row"><span>Current average price</span><span>${m(be.price)}/bu${be.perBu !== null ? ' · <strong style="color:' + (be.price >= (be.m77PerBu || be.perBu) ? '#2d5016' : '#a02818') + ';">' + (be.price >= (be.m77PerBu || be.perBu) ? 'above' : 'below') + ' break-even by ' + m(Math.abs(be.price - (be.m77PerBu || be.perBu))) + '/bu</strong>' : ''}</span></div>` : ''}
+                    <div class="lg-detail">${be.aph} bu/ac (${escapeText(be.aphSource)}) x ${be.acres} ac = ${Number(be.bushels).toLocaleString('en-US')} bu; all expenses on this card for ${d.year}.</div>
+                </div>` : '';
+            // APH entry when none is on file; change it when it was entered here.
+            const aphBox = d.aphNeeded || (d.aph && d.aph.entered) ? `<div class="ledger-prices">
+                    <strong>${d.aphNeeded ? 'Set the ' + escapeText(d.crop.toLowerCase()) + ' APH for this field' : 'APH ' + d.aph.value + ' bu/ac (entered here)'}</strong>
+                    <div class="lp-row"><span class="lp-name">${escapeText(d.crop)} APH</span>
+                    <span class="lp-in"><input type="number" step="0.1" min="0" inputmode="decimal" id="aph-${f._id}" aria-label="APH bu/ac" value="${d.aph && d.aph.entered ? d.aph.value : ''}"><span>bu/ac</span></span></div>
+                    <button type="button" class="btn btn-sm" onclick="saveAph('${f._id}', '${escAttr(d.crop)}', this)">Save APH</button></div>` : '';
             const sp = d.split;
             const split = sp && sp.kind === 'billed' && t.expenses ? `<div class="ledger-split">
                     <div><strong>Billed to ${escapeText(sp.billedTo)}:</strong> ${sp.billedPercent}% of expenses, ${m(sp.billedExpenses)}${perAc(sp.billedExpenses)}</div>
@@ -1061,17 +1085,37 @@
                     <div class="lg-detail">Seed, starter and planter products are split with the landlord at the crop share; other inputs are counted to M77 AG until a split is on file.</div>
                 </div>` : '';
             const note = d.field.excludeFromFinancials ? `<div class="ledger-note">${escapeText(d.field.financialNote || 'Kept out of M77 AG financials.')}</div>` : '';
-            const income = d.income.length ? `<table class="ledger-table"><thead><tr><th>Income</th><th class="num">${m(t.income)}</th></tr></thead><tbody>${ledgerRows(d.income, false)}</tbody></table>` : '<div class="lg-none">No income on file for ' + d.year + '.</div>';
-            const expenses = d.expenses.length ? `<table class="ledger-table"><thead><tr><th>Expenses</th><th class="num">${m(t.expenses)}</th></tr></thead><tbody>${ledgerRows(d.expenses, true)}</tbody></table>` : '<div class="lg-none">No expenses on file for ' + d.year + '.</div>';
+            const pa = n => ac ? m(n / ac) : '--';
+            const head = (label, total) => `<thead><tr><th>${label}</th><th class="num">Total</th><th class="num">$/ac</th></tr>
+                <tr class="lg-total"><td>All ${label.toLowerCase().replace(/ \(.*\)$/, '')}${ac ? ' · ' + ac + ' ac' : ''}</td><td class="num">${m(total)}</td><td class="num">${pa(total)}</td></tr></thead>`;
+            const income = d.income.length ? `<table class="ledger-table">${head('Income' + (projected ? ' (projected at APH)' : ''), t.income)}<tbody>${ledgerRows(d.income, false, ac)}</tbody></table>` : '<div class="lg-none">No income on file for ' + d.year + '.</div>';
+            const expenses = d.expenses.length ? `<table class="ledger-table">${head('Expenses', t.expenses)}<tbody>${ledgerRows(d.expenses, true, ac)}</tbody></table>` : '<div class="lg-none">No expenses on file for ' + d.year + '.</div>';
             const prices = d.pricesNeeded.length ? `<div class="ledger-prices"><strong>Set ${d.year} prices</strong> <span class="lg-detail">(applies to every field for ${d.year})</span>` +
                 d.pricesNeeded.map((p, i) => `<div class="lp-row" data-kind="${escAttr(p.kind)}" data-name="${escAttr(p.name)}">
-                    <span class="lp-name">${escapeText(p.kind === 'grain' ? p.name + ' (grain sold)' : p.name)}</span>
+                    <span class="lp-name">${escapeText(p.kind === 'grain' ? p.name + ' (current average price)' : p.name)}</span>
                     <span class="lp-in">$<input type="number" step="0.01" min="0" inputmode="decimal" aria-label="Price for ${escAttr(p.name)}">
                     ${p.kind === 'grain' ? '<span>/bu</span>' : `<select aria-label="Unit for ${escAttr(p.name)}">${['gal', 'lb', 'ac'].map(u => `<option value="${u}" ${u === p.unit ? 'selected' : ''}>/${u}</option>`).join('')}</select>`}</span>
                 </div>`).join('') + `<button type="button" class="btn btn-sm" onclick="saveLedgerPrices('${f._id}', this)">Save prices</button></div>` : '';
             const missing = d.missing.length ? `<div class="ledger-missing"><strong>Not counted yet (${d.missing.length})</strong><ul>${d.missing.map(x => `<li>${escapeText(x.label)}: <span class="lg-detail">${escapeText(x.detail)}</span></li>`).join('')}</ul></div>` : '';
             const notes = d.notes.length ? `<div class="ledger-note">${d.notes.map(escapeText).join('<br>')}</div>` : '';
-            return note + tiles + split + income + expenses + prices + missing + notes;
+            // Expenses first, then income (Kyle, Oct 17, 2026).
+            return note + tiles + breakEven + aphBox + split + expenses + income + prices + missing + notes;
+        }
+        async function saveAph(id, crop, btn) {
+            const v = document.getElementById('aph-' + id).value.trim();
+            btn.disabled = true;
+            try {
+                const res = await fetch(`${API}/api/field-ledger/${id}/aph`, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ crop, value: v === '' ? null : v }) });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || !data.success) throw new Error(data.message || 'Request failed');
+                showAlert('success', data.message, { noScroll: true });
+                Object.keys(ledgerCache).forEach(k => { if (k.startsWith(id + '|')) delete ledgerCache[k]; });
+                await loadLedger(id, true);
+            } catch (e) {
+                showAlert('error', 'Could not save the APH: ' + e.message, { noScroll: true });
+                btn.disabled = false;
+            }
         }
         async function saveLedgerPrices(id, btn) {
             const box = btn.closest('.ledger-prices');
