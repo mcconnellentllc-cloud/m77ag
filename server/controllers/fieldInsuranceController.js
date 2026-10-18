@@ -1,11 +1,20 @@
 const FieldInsurance = require('../models/fieldInsurance');
 const M77Field = require('../models/m77Field');
 const claim2026Wheat = require('../data/rcisWheat2026Claim');
+const rh2025 = require('../data/rainHail2025Insurance');
 
-// Claims on file that can be attached to field cards, keyed by id.
+// Policies and claims on file whose units can be attached to field cards, keyed by id.
 const CLAIMS = {
-  'rcis-2026-wheat': claim2026Wheat
+  'rcis-2026-wheat': claim2026Wheat,
+  'rh-2025-corn-m77': rh2025.M77_CORN,
+  'rh-2025-wheat-m77': rh2025.M77_WHEAT,
+  'rh-2025-corn-kyle': rh2025.KYLE_CORN,
+  'rh-2025-wheat-kyle': rh2025.KYLE_WHEAT,
+  'rh-2025-milo-me': rh2025.ME_MILO,
+  'rh-2025-corn-me': rh2025.ME_CORN,
+  'rh-2025-wheat-me': rh2025.ME_WHEAT
 };
+exports.CLAIMS = CLAIMS;
 
 function isBlank(v) {
   return v === undefined || v === null || v === '';
@@ -53,6 +62,25 @@ exports.listEntries = async (req, res) => {
   }
 };
 
+// GET /api/field-insurance/claims  All claims on file, each with its units.
+exports.listClaims = async (req, res) => {
+  try {
+    const out = [];
+    for (const [id, claim] of Object.entries(CLAIMS)) {
+      const { POLICY, UNITS } = claim;
+      const attached = await FieldInsurance.find({ policyNumber: POLICY.policyNumber, cropYear: POLICY.cropYear, crop: POLICY.crop })
+        .select('unitNumber m77Field fieldName').lean();
+      const byUnit = {};
+      for (const a of attached) byUnit[a.unitNumber] = a;
+      out.push({ id, policy: POLICY, units: UNITS.map(u => ({ ...u, attachedTo: byUnit[u.unitNumber] ? { m77Field: byUnit[u.unitNumber].m77Field, fieldName: byUnit[u.unitNumber].fieldName } : null })) });
+    }
+    res.json({ success: true, data: out });
+  } catch (err) {
+    console.error('List insurance claims error:', err);
+    res.status(500).json({ success: false, message: 'Failed to load the claims' });
+  }
+};
+
 // GET /api/field-insurance/claims/:claimId
 // The claim's units, each marked with the field it is attached to (if any).
 exports.getClaim = async (req, res) => {
@@ -83,6 +111,48 @@ exports.getClaim = async (req, res) => {
   }
 };
 
+// Attaches one claim unit to a registry field (re-attaching moves it).
+// Returns { entry, created, fieldName } or throws.
+async function attachUnit(claim, unit, m77Field, userId) {
+  const info = await fieldSnapshot(m77Field);
+  if (!info) throw new Error('Field not found');
+  const { POLICY } = claim;
+  const { fieldHint, ...unitData } = unit;
+  const doc = {
+    ...info.snapshot,
+    cropYear: POLICY.cropYear,
+    crop: POLICY.crop,
+    company: POLICY.company,
+    policyNumber: POLICY.policyNumber,
+    agent: POLICY.agent,
+    plan: POLICY.plan,
+    coverageLevel: POLICY.coverageLevel,
+    projectedPrice: POLICY.projectedPrice,
+    harvestPrice: POLICY.harvestPrice,
+    claimNumber: POLICY.claimNumber,
+    claimDate: POLICY.claimDate,
+    checkNumber: POLICY.checkNumber,
+    insuredName: POLICY.insuredName,
+    source: POLICY.source,
+    ...unitData
+  };
+  const existing = await FieldInsurance.findOne({
+    policyNumber: POLICY.policyNumber, unitNumber: unit.unitNumber, cropYear: POLICY.cropYear, crop: POLICY.crop
+  });
+  let entry;
+  if (existing) {
+    // Keep a landlord share someone already set, unless the unit moved to another field.
+    const moved = String(existing.m77Field) !== String(info.field._id);
+    existing.set(doc);
+    if (moved) existing.landlordShare = info.landlordShare;
+    entry = await existing.save();
+  } else {
+    entry = await FieldInsurance.create({ ...doc, landlordShare: info.landlordShare, createdBy: userId });
+  }
+  return { entry, created: !existing, fieldName: info.field.name };
+}
+exports.attachUnit = attachUnit;
+
 // POST /api/field-insurance/claims/:claimId/attach  Body: { unitNumber, m77Field }
 // Attaches one unit of the claim to a field card. Re-attaching moves it.
 exports.attachClaimUnit = async (req, res) => {
@@ -93,47 +163,11 @@ exports.attachClaimUnit = async (req, res) => {
     const unit = claim.UNITS.find(u => u.unitNumber === unitNumber);
     if (!unit) return res.status(400).json({ success: false, message: 'Unit not found on this claim' });
     if (!m77Field) return res.status(400).json({ success: false, message: 'Field is required' });
-
-    const info = await fieldSnapshot(m77Field);
-    if (!info) return res.status(404).json({ success: false, message: 'Field not found' });
-
-    const { POLICY } = claim;
-    const { fieldHint, ...unitData } = unit;
-    const doc = {
-      ...info.snapshot,
-      cropYear: POLICY.cropYear,
-      crop: POLICY.crop,
-      company: POLICY.company,
-      policyNumber: POLICY.policyNumber,
-      agent: POLICY.agent,
-      plan: POLICY.plan,
-      coverageLevel: POLICY.coverageLevel,
-      projectedPrice: POLICY.projectedPrice,
-      harvestPrice: POLICY.harvestPrice,
-      claimNumber: POLICY.claimNumber,
-      claimDate: POLICY.claimDate,
-      checkNumber: POLICY.checkNumber,
-      source: POLICY.source,
-      ...unitData
-    };
-
-    const existing = await FieldInsurance.findOne({
-      policyNumber: POLICY.policyNumber, unitNumber, cropYear: POLICY.cropYear, crop: POLICY.crop
-    });
-    let entry;
-    if (existing) {
-      // Keep a landlord share someone already set, unless the unit moved to another field.
-      const moved = String(existing.m77Field) !== String(info.field._id);
-      existing.set(doc);
-      if (moved) existing.landlordShare = info.landlordShare;
-      entry = await existing.save();
-    } else {
-      entry = await FieldInsurance.create({ ...doc, landlordShare: info.landlordShare, createdBy: req.userId });
-    }
-    res.status(existing ? 200 : 201).json({ success: true, data: entry, message: `Unit ${unitNumber} attached to ${info.field.name}` });
+    const { entry, created, fieldName } = await attachUnit(claim, unit, m77Field, req.userId);
+    res.status(created ? 201 : 200).json({ success: true, data: entry, message: `Unit ${unitNumber} attached to ${fieldName}` });
   } catch (err) {
     console.error('Attach insurance unit error:', err);
-    res.status(400).json({ success: false, message: err.message || 'Failed to attach the unit' });
+    res.status(err.message === 'Field not found' ? 404 : 400).json({ success: false, message: err.message || 'Failed to attach the unit' });
   }
 };
 

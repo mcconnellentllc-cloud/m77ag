@@ -1,0 +1,5156 @@
+{
+ "source": "Rain and Hail MPCI Acreage and Production Reporting forms (ten-year history), policy MP-0759227, McConnell Enterprises LLC, printed Oct 21, 2025",
+ "coverage": {
+  "CORN": 0.8,
+  "SORGHUM": 0.85,
+  "WHEAT": 0.7
+ },
+ "units": [
+  {
+   "page": 3,
+   "column": 1,
+   "county": "75 LOGAN",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "15",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "30-BBI W14 ORIGINAL",
+   "unitNumber": "OU 2.0002",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 26,
+   "rateYield": 23,
+   "adjYield": 24,
+   "averageYield": 23,
+   "tYield": 26,
+   "years": 4,
+   "history": [
+    {
+     "year": "03",
+     "yield": 26,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 26,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "05",
+     "yield": 13,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "12",
+     "yield": 27,
+     "acres": 157.5,
+     "production": 4326,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 3,
+   "column": 2,
+   "county": "75 LOGAN",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "BBI POLE RD HOME",
+   "unitNumber": "OU 2.0001",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 26,
+   "rateYield": 24,
+   "adjYield": 24,
+   "averageYield": 24,
+   "tYield": 26,
+   "years": 4,
+   "history": [
+    {
+     "year": "03",
+     "yield": 26,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 26,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "05",
+     "yield": 17,
+     "acres": 63.5,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "12",
+     "yield": 27,
+     "acres": 99.5,
+     "production": 0,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 3,
+   "column": 3,
+   "county": "75 LOGAN",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "28",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "60-A #1 DAILEY RD",
+   "unitNumber": "BU 1.0000",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 32,
+   "rateYield": 26,
+   "adjYield": 29,
+   "averageYield": 26,
+   "tYield": 26,
+   "years": 4,
+   "history": [
+    {
+     "year": "02",
+     "yield": 26,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 26,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 2,
+     "acres": 52.6,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "09",
+     "yield": 50,
+     "acres": 79.9,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 3,
+   "column": 4,
+   "county": "75 LOGAN",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "28",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "60-A #1 DAILEY RD",
+   "unitNumber": "OU 3.0003",
+   "fsn": "4114",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 44,
+   "rateYield": 38,
+   "adjYield": 39,
+   "averageYield": 38,
+   "tYield": 39,
+   "years": 10,
+   "history": [
+    {
+     "year": "00",
+     "yield": 60,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 20,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "06",
+     "yield": 4,
+     "acres": 106.8,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "08",
+     "yield": 46,
+     "acres": 78.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 29,
+     "acres": 79.9,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 60,
+     "acres": 157.6,
+     "production": 0,
+     "descriptor": "A"
+    },
+    {
+     "year": "13",
+     "yield": 33,
+     "acres": 157.6,
+     "production": 5250,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 32,
+     "acres": 157.6,
+     "production": 4999,
+     "descriptor": "A L"
+    },
+    {
+     "year": "17",
+     "yield": 35,
+     "acres": 157.6,
+     "production": 5541,
+     "descriptor": "A"
+    },
+    {
+     "year": "19",
+     "yield": 60,
+     "acres": 157.6,
+     "production": 9442,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 4,
+   "column": 1,
+   "county": "75 LOGAN",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "15",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "30-BBI W14 ORIGINAL",
+   "unitNumber": "OU 3.0002",
+   "fsn": "4062",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 49,
+   "rateYield": 48,
+   "adjYield": 48,
+   "averageYield": 48,
+   "tYield": 39,
+   "years": 8,
+   "history": [
+    {
+     "year": "03",
+     "yield": 17,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 39,
+     "acres": 93,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "08",
+     "yield": 61,
+     "acres": 90,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 57,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 50,
+     "acres": 89.5,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 56,
+     "acres": 157.5,
+     "production": 8878,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 55,
+     "acres": 157.5,
+     "production": 8699,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 46,
+     "acres": 157.5,
+     "production": 7238,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 4,
+   "column": 2,
+   "county": "75 LOGAN",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "13-LABAM E",
+   "unitNumber": "OU 3.0001",
+   "fsn": "3438",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 49,
+   "rateYield": 48,
+   "adjYield": null,
+   "averageYield": 48,
+   "tYield": 39,
+   "years": 10,
+   "history": [
+    {
+     "year": "08",
+     "yield": 77,
+     "acres": 35,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 62,
+     "acres": 63.5,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 54,
+     "acres": 35,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 0,
+     "acres": 149.4,
+     "production": 0,
+     "descriptor": "P A"
+    },
+    {
+     "year": "12",
+     "yield": 46,
+     "acres": 157.1,
+     "production": 7295,
+     "descriptor": "A"
+    },
+    {
+     "year": "13",
+     "yield": 33,
+     "acres": 149.4,
+     "production": 4926,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 52,
+     "acres": 256.6,
+     "production": 13312,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 58,
+     "acres": 248.9,
+     "production": 14363,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 45,
+     "acres": 157.1,
+     "production": 7061,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 50,
+     "acres": 247.6,
+     "production": 12268,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 4,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "11",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "41-HD E/4",
+   "unitNumber": "EU 4.0000 (8.0600)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 41,
+   "rateYield": 34,
+   "adjYield": 37,
+   "averageYield": 34,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "04",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "05",
+     "yield": 5,
+     "acres": 79,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 47,
+     "acres": 156.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 49,
+     "acres": 156.8,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 4,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "12",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "42 43 HD 1/2 SECTION",
+   "unitNumber": "EU 4.0000 (8.0700)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 27,
+   "rateYield": 20,
+   "adjYield": 24,
+   "averageYield": 20,
+   "tYield": 33,
+   "years": 8,
+   "history": [
+    {
+     "year": "04",
+     "yield": 2,
+     "acres": 158.1,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "06",
+     "yield": 4,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "09",
+     "yield": 5,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "11",
+     "yield": 40,
+     "acres": 158.2,
+     "production": 0,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 28,
+     "acres": 158.2,
+     "production": 4360,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 32,
+     "acres": 158.2,
+     "production": 5034,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 19,
+     "acres": 158.2,
+     "production": 2962,
+     "descriptor": "A"
+    },
+    {
+     "year": "19",
+     "yield": 30,
+     "acres": 158.2,
+     "production": 4724,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 5,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "2",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "10 - LA OURS",
+   "unitNumber": "EU 4.0000 (8.0200)",
+   "fsn": "3702",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 30,
+   "rateYield": 15,
+   "adjYield": 22,
+   "averageYield": 15,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "03",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 2,
+     "acres": 53.4,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "06",
+     "yield": 6,
+     "acres": 80,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "08",
+     "yield": 20,
+     "acres": 79.3,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 5,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "31",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "14-LA BAM S",
+   "unitNumber": "EU 4.0000 (4.0100)",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 35,
+   "rateYield": 35,
+   "adjYield": null,
+   "averageYield": 35,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "07",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "08",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "09",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "10",
+     "yield": 42,
+     "acres": 73,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 5,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "6",
+     "township": "6N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "33-BBI ORPHA",
+   "unitNumber": "EU 4.0000 (8.0100)",
+   "fsn": "0",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 33,
+   "rateYield": 25,
+   "adjYield": 29,
+   "averageYield": 25,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "01",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "02",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 2,
+     "acres": 52.3,
+     "production": null,
+     "descriptor": "A E"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 5,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "35",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "32-HIGHLAND W",
+   "unitNumber": "EU 4.0000 (5.0000)",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "BRIAN PETERSON"
+   ],
+   "approvedYield": 36,
+   "rateYield": 28,
+   "adjYield": 32,
+   "averageYield": 28,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "02",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 2,
+     "acres": 157.2,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "17",
+     "yield": 45,
+     "acres": 157.9,
+     "production": 7090,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 6,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "20",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "45-HD W TOWN",
+   "unitNumber": "EU 4.0000 (7.0500)",
+   "fsn": "2522",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 41,
+   "rateYield": 41,
+   "adjYield": null,
+   "averageYield": 41,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "12",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "13",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "14",
+     "yield": 55,
+     "acres": 113.6,
+     "production": 6267,
+     "descriptor": "A"
+    },
+    {
+     "year": "24",
+     "yield": 42,
+     "acres": 71.5,
+     "production": 3011,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 6,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "32",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "44 HD SOUTH TOWN",
+   "unitNumber": "EU 4.0000 (6.0200)",
+   "fsn": "2522",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 26,
+   "rateYield": 19,
+   "adjYield": null,
+   "averageYield": 19,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "09",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "10",
+     "yield": 28,
+     "acres": 154.9,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 0,
+     "acres": 154.9,
+     "production": 0,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 15,
+     "acres": 154.9,
+     "production": 2313,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 6,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "17",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "20 KYLE",
+   "unitNumber": "EU 4.0000 (8.0300)",
+   "fsn": "0",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 27,
+   "rateYield": 27,
+   "adjYield": null,
+   "averageYield": 27,
+   "tYield": 33,
+   "years": 4,
+   "history": [
+    {
+     "year": "13",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "14",
+     "yield": 33,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "15",
+     "yield": 21,
+     "acres": 333.3,
+     "production": 6979,
+     "descriptor": "A L"
+    },
+    {
+     "year": "17",
+     "yield": 20,
+     "acres": 205.1,
+     "production": 4176,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 6,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "8",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "46-47 HD HOME",
+   "unitNumber": "EU 4.0000 (6.0100)",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 40,
+   "rateYield": 30,
+   "adjYield": 34,
+   "averageYield": 30,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "01",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "02",
+     "yield": 5,
+     "acres": 160,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "13",
+     "yield": 39,
+     "acres": 156.8,
+     "production": 6092,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 28,
+     "acres": 98.8,
+     "production": 2790,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 7,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "12",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "42 43 HD 1/2 SECTION",
+   "unitNumber": "EU 4.0000 (7.0400)",
+   "fsn": "3705",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 54,
+   "rateYield": 45,
+   "adjYield": 48,
+   "averageYield": 45,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "04",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "05",
+     "yield": 9,
+     "acres": 158,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "08",
+     "yield": 57,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 66,
+     "acres": 158.2,
+     "production": 10434,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 79.1
+  },
+  {
+   "page": 7,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "32",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "44-HD S TOWN",
+   "unitNumber": "EU 4.0000 (6.0200)",
+   "fsn": "0",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 47,
+   "rateYield": 43,
+   "adjYield": 43,
+   "averageYield": 43,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "02",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 28,
+     "acres": 49.2,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 48,
+     "acres": 54.8,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 7,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "2",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "10 LA OURS",
+   "unitNumber": "EU 4.0000 (7.0200)",
+   "fsn": "3702",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 50,
+   "rateYield": 48,
+   "adjYield": 48,
+   "averageYield": 48,
+   "tYield": 47,
+   "years": 8,
+   "history": [
+    {
+     "year": "01",
+     "yield": 32,
+     "acres": 53.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 31,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 64,
+     "acres": 79.3,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 49,
+     "acres": 158.5,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 35,
+     "acres": 158.5,
+     "production": 5624,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 55,
+     "acres": 158.5,
+     "production": 8790,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 63,
+     "acres": 158.5,
+     "production": 9943,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 54,
+     "acres": 158.5,
+     "production": 8494,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 79.9
+  },
+  {
+   "page": 7,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "31",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "14-LA BAM S",
+   "unitNumber": "EU 4.0000 (8.0500)",
+   "fsn": "3438",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 46,
+   "rateYield": 46,
+   "adjYield": null,
+   "averageYield": 46,
+   "tYield": 47,
+   "years": 5,
+   "history": [
+    {
+     "year": "10",
+     "yield": 54,
+     "acres": 74.7,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 42,
+     "acres": 147.7,
+     "production": 6162,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 45,
+     "acres": 153,
+     "production": 6820,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 36,
+     "acres": 153,
+     "production": 5432,
+     "descriptor": "A"
+    },
+    {
+     "year": "19",
+     "yield": 53,
+     "acres": 153,
+     "production": 8120,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 8,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "17",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "20 KYLE",
+   "unitNumber": "EU 4.0000 (8.0300)",
+   "fsn": "0",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 28,
+   "rateYield": 20,
+   "adjYield": null,
+   "averageYield": 20,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "12",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "13",
+     "yield": 12,
+     "acres": 420,
+     "production": 0,
+     "descriptor": "P A"
+    },
+    {
+     "year": "15",
+     "yield": 21,
+     "acres": 140,
+     "production": 2963,
+     "descriptor": "P A L"
+    },
+    {
+     "year": "17",
+     "yield": 0,
+     "acres": 200.1,
+     "production": 0,
+     "descriptor": "P A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 8,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "6",
+     "township": "6N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "33- BBI ORPHA",
+   "unitNumber": "EU 4.0000 (7.0100)",
+   "fsn": "3711",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 48,
+   "rateYield": 41,
+   "adjYield": 44,
+   "averageYield": 41,
+   "tYield": 47,
+   "years": 7,
+   "history": [
+    {
+     "year": "05",
+     "yield": 1,
+     "acres": 52.3,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 59,
+     "acres": 76.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 54,
+     "acres": 80,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 44,
+     "acres": 158.7,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 33,
+     "acres": 158.7,
+     "production": 5244,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 65,
+     "acres": 158.7,
+     "production": 10378,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 34,
+     "acres": 158.7,
+     "production": 5447,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 84.3
+  },
+  {
+   "page": 8,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "35",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "61 AJ HIGHLAND E",
+   "unitNumber": "EU 4.0000 (4.0200)",
+   "fsn": "928",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 46,
+   "rateYield": 43,
+   "adjYield": 44,
+   "averageYield": 43,
+   "tYield": 47,
+   "years": 10,
+   "history": [
+    {
+     "year": "06",
+     "yield": 15,
+     "acres": 156.4,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "08",
+     "yield": 62,
+     "acres": 157.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 65,
+     "acres": 157.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 44,
+     "acres": 157.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 54,
+     "acres": 157.1,
+     "production": 0,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 38,
+     "acres": 157.1,
+     "production": 5908,
+     "descriptor": "A"
+    },
+    {
+     "year": "13",
+     "yield": 21,
+     "acres": 157.9,
+     "production": 3360,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 49,
+     "acres": 158.4,
+     "production": 7781,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 35,
+     "acres": 157.9,
+     "production": 5559,
+     "descriptor": "A L"
+    },
+    {
+     "year": "17",
+     "yield": 49,
+     "acres": 158.4,
+     "production": 7791,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 8,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "20",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "45-HD W TOWN",
+   "unitNumber": "EU 4.0000 (7.0500)",
+   "fsn": "0",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 47,
+   "rateYield": 44,
+   "adjYield": 44,
+   "averageYield": 44,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "01",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "02",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "04",
+     "yield": 36,
+     "acres": 32.5,
+     "production": null,
+     "descriptor": "A E"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 9,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "11",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "41-HD E/4",
+   "unitNumber": "EU 4.0000 (7.0300)",
+   "fsn": "3705",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 50,
+   "rateYield": 50,
+   "adjYield": null,
+   "averageYield": 50,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "13",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "14",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "15",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "16",
+     "yield": 59,
+     "acres": 156.8,
+     "production": 9195,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 78.6
+  },
+  {
+   "page": 9,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "33",
+     "township": "7N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 4.0000 (8.0400)",
+   "fsn": "247",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 46,
+   "rateYield": 46,
+   "adjYield": null,
+   "averageYield": 46,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "16",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "17",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "18",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "19",
+     "yield": 43,
+     "acres": 149.6,
+     "production": 6364,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 9,
+   "column": 3,
+   "county": "115 SEDGWICK",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "13",
+     "township": "9N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "OU 9.0003",
+   "fsn": "3939",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 25,
+   "rateYield": 25,
+   "adjYield": null,
+   "averageYield": 25,
+   "tYield": 31,
+   "years": 4,
+   "history": [
+    {
+     "year": "15",
+     "yield": 31,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "16",
+     "yield": 31,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "17",
+     "yield": 12,
+     "acres": 159.7,
+     "production": 1932,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 25,
+     "acres": 159.7,
+     "production": 3989,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 9,
+   "column": 4,
+   "county": "115 SEDGWICK",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "CONT CROP",
+   "type": "W",
+   "legals": [
+    {
+     "section": "7",
+     "township": "9N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "OU 9.0001",
+   "fsn": "3939",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 32,
+   "rateYield": 32,
+   "adjYield": null,
+   "averageYield": 32,
+   "tYield": 31,
+   "years": 4,
+   "history": [
+    {
+     "year": "16",
+     "yield": 31,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "17",
+     "yield": 31,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "18",
+     "yield": 31,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "19",
+     "yield": 35,
+     "acres": 52.9,
+     "production": 1844,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 10,
+   "column": 1,
+   "county": "115 SEDGWICK",
+   "crop": "WHEAT",
+   "cropCode": "RP-WHEAT",
+   "practice": "SUMRFALLOW",
+   "type": "W",
+   "legals": [
+    {
+     "section": "8",
+     "township": "9N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "OU 9.0002",
+   "fsn": "3939",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 42,
+   "rateYield": 42,
+   "adjYield": null,
+   "averageYield": 42,
+   "tYield": 43,
+   "years": 4,
+   "history": [
+    {
+     "year": "15",
+     "yield": 43,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "16",
+     "yield": 43,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "17",
+     "yield": 43,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "18",
+     "yield": 37,
+     "acres": 48.2,
+     "production": 1787,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 10,
+   "column": 2,
+   "county": "75 LOGAN",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "13-LA BAM E",
+   "unitNumber": "OU 1.0001",
+   "fsn": "3438",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 30,
+   "rateYield": 30,
+   "adjYield": null,
+   "averageYield": 30,
+   "tYield": 30,
+   "years": 4,
+   "history": [
+    {
+     "year": "07",
+     "yield": 30,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "08",
+     "yield": 30,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "09",
+     "yield": 27,
+     "acres": 149.4,
+     "production": null,
+     "descriptor": "P"
+    },
+    {
+     "year": "10",
+     "yield": 34,
+     "acres": 152.8,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 10,
+   "column": 3,
+   "county": "75 LOGAN",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "28",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "60-A #1 DAILEY RD",
+   "unitNumber": "OU 1.0002",
+   "fsn": "928",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 39,
+   "rateYield": 38,
+   "adjYield": null,
+   "averageYield": 38,
+   "tYield": 30,
+   "years": 4,
+   "history": [
+    {
+     "year": "02",
+     "yield": 30,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 50,
+     "acres": 52.6,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 14,
+     "acres": 53,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "07",
+     "yield": 59,
+     "acres": 78.8,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 10,
+   "column": 4,
+   "county": "75 LOGAN",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "15",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "30 BBI W14 ORIGINAL",
+   "unitNumber": "OU 2.0002",
+   "fsn": "3053",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 39,
+   "rateYield": 39,
+   "adjYield": null,
+   "averageYield": 39,
+   "tYield": 30,
+   "years": 6,
+   "history": [
+    {
+     "year": "03",
+     "yield": 50,
+     "acres": 67,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 15,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 44,
+     "acres": 90,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 22,
+     "acres": 90,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "07",
+     "yield": 51,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 49,
+     "acres": 68,
+     "production": 3361,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 11,
+   "column": 1,
+   "county": "75 LOGAN",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "31 BBI POLE RD HOME",
+   "unitNumber": "OU 2.0001",
+   "fsn": "928",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 36,
+   "rateYield": 36,
+   "adjYield": null,
+   "averageYield": 36,
+   "tYield": 30,
+   "years": 6,
+   "history": [
+    {
+     "year": "03",
+     "yield": 45,
+     "acres": 63,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 16,
+     "acres": 63,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 39,
+     "acres": 35,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 20,
+     "acres": 35,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "07",
+     "yield": 45,
+     "acres": 64.5,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 49,
+     "acres": 63.5,
+     "production": 3141,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 11,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "12",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "42 43 HD 1/2 SECTION",
+   "unitNumber": "OU 4.0002",
+   "fsn": "2522",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 45,
+   "rateYield": 45,
+   "adjYield": null,
+   "averageYield": 45,
+   "tYield": 37,
+   "years": 5,
+   "history": [
+    {
+     "year": "03",
+     "yield": 42,
+     "acres": 158.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 34,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 68,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 38,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 42,
+     "acres": 158.2,
+     "production": 6686,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 11,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "11",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "41 HD E /4",
+   "unitNumber": "OU 4.0001",
+   "fsn": "2522",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 31,
+   "rateYield": 31,
+   "adjYield": null,
+   "averageYield": 31,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "01",
+     "yield": 45,
+     "acres": 160,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 35,
+     "acres": 157,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 17,
+     "acres": 156.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 26,
+     "acres": 156.8,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 11,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "32",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "44 HD S TOWN",
+   "unitNumber": "OU 4.0003",
+   "fsn": "2522",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 32,
+   "rateYield": 32,
+   "adjYield": null,
+   "averageYield": 32,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "06",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "07",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "08",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "09",
+     "yield": 15,
+     "acres": 154.9,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 12,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "6",
+     "township": "6N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "33- BBI ORPHA",
+   "unitNumber": "BU 5.0000",
+   "fsn": "50",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 33,
+   "rateYield": 30,
+   "adjYield": null,
+   "averageYield": 30,
+   "tYield": 37,
+   "years": 5,
+   "history": [
+    {
+     "year": "03",
+     "yield": 40,
+     "acres": 52.3,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 13,
+     "acres": 52.2,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "05",
+     "yield": 12,
+     "acres": 106.7,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "06",
+     "yield": 10,
+     "acres": 80,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "08",
+     "yield": 77,
+     "acres": 78.4,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 12,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "33",
+     "township": "7N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "54 M E PAULS",
+   "unitNumber": "BU 6.0000",
+   "fsn": "0",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 34,
+   "rateYield": 34,
+   "adjYield": null,
+   "averageYield": 34,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "02",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "03",
+     "yield": 29,
+     "acres": 78.3,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 47,
+     "acres": 78.3,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 21,
+     "acres": 78.4,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 12,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "2",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "10 LA HIGHLAND CENTER",
+   "unitNumber": "OU 3.0001",
+   "fsn": "3438",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 44,
+   "rateYield": 44,
+   "adjYield": null,
+   "averageYield": 44,
+   "tYield": 37,
+   "years": 5,
+   "history": [
+    {
+     "year": "03",
+     "yield": 45,
+     "acres": 53.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 29,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 27,
+     "acres": 105.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "07",
+     "yield": 60,
+     "acres": 79.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 61,
+     "acres": 79.3,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 12,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "35",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "61 AJ HIGHLAND E",
+   "unitNumber": "OU 3.0002",
+   "fsn": "928",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 42,
+   "rateYield": 42,
+   "adjYield": null,
+   "averageYield": 42,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "03",
+     "yield": 33,
+     "acres": 157.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "04",
+     "yield": 48,
+     "acres": 156.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 22,
+     "acres": 157.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "07",
+     "yield": 63,
+     "acres": 157.9,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 13,
+   "column": 1,
+   "county": "115 SEDGWICK",
+   "crop": "MILLET",
+   "cropCode": "APH-MILLET",
+   "practice": "NON IRR",
+   "type": "PRO",
+   "legals": [
+    {
+     "section": "7",
+     "township": "9N",
+     "range": "46W"
+    },
+    {
+     "section": "8",
+     "township": "9N",
+     "range": "46W"
+    },
+    {
+     "section": "13",
+     "township": "9N",
+     "range": "46W"
+    },
+    {
+     "section": "8",
+     "township": "9N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "BU 7.0000",
+   "fsn": "3939",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 17,
+   "rateYield": 17,
+   "adjYield": null,
+   "averageYield": 17,
+   "tYield": 26,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 17,
+     "acres": 0,
+     "production": null,
+     "descriptor": "S"
+    },
+    {
+     "year": "22",
+     "yield": 17,
+     "acres": 0,
+     "production": null,
+     "descriptor": "S"
+    },
+    {
+     "year": "23",
+     "yield": 17,
+     "acres": 0,
+     "production": null,
+     "descriptor": "S"
+    },
+    {
+     "year": "24",
+     "yield": 17,
+     "acres": 0,
+     "production": null,
+     "descriptor": "S"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 13,
+   "column": 2,
+   "county": "75 LOGAN",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "15",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "30 BBI W 14 ORIGINAL",
+   "unitNumber": "OU 2.0002",
+   "fsn": "3053",
+   "insuredShare": 0.667,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 62,
+   "rateYield": 53,
+   "adjYield": 55,
+   "averageYield": 53,
+   "tYield": 55,
+   "years": 4,
+   "history": [
+    {
+     "year": "04",
+     "yield": 55,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "05",
+     "yield": 55,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "06",
+     "yield": 21,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "10",
+     "yield": 81,
+     "acres": 68,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 13,
+   "column": 3,
+   "county": "75 LOGAN",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "31 BBI POLE RD HOME",
+   "unitNumber": "OU 2.0001",
+   "fsn": "928",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 62,
+   "rateYield": 54,
+   "adjYield": 55,
+   "averageYield": 54,
+   "tYield": 55,
+   "years": 4,
+   "history": [
+    {
+     "year": "04",
+     "yield": 55,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "05",
+     "yield": 55,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "06",
+     "yield": 24,
+     "acres": 63.5,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "10",
+     "yield": 81,
+     "acres": 63.5,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 13,
+   "column": 4,
+   "county": "75 LOGAN",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "28",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "60-A #1 DAILEY RD",
+   "unitNumber": "OU 1.0002",
+   "fsn": "928",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 45,
+   "rateYield": 33,
+   "adjYield": 35,
+   "averageYield": 33,
+   "tYield": 55,
+   "years": 5,
+   "history": [
+    {
+     "year": "00",
+     "yield": 35,
+     "acres": 105,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "01",
+     "yield": 19,
+     "acres": 53,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "03",
+     "yield": 42,
+     "acres": 52.5,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "04",
+     "yield": 40,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 28,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A E"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 14,
+   "column": 1,
+   "county": "75 LOGAN",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "13-14 LA BAM E",
+   "unitNumber": "OU 1.0001",
+   "fsn": "4211",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 69,
+   "rateYield": 69,
+   "adjYield": null,
+   "averageYield": 69,
+   "tYield": 55,
+   "years": 4,
+   "history": [
+    {
+     "year": "09",
+     "yield": 73,
+     "acres": 157.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 92,
+     "acres": 149.4,
+     "production": 13704,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 47,
+     "acres": 156.7,
+     "production": 7382,
+     "descriptor": "A L"
+    },
+    {
+     "year": "18",
+     "yield": 62,
+     "acres": 157.1,
+     "production": 9776,
+     "descriptor": "A L"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 14,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "12",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "42 43 HD 1/2 SECTION",
+   "unitNumber": "EU 3.0000 (7.0300)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 74,
+   "rateYield": 66,
+   "adjYield": 66,
+   "averageYield": 66,
+   "tYield": 63,
+   "years": 10,
+   "history": [
+    {
+     "year": "07",
+     "yield": 41,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 76,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 114,
+     "acres": 158.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 31,
+     "acres": 158.2,
+     "production": 4959,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 32,
+     "acres": 158.2,
+     "production": 5051,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "15",
+     "yield": 72,
+     "acres": 316.4,
+     "production": 22795,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 95,
+     "acres": 316.4,
+     "production": 29942,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 66,
+     "acres": 158.8,
+     "production": 10450,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 74,
+     "acres": 158.2,
+     "production": 11776,
+     "descriptor": "A L"
+    },
+    {
+     "year": "24",
+     "yield": 56,
+     "acres": 79.1,
+     "production": 4457,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 14,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "35",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "32 OT HIGHLAND CENTER",
+   "unitNumber": "EU 3.0000 (4.0000)",
+   "fsn": "4063",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "BRIAN PETERSON"
+   ],
+   "approvedYield": 50,
+   "rateYield": 47,
+   "adjYield": null,
+   "averageYield": 47,
+   "tYield": 63,
+   "years": 4,
+   "history": [
+    {
+     "year": "00",
+     "yield": 63,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "01",
+     "yield": 22,
+     "acres": 160,
+     "production": null,
+     "descriptor": "P A"
+    },
+    {
+     "year": "15",
+     "yield": 53,
+     "acres": 157.1,
+     "production": 8381,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 50,
+     "acres": 158.4,
+     "production": 7867,
+     "descriptor": "A L"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 14,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "6",
+     "township": "6N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "33-BBI ORPHA",
+   "unitNumber": "EU 3.0000 (6.0000)",
+   "fsn": "50",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "LYNN PETERSON"
+   ],
+   "approvedYield": 50,
+   "rateYield": 13,
+   "adjYield": null,
+   "averageYield": 13,
+   "tYield": 63,
+   "years": 5,
+   "history": [
+    {
+     "year": "00",
+     "yield": 13,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A O"
+    },
+    {
+     "year": "01",
+     "yield": 18,
+     "acres": 50.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "02",
+     "yield": 0,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A O"
+    },
+    {
+     "year": "03",
+     "yield": 27,
+     "acres": 52.3,
+     "production": null,
+     "descriptor": "A O"
+    },
+    {
+     "year": "04",
+     "yield": 9,
+     "acres": 52.3,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 15,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "17",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "KYLE",
+   "unitNumber": "EU 3.0000 (7.0100)",
+   "fsn": "3720",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 63,
+   "rateYield": 63,
+   "adjYield": null,
+   "averageYield": 63,
+   "tYield": 63,
+   "years": 4,
+   "history": [
+    {
+     "year": "11",
+     "yield": 63,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "12",
+     "yield": 63,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "13",
+     "yield": 63,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "14",
+     "yield": 61,
+     "acres": 218,
+     "production": 13190,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 15,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "2",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "10 LA OURS",
+   "unitNumber": "EU 3.0000 (3.0100)",
+   "fsn": "3438",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 50,
+   "rateYield": 21,
+   "adjYield": null,
+   "averageYield": 21,
+   "tYield": 63,
+   "years": 5,
+   "history": [
+    {
+     "year": "00",
+     "yield": 18,
+     "acres": 53.4,
+     "production": null,
+     "descriptor": "A O"
+    },
+    {
+     "year": "01",
+     "yield": 20,
+     "acres": 53.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "02",
+     "yield": 0,
+     "acres": 53.5,
+     "production": null,
+     "descriptor": "A O"
+    },
+    {
+     "year": "03",
+     "yield": 33,
+     "acres": 53.5,
+     "production": null,
+     "descriptor": "A O"
+    },
+    {
+     "year": "04",
+     "yield": 36,
+     "acres": 54.3,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 15,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "32",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "44 HD S TOWN",
+   "unitNumber": "EU 3.0000 (7.0500)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 92,
+   "rateYield": 78,
+   "adjYield": 79,
+   "averageYield": 78,
+   "tYield": 63,
+   "years": 10,
+   "history": [
+    {
+     "year": "07",
+     "yield": 77,
+     "acres": 100.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 95,
+     "acres": 154.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 100,
+     "acres": 154.9,
+     "production": 15515,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 13,
+     "acres": 154.9,
+     "production": 1946,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 31,
+     "acres": 154.9,
+     "production": 4797,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "14",
+     "yield": 111,
+     "acres": 154.9,
+     "production": 17249,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 87,
+     "acres": 154.8,
+     "production": 13418,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 108,
+     "acres": 154.9,
+     "production": 16806,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 81,
+     "acres": 154.9,
+     "production": 12476,
+     "descriptor": "A L"
+    },
+    {
+     "year": "24",
+     "yield": 74,
+     "acres": 77.4,
+     "production": 5713,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 77.4
+  },
+  {
+   "page": 15,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "20",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "45 HD W TOWN",
+   "unitNumber": "EU 3.0000 (7.0400)",
+   "fsn": "7646",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 87,
+   "rateYield": 75,
+   "adjYield": 77,
+   "averageYield": 75,
+   "tYield": 63,
+   "years": 10,
+   "history": [
+    {
+     "year": "09",
+     "yield": 64,
+     "acres": 118.9,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 97,
+     "acres": 118.9,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 92,
+     "acres": 113.6,
+     "production": 10436,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 8,
+     "acres": 117.2,
+     "production": 913,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 42,
+     "acres": 117.2,
+     "production": 4889,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "15",
+     "yield": 117,
+     "acres": 119,
+     "production": 13906,
+     "descriptor": "A"
+    },
+    {
+     "year": "16",
+     "yield": 98,
+     "acres": 113.6,
+     "production": 11125,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 57,
+     "acres": 117.3,
+     "production": 6688,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 72,
+     "acres": 117.8,
+     "production": 8472,
+     "descriptor": "A L"
+    },
+    {
+     "year": "24",
+     "yield": 98,
+     "acres": 113.6,
+     "production": 11100,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 75.7
+  },
+  {
+   "page": 16,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "8",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "46-47 HD HOME",
+   "unitNumber": "EU 3.0000 (5.0100)",
+   "fsn": "2522",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 74,
+   "rateYield": 61,
+   "adjYield": 64,
+   "averageYield": 61,
+   "tYield": 63,
+   "years": 10,
+   "history": [
+    {
+     "year": "06",
+     "yield": 36,
+     "acres": 168.4,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 90,
+     "acres": 168.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 55,
+     "acres": 168.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 74,
+     "acres": 168.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 70,
+     "acres": 164.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 83,
+     "acres": 157.8,
+     "production": 13059,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 4,
+     "acres": 159.2,
+     "production": 590,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 54,
+     "acres": 167.1,
+     "production": 9100,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "14",
+     "yield": 66,
+     "acres": 167.1,
+     "production": 11090,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 79,
+     "acres": 98,
+     "production": 7742,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 16,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "11",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "41 HD E /4",
+   "unitNumber": "EU 3.0000 (5.0200)",
+   "fsn": "2522",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "HAROLD MCCONNELL"
+   ],
+   "approvedYield": 84,
+   "rateYield": 75,
+   "adjYield": 75,
+   "averageYield": 75,
+   "tYield": 63,
+   "years": 10,
+   "history": [
+    {
+     "year": "96",
+     "yield": 45,
+     "acres": 77,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "97",
+     "yield": 82,
+     "acres": 78.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "00",
+     "yield": 33,
+     "acres": 157,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "03",
+     "yield": 53,
+     "acres": 157,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "05",
+     "yield": 39,
+     "acres": 78.4,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 96,
+     "acres": 156.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 104,
+     "acres": 156.8,
+     "production": 16266,
+     "descriptor": "A"
+    },
+    {
+     "year": "14",
+     "yield": 125,
+     "acres": 156.8,
+     "production": 19650,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 91,
+     "acres": 156.8,
+     "production": 14244,
+     "descriptor": "A"
+    },
+    {
+     "year": "18",
+     "yield": 86,
+     "acres": 156.8,
+     "production": 13554,
+     "descriptor": "A L"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 16,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "33",
+     "township": "7N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "54 M E PAULS",
+   "unitNumber": "EU 3.0000 (7.0200)",
+   "fsn": "0",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 57,
+   "rateYield": 57,
+   "adjYield": null,
+   "averageYield": 57,
+   "tYield": 63,
+   "years": 4,
+   "history": [
+    {
+     "year": "96",
+     "yield": 63,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "97",
+     "yield": 63,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "98",
+     "yield": 71,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "99",
+     "yield": 31,
+     "acres": 53,
+     "production": null,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 16,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "35",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 3.0000 (3.0200)",
+   "fsn": "4114",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 56,
+   "rateYield": 56,
+   "adjYield": null,
+   "averageYield": 56,
+   "tYield": 63,
+   "years": 4,
+   "history": [
+    {
+     "year": "15",
+     "yield": 57,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "16",
+     "yield": 57,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "17",
+     "yield": 57,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "18",
+     "yield": 53,
+     "acres": 157.9,
+     "production": 8378,
+     "descriptor": "A L"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 17,
+   "column": 1,
+   "county": "115 SEDGWICK",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "8",
+     "township": "9N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "53 M.E DICKS",
+   "unitNumber": "OU 10.0002",
+   "fsn": "179",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 51,
+   "rateYield": 44,
+   "adjYield": 46,
+   "averageYield": 44,
+   "tYield": 56,
+   "years": 10,
+   "history": [
+    {
+     "year": "06",
+     "yield": 30,
+     "acres": 75.1,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 59,
+     "acres": 75.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "08",
+     "yield": 64,
+     "acres": 75.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 53,
+     "acres": 75.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 63,
+     "acres": 75.1,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 59,
+     "acres": 75.1,
+     "production": 4406,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 13,
+     "acres": 75.3,
+     "production": 953,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 49,
+     "acres": 75.3,
+     "production": 3706,
+     "descriptor": "A L"
+    },
+    {
+     "year": "14",
+     "yield": 31,
+     "acres": 75.3,
+     "production": 2353,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 16,
+     "acres": 75.3,
+     "production": 1213,
+     "descriptor": "P A L"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 17,
+   "column": 2,
+   "county": "115 SEDGWICK",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "7",
+     "township": "9N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "16 LA BIG FIELD",
+   "unitNumber": "BU 8.0000",
+   "fsn": "3939",
+   "insuredShare": 0.65,
+   "otherPersons": [
+    "ADELE MCCONNELL",
+    "LARRY MCCONNELL"
+   ],
+   "approvedYield": 52,
+   "rateYield": 48,
+   "adjYield": 50,
+   "averageYield": 48,
+   "tYield": 56,
+   "years": 10,
+   "history": [
+    {
+     "year": "09",
+     "yield": 71,
+     "acres": 163.8,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 75,
+     "acres": 203,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 69,
+     "acres": 198.5,
+     "production": 13661,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 29,
+     "acres": 198.5,
+     "production": 5845,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 54,
+     "acres": 198.5,
+     "production": 10721,
+     "descriptor": "A L"
+    },
+    {
+     "year": "14",
+     "yield": 75,
+     "acres": 198.5,
+     "production": 14868,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 25,
+     "acres": 209.1,
+     "production": 5145,
+     "descriptor": "P A L"
+    },
+    {
+     "year": "16",
+     "yield": 38,
+     "acres": 198.5,
+     "production": 7532,
+     "descriptor": "A"
+    },
+    {
+     "year": "17",
+     "yield": 13,
+     "acres": 165,
+     "production": 2156,
+     "descriptor": "P A"
+    },
+    {
+     "year": "18",
+     "yield": 31,
+     "acres": 62.9,
+     "production": 1939,
+     "descriptor": "A L"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 17,
+   "column": 3,
+   "county": "115 SEDGWICK",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "13",
+     "township": "9N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "17 LA MALVIHILL",
+   "unitNumber": "BU 9.0000",
+   "fsn": "3712",
+   "insuredShare": 0.5,
+   "otherPersons": [
+    "M77 AG"
+   ],
+   "approvedYield": 64,
+   "rateYield": 60,
+   "adjYield": 61,
+   "averageYield": 60,
+   "tYield": 56,
+   "years": 10,
+   "history": [
+    {
+     "year": "08",
+     "yield": 70,
+     "acres": 159.7,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "09",
+     "yield": 70,
+     "acres": 159.7,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 74,
+     "acres": 159.7,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 79,
+     "acres": 159.7,
+     "production": 12575,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 26,
+     "acres": 159.7,
+     "production": 4139,
+     "descriptor": "A L E"
+    },
+    {
+     "year": "13",
+     "yield": 60,
+     "acres": 159.7,
+     "production": 9532,
+     "descriptor": "A L"
+    },
+    {
+     "year": "14",
+     "yield": 79,
+     "acres": 159.7,
+     "production": 12607,
+     "descriptor": "A"
+    },
+    {
+     "year": "15",
+     "yield": 24,
+     "acres": 159.7,
+     "production": 3807,
+     "descriptor": "A L"
+    },
+    {
+     "year": "16",
+     "yield": 63,
+     "acres": 159.7,
+     "production": 10052,
+     "descriptor": "A"
+    },
+    {
+     "year": "24",
+     "yield": 57,
+     "acres": 161.9,
+     "production": 9240,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 17,
+   "column": 4,
+   "county": "115 SEDGWICK",
+   "crop": "CORN",
+   "cropCode": "RP-CORN",
+   "practice": "NON IRR",
+   "type": "GSG",
+   "legals": [
+    {
+     "section": "8",
+     "township": "9N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "15 KB ROSCOE HOME",
+   "unitNumber": "OU 10.0001",
+   "fsn": "384",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 59,
+   "rateYield": 48,
+   "adjYield": 50,
+   "averageYield": 48,
+   "tYield": 56,
+   "years": 10,
+   "history": [
+    {
+     "year": "01",
+     "yield": 47,
+     "acres": 44,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "02",
+     "yield": 29,
+     "acres": 45.2,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "03",
+     "yield": 22,
+     "acres": 45.2,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "04",
+     "yield": 46,
+     "acres": 45.2,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "05",
+     "yield": 57,
+     "acres": 47,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "06",
+     "yield": 49,
+     "acres": 47,
+     "production": null,
+     "descriptor": "A E"
+    },
+    {
+     "year": "07",
+     "yield": 69,
+     "acres": 47,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "10",
+     "yield": 73,
+     "acres": 47,
+     "production": null,
+     "descriptor": "A"
+    },
+    {
+     "year": "11",
+     "yield": 60,
+     "acres": 41.4,
+     "production": 2504,
+     "descriptor": "A"
+    },
+    {
+     "year": "12",
+     "yield": 32,
+     "acres": 41.4,
+     "production": 1334,
+     "descriptor": "A L E"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 18,
+   "column": 1,
+   "county": "75 LOGAN",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "14",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "POLE RD/ BAMFORD",
+   "unitNumber": "EU 1.0000 (1.0100)",
+   "fsn": "3702",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 39,
+   "rateYield": 39,
+   "adjYield": null,
+   "averageYield": 39,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 46,
+     "acres": 75.4,
+     "production": 3440,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 127.7
+  },
+  {
+   "page": 18,
+   "column": 2,
+   "county": "75 LOGAN",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "28",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 1.0000 (1.0300)",
+   "fsn": "3704",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 40,
+   "rateYield": 40,
+   "adjYield": null,
+   "averageYield": 40,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 37,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 47,
+     "acres": 78.8,
+     "production": 3711,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 78.8
+  },
+  {
+   "page": 18,
+   "column": 3,
+   "county": "75 LOGAN",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "15",
+     "township": "7N",
+     "range": "48W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 1.0000 (1.0200)",
+   "fsn": "3708",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 40,
+   "rateYield": 40,
+   "adjYield": null,
+   "averageYield": 40,
+   "tYield": 37,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 40,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "22",
+     "yield": 40,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "23",
+     "yield": 40,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "24",
+     "yield": 40,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    }
+   ],
+   "acres2025": 78.8
+  },
+  {
+   "page": 18,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "33",
+     "township": "7N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "PAULS",
+   "unitNumber": "EU 2.0000 (2.0300)",
+   "fsn": "3710",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 50,
+   "rateYield": 50,
+   "adjYield": null,
+   "averageYield": 50,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 48,
+     "acres": 68,
+     "production": 3237,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 78
+  },
+  {
+   "page": 19,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "35",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "HIGHLAND",
+   "unitNumber": "EU 2.0000 (2.0500)",
+   "fsn": "3704",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 49,
+   "rateYield": 49,
+   "adjYield": null,
+   "averageYield": 49,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 44,
+     "acres": 158.2,
+     "production": 6998,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 78.9
+  },
+  {
+   "page": 19,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "8",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.0600)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 52,
+   "rateYield": 52,
+   "adjYield": null,
+   "averageYield": 52,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 55,
+     "acres": 98.8,
+     "production": 5424,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 68.3
+  },
+  {
+   "page": 19,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "11",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.0700)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 58,
+   "rateYield": 58,
+   "adjYield": null,
+   "averageYield": 58,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 79,
+     "acres": 78.4,
+     "production": 6226,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 0
+  },
+  {
+   "page": 19,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "12",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.0800)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 56,
+   "rateYield": 56,
+   "adjYield": null,
+   "averageYield": 56,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 71,
+     "acres": 79.1,
+     "production": 5620,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 79.3
+  },
+  {
+   "page": 20,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "20",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "W TOWN",
+   "unitNumber": "EU 2.0000 (2.0900)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 60,
+   "rateYield": 60,
+   "adjYield": null,
+   "averageYield": 60,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 51,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 85,
+     "acres": 73.6,
+     "production": 6222,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 117.3
+  },
+  {
+   "page": 20,
+   "column": 2,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "6",
+     "township": "6N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.0100)",
+   "fsn": "3711",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 54,
+   "rateYield": 54,
+   "adjYield": null,
+   "averageYield": 54,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "22",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "23",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "24",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    }
+   ],
+   "acres2025": 74.4
+  },
+  {
+   "page": 20,
+   "column": 3,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "17",
+     "township": "6N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.0200)",
+   "fsn": "3701",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 54,
+   "rateYield": 54,
+   "adjYield": null,
+   "averageYield": 54,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "22",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "23",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "24",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    }
+   ],
+   "acres2025": 143.6
+  },
+  {
+   "page": 20,
+   "column": 4,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "32",
+     "township": "8N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.1000)",
+   "fsn": "3705",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 54,
+   "rateYield": 54,
+   "adjYield": null,
+   "averageYield": 54,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "22",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "23",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    },
+    {
+     "year": "24",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "C"
+    }
+   ],
+   "acres2025": 77.4
+  },
+  {
+   "page": 21,
+   "column": 1,
+   "county": "95 PHILLIPS",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "29",
+     "township": "7N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "",
+   "unitNumber": "EU 2.0000 (2.0400)",
+   "fsn": "7655",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 54,
+   "rateYield": 54,
+   "adjYield": null,
+   "averageYield": 54,
+   "tYield": 51,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "L"
+    },
+    {
+     "year": "22",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "L"
+    },
+    {
+     "year": "23",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "L"
+    },
+    {
+     "year": "24",
+     "yield": 54,
+     "acres": 0,
+     "production": 0,
+     "descriptor": "L"
+    }
+   ],
+   "acres2025": 78.8
+  },
+  {
+   "page": 21,
+   "column": 2,
+   "county": "115 SEDGWICK",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "7",
+     "township": "9N",
+     "range": "46W"
+    }
+   ],
+   "unitDescription": "ROSCOES",
+   "unitNumber": "EU 3.0000 (3.0100)",
+   "fsn": "3703",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 44,
+   "rateYield": 44,
+   "adjYield": null,
+   "averageYield": 44,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 36,
+     "acres": 62.9,
+     "production": 2280,
+     "descriptor": "A"
+    }
+   ],
+   "acres2025": 80.1
+  },
+  {
+   "page": 21,
+   "column": 3,
+   "county": "115 SEDGWICK",
+   "crop": "SORGHUM",
+   "cropCode": "RP-GRAIN SORG",
+   "practice": "NON IRR",
+   "type": "NTS",
+   "legals": [
+    {
+     "section": "13",
+     "township": "9N",
+     "range": "47W"
+    }
+   ],
+   "unitDescription": "KB MICHAELS",
+   "unitNumber": "EU 3.0000 (3.0200)",
+   "fsn": "3712",
+   "insuredShare": 1,
+   "otherPersons": [],
+   "approvedYield": 47,
+   "rateYield": 47,
+   "adjYield": null,
+   "averageYield": 47,
+   "tYield": 47,
+   "years": 4,
+   "history": [
+    {
+     "year": "21",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "22",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "23",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    },
+    {
+     "year": "24",
+     "yield": 47,
+     "acres": 0,
+     "production": null,
+     "descriptor": "T"
+    }
+   ],
+   "acres2025": 80.9
+  }
+ ]
+}

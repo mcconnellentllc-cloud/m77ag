@@ -120,6 +120,20 @@ mongoose.connect(MONGODB_URI)
     } catch (e) {
       console.error('Season records load failed:', e.message);
     }
+    // Crop insurance claim units onto their field cards (2025 Rain and Hail claims)
+    try {
+      const { attachClaimUnits } = require('./services/insuranceClaims');
+      (await attachClaimUnits()).forEach(r => console.log('Insurance claims:', r));
+    } catch (e) {
+      console.error('Insurance claims attach failed:', e.message);
+    }
+    // FSA-578 acreage reports onto the field cards (2024)
+    try {
+      const { applyFsaCropReports } = require('./services/fsaCropReports');
+      (await applyFsaCropReports()).forEach(r => console.log('FSA reports:', r));
+    } catch (e) {
+      console.error('FSA reports load failed:', e.message);
+    }
     // Hunts booked outside the website (applied once each)
     try {
       const { applyHuntingBookings } = require('./services/huntingBookingsToRecord');
@@ -193,6 +207,7 @@ const clientRoutes = require('./routes/clients');
 const m77FarmRoutes = require('./routes/m77Farms');
 const seedCostShareRoutes = require('./routes/seedCostShares');
 const fieldInsuranceRoutes = require('./routes/fieldInsurance');
+const fsaReportsRoutes = require('./routes/fsaReports');
 const fieldOperationRoutes = require('./routes/fieldOperations');
 const landlordSummaryRoutes = require('./routes/landlordSummary');
 const customWorkRoutes = require('./routes/customWork');
@@ -252,6 +267,7 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/m77-farms', m77FarmRoutes);
 app.use('/api/seed-cost-shares', seedCostShareRoutes);
 app.use('/api/field-insurance', fieldInsuranceRoutes);
+app.use('/api/fsa-reports', fsaReportsRoutes);
 app.use('/api/field-operations', fieldOperationRoutes);
 app.use('/api/field-ledger', require('./routes/fieldLedger'));
 app.use('/api/landlord-summary', landlordSummaryRoutes);
