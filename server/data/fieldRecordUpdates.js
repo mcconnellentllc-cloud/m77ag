@@ -38,5 +38,8 @@ module.exports.cropSets = [
   // the planned crops on the cards (force).
   { key: 'crop-2026-16-17-corn-2026-10-17', match: /^(16\.[EMW]|17\.[EW]) /i, year: 2026, crop: 'CORN', force: true },
   // Kyle, Oct 17, 2026: 79.S is sorghum sudan for 2027, no wheat (79.N is the wheat).
-  { key: 'crop-2027-79s-sudan-2026-10-17', match: /^79\.S /i, year: 2027, crop: 'SORGHUM SUDAN', force: true }
+  { key: 'crop-2027-79s-sudan-2026-10-17', match: /^79\.S /i, year: 2027, crop: 'SORGHUM SUDAN', force: true },
+  // Kyle, Oct 18, 2026: 78 was fallow in 2026 (disced Apr 23 and May 13,
+  // wheat drilled Oct 9 for 2027). The spring discing goes to the 2027 wheat.
+  { key: 'crop-2026-78-fallow-2026-10-18', match: /^78 LUEKING BULL PASTURE$/i, year: 2026, crop: 'FALLOW' }
 ];
