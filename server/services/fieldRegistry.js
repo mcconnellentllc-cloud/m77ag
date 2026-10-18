@@ -10,11 +10,34 @@ const Client = require('../models/client');
 
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// Client for a new registry farm, as server/scripts/seed-and-migrate-hierarchy.js
+// defines them: Lueking ground under Allphin Farms (enterprise Lueking), the
+// rest under M77 AG (owner). Found by enterprise, type or name; else the
+// client the other M77 AG farms sit under; else created as the seed defines it.
+async function clientFor(lueking, clientsAdded) {
+  if (lueking) {
+    const found = await Client.findOne({ defaultEnterprise: /^lueking$/i }).lean() ||
+      await Client.findOne({ name: /^allphin farms$/i }).lean();
+    if (found) return found;
+    const made = await Client.create({ name: 'Allphin Farms', type: 'landlord', contact: { name: 'Allphin Farms' }, defaultEnterprise: 'Lueking' });
+    clientsAdded.push(made.name);
+    return made.toObject();
+  }
+  const found = await Client.findOne({ type: 'owner' }).sort({ createdAt: 1 }).lean() ||
+    await Client.findOne({ name: /^m77 ag$/i }).lean();
+  if (found) return found;
+  const farm = await M77Farm.findOne({ name: { $in: ['MEFARMS', 'KBFARMS', 'LAFARMS', 'HDFARMS', 'A1FARMS', 'PETERSON'] }, client: { $ne: null } }).select('client').lean();
+  if (farm) return { _id: farm.client };
+  const made = await Client.create({ name: 'M77 AG', type: 'owner', contact: { name: 'M77 AG' }, defaultEnterprise: 'M77 AG' });
+  clientsAdded.push(made.name);
+  return made.toObject();
+}
+
 // Registry farm for a card: the farm of that name; else the farm other cards
 // of the same card farm already sit under; else a new farm of that name
-// (Lueking under the client whose enterprise is Lueking, others under the
-// owner client).
-async function registryFarm(cf, farmsAdded) {
+// under its client (see clientFor). A farm of that name with no client is
+// given one rather than duplicated.
+async function registryFarm(cf, farmsAdded, clientsAdded) {
   const name = String(cf.farm || '').trim();
   if (!name) return null;
   const byName = await M77Farm.findOne({ name: new RegExp('^' + esc(name) + '$', 'i') }).select('_id client').lean();
@@ -23,9 +46,12 @@ async function registryFarm(cf, farmsAdded) {
   const sibling = await M77Field.findOne({ legacySource: 'CroppingField', legacyId: { $in: siblings } }).select('farm client').lean();
   if (sibling && sibling.farm && sibling.client) return { _id: sibling.farm, client: sibling.client };
   const lueking = name.toUpperCase() === 'LUEKING';
-  const client = (lueking ? await Client.findOne({ defaultEnterprise: 'Lueking' }).lean() : null) ||
-    await Client.findOne({ type: 'owner' }).sort({ createdAt: 1 }).lean();
-  if (!client) return null;
+  const client = await clientFor(lueking, clientsAdded);
+  if (byName) {
+    await M77Farm.updateOne({ _id: byName._id }, { $set: { client: client._id } });
+    farmsAdded.push(`${name} (client set)`);
+    return { _id: byName._id, client: client._id };
+  }
   const lease = cf.lease || {};
   const type = ['owned', 'crop-share', 'cash-rent'].includes(lease.type) ? lease.type : (lueking ? 'cash-rent' : 'crop-share');
   const farm = await M77Farm.create({ name: lueking ? 'Lueking' : name, client: client._id, landlordName: lease.landlord || name, type,
@@ -70,9 +96,10 @@ async function ensureRegistryFields() {
   const added = [];
   const failed = [];
   const farmsAdded = [];
+  const clientsAdded = [];
   for (const cf of cards) {
     try {
-      const farm = await registryFarm(cf, farmsAdded);
+      const farm = await registryFarm(cf, farmsAdded, clientsAdded);
       if (!farm) { failed.push(`${cf.field}: no registry farm or client for ${cf.farm || '(no farm)'}`); continue; }
       const lueking = String(cf.farm).toUpperCase() === 'LUEKING';
       const lease = cf.lease || {};
@@ -104,6 +131,7 @@ async function ensureRegistryFields() {
   }
   const out = [...customLines];
   if (added.length) out.push(`registry fields added for ${added.length} cards: ${added.join(', ')}`);
+  if (clientsAdded.length) out.push(`registry clients added: ${clientsAdded.join(', ')}`);
   if (farmsAdded.length) out.push(`registry farms added: ${farmsAdded.join(', ')}`);
   if (failed.length) out.push(`not added, so not in the records lists: ${failed.join('; ')}`);
   return out;
