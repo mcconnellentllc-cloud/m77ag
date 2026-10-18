@@ -41,5 +41,10 @@ module.exports.cropSets = [
   { key: 'crop-2027-79s-sudan-2026-10-17', match: /^79\.S /i, year: 2027, crop: 'SORGHUM SUDAN', force: true },
   // Kyle, Oct 18, 2026: 78 was fallow in 2026 (disced Apr 23 and May 13,
   // wheat drilled Oct 9 for 2027). The spring discing goes to the 2027 wheat.
-  { key: 'crop-2026-78-fallow-2026-10-18', match: /^78 LUEKING BULL PASTURE$/i, year: 2026, crop: 'FALLOW' }
+  { key: 'crop-2026-78-fallow-2026-10-18', match: /^78 LUEKING BULL PASTURE$/i, year: 2026, crop: 'FALLOW' },
+  // Kyle, Oct 18, 2026: 29.S was the only part of 29 worked in 2026 (disced
+  // and sudangrass 845F seeded Jun 24); 29.N is grass. Replaces the planned
+  // pearl millet on both (force).
+  { key: 'crop-2026-29s-sudan-2026-10-18', match: /^29\.S MICHAEL$/i, year: 2026, crop: 'SORGHUM SUDAN', force: true },
+  { key: 'crop-2026-29n-grass-2026-10-18', match: /^29\.N MICHAEL$/i, year: 2026, crop: 'PASTURE', force: true }
 ];
