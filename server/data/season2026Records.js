@@ -484,7 +484,10 @@ function tillageImplement(e) {
   return { key: 'disk-tandem', label: 'disc' };
 }
 // Tillage is charged to the upcoming crop (Kyle, Oct 15, 2026): passes before
-// June go to the 2026 crop, later passes to the next harvested crop.
+// June go to the 2026 crop, later passes to the next harvested crop. A pass
+// followed within two weeks by a planting logged on the same field is that
+// planting's seedbed: it goes to the crop planted (29 on Jun 24, 2026: disc
+// and sudangrass the same day).
 // Card match, by what was on each half at the time: spring passes go to the
 // half planted in spring (else the fallow half), June to early July passes to
 // the fallow half (wheat still standing), later passes to the fallow or
@@ -492,22 +495,30 @@ function tillageImplement(e) {
 // a split field (name ends in N/S/E/W) covered the whole quarter and is added
 // to both halves.
 const OPS_TILL = require('./opsCenterTillage2026.json');
+const dayNo = d => Date.parse(d + 'T00:00:00Z') / 864e5;
+function plantingAfter(e) {
+  const p = OPS_SEED.find(x => opsNumber(x.opsField) === opsNumber(e.opsField) && SEED_CROP[x.crop] &&
+    (x.area || 0) >= OVERLAP_ACRES && dayNo(x.start) >= dayNo(e.start) && dayNo(x.start) - dayNo(e.start) <= 14);
+  return p ? correctedCrop(p.opsField, Number(p.start.slice(0, 4)), SEED_CROP[p.crop]) : null;
+}
 for (const e of OPS_TILL) {
   const num = opsNumber(e.opsField);
   const split = /[.\- ][NSEW]$/i.test(e.opsField);
   const spring = e.start < '2026-06-01';
   const earlySummer = !spring && e.start < '2026-07-06';
-  const matchCrops = spring ? [['CORN', 'SORGHUM', 'SORGHUM SUDAN'], ['FALLOW']]
+  const planted = spring ? null : plantingAfter(e);
+  const matchCrops = planted ? [[planted]]
+    : spring ? [['CORN', 'SORGHUM', 'SORGHUM SUDAN'], ['FALLOW']]
     : earlySummer ? [['FALLOW']] : [['FALLOW', 'WHEAT']];
   const halves = split && e.area > 120 ? [1, 2] : [0];
   const impl = tillageImplement(e);
   for (const h of halves) {
     OPS_RECORDS.push({
-      key: 'till26-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.equipment.join('-')) + (h ? '-half' + h : ''), rev: 2,
+      key: 'till26-' + slug(e.opsField) + '-' + e.start + '-' + slug(e.equipment.join('-')) + (h ? '-half' + h : ''), rev: planted ? 3 : 2,
       fieldHint: num, opsName: e.opsField,
       matchBy: 'crops', matchCrops, matchCropYear: 2026, pickIndex: h ? h - 1 : undefined,
       area: e.area,
-      cropYear: spring ? 2026 : 2027, crop: null, cropFromRotation: true, acresFromField: true,
+      cropYear: spring || planted ? 2026 : 2027, crop: null, cropFromRotation: true, acresFromField: true,
       type: 'tillage', status: 'completed',
       title: impl.label === 'disc' ? 'Disc' : 'Field finisher', suggestedRateKey: impl.key,
       startDate: e.start, endDate: e.end || e.start,
@@ -515,7 +526,8 @@ for (const e of OPS_TILL) {
       review: null,
       source: 'Operations Center Field Report Tillage 2026',
       notes: 'Report: ' + e.field + ', ' + e.area + ' ac logged, target depth ' + e.depth + ', ' + e.hours + ', ' + e.fuel + ' fuel.' +
-        (h ? ' Whole-quarter pass; this record is for half ' + h + '.' : '') + ' Implement (' + impl.label + ') from Kyle by tractor and date.'
+        (h ? ' Whole-quarter pass; this record is for half ' + h + '.' : '') + ' Implement (' + impl.label + ') from Kyle by tractor and date.' +
+        (planted ? ' Seedbed for the ' + planted.toLowerCase() + ' planted on this field right after.' : '')
     });
   }
 }
