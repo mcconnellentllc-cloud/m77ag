@@ -15,6 +15,11 @@ const fieldInsuranceSchema = new mongoose.Schema({
   crop: { type: String, required: true, uppercase: true, trim: true },
 
   company: { type: String, trim: true },
+  // Policy holder (M77 AG, LLC or McConnell Enterprises LLC).
+  insuredName: { type: String, trim: true },
+  // Premium for this unit: its net premium (after subsidy) plus its share of the
+  // county administrative fee and interest.
+  premium: { type: Number, default: null },
   policyNumber: { type: String, required: true, trim: true },
   agent: { type: String, trim: true },
   unitNumber: { type: String, required: true, trim: true },

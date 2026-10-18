@@ -7,6 +7,7 @@ const controller = require('../controllers/fieldInsuranceController');
 router.use(authenticate, isStaff);
 
 router.get('/', controller.listEntries);
+router.get('/claims', controller.listClaims);
 router.get('/claims/:claimId', controller.getClaim);
 router.post('/claims/:claimId/attach', controller.attachClaimUnit);
 router.put('/:id', controller.updateEntry);

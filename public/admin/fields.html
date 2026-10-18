@@ -859,9 +859,8 @@
         let seedByField = {};  // m77Field id -> [seed cost share entries, all years]
 
         // Crop insurance units per field, by crop year and crop.
-        const INS_CLAIM_ID = 'rcis-2026-wheat';
         let insByField = {};   // m77Field id -> [insurance units, all years]
-        let insClaim = null;   // { policy, units } for INS_CLAIM_ID
+        let insClaims = [];    // [{ id, policy, units }] every policy and claim on file
 
         function fmtAcres(n) {
             if (n == null) return '-';
@@ -1045,7 +1044,7 @@
 
             const headerBadge = needs
                 ? '<span style="background:#fdecea; color:#962d22; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; text-transform:uppercase;">Needs Assignment</span>'
-                : (hasCurrent ? '<span style="background:#e8f5e9; color:#1e3d10; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">FSA on file</span>' : '');
+                : (hasCurrent || fsaReportsByField[String(f._id)] ? '<span style="background:#e8f5e9; color:#1e3d10; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600;">FSA on file</span>' : '');
 
             const currentBlock = hasCurrent ? `
                 <dl style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:8px 16px; margin-top:8px; font-size:12px;">
@@ -1060,7 +1059,7 @@
                 </dl>
             ` : (needs
                 ? `<div style="margin-top:8px; font-size:12px; color:#666;">No FSA Farm/Tract assigned yet${f.legalDescription ? ` &middot; legal: <strong>${escapeHtml(f.legalDescription)}</strong>` : ''}. Assign via the field edit form once the CCC-902 is filed.</div>`
-                : `<div style="margin-top:8px; font-size:12px; color:#888;">No FSA record on file.</div>`);
+                : `<div style="margin-top:8px; font-size:12px; color:#888;">${fsaReportsByField[String(f._id)] ? 'No current FSA farm/tract set on this field.' : 'No FSA record on file.'}</div>`);
 
             const historyBlock = history.length > 0 ? `
                 <details style="margin-top: 10px;">
@@ -1091,8 +1090,64 @@
                     </summary>
                     ${currentBlock}
                     ${historyBlock}
+                    ${renderFsaReports(f)}
                 </details>
             `;
+        }
+
+        // FSA-578 acreage report lines (CLUs) on this field, and CLUs in its
+        // tract that are not yet placed on one field.
+        let fsaReportsByField = {};  // m77Field id -> { on: [lines], open: [lines] }
+        async function loadFsaReports() {
+            try {
+                const res = await fetch('/api/fsa-reports', { headers: authHeaders() });
+                const data = await res.json();
+                if (!res.ok || data.success === false) throw new Error(data.message || 'Request failed');
+                fsaReportsByField = {};
+                const slot = id => (fsaReportsByField[id] = fsaReportsByField[id] || { on: [], open: [] });
+                for (const l of data.data || []) {
+                    for (const c of l.cards || []) if (c.m77Field) slot(String(c.m77Field)).on.push({ ...l, cardAcres: c.acres });
+                    for (const c of l.openOn || []) if (c.m77Field) slot(String(c.m77Field)).open.push(l);
+                }
+            } catch (e) {
+                console.warn('FSA reports load failed:', e.message);
+            }
+        }
+
+        function renderFsaReports(f) {
+            const r = fsaReportsByField[String(f._id)];
+            if (!r) return '';
+            const th = 'text-align:left; padding:4px 8px;';
+            const td = 'padding:4px 8px;';
+            const shareText = l => (l.shares || []).map(s => `${Number(s.percent).toFixed(0)}% ${s.name}`).join(', ');
+            const dateText = d => d ? new Date(d).toLocaleDateString(undefined, { timeZone: 'UTC' }) : '—';
+            const row = (l, acres) => `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="${td}">${l.programYear}</td>
+                    <td style="${td}">${escapeHtml(l.farm)} / ${escapeHtml(l.tract)} / ${escapeHtml(l.clu)}</td>
+                    <td style="${td}">${escapeHtml([l.crop, l.varType, l.intendedUse].filter(Boolean).join(' '))}${l.cropland ? '' : ' (non-cropland)'}</td>
+                    <td style="${td} text-align:right;">${acres != null ? fmtAcres(acres) + (acres !== l.acres ? ` of ${fmtAcres(l.acres)}` : '') : fmtAcres(l.acres) + ' (whole CLU)'}</td>
+                    <td style="${td}">${dateText(l.plantingDate)}${l.endYear ? ' to ' + escapeHtml(l.endYear) : ''}</td>
+                    <td style="${td}">${escapeHtml(shareText(l))}</td>
+                    <td style="${td}">${escapeHtml(l.napUnit || '—')}</td>
+                </tr>
+                ${l.note ? `<tr><td colspan="7" style="${td} color:#666;">${escapeHtml(l.note)}</td></tr>` : ''}`;
+            const table = (lines, acresOf) => `
+                <div style="overflow-x:auto;">
+                <table style="margin-top:6px; width:100%; min-width:640px; font-size:11px; border-collapse:collapse;">
+                    <thead><tr style="background:#f0efe8;"><th style="${th}">Year</th><th style="${th}">Farm / Tract / CLU</th><th style="${th}">Crop</th><th style="${th} text-align:right;">Acres</th><th style="${th}">Planted</th><th style="${th}">Producer shares</th><th style="${th}">NAP unit</th></tr></thead>
+                    <tbody>${lines.map(l => row(l, acresOf(l))).join('')}</tbody>
+                </table>
+                </div>`;
+            const tracts = [...new Map([...r.on, ...r.open].map(l => [l.programYear + '|' + l.farm + '|' + l.tract, l])).values()];
+            const tractLine = tracts.map(l => `${l.programYear} farm ${escapeHtml(l.farm)} tract ${escapeHtml(l.tract)}: ${escapeHtml(l.legal || '')}${l.tractCropland != null ? ' · cropland ' + fmtAcres(l.tractCropland) : ''}${l.tractFarmland != null ? ' · farmland ' + fmtAcres(l.tractFarmland) : ''}`).join('<br>');
+            return `
+                <div style="margin-top:12px;">
+                    <div style="font-size:11px; color:#8a6d00; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">FSA-578 acreage report</div>
+                    <div style="font-size:11px; color:#666; margin-top:4px;">${tractLine}</div>
+                    ${r.on.length ? table(r.on, l => l.cardAcres) : ''}
+                    ${r.open.length ? `<div style="font-size:11px; color:#962d22; margin-top:8px;">Reported on this tract, not yet placed on a field:</div>${table(r.open, l => l.acres)}` : ''}
+                </div>`;
         }
 
         function fmtMoney(n) {
@@ -1199,6 +1254,13 @@
             return !hint.suffix || hint.suffix === fn.suffix;
         }
 
+        // Same section, township and range: the card's "2-6-47" against the unit's "Sec 2 T6N R47W".
+        function unitInFieldSection(unit, f) {
+            const card = String(f.legalDescription || '').match(/(\d+)-(\d+)-(\d+)/);
+            const loc = String(unit.location || '').match(/Sec\s*(\d+)\s*T(\d+)N\s*R(\d+)W/i);
+            return !!(card && loc && Number(card[1]) === Number(loc[1]) && Number(card[2]) === Number(loc[2]) && Number(card[3]) === Number(loc[3]));
+        }
+
         function renderInsuranceSection(f) {
             const year = yearOf(f);
             const entries = (insByField[f._id] || []).filter(e => e.cropYear === year);
@@ -1228,7 +1290,10 @@
                         ${line('Prices (projected / harvest)', `${e.projectedPrice != null ? fmtMoney(e.projectedPrice) : '—'} / ${e.harvestPrice != null ? fmtMoney(e.harvestPrice) : '—'}`)}
                         ${line('Revenue guarantee', fmtMoney(e.adjustedGuarantee))}
                         ${line('Production to count', `${num(e.productionToCountBu, 1)} bu (${prodLabel}) · ${fmtMoney(e.productionToCountValue)}`)}
-                        ${line('Insured share', fmtPct(e.insuredShare) + (e.otherShare ? ' · ' + escapeHtml(e.otherShare) : ''))}
+                        ${e.insuredName ? line('Insured', escapeHtml(e.insuredName)) : ''}
+                        ${line('Insured share', fmtPct(e.insuredShare) + (e.otherShare ? ' · shared with ' + escapeHtml(e.otherShare) : ''))}
+                        ${e.premium != null ? line('Premium (net of subsidy, with fees)', fmtMoney(e.premium)) : ''}
+                        ${e.notes ? `<div style="color:#666;">${escapeHtml(e.notes)}</div>` : ''}
                         ${line('Indemnity (production + revenue)', e.totalPayable != null ? `<strong>${fmtMoney(e.totalPayable)}</strong> (${fmtMoney(e.productionPayable)} + ${fmtMoney(e.revenuePayable)})` : 'Not settled')}
                         ${e.claimNumber ? line('Claim', `${escapeHtml(e.claimNumber)}${e.checkNumber ? ' · check ' + escapeHtml(e.checkNumber) : ''}${e.claimDate ? ' · ' + new Date(e.claimDate).toLocaleDateString(undefined, { timeZone: 'UTC' }) : ''}`) : ''}
                         ${line('Landlord share of indemnity (' + fmtPct(e.landlordShare) + ')', '<strong>' + fmtMoney(e.landlordIndemnity) + '</strong>')}
@@ -1240,22 +1305,27 @@
             }).join('');
 
             let attach = '';
-            const open = insClaim && insClaim.policy.cropYear === year ? insClaim.units.filter(u => !u.attachedTo) : [];
+            const open = [];
+            for (const c of insClaims) {
+                if (c.policy.cropYear !== year) continue;
+                for (const u of c.units) if (!u.attachedTo) open.push({ ...u, claimId: c.id, policy: c.policy });
+            }
             if (open.length) {
-                const suggested = open.filter(u => unitMatchesField(u, f));
+                const unitLabel = u => `${u.policy.crop} ${u.unitNumber} · ${num(u.insuredAcres, 2)} ac · ${u.location || ''} · ${u.policy.insuredName || u.policy.company}`;
+                const suggested = open.filter(u => unitMatchesField(u, f) || unitInFieldSection(u, f));
                 const sugg = suggested.map(u => `
-                    <button class="btn btn-sm" data-ins-attach="${fid}" data-unit="${escapeHtml(u.unitNumber)}" style="margin-top:6px;">
-                        Attach unit ${escapeHtml(u.unitNumber)} (${num(u.insuredAcres, 2)} ac, FSN ${escapeHtml(u.fsn)})
-                    </button>`).join('');
-                const options = open.map(u => `<option value="${escapeHtml(u.unitNumber)}">${escapeHtml(u.unitNumber)} · ${num(u.insuredAcres, 2)} ac · FSN ${escapeHtml(u.fsn)} · ${escapeHtml(u.location)}</option>`).join('');
+                    <button class="btn btn-sm" data-ins-attach="${fid}" data-unit="${escapeHtml(u.claimId + '|' + u.unitNumber)}" style="margin-top:6px; text-align:left;">
+                        Attach ${escapeHtml(unitLabel(u))}
+                    </button>${u.notes ? `<div style="font-size:11px; color:#666; margin-top:2px;">${escapeHtml(u.notes)}</div>` : ''}`).join('');
+                const options = open.map(u => `<option value="${escapeHtml(u.claimId + '|' + u.unitNumber)}">${escapeHtml(unitLabel(u))}</option>`).join('');
                 attach = `
                     <div style="margin-top:10px; font-size:12px;">
-                        ${suggested.length ? '<div style="color:#2d5016; font-weight:600;">Suggested from the claim by field number:</div>' + sugg : ''}
+                        ${suggested.length ? '<div style="color:#2d5016; font-weight:600;">Units in this section (legal description) or naming this field:</div>' + sugg : ''}
                         <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;">
                             <select id="insUnit-${fid}" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:16px; max-width:100%;">${options}</select>
                             <button class="btn btn-secondary btn-sm" data-ins-attach-select="${fid}">Attach selected unit</button>
                         </div>
-                        <div style="margin-top:6px; font-size:11px; color:#888;">Units from ${escapeHtml(insClaim.policy.company)} claim ${escapeHtml(insClaim.policy.claimNumber)} not yet on a field card.</div>
+                        <div style="margin-top:6px; font-size:11px; color:#888;">${open.length} insurance unit${open.length === 1 ? '' : 's'} for ${year} not yet on a field card.</div>
                     </div>`;
             }
 
@@ -1282,25 +1352,28 @@
 
         async function loadInsurance() {
             try {
-                const [list, claim] = await Promise.all([
+                const [list, claims] = await Promise.all([
                     insRequest(''),
-                    insRequest('/claims/' + INS_CLAIM_ID)
+                    insRequest('/claims')
                 ]);
                 insByField = {};
                 for (const e of list.data || []) {
                     const k = String(e.m77Field);
                     (insByField[k] = insByField[k] || []).push(e);
                 }
-                insClaim = claim.data || null;
+                insClaims = claims.data || [];
             } catch (e) {
                 console.warn('Crop insurance load failed:', e.message);
             }
         }
 
-        async function attachInsuranceUnit(fieldId, unitNumber) {
-            if (!unitNumber) return;
+        // ref is "claimId|unitNumber"
+        async function attachInsuranceUnit(fieldId, ref) {
+            if (!ref) return;
+            const cut = ref.indexOf('|');
+            const claimId = ref.slice(0, cut), unitNumber = ref.slice(cut + 1);
             try {
-                const data = await insRequest('/claims/' + INS_CLAIM_ID + '/attach', {
+                const data = await insRequest('/claims/' + encodeURIComponent(claimId) + '/attach', {
                     method: 'POST', body: JSON.stringify({ unitNumber, m77Field: fieldId })
                 });
                 showBanner('success', data.message || 'Unit attached.');
@@ -1487,7 +1560,7 @@
             const seedWasOpen = sectionOpen('seed-section');
             const insWasOpen = sectionOpen('ins-section');
             const opsWasOpen = sectionOpen('ops-section');
-            await Promise.all([loadSeedCostShares(), loadInsurance(), loadOperations()]);
+            await Promise.all([loadSeedCostShares(), loadInsurance(), loadOperations(), loadFsaReports()]);
             renderHierarchy(lastFields);
             for (const key of open) {
                 const card = hierarchyEl.querySelector(`details[data-field-id="${key.slice(2)}"]`);
@@ -1665,6 +1738,7 @@
                     loadSeedCostShares(),
                     loadInsurance(),
                     loadOperations(),
+                    loadFsaReports(),
                     Object.keys(croppingById).length ? null : loadCropping()
                 ]);
                 // Custom acres are billed on the Custom Work page, not carried as cards.

@@ -25,6 +25,7 @@ const SeedCostShare = require('../models/seedCostShare');
 const CropExpense = require('../models/cropExpense');
 const InputPrice = require('../models/inputPrice');
 const operationCost = require('../services/operationCost');
+const { aphFromDatabase } = require('../services/aphDatabase');
 const LUEKING_LEASE = require('../data/luekingLease2026');
 
 const OP_LABELS = { tillage: 'Tillage', spray: 'Spray', fertilizer: 'Fertilizer', seeding: 'Seeding', harvest: 'Harvest', other: 'Other' };
@@ -90,8 +91,11 @@ function cropOf(cf, year, hist) {
   return normCrop(cf['crop' + year] || (hist && hist.crop) || '');
 }
 // APH for the crop on this field: the insurance unit for the year, else the
-// most recent unit for the crop, else the average crop-history yield for the
-// crop (up to the last 10 years before this one).
+// most recent unit for the crop, else the APH entered on the card, else the
+// Rain and Hail APH database matched by legal description, else the average
+// crop-history yield for the crop (up to the last 10 years before this one).
+// When the database holds more than one unit for the section, the reason is
+// returned in ambiguity and the next source is used.
 async function aphFor(regIds, cf, crop, year) {
   if (!crop) return null;
   const units = regIds.length ? await FieldInsurance.find({ m77Field: { $in: regIds }, aph: { $gt: 0 } }).sort({ cropYear: -1 }).lean() : [];
@@ -100,11 +104,14 @@ async function aphFor(regIds, cf, crop, year) {
   if (unit) return { value: unit.aph, source: `APH, ${unit.cropYear} insurance unit ${unit.unitNumber}` };
   const entered = (cf.aph || []).find(a => normCrop(a.crop) === crop && a.value > 0);
   if (entered) return { value: entered.value, source: entered.source || 'APH entered on the card', entered: true };
+  const db = aphFromDatabase(cf, crop);
+  if (db && db.value) return db;
+  const ambiguity = db && db.ambiguous ? db.detail : null;
   const yields = (cf.cropHistory || []).filter(h => h.year < year && normCrop(h.crop) === crop && h.yieldPerAcre > 0)
     .sort((a, b) => b.year - a.year).slice(0, 10);
-  if (!yields.length) return null;
+  if (!yields.length) return ambiguity ? { value: null, ambiguity } : null;
   const avg = Math.round(yields.reduce((t, h) => t + h.yieldPerAcre, 0) / yields.length * 10) / 10;
-  return { value: avg, source: `average yield, ${yields.length} year${yields.length === 1 ? '' : 's'} of crop history` };
+  return { value: avg, source: `average yield, ${yields.length} year${yields.length === 1 ? '' : 's'} of crop history`, ambiguity };
 }
 
 // GET /api/field-ledger/:id?year=2026   (id = the card's CroppingField id)
@@ -279,17 +286,36 @@ exports.getLedger = async (req, res) => {
     }
 
     // Crop insurance indemnity
-    let landlordIndemnity = 0;
+    // Units insured by another entity (McConnell Enterprises LLC): on the
+    // field's totals, but their indemnity and premium are that entity's, not
+    // M77 AG's.
+    let landlordIndemnity = 0, otherIndemnity = 0, otherPremium = 0;
+    const otherEntities = new Set();
     for (const u of units) {
-      if (!(u.totalPayable > 0)) continue;
-      income.push({ group: 'Crop insurance', label: `${u.crop} indemnity, unit ${u.unitNumber}`, detail: `${u.company || ''} policy ${u.policyNumber}${u.claimNumber ? ', claim ' + u.claimNumber : ''}`, amount: round2(u.totalPayable) });
-      landlordIndemnity += round2(u.totalPayable * (u.landlordShare || 0));
+      const other = u.insuredName && !/^M77 AG/i.test(u.insuredName);
+      const who = other ? ` (${u.insuredName})` : '';
+      if (u.premium > 0) {
+        expenses.push({ group: 'Crop insurance', label: `${u.crop} premium, unit ${u.unitNumber}${who}`,
+          detail: `${u.insuredAcres} ac at ${Math.round((u.insuredShare || 1) * 100)}% share; net premium after subsidy, with the administrative fee and interest`, amount: round2(u.premium) });
+        if (other) otherPremium += u.premium;
+      }
+      if (!u.totalPayable) continue;
+      income.push({ group: 'Crop insurance', label: `${u.crop} indemnity, unit ${u.unitNumber}${who}`,
+        detail: `${u.company || ''} policy ${u.policyNumber}${u.claimNumber ? ', claim ' + u.claimNumber : ''}${u.guaranteeBuPerAcre ? ' · guarantee ' + u.guaranteeBuPerAcre + ' bu/ac' : ''}${u.productionToCountBu != null ? ' · production ' + u.productionToCountBu + ' bu' : ''}`,
+        amount: round2(u.totalPayable) });
+      if (other) { otherIndemnity += u.totalPayable; otherEntities.add(u.insuredName); }
+      else landlordIndemnity += round2(u.totalPayable * (u.landlordShare || 0));
     }
+    if (otherEntities.size) notes.push(`Insured by ${[...otherEntities].join(', ')}: indemnity ${'$' + otherIndemnity.toFixed(2)}${otherPremium ? ' and premium $' + otherPremium.toFixed(2) : ''} are that entity's and are left out of M77 AG's share.`);
 
     // Projected income: APH x acres x the current average price for the crop
     // (Kyle, Oct 17, 2026). Used when no grain has been delivered for the year.
     const crop = cropOf(cf, year, hist);
-    const aph = await aphFor(regIds, cf, crop, year);
+    const aphFound = await aphFor(regIds, cf, crop, year);
+    const aph = aphFound && aphFound.value ? aphFound : null;
+    if (aphFound && aphFound.ambiguity) {
+      missing.push({ label: `APH for ${crop.toLowerCase()}`, detail: `${aphFound.ambiguity}. ${aph ? 'Using ' + aph.source + ' until' : 'Enter it on the card or'} pick the unit.` });
+    }
     const sold = crop && !NOT_SOLD.includes(crop);
     const priceSet = sold ? priceOf['grain|' + crop.toLowerCase()] : null;
     if (sold && !harvests.length && !(hist && hist.grossRevenue > 0)) {
@@ -323,8 +349,8 @@ exports.getLedger = async (req, res) => {
     } else if (lease.type === 'crop-share' && lease.sharePercentage > 0) {
       const grain = income.filter(l => l.group === 'Grain' || l.group === 'Crop history' || l.group === 'Projected').reduce((s, l) => s + l.amount, 0);
       const landlordGrain = round2(grain * lease.sharePercentage / 100);
-      const m77Income = round2(totalIncome - landlordGrain - landlordIndemnity);
-      const m77Expenses = round2(totalExpenses - landlordSeed);
+      const m77Income = round2(totalIncome - landlordGrain - landlordIndemnity - otherIndemnity);
+      const m77Expenses = round2(totalExpenses - landlordSeed - otherPremium);
       split = {
         landlord: lease.landlord || '', landlordPercent: lease.sharePercentage,
         landlordGrain, landlordIndemnity: round2(landlordIndemnity), landlordSeed: round2(landlordSeed),
